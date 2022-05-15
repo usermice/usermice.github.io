@@ -251,62 +251,6 @@
       </tags>
   </entry>
   <entry>
-    <title>install-Argo CD</title>
-    <url>/%E5%AE%89%E8%A3%85Argo-CD/install-Argo-CD/</url>
-    <content><![CDATA[<h3 id="1-安装Argo-CD"><a href="#1-安装Argo-CD" class="headerlink" title="1. 安装Argo CD"></a>1. 安装Argo CD</h3><ul>
-<li>Argo CD 是一个为 Kubernetes 而生的，遵循声明式 GitOps 理念的持续部署（CD）工具。Argo CD 可在 Git 存储库更改时自动同步和部署应用程序</li>
-<li>应用定义、配置和环境信息是声明式的，并可以进行版本控制</li>
-<li>应用部署和生命周期管理是全自动化的、是可审计的，清晰易懂</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace argocd  <span class="comment">#创建ArgoCD命名空间</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml  <span class="comment">#下载并启动ArgoCD</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl patch service -n argocd argocd-server -p <span class="string">&#x27;&#123;&quot;spec&quot;: &#123;&quot;type&quot;: &quot;NodePort&quot;&#125;&#125;&#x27;</span>   <span class="comment">#使用NodePort方式暴露argocd ui</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=<span class="string">&quot;&#123;.data.password&#125;&quot;</span> | <span class="built_in">base64</span> -d  <span class="comment">#获取ArgoCD的admin登陆密码</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cli：CLI 是用于管理 Argo CD 的命令行工具</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.3/argocd-linux-amd64 &amp;&amp; <span class="built_in">chmod</span> +x /usr/local/bin/argocd</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看argocd-server暴露端口</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get svc -n argocd</span></span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>安装Argo CD</category>
-      </categories>
-      <tags>
-        <tag>Kubernetes</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install-Dashboard</title>
-    <url>/%E9%83%A8%E7%BD%B2Dashboard/install-Dashboard/</url>
-    <content><![CDATA[<h3 id="1-部署Dashboard-端口映射，可以用于web访问"><a href="#1-部署Dashboard-端口映射，可以用于web访问" class="headerlink" title="1. 部署Dashboard(端口映射，可以用于web访问)"></a>1. 部署Dashboard(端口映射，可以用于web访问)</h3><ul>
-<li>Core DNS：可以为集群中的SVC创建一个域名IP的对应关系解析</li>
-<li>Dashboard：给K8S集群提供一个B&#x2F;S 结构的体系访问</li>
-<li>Ingress Controller：官方只能实现四层代理，Ingress可以实现七层代理</li>
-<li>Fedetation：提供一个可以跨集群中心的多K8S统一管理功能</li>
-<li>Prometheus：提供一个K8S集群监控能力</li>
-<li>ELK：提供K8S集群日志统一分析介入平台<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">部署Dashboard</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/kubernetes/cfg/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.5.1/aio/deploy/recommended.yaml</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">默认Dashboard只能集群内部访问，修改Service为NodePort类型，暴露到外部：</span></span><br><span class="line">vim /opt/kubernetes/cfg/recommended.yaml</span><br><span class="line">kind: Service</span><br><span class="line">apiVersion: v1</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    k8s-app: kubernetes-dashboard</span><br><span class="line">  name: kubernetes-dashboard</span><br><span class="line">  namespace: kubernetes-dashboard</span><br><span class="line">spec:</span><br><span class="line">  ports:</span><br><span class="line">    - port: 443</span><br><span class="line">      targetPort: 8443</span><br><span class="line">      nodePort: 30001       #此处添加</span><br><span class="line">  type: NodePort      		#此处添加</span><br><span class="line">  selector:</span><br><span class="line">    k8s-app: kubernetes-dashboard</span><br><span class="line">    </span><br><span class="line">[root@k8s-master cfg]# pwd</span><br><span class="line">/opt/kubernetes/cfg</span><br><span class="line">[root@k8s-master cfg]# kubectl apply -f recommended.yaml</span><br><span class="line"></span><br><span class="line">[root@k8s-master cfg]# kubectl get pods,svc -n kubernetes-dashboard</span><br><span class="line">NAME                                             READY   STATUS    RESTARTS   AGE</span><br><span class="line">pod/dashboard-metrics-scraper-694557449d-mvnc8   1/1     Running   0          21s</span><br><span class="line">pod/kubernetes-dashboard-9774cc786-fm748         1/1     Running   0          21s</span><br><span class="line"></span><br><span class="line">NAME                                TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)         AGE</span><br><span class="line">service/dashboard-metrics-scraper   ClusterIP   10.0.0.248   &lt;none&gt;        8000/TCP        21s</span><br><span class="line">service/kubernetes-dashboard        NodePort    10.0.0.15    &lt;none&gt;        443:30001/TCP   22s</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">创建service account并绑定默认cluster-admin管理员集群角色：</span></span><br><span class="line">[root@k8s-master cfg]# kubectl create serviceaccount dashboard-admin -n kube-system</span><br><span class="line">serviceaccount/dashboard-admin created    	#返回此值是为成功</span><br><span class="line"></span><br><span class="line">[root@k8s-master cfg]# kubectl create clusterrolebinding dashboard-admin --clusterrole=cluster-admin --serviceaccount=kube-system:dashboard-admin</span><br><span class="line">clusterrolebinding.rbac.authorization.k8s.io/dashboard-admin created   #</span><br><span class="line"></span><br><span class="line">[root@k8s-master cfg]# kubectl describe secrets -n kube-system $(kubectl -n kube-system get secret | awk &#x27;/dashboard-admin/&#123;print $1&#125;&#x27;)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">打开浏览器访问：https://NodeIP:30001</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">打开谷歌浏览器提示：NET::ERR_CERT_INVALID</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">在chrome该页面上，直接键盘敲入这12个字符：`thisisunsafe`</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">**注意：鼠标点击当前页面任意位置，让页面处于最上层即可输入**</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">复制创建cluster-admin生成的token到浏览器登录</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-]]></content>
-      <categories>
-        <category>部署Dashboard</category>
-      </categories>
-      <tags>
-        <tag>Kubernetes</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install-coredns</title>
-    <url>/install-coredns/install-coredns/</url>
-    <content><![CDATA[<h3 id="1-安装coredns"><a href="#1-安装coredns" class="headerlink" title="1. 安装coredns"></a>1. 安装coredns</h3><ul>
-<li>去官网下载<a href="https://github.com/coredns/deployment/tree/master/kubernetes">CoreDNS</a>deploy.sh和coredns.yam.sed两个文件  </li>
-<li><a href="https://kaerser.github.io/2019/03/11/coredns%E9%85%8D%E7%BD%AE/">CoreDNS配置</a>  <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/deploy.sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/coredns.yaml.sed</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看帮助</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./deploy.sh -h</span></span><br></pre></td></tr></table></figure></li>
-<li><code>REVERSE_CIDRS=&quot;10.254.0.0/16&quot;</code> # 配置 kubernetes svc 网段</li>
-<li><code>CLUSTER_DNS_IP=&quot;10.254.0.2&quot;</code> # 配置 kubernetes DNS IP</li>
-<li><code>CLUSTER_DOMAIN=&quot;cluster.local&quot;</code> # 配置 kubernetes 的域名</li>
-<li><font color="red">-r</font>：kubernetes svc网段、<font color="red">-i</font>：kubernetes DNS IP、<font color="red">-d</font>：kubernetes 的域名  <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> ./deploy.sh -s -r 10.254.0.0/16 -i 10.254.0.10 -d cluster.local &gt; coredns.yaml</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改前后对比</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">diff coredns.yaml coredns.yaml.sed</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启动Coredns</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f coredns.yaml</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-]]></content>
-      <categories>
-        <category>install-coredns</category>
-      </categories>
-      <tags>
-        <tag>Kubernetes</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>git-command-usage</title>
     <url>/git%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8/git-command-usage/</url>
     <content><![CDATA[<h3 id="1-git命令作用"><a href="#1-git命令作用" class="headerlink" title="1. git命令作用"></a>1. git命令作用</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">初始配置获取仓库</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置环境提交所用账户以及邮箱</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.name <span class="string">&quot;name&quot;</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.emamil <span class="string">&quot;name@gmail.com&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">获取现有仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/zabbix/zabbix.git  <span class="comment">#克隆现有远程代码到本地开发</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">本地创建仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git init  <span class="comment">#初始化git本地仓库，初始化后在本地生成一个.git目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git add .  <span class="comment">#把修改或者添加文件到索引中：-A：参数代表所有</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git commit -m <span class="string">&quot;清除缓存&quot;</span>  <span class="comment">#声明本次修改或添加内容并且交到本地仓库</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">拉取推送仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git pull -u origin master <span class="comment">#拉取master分支到本地-f:强制拉取，</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git push -u origin master <span class="comment">#推送master分支到远程</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">切换、查看、合并分支</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git fetch  	<span class="comment">#查看线上分支,--all:查看线上所有分支</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git branch -a <span class="comment">#-a：查看本地当前分支、dev：创建dev分支、-d：删除分支、-D：强制删除</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout dev <span class="comment">#切换分支，dev：切换到dev分支</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout .   <span class="comment">#放弃本地所有修改</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git merge -m <span class="string">&#x27;合并dev分支到master&#x27;</span> dev  <span class="comment">#先切换到master分支</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">回退版本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git reset --hard  	<span class="comment">#回退版本、可选择版本分支号回退</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">rm</span> -r --cached .  <span class="comment">#清楚本地缓存</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看git仓库状态以及日志</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git status  <span class="comment">#命令查看当前git仓库的状态</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> -5  <span class="comment">#查看最近五次日志,v2.5.. Makefile fs/:找出所有从&quot;v2.5“开始在fs目录下的所有Makefile的修改</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --<span class="built_in">stat</span>  <span class="comment">#显示在每个提交(commit)中哪些文件被修改, 这些文件分别添加或删除多少行内容</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --pretty=oneline  <span class="comment">#格式化日志输出。--pretty参数可以使用若干表现格式，如oneline，--pretty=short，也可用medium,full,fuller,email 或raw，也可以用--pretty=format参数定义格式，</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --graph --pretty=oneline  <span class="comment">#--graph 选项可以可视化你的提交图(commit graph)，会用ASCII字符来画出一个很漂亮的提交历史(commit history)线：</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git diff --cached <span class="comment">#diff比较选项再加上 --cached参数，看看缓存区中哪些文件被修改</span></span></span><br></pre></td></tr></table></figure>
@@ -384,27 +328,56 @@
       </tags>
   </entry>
   <entry>
-    <title>install-harbor</title>
-    <url>/%E5%AE%89%E8%A3%85Harbor%E7%A7%81%E6%9C%89%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%98%E5%82%A8%E5%BA%93/install-harbor/</url>
-    <content><![CDATA[<h3 id="1-在安装好docker后安装Harbor私有镜像库"><a href="#1-在安装好docker后安装Harbor私有镜像库" class="headerlink" title="1. 在安装好docker后安装Harbor私有镜像库"></a>1. 在安装好docker后安装Harbor私有镜像库</h3><ul>
-<li>默认用户名：admin</li>
-<li>默认密码：Harbor12345<h4 id="1-1-Harbor依赖docker-compose，先安装docker-compose"><a href="#1-1-Harbor依赖docker-compose，先安装docker-compose" class="headerlink" title="1.1 Harbor依赖docker-compose，先安装docker-compose"></a>1.1 Harbor依赖docker-compose，先安装docker-compose</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -L https://get.daocloud.io/docker/compose/releases/download/1.21.2/docker-compose-`<span class="built_in">uname</span> -s`-`<span class="built_in">uname</span> -m` &gt; /usr/local/bin/docker-compose</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">给予执行权限</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> +x /usr/local/bin/docker-compose</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装Compose命令补全工具</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose version --short)/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl daemon-reload &amp;&amp; systemctl restart docker</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-2-重启docker后安装Harbor"><a href="#1-2-重启docker后安装Harbor" class="headerlink" title="1.2 重启docker后安装Harbor"></a>1.2 重启docker后安装Harbor</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/goharbor/harbor/releases/download/v2.5.0/harbor-offline-installer-v2.5.0.tgz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf harbor-offline-installer-v2.5.0.tgz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim harbor/harbor.yml  <span class="comment">#修改默认端口</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./install.sh</span></span><br></pre></td></tr></table></figure></li>
-<li><font color="red">docker登录Harbor</font>  <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker login http://192.168.35.128:8080</span></span><br></pre></td></tr></table></figure></li>
-<li><font color="red">如果报错:Error response from daemon: Get  http: server gave HTTP response to HTTPS client</font></li>
-<li>修改配置文件(指定私有仓库，可忽略跳过)<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">tee</span> /etc/docker/daemon.json &lt;&lt;-<span class="string">&#x27;EOF&#x27;</span></span></span><br><span class="line">&#123;</span><br><span class="line">  &quot;storage-driver&quot;: &quot;overlay2&quot;,</span><br><span class="line">  &quot;registry-mirrors&quot;:[&quot;https://r2hd8p9u.mirror.aliyuncs.com&quot;],</span><br><span class="line">  &quot;insecure-registries&quot;:[&quot;*.*.*.*:5000&quot;,&quot;192.168.4.126&quot;]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/docker/daemon.json</span></span><br><span class="line">&#123;</span><br><span class="line">	&quot;insecure-registries&quot;: [&quot;harbor服务器IP:端口&quot;]</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl daemon-reload &amp;&amp; systemctl restart docker</span></span><br></pre></td></tr></table></figure>
-<h4 id="3-推送镜像到Harbor仓库"><a href="#3-推送镜像到Harbor仓库" class="headerlink" title="3. 推送镜像到Harbor仓库"></a>3. 推送镜像到Harbor仓库</h4></li>
-<li><code>SOURCE_IMAGE[:TAG]：</code><font color="red">原镜像名字和tag</font>  </li>
-<li><code>test：</code><font>Harbor项目名称</font>  </li>
-<li><code>IMAGE[:TAG]：</code><font color="red">自定义命名，以及版本标签</font>  <blockquote>
-<p>示例：</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在项目中标记镜像</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker tag SOURCE_IMAGE[:TAG] 192.168.35.128:9527/test/IMAGE[:TAG]</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">推送镜像到当前项目</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker push 192.168.35.128:9527/test/IMAGE[:TAG]</span></span><br></pre></td></tr></table></figure></li>
+    <title>install-Argo CD</title>
+    <url>/%E5%AE%89%E8%A3%85Argo-CD/install-Argo-CD/</url>
+    <content><![CDATA[<h3 id="1-安装Argo-CD"><a href="#1-安装Argo-CD" class="headerlink" title="1. 安装Argo CD"></a>1. 安装Argo CD</h3><ul>
+<li>Argo CD 是一个为 Kubernetes 而生的，遵循声明式 GitOps 理念的持续部署（CD）工具。Argo CD 可在 Git 存储库更改时自动同步和部署应用程序</li>
+<li>应用定义、配置和环境信息是声明式的，并可以进行版本控制</li>
+<li>应用部署和生命周期管理是全自动化的、是可审计的，清晰易懂</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace argocd  <span class="comment">#创建ArgoCD命名空间</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml  <span class="comment">#下载并启动ArgoCD</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl patch service -n argocd argocd-server -p <span class="string">&#x27;&#123;&quot;spec&quot;: &#123;&quot;type&quot;: &quot;NodePort&quot;&#125;&#125;&#x27;</span>   <span class="comment">#使用NodePort方式暴露argocd ui</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=<span class="string">&quot;&#123;.data.password&#125;&quot;</span> | <span class="built_in">base64</span> -d  <span class="comment">#获取ArgoCD的admin登陆密码</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cli：CLI 是用于管理 Argo CD 的命令行工具</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.3/argocd-linux-amd64 &amp;&amp; <span class="built_in">chmod</span> +x /usr/local/bin/argocd</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看argocd-server暴露端口</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get svc -n argocd</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>安装Argo CD</category>
+      </categories>
+      <tags>
+        <tag>Kubernetes</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>install-Dashboard</title>
+    <url>/%E9%83%A8%E7%BD%B2Dashboard/install-Dashboard/</url>
+    <content><![CDATA[<h3 id="1-部署Dashboard-端口映射，可以用于web访问"><a href="#1-部署Dashboard-端口映射，可以用于web访问" class="headerlink" title="1. 部署Dashboard(端口映射，可以用于web访问)"></a>1. 部署Dashboard(端口映射，可以用于web访问)</h3><ul>
+<li>Core DNS：可以为集群中的SVC创建一个域名IP的对应关系解析</li>
+<li>Dashboard：给K8S集群提供一个B&#x2F;S 结构的体系访问</li>
+<li>Ingress Controller：官方只能实现四层代理，Ingress可以实现七层代理</li>
+<li>Fedetation：提供一个可以跨集群中心的多K8S统一管理功能</li>
+<li>Prometheus：提供一个K8S集群监控能力</li>
+<li>ELK：提供K8S集群日志统一分析介入平台<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">部署Dashboard</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/kubernetes/cfg/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.5.1/aio/deploy/recommended.yaml</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">默认Dashboard只能集群内部访问，修改Service为NodePort类型，暴露到外部：</span></span><br><span class="line">vim /opt/kubernetes/cfg/recommended.yaml</span><br><span class="line">kind: Service</span><br><span class="line">apiVersion: v1</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    k8s-app: kubernetes-dashboard</span><br><span class="line">  name: kubernetes-dashboard</span><br><span class="line">  namespace: kubernetes-dashboard</span><br><span class="line">spec:</span><br><span class="line">  ports:</span><br><span class="line">    - port: 443</span><br><span class="line">      targetPort: 8443</span><br><span class="line">      nodePort: 30001       #此处添加</span><br><span class="line">  type: NodePort      		#此处添加</span><br><span class="line">  selector:</span><br><span class="line">    k8s-app: kubernetes-dashboard</span><br><span class="line">    </span><br><span class="line">[root@k8s-master cfg]# pwd</span><br><span class="line">/opt/kubernetes/cfg</span><br><span class="line">[root@k8s-master cfg]# kubectl apply -f recommended.yaml</span><br><span class="line"></span><br><span class="line">[root@k8s-master cfg]# kubectl get pods,svc -n kubernetes-dashboard</span><br><span class="line">NAME                                             READY   STATUS    RESTARTS   AGE</span><br><span class="line">pod/dashboard-metrics-scraper-694557449d-mvnc8   1/1     Running   0          21s</span><br><span class="line">pod/kubernetes-dashboard-9774cc786-fm748         1/1     Running   0          21s</span><br><span class="line"></span><br><span class="line">NAME                                TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)         AGE</span><br><span class="line">service/dashboard-metrics-scraper   ClusterIP   10.0.0.248   &lt;none&gt;        8000/TCP        21s</span><br><span class="line">service/kubernetes-dashboard        NodePort    10.0.0.15    &lt;none&gt;        443:30001/TCP   22s</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">创建service account并绑定默认cluster-admin管理员集群角色：</span></span><br><span class="line">[root@k8s-master cfg]# kubectl create serviceaccount dashboard-admin -n kube-system</span><br><span class="line">serviceaccount/dashboard-admin created    	#返回此值是为成功</span><br><span class="line"></span><br><span class="line">[root@k8s-master cfg]# kubectl create clusterrolebinding dashboard-admin --clusterrole=cluster-admin --serviceaccount=kube-system:dashboard-admin</span><br><span class="line">clusterrolebinding.rbac.authorization.k8s.io/dashboard-admin created   #</span><br><span class="line"></span><br><span class="line">[root@k8s-master cfg]# kubectl describe secrets -n kube-system $(kubectl -n kube-system get secret | awk &#x27;/dashboard-admin/&#123;print $1&#125;&#x27;)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">打开浏览器访问：https://NodeIP:30001</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">打开谷歌浏览器提示：NET::ERR_CERT_INVALID</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">在chrome该页面上，直接键盘敲入这12个字符：`thisisunsafe`</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">**注意：鼠标点击当前页面任意位置，让页面处于最上层即可输入**</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">复制创建cluster-admin生成的token到浏览器登录</span></span><br></pre></td></tr></table></figure></li>
 </ul>
 ]]></content>
       <categories>
-        <category>安装Harbor私有云原生存储库</category>
+        <category>部署Dashboard</category>
+      </categories>
+      <tags>
+        <tag>Kubernetes</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>install-coredns</title>
+    <url>/install-coredns/install-coredns/</url>
+    <content><![CDATA[<h3 id="1-安装coredns"><a href="#1-安装coredns" class="headerlink" title="1. 安装coredns"></a>1. 安装coredns</h3><ul>
+<li>去官网下载<a href="https://github.com/coredns/deployment/tree/master/kubernetes">CoreDNS</a>deploy.sh和coredns.yam.sed两个文件  </li>
+<li><a href="https://kaerser.github.io/2019/03/11/coredns%E9%85%8D%E7%BD%AE/">CoreDNS配置</a>  <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/deploy.sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/coredns.yaml.sed</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看帮助</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./deploy.sh -h</span></span><br></pre></td></tr></table></figure></li>
+<li><code>REVERSE_CIDRS=&quot;10.254.0.0/16&quot;</code> # 配置 kubernetes svc 网段</li>
+<li><code>CLUSTER_DNS_IP=&quot;10.254.0.2&quot;</code> # 配置 kubernetes DNS IP</li>
+<li><code>CLUSTER_DOMAIN=&quot;cluster.local&quot;</code> # 配置 kubernetes 的域名</li>
+<li><font color="red">-r</font>：kubernetes svc网段、<font color="red">-i</font>：kubernetes DNS IP、<font color="red">-d</font>：kubernetes 的域名  <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> ./deploy.sh -s -r 10.254.0.0/16 -i 10.254.0.10 -d cluster.local &gt; coredns.yaml</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改前后对比</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">diff coredns.yaml coredns.yaml.sed</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启动Coredns</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f coredns.yaml</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      <categories>
+        <category>install-coredns</category>
       </categories>
       <tags>
         <tag>Kubernetes</tag>
@@ -432,109 +405,6 @@
       </categories>
       <tags>
         <tag>gitlab</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Install_hugo</title>
-    <url>/blog-system/install-hugo/</url>
-    <content><![CDATA[<h4 id="Windows系统安装hugo博客系统"><a href="#Windows系统安装hugo博客系统" class="headerlink" title="Windows系统安装hugo博客系统"></a>Windows系统安装hugo博客系统</h4><blockquote>
-<ul>
-<li>打开Power Shell</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;Set-ExecutionPolicy RemoteSigned -Scope CurrentUser</span><br><span class="line">执行策略更改</span><br><span class="line">执行策略可帮助你防止执行不信任的脚本。更改执行策略可能会产生安全风险，如 https:/go.microsoft.com/fwlink/?LinkID=135170</span><br><span class="line">中的 about_Execution_Policies 帮助主题所述。是否要更改执行策略?</span><br><span class="line">[Y] 是(Y)  [A] 全是(A)  [N] 否(N)  [L] 全否(L)  [S] 暂停(S)  [?] 帮助 (默认值为“N”): Y</span><br></pre></td></tr></table></figure>
-<blockquote>
-<ul>
-<li>安装scoop安装包</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;Invoke-Expression (New-Object System.Net.WebClient).DownloadString(&#x27;https://get.scoop.sh&#x27;)</span><br><span class="line">Initializing...</span><br><span class="line">Downloading...</span><br><span class="line">Extracting...</span><br><span class="line">Creating shim...</span><br><span class="line">Adding ~\scoop\shims to your path.</span><br><span class="line">Scoop was installed successfully!</span><br><span class="line">Type &#x27;scoop help&#x27; for instructions.</span><br></pre></td></tr></table></figure>
-<blockquote>
-<ul>
-<li>安装hugo博客系统</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;scoop install hugo</span><br><span class="line">Installing &#x27;hugo&#x27; (0.96.0) [64bit]</span><br><span class="line">hugo_0.96.0_windows-64bit.zip (15.5 MB) [=====================================================================] 100%</span><br><span class="line">Checking hash of hugo_0.96.0_windows-64bit.zip ... ok.</span><br><span class="line">Extracting hugo_0.96.0_windows-64bit.zip ... done.</span><br><span class="line">Linking ~\scoop\apps\hugo\current =&gt; ~\scoop\apps\hugo\0.96.0</span><br><span class="line">Creating shim for &#x27;hugo&#x27;.</span><br><span class="line">&#x27;hugo&#x27; (0.96.0) was installed successfully!  </span><br></pre></td></tr></table></figure>
-<blockquote>
-<ul>
-<li>安装hugo扩展版本</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;scoop install hugo-extended</span><br><span class="line">Installing &#x27;hugo-extended&#x27; (0.96.0) [64bit]</span><br><span class="line">hugo_extended_0.96.0_windows-64bit.zip (16.7 MB) [============================================================] 100%</span><br><span class="line">Checking hash of hugo_extended_0.96.0_windows-64bit.zip ... ok.</span><br><span class="line">Extracting hugo_extended_0.96.0_windows-64bit.zip ... done.</span><br><span class="line">Linking ~\scoop\apps\hugo-extended\current =&gt; ~\scoop\apps\hugo-extended\0.96.0</span><br><span class="line">Creating shim for &#x27;hugo&#x27;.</span><br><span class="line">WARN  Overwriting shim (&#x27;hugo.exe&#x27; -&gt; &#x27;hugo.exe&#x27;) installed from hugo</span><br><span class="line">&#x27;hugo-extended&#x27; (0.96.0) was installed successfully!</span><br></pre></td></tr></table></figure>
-<blockquote>
-<ul>
-<li>生成博客目录</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;hugo.exe new site miceblog</span><br><span class="line">Congratulations! Your new Hugo site is created in C:\Users\Andy\miceblog.</span><br><span class="line"></span><br><span class="line">Just a few more steps and you&#x27;re ready to go:</span><br><span class="line"></span><br><span class="line">1. Download a theme into the same-named folder.</span><br><span class="line">   Choose a theme from https://themes.gohugo.io/ or</span><br><span class="line">   create your own with the &quot;hugo new theme &lt;THEMENAME&gt;&quot; command.</span><br><span class="line">2. Perhaps you want to add some content. You can add single files</span><br><span class="line">   with &quot;hugo new &lt;SECTIONNAME&gt;\&lt;FILENAME&gt;.&lt;FORMAT&gt;&quot;.</span><br><span class="line">3. Start the built-in live server via &quot;hugo server&quot;.</span><br><span class="line"></span><br><span class="line">Visit https://gohugo.io/ for quickstart guide and full documentation</span><br></pre></td></tr></table></figure>
-<p><a href="https://themes.gohugo.io/">下载主题</a><br><a href="https://github.com/g1eny0ung/hugo-theme-dream.git">dream</a>  </p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/vaga/hugo-theme-m10c.git themes/m10c</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<ul>
-<li>启动主题需要nodejs，先安装nodejs然后执行：npm.cmd install postcss-cli</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;hugo.exe server -t m10c --buildDrafts</span><br></pre></td></tr></table></figure>
-<blockquote>
-<ul>
-<li>生成博客文件</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;hugo.exe new install_hugo/install_hugo.md</span><br></pre></td></tr></table></figure>
-
-<h4 id="把博客推送到远端"><a href="#把博客推送到远端" class="headerlink" title="把博客推送到远端"></a>把博客推送到远端</h4><blockquote>
-<ul>
-<li>现在GitHub创建一个新项目，项目名称必须是以用户名，开头以：github.io结尾，</li>
-</ul>
-</blockquote>
-<blockquote>
-<ul>
-<li>hugo配置使用主题以及GitHub地址</li>
-</ul>
-</blockquote>
-<blockquote>
-<blockquote>
-<ul>
-<li>–theme： 指定使用主题</li>
-<li></li>
-<li>–baseUrl： 指定远端地址</li>
-<li>–buildDrafts： 启动hugo</li>
-<li>在项目目录下生成public 目录</li>
-</ul>
-</blockquote>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;hugo.exe --theme=m10c --baseUrl=&quot;https://username.github.io/&quot; --buildDrafts</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<ul>
-<li>把public目录推送到远端</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cd public</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git init</span></span><br><span class="line">Initialized empty Git repository in C:/Users/Andy/miceblog/public/.git/</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git add .</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.email <span class="string">&quot;you@example.com&quot;</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.name <span class="string">&quot;Your Name&quot;</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git commit -m <span class="string">&quot;add blog system push github&quot;</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git remote add origin https://github.com/username/username.github.io.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git push -u origin master</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>blog-system</category>
-      </categories>
-      <tags>
-        <tag>hugo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install_nginx</title>
-    <url>/nginx/install-nginx/</url>
-    <content><![CDATA[<h4 id="1-创建普通用户部署启动nginx"><a href="#1-创建普通用户部署启动nginx" class="headerlink" title="1. 创建普通用户部署启动nginx"></a>1. 创建普通用户部署启动nginx</h4><h5 id="1-1-判断用户是否存在、不存在创建"><a href="#1-1-判断用户是否存在、不存在创建" class="headerlink" title="1.1 判断用户是否存在、不存在创建"></a>1.1 判断用户是否存在、不存在创建</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">id</span> admin</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="keyword">if</span> [ $? -eq 0 ];<span class="keyword">then</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash">   groupadd group &amp;&amp; useradd -g admin admin</span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash">   <span class="built_in">echo</span> <span class="string">&quot;password&quot;</span>|passwd --stdin admin &amp;&gt;/dev/null</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash"><span class="keyword">fi</span></span></span><br></pre></td></tr></table></figure>
-
-<h5 id="1-2-创建程序所用目录、设置目录权限"><a href="#1-2-创建程序所用目录、设置目录权限" class="headerlink" title="1.2 创建程序所用目录、设置目录权限"></a>1.2 创建程序所用目录、设置目录权限</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -p /opt/&#123;src,deploy,conf,apps,scripts&#125;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> -R admin:admin /opt/*</span> </span><br></pre></td></tr></table></figure>
-
-<h5 id="1-3-授予目录权限"><a href="#1-3-授予目录权限" class="headerlink" title="1.3 授予目录权限"></a>1.3 授予目录权限</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;#########Start/Stop Service###############</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">Cmnd_Alias ADMIN_START_SERVICES = /usr/bin/kill, /etc/init.d/nginx, /opt/apps/*</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">admin ALL=(ALL)NOPASSWD:ADMIN_START_SERVICES&quot;</span> &gt; /etc/sudoers.d/admin</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> 660 /etc/sudoers.d/admin</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="1-4-安装扩展"><a href="#1-4-安装扩展" class="headerlink" title="1.4 安装扩展"></a>1.4 安装扩展</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y wget gcc gcc-c++ pcre-devel zlib-devel openssl openssl-devel git</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="1-5-下载安装nginx"><a href="#1-5-下载安装nginx" class="headerlink" title="1.5 下载安装nginx"></a>1.5 下载安装nginx</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$</span><span class="language-bash">su admin -c <span class="string">&quot;</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  #下载并且安装nginx</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  wget -c https://nginx.org/download/nginx-1.20.2.tar.gz -P /opt/src/</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  tar zxvf  /opt/src/nginx-1.20.2.tar.gz -C /opt/src/</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  cd /opt/src/nginx-1.20.2/</span></span>  </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  ./configure --prefix=/opt/apps/nginx \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --with-http_stub_status_module --with-http_ssl_module \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --with-http_gzip_static_module --with-ipv6 --with-stream \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --with-stream_ssl_module --with-http_v2_module \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --with-pcre --with-http_gzip_static_module \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --with-http_dav_module --with-http_addition_module \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --with-http_sub_module --with-http_flv_module \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --with-http_mp4_module --with-stream \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --user=admin --group=admin·  #配置程序路径以及启用模块,</span></span> </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  sleep 3</span></span>  </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  make -j2 &amp;&amp; make install     #编译安装</span></span>  </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  sleep 8  #等待8秒 m代表分钟(3m代表等待3分钟)  h代表小时 d代表天</span></span>  </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  rm -rf /opt/apps/nginx/conf/nginx.conf</span></span>  </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  git clone https://admin:&quot;</span>frTd3KbJct_pgoBstA5f<span class="string">&quot;@gitlab.com/usererge/nginx-conf.git /opt/conf/</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  mv /opt/conf/* /opt/apps/nginx/conf/</span></span>  </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  sudo /opt/apps/nginx/sbin/nginx</span></span>  </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  &quot;</span></span>  </span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>nginx</category>
-      </categories>
-      <tags>
-        <tag>install_nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -692,7 +562,7 @@
 </blockquote>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install ipset ipvsadm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在所有节点执行如下脚本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt; /etc/sysconfig/modules/ipvs.modules &lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">!/bin/bash</span></span></span><br><span class="line">modprobe -- ip_vs</span><br><span class="line">modprobe -- ip_vs_rr</span><br><span class="line">modprobe -- ip_vs_wrr</span><br><span class="line">modprobe -- ip_vs_sh</span><br><span class="line">modprobe -- nf_conntrack_ipv4</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">授权、运行、检查是否加载</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">chmod 755 /etc/sysconfig/modules/ipvs.modules &amp;&amp; bash /etc/sysconfig/modules/ipvs.modules &amp;&amp; lsmod | grep -e ip_vs -e nf_conntrack_ipv4</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">检查是否加载</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">lsmod | grep -e ipvs -e nf_conntrack_ipv4</span></span></span><br></pre></td></tr></table></figure>
 <h4 id="1-3-所有节点都安装docker"><a href="#1-3-所有节点都安装docker" class="headerlink" title="1.3 所有节点都安装docker"></a>1.3 所有节点都安装docker</h4></li>
-<li><font color="red">国内修改为阿里云yum源</font>  <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">rm</span> -rf /etc/yum.repos.d/*</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y yum-utils device-mapper-persistent-data lvm2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s+download.docker.com+mirrors.aliyun.com/docker-ce+&#x27;</span> /etc/yum.repos.d/docker-ce.repo</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum makecache fast</span></span><br></pre></td></tr></table></figure>
+<li><font color="red">国内修改为阿里云yum源</font>  <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> /etc/yum.repos.d/CentOS-Base.repo&#123;,.bak&#125;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> /etc/yum.repos.d/epel.repo&#123;,.bak&#125;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y yum-utils device-mapper-persistent-data lvm2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s+download.docker.com+mirrors.aliyun.com/docker-ce+&#x27;</span> /etc/yum.repos.d/docker-ce.repo</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum makecache fast</span></span><br></pre></td></tr></table></figure>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/docker/daemon.json &lt;&lt;<span class="string">EOF</span></span></span><br><span class="line">&#123;</span><br><span class="line">    &quot;registry-mirrors&quot;: [&quot;https://bn4ll166.mirror.aliyuncs.com&quot;],</span><br><span class="line">    &quot;data-root&quot;: &quot;/data/docker-root&quot;,</span><br><span class="line">    &quot;dns&quot;: [&quot;223.5.5.5&quot;,&quot;119.29.29.29&quot;],</span><br><span class="line">    &quot;bip&quot;: &quot;172.31.255.254/16&quot;,</span><br><span class="line">    &quot;storage-driver&quot;: &quot;overlay2&quot;,</span><br><span class="line">    &quot;storage-opts&quot;: [&quot;overlay2.override_kernel_check=true&quot;],</span><br><span class="line">    &quot;userland-proxy&quot;: false,</span><br><span class="line">    &quot;log-driver&quot;: &quot;json-file&quot;,</span><br><span class="line">    &quot;log-opts&quot;: &#123;&quot;max-size&quot;: &quot;500m&quot;,&quot;max-file&quot;: &quot;1&quot;&#125;,</span><br><span class="line">    &quot;exec-opts&quot;: [&quot;native.cgroupdriver=systemd&quot;],	</span><br><span class="line">    &quot;live-restore&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 <li><font color="red">直接使用docker官方源安装 </font> <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">卸载旧版本docker</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置yum库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y yum-utils</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装docker</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y docker-ce docker-ce-cli containerd.io</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> docker &amp;&amp; systemctl start docker</span></span><br></pre></td></tr></table></figure>
 <h4 id="1-4-所有节点-配置kubernetes-yum源"><a href="#1-4-所有节点-配置kubernetes-yum源" class="headerlink" title="1.4 所有节点 配置kubernetes yum源"></a>1.4 所有节点 配置<code>kubernetes yum</code>源</h4></li>
@@ -761,7 +631,7 @@
 <li><p><font color="red">安装calico网络插件</font></p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://docs.projectcalico.org/v3.8/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">wget  https://docs.projectcalico.org/manifests/calico.yaml</span></span><br></pre></td></tr></table></figure></li>
 <li><p><font color="red">kubernetes 中 kubectl 命令自动补全</font>  </p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y bash-completion</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;source &lt;(kubectl completion bash)&quot;</span> &gt;&gt;~/.bashrc</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">source</span> /usr/share/bash-completion/bash_completion</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">source</span> &lt;(kubectl completion bash)</span></span><br></pre></td></tr></table></figure></li>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y bash-completion</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">source</span> /etc/profile.d/bash_completion.sh</span></span><br></pre></td></tr></table></figure></li>
 </ul>
 <h3 id="5-二进制安装kubernetes"><a href="#5-二进制安装kubernetes" class="headerlink" title="5. 二进制安装kubernetes"></a>5. 二进制安装kubernetes</h3><h4 id="5-1-1-部署Etcd存储集群、三台主机作为节点"><a href="#5-1-1-部署Etcd存储集群、三台主机作为节点" class="headerlink" title="5.1.1 部署Etcd存储集群、三台主机作为节点"></a>5.1.1 部署Etcd存储集群、三台主机作为节点</h4><ul>
 <li><p>键值对数据库，存储K8S集群所有重要信息(持久化)</p>
@@ -901,28 +771,6 @@
       </tags>
   </entry>
   <entry>
-    <title>install_hexo</title>
-    <url>/blog-system/install-hexo/</url>
-    <content><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
-  <script id="hbeData" type="hbeData" data-hmacdigest="38ee075f7d1c88089b2e5bb810ded53eb750a711b054b7d8db5c8fb7871cef32">48148d24bff3dfd75601a92eed03ff0c278ae43a54b3a74a60a945ee9e447d045e3bf501ceba1376f8cf99b688e329d2800509c286bbe075c0d81dd46cb6bea9b8781467a329d2c2cfde0a604e9c5a5360c47425af32cf6bc8b6e24e7dc89821db40120bab78997559cbff88e3eefc1c4a979072447dfcdab71de61760dc859b0c229cbefcd0094b4c9ebaee24e5da2752c49982871232a5216f4d3f877b88ae1c3e01f0ac12611de88aab6af9707b9e30dad23ea513fa2104a9797b06b6796a1640d1ce8edaab82f8bb565f9936fdac39ddc859c31c928d9d94666f597989a7b91e727b9d5c60b30e6e105e962951fd0b7efcd28e2ba333095044701f2f7253e8d5c356dd516d3fed881a1ac94255fcea42213158d5cd07310cc7c87dc904b4bc61f6b87f801415a3a86747ea3562b6eef88725f5a3ab239a86b0777c2de4fb8b5e4693859f5c327bfbc4f3900b0fadaff726ced5baca92b78639e5190d3b1dbcb509cb0a2c77248a10b58c212dea07fc29eaf3dabef96950dc96d39c8c958021009ab843ba4fb8e89690fc9a1e2533237c3616e0a830182b9a2e4ec18534decbb5a3a2fe0a1521f61b6b7809cdbcfcd1cae7cd71bdda6189593bdec7cb11f1d4341af663444ec8033532714866a090a4f81a39301f37f384c51684ccd85f142b2e910fdb3610e5c6ede86f04615d1e438ec921210a0c41c6fd7f34ee65db412bd3ddad40daeb10cd0c5d923b6223debef800e831a0f7b9c613e04a0833938bfa13a87faf2715c768145fb5753d66dd6ab4e8dd63b82a36dade1d4a4f980a6e1f69288da92612f0449068df915e7094c18c708046b337f1d2e7fa85a0b579256614dfb7bce7d7269851c12bafcd521f3c97155dd38c8497d5f8b8a9d0d2fb6a9e7ec43154b863e0b2de3f4ddd183f36942c4f3ffd9350f6ad3751456ac3e86930cbfa1dade22f1eb2478cd3bae7bb55fd833245ef8ffe95e7f8f8313868c0bf609a38622a3794ce915c9ffe259a503a41604f46c906f2d09e085c45a8e5a5acda0aa8f10925dc671c2e2149560003ff4396f336002bc256a9078951111ec2e0079b325dacf8a8276ec3dacea290c760c67cfbf9be94787c3953a12b2f8037a85c76caf09d620108142d8492562e1166d5aea4cd4ddfb61a590f69b543a0e5b8ec68cc6fff689a5577467eb4392180b08bcb939243822c0acc287bb322b64c7a9e5c46c7f96f31eaf2aa7986877e175480ee60e981875cc1a0f83fe4dd6344fc94436b16f19d3f24fc329b1d6adf40b91c19f0e01eb32b476bd4dcf7a3c9cf0380b9c636132dc258118c2309662469572d0c7cd77525d150dfea4fc94ea82095d509760c9c5ec18bbfce7299c4ba045fac9a851b95aa68c4455f2326ac5ebf8b530eff9e4f96302c480d3645f38c170707086272b115cddc41c22fe0f6a14026e45b33c9bccd18384a9c8124b08c681970f6618d4ca742eeeb8166fbb994c16070dd13629dc2570dd0d0bac863bbb302e98439007eb86f4fa2b0faad0fdf036e9acbdfe557fdf51b3903b0454a0a8e1012c418b61f42d7914835fcbe6eb40dbb8dd7bceb38dc04b3a5cf41f178219f24877ec67bea47000386cbc9348333f8aba0ac156f90a68265ff19ab9ce7f0fba5da56f91deabbc47aab93930af7f656cd1e89e4490dad4d4fe3f006629683a3315ef4e346e0b5b8787626e71130013286e56c409ed3719436fdf82f8c043aed3583ab17d85984077b2512c108bc55cde03a38e8db506f8b11e408400d44a563cf60cce1df242d81cc5fa34e6cf85f9f2909bf4cbed6af94b357cfa547b5c51bc67132a451379dfc6891e533492e19689cfe674fae766ab43f425483c931d54b69243e2152098c94c134154d16fe27111b688841dd3342f7def3e22100e8105088363c691a624a2d89fd30c36a23fe2f8c25846e52b6f0267cb1d0d290f0485c760c5b11847e96be02d6e30f712c454f1e39298be0ae19f3544c11f917aa7f375470bd977d967a2e825d87a7023cbd40e0fbcd1dbef797898fcf951f825be49d2dc10dadc62269d4db9ec0cc8534c33645489ea39cc8550850b48bf74e220277576926f4a7deccde13b48801fcfb924fb735b8b09803d48feb89ba03a9012846980c74bb4f7ec7f586b61bd612f8ee81afa6a6351b1be9554f3afeb2769908aa72cc620b78cc2e48f250ce74b839bfe58028f4a6a8c3f2b487673943147d8d773f8ffe2a6b45c846c52f0c0a291903d225e8de4cc7efb788938e4dea4e8e77b40696c78069a18da341e9f1fb9018492d24ee2b2d573c44ac480f6f2e7cdf10fb94442e980bc78aeb3fe17c74746ed39b239cff8a0b0a25a741865afc2955ec75ca4e0e83f55244dc449328b1f087455c56b370c093c068efc44b00ebf0b7c3a6a5cf8e3caf1f80eea8eef93030ba9ce0b2179ea833654b1d9769f0bc7abdd5b02b72472cef145f74209024f2af86f3f2e67ed11c50f0519fa38fcf7ed34dd52563a27fb97e51ac3e107a43eae434091211abe8a64159a6981978b1d2cb2ac3c02e0f598eb7435c1015aa85339ebbbb912a0c1009c37ee841372bcb731d5b21fd19c8c08a1d01c967e295a6378a119a169dfa943fd87ae4c965c8e62e7ccf4d5fd944a194f27f06a041dc868f82ae315258825c09840856dd111feac83bbbea5274a8b8bb24a92c885ff55d7b9ce1b23eb34609d0be97307cf1eab31dc0860d4e67b06b7ecbcda57b6c80f13aa384c4d9a854a0d36f055acaffbc440d45095061979db993748766677999ee62d2c2c68534fcf56a222787e4cc8bf236ee1f92025b347f02e0662364ea77406fa27387248f087ca312dbda0cf35d9720ce633bd1180ba6565749b20106efdb93ddcd4fbf89817981d656bdbb20f61ab4a2a60d3f16d20db6310662d8d738ca265b0f723a4734cc9c73297e1623c34458bb5ac0500c04340ada8b91fe7b3096d00b3575bfbd24ce9aaaa332c67ef3c929c91fc45b093f3f257fc9bce0775c2214c5996912689329af22a774f7b3ed14cd98b4704c2c7da7f57f3dea9f70b74420a8d8948a82ed3275d5695016d6be5584be13cdc01c1f0d8ae05ec9ea2dc54c294e2639e76afbd3aba12740d93636d4e204aac1bf74ed2a3fa1d551c7c8a397aff849f76ff9ba2456901787b856b822c533868b7d200679e7752f9737e70f54a110f5ed5130aec3bb398b08bb97d252ccbbd668c05dd37e0d96466f05319069e6057f541b96a12d94716e02e12e66e46dd3656c86f726c59eeb49515e8a30a796ee2e58deb83794b006d495eb6d5cbbdc9f59d16c2ec226d13760affdd2704f03414690412b5019d86722d7b9465f4048f991bf997f343c88aea23725e67cfa0a08fa56fe9b828891e3b3d53a53535c4b324f18a446e1bf742e0436d0c5e87a3df130631504f42c290b6f374a021d37ab092f485909baa7f6e082124b517dc9bc8f824f15efb9c0935a9bbacb9efbac654158f3e82e1d5665a2f7682c4f85aa00a415ea174eb5e3223796f225c2047270d3373d5d5e8d4b21bea20bc80ae8458322d7d1fc40a8b1e381027603916c1b6161b4181fb083a93c5148f5bfc2695da022135c3fd7d01a4a4e3a9d4f0452a664d950c0d2b5a0decb03e1948c679a9bc7ae4b16995d4dcb09871dd75a702fcb507b2f2464f120326098b29f0e65d1bf57999a9e5093011ba8695f4c89d36bcdda0f1ea0fe4730c77e69803a12799bbdbabb9b597beb8e5d0c44659b3cc71a3b8da54e576b74deb0ac32f692f1bf352bf960cc964b47109e283a0c03b79251907a6620ede8206ed3614b8b611881ff688b80ee69b4738477844d771fcce7b47e282f0f7a25bc76699e114d4640c2c0bd754af964544f2ad585ef6feeb3deb78dc8e7e19e2d144f587f4dc6637060e6b98c6ef82d41e94f24d64eb34b7152c0fb9d811b1c98c1270afe3cded19d0532f496ebfbe0845371505d5e428df348104320ad5df9bad60f34354113474087331bb5f7d5d975c5ae225be8188494c2de852e86c002093c4e3d5e78d1ae14f3f20c00dcd09bc57e539a06c80b018ad722ab0a1e6b77f28bdf695168e6b890f339388f21a472d1d7b64c01e145cf16d3927c2284a7d22c640ef7375c0948b3aa7883cceca563b937ec7371ed1770e7be880414520619e316db8fc47fefe9131f08503dc6d741b476783a8b270ae22090b37f33964a161883395b424632ad38b27ed2d56fdd953f4b594424f26575bb2befdb1faee3f9b2011c875ca0ad291a61074a8e50a2849b02edbf2189caf75967f470e1f8b42857619ff475d6f165ff8021a51b736c214c3b207933eb6c7c6bcc481f6ce360cbb77d9c5c765a130f7376914c2270666767cd0c0e1e816045efa757be6dff8ca0dd2ad205382998e5b12dfe81ef74bbbfdcf4c441206d2d123984dbe45788226f187f02db7104cd1006443e7e5b023ac419ce33931e7894817577ac4f158ffbee460d5242f9b01777621a1d7c54ff0a7d54691e30fc22c2dffc7d928b7b8eabf47769cf56fd0420eb55b9650c01605105364e074c77b33a83ff36d4754e42d0cf868498f9842360cc7638d033bedddb0fa8c435b65d797990ff7b2e0964531d00e99d95da9fa981805fb86dda0e740769555e3a3e923238e49708d42966dc41f609c79cf88cb7be4b8fcbe948ee5a18d29156dd2de2fad8ce163de7c4072f30918e1b4a651a4f83ff8a1def3cc086160148b41931f644265961e12d3011e80964b1a5778ada6c9bdb1aa21acd9e2363061836ec756a823d0d2391d39f2184181afad3d1669ca91a83336deb091ca09c1c2eaedc383a8c8cef5de1fabe626e7deb59f4e80e67d04057a9f23811e37e806b7608469d9c80a51a9c831a7aa132944f0b6b1bef4bbcad0725ba892bf6654dc9ed1f0fe089c02fe706c99073777ac30fad4a1fe4825a4d5bffa39c86e8e5ac933e36f0d013ac2327c0d06dc6619ac628338d1f7572ce9dc6a0c8c22982c9ee8b86a18e34e032922bac66b55d95b640b0958a6edc797143bc2f9db2da8149e47fe92324dbe6a25d3268f16637eb809d56cff45d9b8bcf06f9d1939e4681da7860157c3534a3dddd96b5a3cc49ee9a80555526c4a94a560e2bb5cd0c3c45ac34af0ae611bef522cf9ccf2eacc97a36df1fe1ca7f8bef0717dfa2824656066c6fcb74b9e006d853c2c1884a925b03a925bdb83a6413cc8fd1e6142d5c1eb9870d6753334d78b66d668f8f703c90ba592c99591a4d6636d5db5f453179c4298eea4f8f9cea7dffda358a4fef524dbb16fa33d29d90bbae6ddeb8282af29233d8c6b719472d47974002eb0036a3b992376d856a17edc938f7a7f79fa336c87f0db6b52c2de597293df8df1b55ff85a74df1b2a3ed148b82448875179b0819164847fc48b81b65ef0491fbfbb6fa0060ab572976e6051411f4eef0b4af8f9ad69306775393b22dbe81865047aeabb0a8e8f74f666d20ddcf6865c90647c7665584bc4cfc7fa13a8ca7d50df0fce036379e82b38946e4a038606f4360cfe8c2f1e3513f5b6c6ef79292597a34aa60e1deec449d6757d932fa97478164d5ed2ebc0cdc755b056d58de9660da6b5f5bc8dc5438e196e8732d07b0a150f67ec40409210d44d1e886dde9d2c77b46afd4f005b3d021568dc5a9f718e62572b9cce2ecb77afd8b8272fbac711e28e9caf54025134e450c5bd3cfbcc4f6f9f69a4cf509db2bea4df0f3ef9367bf6a827141d1d1e4af4fcd004ee632f67d16b4434b9c6f5045547ef5c6948b903007d93e71c28671534cb1410bd5ee6f3abea69d631bcc79e1f918d35659be2272382370b1bef671b5f7d5f80a379b9386916984cd952526bce61dd9b02aff517eb7efb96f086e030e5523ed0992e6709374995e7e3817c258e04606b1022b6baf7b8dde3f397802694b0ae195f71cd68efd2a4358b12a18369f6596c8abb0f9e2b90748ecea69a852ea5d5159b4fe21ff7adb2236db62ebf40bf507350a55e047783fca6e42ea2925c7c17e7ec8dee10f44d598ec15ed482b29afdc1c1ceb26272d631daf30cee5f9db57275cc02e3f22f72a3f3e5722353dc5dfa0295dcfe77292b3d5ef45f085930c7d944f4ff6ef2a41c89da1e575b5188f2cb6654a132870d6808da21f4ba6840b574cc4c02fd66e60daca8ff2da08726c27622eecf312682599e52a2bec9dc2c13934c7454938908153ea3ebd68393692d52e5bcbcbeb0aa0531511bd80d614750739e001a041ce50ce664edb61dc34dcae4a76d42efb37eb17f4e9352ba82a1f16327a5bec7bb48da97abe2c751996712d4348f28b136b6950f0ce19be60b7593cce5a5a7b82050ce37796d676333a62a4c25a45c0a37cc1ca666c6c65135c54c45a80e8ca045ba2c26edf873a7fb5e7e366da36401eeb6899c832f737c189dc25992072b7e7b39361b905c3345f8e06d8b2aca934e7c4a9549c5d6bc161c71ed64586b0cc86224489709e8fde31cb8250beaca82c33329f158b8e84566b31ba764f6d687cfc824b04758f021c6a30478c158b80d2c26fd2e95045b4df0b3b935b87b13cd785510683749d39229325ab2b4d6a0c8264363f92def8b2f3b833543059c933947f6b0639f430dcd42ce2f2c251ef0eb82e24a6a9f68bc681c19933110d56672bf5ec3287f70463f0320990867f9645ef7c2a151b8d19d541a967205692f612a1812488c79d4d31cbad28ee4cc5852857662d297868b784f729db32e24576715e1bb2b65cf9cab9b6b705216e3642db6604340b51c6cab4d3482e56eb45d0d67875cb363b208ef56024694c37aaa237f413a3e56217e44d845479500bcedbb04ef4eac1b264373599f0ca420d4a8e5c8a36122f9385a134340f6c8ff150faa1b5761c94ef52ea5b39c573b3be6b0ddc489f72a5c0a2a2dcf6ddbda66bd5d0c9db4810278aacc8c6047a30704b06ae7fcc0bb52deabedbce66d380222d80a0c80d58f38fb2313e8f1f75a2a79377ca3d04860e333a0437d0426ea5a1ff3d990d3c121e5ac3c28b1692bb63f90dc4720c663e52677181fb70d7f59e95e2ca8ffddd8c791e2e9d11168b0c69933717ad7d54048d0627b8bcc1623b2229c9b29d6d5598c95b5c6f4e8a618a69323525fd30ed622d0e7f90be1f2e7bcc42c80a987010d6740ad4e7c213135275cda88d4324d54ae6354bf88cabfbef84bfb3ce77c3ad0c09e9e1cfd102391c6dc171e24e504181b67343d0c826c3e69920897727122b35c97bbc6fc2499fb033321863afd01192eb9806c21b1277b0a3516a5699a19fc2c7e8afecd6faed737a0d21d4510839f524b6dd72c7bbb43e7fb899b93aae1e253327b543ddb2f190d7e973de039ae922d40603742c3e5154da248b38da1248ea7e8c52d309fd7abc90842cedcc2b1f60d97b16dd1171f9cd3114811704cad3a266078a74b61d23ac32bbf30c068d56684cea34a6c7d943853e5488eb242b1e86fa7c28bc1705ee3e2647607b3fd5e6b05bd697368fecd84ccb5deb6eba4332cbcd44c6c523d73f2e6d67b036c349e370f8792c7b4c14cf597a76f2763826ea416ab38c872e55a6b5105e17ae6f9be8b30df6fc89d66352ae3ce884a70120cba4041c95e2abd87bdc9a260d1d196288c25d44cf2e20166a95738acfecb79787a0064e00a3c1afa69d424b02791c9954e1cf274ffd44eba399010837b390ba89ddc859c4e8a374472e3de9817cf2b3f6f2a9b8e42d497ac2210c33f0ec7fe7bfb6c7c87973fdc2e96b76c0fcc34d784056718d9991a08076a419e3e34dbaaa6f0796ea41e440def82c9bfafdaab46bbb6c9ee33941ba4bcac725ea61e42ffb8e33f777e0bd49a07876d4f0e59428311689239425ddb5f81507690717030d9eb758c600bd47af696a3b896ed13db2b17d22a3b6c6f83530a975af6971273a9b1de5c828d11cf9d62776bcde72733edc21e20a33e94e1b20cafaf65a9221ad70528fa5a61f40c4f31225ffaf85cc7da0d4beb387aade7aceaf338665737648f152f43320521378c4419096a1ec8b648f277eb025d0f4e76e835d80500469348a99aeb59c127f715f08a0e1df1b5c39c68ff1809283ff3701778321e1dda8467d904c5674c29ab16489e42392170a540184816bab11e41f00742d7404ed2cbfe44bc89f095bb08502dbbaa9f134986a81a64340e68744b2f94ab69e18580b1715ce27175697bae7fd78c462af3cb9fd1dac7e9d95f940739df50752ab70360287fc7d79d5b88cde5ff1fd48f9a13b5d4175cdc37a85f612ab74ccb5161226b685fe972314030e0a3a8595193d2414444b34b149da379d7f5d62189434b93942b74866dc922f2ac868c832057b11817a34daaad3d80891cd95de2482e6ea0517c6c1c4dac0407073a2d818561545a77926834430612b65c9d5f8efeda1086223d87ec13f13a678fb0264e02f3f1dfefbeaa2f048477c3ca5454f74d2f19c622cad8d4639e36682589feb0333acca7a19c93fae21755bdddea0efb77e141e926fdc7baef441ea1c41cdc0da300c9ac038d89a0aee6072de3a6505acdbc11967b26efb483caa8b442113149c32ac5b5d8cc0927e60fd15996f4d07a0ce3865437429d8c1aa4379f53429eb808d4d6e26f178397bc06e9d8724c6cb8e42f700e8e3f65e4409e154307191997145e60e228e26f2ecd12537cd03e2850b0dd504adf2ac1b78cef667d6eeb35159bddc94f880eeb4edc31d15dd3c389071440352d10c0d83d155d64835c391562c3d6811bc0a43372b201c0f3abc99d5e71633874d9eeed69c6c718a63dc2ca0246d4712d25eca90109291534348bc3e7f18bbe849f75696dfbcce9e3b55b2aeb41c5262fe7e01823a274f8617987502c94dadaac10385d36814b571e4f64dcd7e20c076710fdfa7285b9cf0f839cb85fcf0b00e71ec6d61ef07f13f65ea18d190e0dd30142d402a3829c0d987c37e85bce8f2d5679d94b46899c2343650396662570dcac943c115e4f670bb4f7f9c7162cbc9ef2ed708a8747313fe0ce2dbca5ef8c1fa0473309117dff5f9ffb38c82dbf05d94a8b12abb60fcbddd62b7dcc97a85fe6a863853741e7fef0cb03ebc483fae00f90984129c6420907849f9da87c1703611a17e804cabe58e1c90acaf5f8aab3f676b3de722c7e03f6742270aab5a5c623a2f7dc20d77637614327b832bf85002fdcd439cde3aecf9dd9f7ff63d4ba61c1fac4638ec16a252e3a18e6e811dd5a8774e8ec608b58f876e2175ad02daab5ff8932405473a0ffec64f361c8d1645e516bb93879a76a746937931073e4377f7a76ee04222e47edfad375aadb48d14e9b0fa4f0c571dada6e82a56920e3832243bca242dbe16cd836247fa57c2ef5112401a70ce6b45fdc4810aeb5ed12f5e21a0d20391fbf8a09a089caec33414e57280fdbef4b64b9bd895ceb91517341cc0e4c2d25e4664fae3bc0f6bd2be1c46eb87c59c37da7f33acf6544a3a43f8449d4d7506489052c3a0942fbba69788ec2c2bfd4ef95d6b727eb95cc991bb3e125c54804a825933561d8fb760e263dffbc1e91cc31d9b92f8e93b5c49ff6d374ba5d010b544ad828bf3fb816d9dec35247a2b8699966253afeba133ad4414f4022e23a12cfccd1bd3b408a39a306a29a9c2a4e6925b6e0afb2758cebb99cf50e44ba37cec1858398db103bcbcd75a9c9bfa31923a5281bab7dfa487fe4912027e09922bd28a8554a5bc9753873a4a5c052745005386e5e76c30c1080daab7a78916c0dc0f92f5f6e461f6c1c5ff4b965bec56b0c4674dc99548a04cd3142a041b1a1c601d3722cee21af12eff8b2a41251574ff0ac81238b48d48f45dd09b6288dd0fa5bba36c9ecfb118fc75facedf512caa2b0046b23c0ca960ad204cbc42bc750a44d1ee6749880e5691ae0167535aeada37a70ce43829ba62a09e0eabbbba52ba9de5e4c92eb559fd4037041ee4db660560f9dc818d909694f7ef2763a059981825db0be0bd3d0314c153cd58375a97e3bd07248bacdf47232765d95c11fda4aba6ba901e9623b5b81d5f3a90dc3aa8afc529f88f43c9c2410166c1c2461bc71e5e793da912fe1519551f904ad1ad306674288cbc9de56bb785595a887243038b2eeeb485342a3a4dff72c1a963d2bc8e0346a81fe5b98a525fa1420127c908afe0f8bb10b4b9b1996b21d0223ad4ac8bfaf1a58ea31c6846466fd7929be9c3f8c1c8f2de3e9054c6f6805026055792b1b9846880c9a10dd842d6e2868caf4d70558b551a4d7253c63f55fab0e6f23c249c5b30cbcf36c97884420bfd057fb171504856cfbf061c7e264a335c7c623d075ab47b17af4f616fd37f4682a9ac4ab93db3b43470035e02a207392f3c22bc952ab1a83988fc0506d98baac12a1749d5cf42bcee509459ca6f89c2a9879f64558e9cf902e0f776a9ddeb0931602ab2c4311fba0d91ff858a41111d7ef9ad37a46f05937102bb52d5a643eb1ab8b763e47d8fc44b40d2b4ed2f4a37ca97fbded5873563e7f24d4609acb991976c63643c9caefd317405376755663852a34eb9a0ce995c946a44f59293c7ab52157776dd30af889ef347b55dcc17b99cb6a85ddb5d4a45f1bb829793aa3646a266e053862f697d25f54ac905dfa93e791f265f80b2f27536ae621c8eb2059fb9fcc4b476b916eb612104110ead60b5327780470dc0fc6dca8f6cd3daebf7b2ca1c0744322ce4d76e2371b49f26a9ee61178004255abe4a5d299547b99d94134e5ce08d472737be8f0f10b97e57f2fc9a45f850a8cc6f8bc21b971aab7e8ad4473248ce70d8660acaa50ab6e50c074376ad7e33329732c54f210f8ce12e8cb51e0cc1f05d18b60d7f5c54f4868883b06a8dfb603c7ad75bf6bbad70a2add9dbe05a35539938e7277155c4bbb3683ef6dd053da30d93b1a16700a416a532ee3c6b3b02b8434297acdb74a5fa42aada8ff8901bddf5b53703d80d4f21384d5e3bbf768b1c0619864d33423b3e92e4c26fd467559c15aec2d8e73e1484dddf094a73f0db13f6094840b6f07ff2fb27ad804f8a0b6e9c7b3aa73a990315497a2d257e88ae7b2ce7d69150c79ac59549b5426d0b9ea341a058ddb7f8efb4943a3153534f723aa1aad5a474db2b86f26efa098edb54af76f32809a2e1e90feda32c4c137655165f2af45504998c45ae639d65c8477c6ea4d4c6b2521bdc78bed64a61b92ee60536ffdd458d161355ef4569d6a398f1500bc8a4bc449b1cbc124843ff9b4050c1768ebb8debc1dbf7f5f09e8424160686989184a23a97b890dcc8925fcf79b1a884ad7c84f4dbf028bf82b57a2f4a7bbff2abb7b663850ae789c20e5b01bdafb577774786d4c6a66d8d1352bcd95d41d7b7accc8952baea316fc27561227f68101f9dc4224d9e0012203197c86180c05f7de38ec2c851b0919b281c5ccf9fca6d933f07561afb840c8b4db38140b07d339728bdad03c9cb48f8d675f7c02eeb2d6921c814496ac81d5255ee187178ca3c21c4260bf66f7d0e85f118f9e6e37462220eb2a2f81bef4f4771aa9621dd669840aede985c262ca6809d18fba16ef425c7bebf1f04c5c2c792a25baf9c13402db2af68486d828523b734c2423f6de76fc657f2a65d300ac7ec75c86c62d230c12c92c0185e061bb5635b49361b426e41a2c4</script>
-  <div class="hbe hbe-content">
-    <div class="hbe hbe-input hbe-input-default">
-      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
-      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
-        <span class="hbe hbe-input-label-content hbe-input-label-content-default">您好, 这里需要密码.</span>
-      </label>
-    </div>
-  </div>
-</div>
-<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
-      <categories>
-        <category>blog-system</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>install-gitlab</title>
     <url>/install-gitlab/install-gitlab/</url>
     <content><![CDATA[<h3 id="1-gitlab-简介以及安装"><a href="#1-gitlab-简介以及安装" class="headerlink" title="1. gitlab 简介以及安装"></a>1. gitlab 简介以及安装</h3><p><a href="https://packages.gitlab.com/gitlab/gitlab-ce">gitlab安装包库</a></p>
@@ -950,6 +798,158 @@
       </tags>
   </entry>
   <entry>
+    <title>install-harbor</title>
+    <url>/%E5%AE%89%E8%A3%85Harbor%E7%A7%81%E6%9C%89%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%98%E5%82%A8%E5%BA%93/install-harbor/</url>
+    <content><![CDATA[<h3 id="1-在安装好docker后安装Harbor私有镜像库"><a href="#1-在安装好docker后安装Harbor私有镜像库" class="headerlink" title="1. 在安装好docker后安装Harbor私有镜像库"></a>1. 在安装好docker后安装Harbor私有镜像库</h3><ul>
+<li>默认用户名：admin</li>
+<li>默认密码：Harbor12345<h4 id="1-1-Harbor依赖docker-compose，先安装docker-compose"><a href="#1-1-Harbor依赖docker-compose，先安装docker-compose" class="headerlink" title="1.1 Harbor依赖docker-compose，先安装docker-compose"></a>1.1 Harbor依赖docker-compose，先安装docker-compose</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -L https://get.daocloud.io/docker/compose/releases/download/1.21.2/docker-compose-`<span class="built_in">uname</span> -s`-`<span class="built_in">uname</span> -m` &gt; /usr/local/bin/docker-compose</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">给予执行权限</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> +x /usr/local/bin/docker-compose</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装Compose命令补全工具</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose version --short)/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl daemon-reload &amp;&amp; systemctl restart docker</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-2-重启docker后安装Harbor"><a href="#1-2-重启docker后安装Harbor" class="headerlink" title="1.2 重启docker后安装Harbor"></a>1.2 重启docker后安装Harbor</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/goharbor/harbor/releases/download/v2.5.0/harbor-offline-installer-v2.5.0.tgz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf harbor-offline-installer-v2.5.0.tgz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim harbor/harbor.yml  <span class="comment">#修改默认端口</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./install.sh</span></span><br></pre></td></tr></table></figure></li>
+<li><font color="red">docker登录Harbor</font>  <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker login http://192.168.35.128:8080</span></span><br></pre></td></tr></table></figure></li>
+<li><font color="red">如果报错:Error response from daemon: Get  http: server gave HTTP response to HTTPS client</font></li>
+<li>修改配置文件(指定私有仓库，可忽略跳过)<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">tee</span> /etc/docker/daemon.json &lt;&lt;-<span class="string">&#x27;EOF&#x27;</span></span></span><br><span class="line">&#123;</span><br><span class="line">  &quot;storage-driver&quot;: &quot;overlay2&quot;,</span><br><span class="line">  &quot;registry-mirrors&quot;:[&quot;https://r2hd8p9u.mirror.aliyuncs.com&quot;],</span><br><span class="line">  &quot;insecure-registries&quot;:[&quot;*.*.*.*:5000&quot;,&quot;192.168.4.126&quot;]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/docker/daemon.json</span></span><br><span class="line">&#123;</span><br><span class="line">	&quot;insecure-registries&quot;: [&quot;harbor服务器IP:端口&quot;]</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl daemon-reload &amp;&amp; systemctl restart docker</span></span><br></pre></td></tr></table></figure>
+<h4 id="3-推送镜像到Harbor仓库"><a href="#3-推送镜像到Harbor仓库" class="headerlink" title="3. 推送镜像到Harbor仓库"></a>3. 推送镜像到Harbor仓库</h4></li>
+<li><code>SOURCE_IMAGE[:TAG]：</code><font color="red">原镜像名字和tag</font>  </li>
+<li><code>test：</code><font>Harbor项目名称</font>  </li>
+<li><code>IMAGE[:TAG]：</code><font color="red">自定义命名，以及版本标签</font>  <blockquote>
+<p>示例：</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在项目中标记镜像</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker tag SOURCE_IMAGE[:TAG] 192.168.35.128:9527/test/IMAGE[:TAG]</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">推送镜像到当前项目</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker push 192.168.35.128:9527/test/IMAGE[:TAG]</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      <categories>
+        <category>安装Harbor私有云原生存储库</category>
+      </categories>
+      <tags>
+        <tag>Kubernetes</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>install_hexo</title>
+    <url>/blog-system/install-hexo/</url>
+    <content><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="38ee075f7d1c88089b2e5bb810ded53eb750a711b054b7d8db5c8fb7871cef32">48148d24bff3dfd75601a92eed03ff0c278ae43a54b3a74a60a945ee9e447d045e3bf501ceba1376f8cf99b688e329d2800509c286bbe075c0d81dd46cb6bea9b8781467a329d2c2cfde0a604e9c5a5360c47425af32cf6bc8b6e24e7dc89821db40120bab78997559cbff88e3eefc1c4a979072447dfcdab71de61760dc859b0c229cbefcd0094b4c9ebaee24e5da2752c49982871232a5216f4d3f877b88ae1c3e01f0ac12611de88aab6af9707b9e30dad23ea513fa2104a9797b06b6796a1640d1ce8edaab82f8bb565f9936fdac39ddc859c31c928d9d94666f597989a7b91e727b9d5c60b30e6e105e962951fd0b7efcd28e2ba333095044701f2f7253e8d5c356dd516d3fed881a1ac94255fcea42213158d5cd07310cc7c87dc904b4bc61f6b87f801415a3a86747ea3562b6eef88725f5a3ab239a86b0777c2de4fb8b5e4693859f5c327bfbc4f3900b0fadaff726ced5baca92b78639e5190d3b1dbcb509cb0a2c77248a10b58c212dea07fc29eaf3dabef96950dc96d39c8c958021009ab843ba4fb8e89690fc9a1e2533237c3616e0a830182b9a2e4ec18534decbb5a3a2fe0a1521f61b6b7809cdbcfcd1cae7cd71bdda6189593bdec7cb11f1d4341af663444ec8033532714866a090a4f81a39301f37f384c51684ccd85f142b2e910fdb3610e5c6ede86f04615d1e438ec921210a0c41c6fd7f34ee65db412bd3ddad40daeb10cd0c5d923b6223debef800e831a0f7b9c613e04a0833938bfa13a87faf2715c768145fb5753d66dd6ab4e8dd63b82a36dade1d4a4f980a6e1f69288da92612f0449068df915e7094c18c708046b337f1d2e7fa85a0b579256614dfb7bce7d7269851c12bafcd521f3c97155dd38c8497d5f8b8a9d0d2fb6a9e7ec43154b863e0b2de3f4ddd183f36942c4f3ffd9350f6ad3751456ac3e86930cbfa1dade22f1eb2478cd3bae7bb55fd833245ef8ffe95e7f8f8313868c0bf609a38622a3794ce915c9ffe259a503a41604f46c906f2d09e085c45a8e5a5acda0aa8f10925dc671c2e2149560003ff4396f336002bc256a9078951111ec2e0079b325dacf8a8276ec3dacea290c760c67cfbf9be94787c3953a12b2f8037a85c76caf09d620108142d8492562e1166d5aea4cd4ddfb61a590f69b543a0e5b8ec68cc6fff689a5577467eb4392180b08bcb939243822c0acc287bb322b64c7a9e5c46c7f96f31eaf2aa7986877e175480ee60e981875cc1a0f83fe4dd6344fc94436b16f19d3f24fc329b1d6adf40b91c19f0e01eb32b476bd4dcf7a3c9cf0380b9c636132dc258118c2309662469572d0c7cd77525d150dfea4fc94ea82095d509760c9c5ec18bbfce7299c4ba045fac9a851b95aa68c4455f2326ac5ebf8b530eff9e4f96302c480d3645f38c170707086272b115cddc41c22fe0f6a14026e45b33c9bccd18384a9c8124b08c681970f6618d4ca742eeeb8166fbb994c16070dd13629dc2570dd0d0bac863bbb302e98439007eb86f4fa2b0faad0fdf036e9acbdfe557fdf51b3903b0454a0a8e1012c418b61f42d7914835fcbe6eb40dbb8dd7bceb38dc04b3a5cf41f178219f24877ec67bea47000386cbc9348333f8aba0ac156f90a68265ff19ab9ce7f0fba5da56f91deabbc47aab93930af7f656cd1e89e4490dad4d4fe3f006629683a3315ef4e346e0b5b8787626e71130013286e56c409ed3719436fdf82f8c043aed3583ab17d85984077b2512c108bc55cde03a38e8db506f8b11e408400d44a563cf60cce1df242d81cc5fa34e6cf85f9f2909bf4cbed6af94b357cfa547b5c51bc67132a451379dfc6891e533492e19689cfe674fae766ab43f425483c931d54b69243e2152098c94c134154d16fe27111b688841dd3342f7def3e22100e8105088363c691a624a2d89fd30c36a23fe2f8c25846e52b6f0267cb1d0d290f0485c760c5b11847e96be02d6e30f712c454f1e39298be0ae19f3544c11f917aa7f375470bd977d967a2e825d87a7023cbd40e0fbcd1dbef797898fcf951f825be49d2dc10dadc62269d4db9ec0cc8534c33645489ea39cc8550850b48bf74e220277576926f4a7deccde13b48801fcfb924fb735b8b09803d48feb89ba03a9012846980c74bb4f7ec7f586b61bd612f8ee81afa6a6351b1be9554f3afeb2769908aa72cc620b78cc2e48f250ce74b839bfe58028f4a6a8c3f2b487673943147d8d773f8ffe2a6b45c846c52f0c0a291903d225e8de4cc7efb788938e4dea4e8e77b40696c78069a18da341e9f1fb9018492d24ee2b2d573c44ac480f6f2e7cdf10fb94442e980bc78aeb3fe17c74746ed39b239cff8a0b0a25a741865afc2955ec75ca4e0e83f55244dc449328b1f087455c56b370c093c068efc44b00ebf0b7c3a6a5cf8e3caf1f80eea8eef93030ba9ce0b2179ea833654b1d9769f0bc7abdd5b02b72472cef145f74209024f2af86f3f2e67ed11c50f0519fa38fcf7ed34dd52563a27fb97e51ac3e107a43eae434091211abe8a64159a6981978b1d2cb2ac3c02e0f598eb7435c1015aa85339ebbbb912a0c1009c37ee841372bcb731d5b21fd19c8c08a1d01c967e295a6378a119a169dfa943fd87ae4c965c8e62e7ccf4d5fd944a194f27f06a041dc868f82ae315258825c09840856dd111feac83bbbea5274a8b8bb24a92c885ff55d7b9ce1b23eb34609d0be97307cf1eab31dc0860d4e67b06b7ecbcda57b6c80f13aa384c4d9a854a0d36f055acaffbc440d45095061979db993748766677999ee62d2c2c68534fcf56a222787e4cc8bf236ee1f92025b347f02e0662364ea77406fa27387248f087ca312dbda0cf35d9720ce633bd1180ba6565749b20106efdb93ddcd4fbf89817981d656bdbb20f61ab4a2a60d3f16d20db6310662d8d738ca265b0f723a4734cc9c73297e1623c34458bb5ac0500c04340ada8b91fe7b3096d00b3575bfbd24ce9aaaa332c67ef3c929c91fc45b093f3f257fc9bce0775c2214c5996912689329af22a774f7b3ed14cd98b4704c2c7da7f57f3dea9f70b74420a8d8948a82ed3275d5695016d6be5584be13cdc01c1f0d8ae05ec9ea2dc54c294e2639e76afbd3aba12740d93636d4e204aac1bf74ed2a3fa1d551c7c8a397aff849f76ff9ba2456901787b856b822c533868b7d200679e7752f9737e70f54a110f5ed5130aec3bb398b08bb97d252ccbbd668c05dd37e0d96466f05319069e6057f541b96a12d94716e02e12e66e46dd3656c86f726c59eeb49515e8a30a796ee2e58deb83794b006d495eb6d5cbbdc9f59d16c2ec226d13760affdd2704f03414690412b5019d86722d7b9465f4048f991bf997f343c88aea23725e67cfa0a08fa56fe9b828891e3b3d53a53535c4b324f18a446e1bf742e0436d0c5e87a3df130631504f42c290b6f374a021d37ab092f485909baa7f6e082124b517dc9bc8f824f15efb9c0935a9bbacb9efbac654158f3e82e1d5665a2f7682c4f85aa00a415ea174eb5e3223796f225c2047270d3373d5d5e8d4b21bea20bc80ae8458322d7d1fc40a8b1e381027603916c1b6161b4181fb083a93c5148f5bfc2695da022135c3fd7d01a4a4e3a9d4f0452a664d950c0d2b5a0decb03e1948c679a9bc7ae4b16995d4dcb09871dd75a702fcb507b2f2464f120326098b29f0e65d1bf57999a9e5093011ba8695f4c89d36bcdda0f1ea0fe4730c77e69803a12799bbdbabb9b597beb8e5d0c44659b3cc71a3b8da54e576b74deb0ac32f692f1bf352bf960cc964b47109e283a0c03b79251907a6620ede8206ed3614b8b611881ff688b80ee69b4738477844d771fcce7b47e282f0f7a25bc76699e114d4640c2c0bd754af964544f2ad585ef6feeb3deb78dc8e7e19e2d144f587f4dc6637060e6b98c6ef82d41e94f24d64eb34b7152c0fb9d811b1c98c1270afe3cded19d0532f496ebfbe0845371505d5e428df348104320ad5df9bad60f34354113474087331bb5f7d5d975c5ae225be8188494c2de852e86c002093c4e3d5e78d1ae14f3f20c00dcd09bc57e539a06c80b018ad722ab0a1e6b77f28bdf695168e6b890f339388f21a472d1d7b64c01e145cf16d3927c2284a7d22c640ef7375c0948b3aa7883cceca563b937ec7371ed1770e7be880414520619e316db8fc47fefe9131f08503dc6d741b476783a8b270ae22090b37f33964a161883395b424632ad38b27ed2d56fdd953f4b594424f26575bb2befdb1faee3f9b2011c875ca0ad291a61074a8e50a2849b02edbf2189caf75967f470e1f8b42857619ff475d6f165ff8021a51b736c214c3b207933eb6c7c6bcc481f6ce360cbb77d9c5c765a130f7376914c2270666767cd0c0e1e816045efa757be6dff8ca0dd2ad205382998e5b12dfe81ef74bbbfdcf4c441206d2d123984dbe45788226f187f02db7104cd1006443e7e5b023ac419ce33931e7894817577ac4f158ffbee460d5242f9b01777621a1d7c54ff0a7d54691e30fc22c2dffc7d928b7b8eabf47769cf56fd0420eb55b9650c01605105364e074c77b33a83ff36d4754e42d0cf868498f9842360cc7638d033bedddb0fa8c435b65d797990ff7b2e0964531d00e99d95da9fa981805fb86dda0e740769555e3a3e923238e49708d42966dc41f609c79cf88cb7be4b8fcbe948ee5a18d29156dd2de2fad8ce163de7c4072f30918e1b4a651a4f83ff8a1def3cc086160148b41931f644265961e12d3011e80964b1a5778ada6c9bdb1aa21acd9e2363061836ec756a823d0d2391d39f2184181afad3d1669ca91a83336deb091ca09c1c2eaedc383a8c8cef5de1fabe626e7deb59f4e80e67d04057a9f23811e37e806b7608469d9c80a51a9c831a7aa132944f0b6b1bef4bbcad0725ba892bf6654dc9ed1f0fe089c02fe706c99073777ac30fad4a1fe4825a4d5bffa39c86e8e5ac933e36f0d013ac2327c0d06dc6619ac628338d1f7572ce9dc6a0c8c22982c9ee8b86a18e34e032922bac66b55d95b640b0958a6edc797143bc2f9db2da8149e47fe92324dbe6a25d3268f16637eb809d56cff45d9b8bcf06f9d1939e4681da7860157c3534a3dddd96b5a3cc49ee9a80555526c4a94a560e2bb5cd0c3c45ac34af0ae611bef522cf9ccf2eacc97a36df1fe1ca7f8bef0717dfa2824656066c6fcb74b9e006d853c2c1884a925b03a925bdb83a6413cc8fd1e6142d5c1eb9870d6753334d78b66d668f8f703c90ba592c99591a4d6636d5db5f453179c4298eea4f8f9cea7dffda358a4fef524dbb16fa33d29d90bbae6ddeb8282af29233d8c6b719472d47974002eb0036a3b992376d856a17edc938f7a7f79fa336c87f0db6b52c2de597293df8df1b55ff85a74df1b2a3ed148b82448875179b0819164847fc48b81b65ef0491fbfbb6fa0060ab572976e6051411f4eef0b4af8f9ad69306775393b22dbe81865047aeabb0a8e8f74f666d20ddcf6865c90647c7665584bc4cfc7fa13a8ca7d50df0fce036379e82b38946e4a038606f4360cfe8c2f1e3513f5b6c6ef79292597a34aa60e1deec449d6757d932fa97478164d5ed2ebc0cdc755b056d58de9660da6b5f5bc8dc5438e196e8732d07b0a150f67ec40409210d44d1e886dde9d2c77b46afd4f005b3d021568dc5a9f718e62572b9cce2ecb77afd8b8272fbac711e28e9caf54025134e450c5bd3cfbcc4f6f9f69a4cf509db2bea4df0f3ef9367bf6a827141d1d1e4af4fcd004ee632f67d16b4434b9c6f5045547ef5c6948b903007d93e71c28671534cb1410bd5ee6f3abea69d631bcc79e1f918d35659be2272382370b1bef671b5f7d5f80a379b9386916984cd952526bce61dd9b02aff517eb7efb96f086e030e5523ed0992e6709374995e7e3817c258e04606b1022b6baf7b8dde3f397802694b0ae195f71cd68efd2a4358b12a18369f6596c8abb0f9e2b90748ecea69a852ea5d5159b4fe21ff7adb2236db62ebf40bf507350a55e047783fca6e42ea2925c7c17e7ec8dee10f44d598ec15ed482b29afdc1c1ceb26272d631daf30cee5f9db57275cc02e3f22f72a3f3e5722353dc5dfa0295dcfe77292b3d5ef45f085930c7d944f4ff6ef2a41c89da1e575b5188f2cb6654a132870d6808da21f4ba6840b574cc4c02fd66e60daca8ff2da08726c27622eecf312682599e52a2bec9dc2c13934c7454938908153ea3ebd68393692d52e5bcbcbeb0aa0531511bd80d614750739e001a041ce50ce664edb61dc34dcae4a76d42efb37eb17f4e9352ba82a1f16327a5bec7bb48da97abe2c751996712d4348f28b136b6950f0ce19be60b7593cce5a5a7b82050ce37796d676333a62a4c25a45c0a37cc1ca666c6c65135c54c45a80e8ca045ba2c26edf873a7fb5e7e366da36401eeb6899c832f737c189dc25992072b7e7b39361b905c3345f8e06d8b2aca934e7c4a9549c5d6bc161c71ed64586b0cc86224489709e8fde31cb8250beaca82c33329f158b8e84566b31ba764f6d687cfc824b04758f021c6a30478c158b80d2c26fd2e95045b4df0b3b935b87b13cd785510683749d39229325ab2b4d6a0c8264363f92def8b2f3b833543059c933947f6b0639f430dcd42ce2f2c251ef0eb82e24a6a9f68bc681c19933110d56672bf5ec3287f70463f0320990867f9645ef7c2a151b8d19d541a967205692f612a1812488c79d4d31cbad28ee4cc5852857662d297868b784f729db32e24576715e1bb2b65cf9cab9b6b705216e3642db6604340b51c6cab4d3482e56eb45d0d67875cb363b208ef56024694c37aaa237f413a3e56217e44d845479500bcedbb04ef4eac1b264373599f0ca420d4a8e5c8a36122f9385a134340f6c8ff150faa1b5761c94ef52ea5b39c573b3be6b0ddc489f72a5c0a2a2dcf6ddbda66bd5d0c9db4810278aacc8c6047a30704b06ae7fcc0bb52deabedbce66d380222d80a0c80d58f38fb2313e8f1f75a2a79377ca3d04860e333a0437d0426ea5a1ff3d990d3c121e5ac3c28b1692bb63f90dc4720c663e52677181fb70d7f59e95e2ca8ffddd8c791e2e9d11168b0c69933717ad7d54048d0627b8bcc1623b2229c9b29d6d5598c95b5c6f4e8a618a69323525fd30ed622d0e7f90be1f2e7bcc42c80a987010d6740ad4e7c213135275cda88d4324d54ae6354bf88cabfbef84bfb3ce77c3ad0c09e9e1cfd102391c6dc171e24e504181b67343d0c826c3e69920897727122b35c97bbc6fc2499fb033321863afd01192eb9806c21b1277b0a3516a5699a19fc2c7e8afecd6faed737a0d21d4510839f524b6dd72c7bbb43e7fb899b93aae1e253327b543ddb2f190d7e973de039ae922d40603742c3e5154da248b38da1248ea7e8c52d309fd7abc90842cedcc2b1f60d97b16dd1171f9cd3114811704cad3a266078a74b61d23ac32bbf30c068d56684cea34a6c7d943853e5488eb242b1e86fa7c28bc1705ee3e2647607b3fd5e6b05bd697368fecd84ccb5deb6eba4332cbcd44c6c523d73f2e6d67b036c349e370f8792c7b4c14cf597a76f2763826ea416ab38c872e55a6b5105e17ae6f9be8b30df6fc89d66352ae3ce884a70120cba4041c95e2abd87bdc9a260d1d196288c25d44cf2e20166a95738acfecb79787a0064e00a3c1afa69d424b02791c9954e1cf274ffd44eba399010837b390ba89ddc859c4e8a374472e3de9817cf2b3f6f2a9b8e42d497ac2210c33f0ec7fe7bfb6c7c87973fdc2e96b76c0fcc34d784056718d9991a08076a419e3e34dbaaa6f0796ea41e440def82c9bfafdaab46bbb6c9ee33941ba4bcac725ea61e42ffb8e33f777e0bd49a07876d4f0e59428311689239425ddb5f81507690717030d9eb758c600bd47af696a3b896ed13db2b17d22a3b6c6f83530a975af6971273a9b1de5c828d11cf9d62776bcde72733edc21e20a33e94e1b20cafaf65a9221ad70528fa5a61f40c4f31225ffaf85cc7da0d4beb387aade7aceaf338665737648f152f43320521378c4419096a1ec8b648f277eb025d0f4e76e835d80500469348a99aeb59c127f715f08a0e1df1b5c39c68ff1809283ff3701778321e1dda8467d904c5674c29ab16489e42392170a540184816bab11e41f00742d7404ed2cbfe44bc89f095bb08502dbbaa9f134986a81a64340e68744b2f94ab69e18580b1715ce27175697bae7fd78c462af3cb9fd1dac7e9d95f940739df50752ab70360287fc7d79d5b88cde5ff1fd48f9a13b5d4175cdc37a85f612ab74ccb5161226b685fe972314030e0a3a8595193d2414444b34b149da379d7f5d62189434b93942b74866dc922f2ac868c832057b11817a34daaad3d80891cd95de2482e6ea0517c6c1c4dac0407073a2d818561545a77926834430612b65c9d5f8efeda1086223d87ec13f13a678fb0264e02f3f1dfefbeaa2f048477c3ca5454f74d2f19c622cad8d4639e36682589feb0333acca7a19c93fae21755bdddea0efb77e141e926fdc7baef441ea1c41cdc0da300c9ac038d89a0aee6072de3a6505acdbc11967b26efb483caa8b442113149c32ac5b5d8cc0927e60fd15996f4d07a0ce3865437429d8c1aa4379f53429eb808d4d6e26f178397bc06e9d8724c6cb8e42f700e8e3f65e4409e154307191997145e60e228e26f2ecd12537cd03e2850b0dd504adf2ac1b78cef667d6eeb35159bddc94f880eeb4edc31d15dd3c389071440352d10c0d83d155d64835c391562c3d6811bc0a43372b201c0f3abc99d5e71633874d9eeed69c6c718a63dc2ca0246d4712d25eca90109291534348bc3e7f18bbe849f75696dfbcce9e3b55b2aeb41c5262fe7e01823a274f8617987502c94dadaac10385d36814b571e4f64dcd7e20c076710fdfa7285b9cf0f839cb85fcf0b00e71ec6d61ef07f13f65ea18d190e0dd30142d402a3829c0d987c37e85bce8f2d5679d94b46899c2343650396662570dcac943c115e4f670bb4f7f9c7162cbc9ef2ed708a8747313fe0ce2dbca5ef8c1fa0473309117dff5f9ffb38c82dbf05d94a8b12abb60fcbddd62b7dcc97a85fe6a863853741e7fef0cb03ebc483fae00f90984129c6420907849f9da87c1703611a17e804cabe58e1c90acaf5f8aab3f676b3de722c7e03f6742270aab5a5c623a2f7dc20d77637614327b832bf85002fdcd439cde3aecf9dd9f7ff63d4ba61c1fac4638ec16a252e3a18e6e811dd5a8774e8ec608b58f876e2175ad02daab5ff8932405473a0ffec64f361c8d1645e516bb93879a76a746937931073e4377f7a76ee04222e47edfad375aadb48d14e9b0fa4f0c571dada6e82a56920e3832243bca242dbe16cd836247fa57c2ef5112401a70ce6b45fdc4810aeb5ed12f5e21a0d20391fbf8a09a089caec33414e57280fdbef4b64b9bd895ceb91517341cc0e4c2d25e4664fae3bc0f6bd2be1c46eb87c59c37da7f33acf6544a3a43f8449d4d7506489052c3a0942fbba69788ec2c2bfd4ef95d6b727eb95cc991bb3e125c54804a825933561d8fb760e263dffbc1e91cc31d9b92f8e93b5c49ff6d374ba5d010b544ad828bf3fb816d9dec35247a2b8699966253afeba133ad4414f4022e23a12cfccd1bd3b408a39a306a29a9c2a4e6925b6e0afb2758cebb99cf50e44ba37cec1858398db103bcbcd75a9c9bfa31923a5281bab7dfa487fe4912027e09922bd28a8554a5bc9753873a4a5c052745005386e5e76c30c1080daab7a78916c0dc0f92f5f6e461f6c1c5ff4b965bec56b0c4674dc99548a04cd3142a041b1a1c601d3722cee21af12eff8b2a41251574ff0ac81238b48d48f45dd09b6288dd0fa5bba36c9ecfb118fc75facedf512caa2b0046b23c0ca960ad204cbc42bc750a44d1ee6749880e5691ae0167535aeada37a70ce43829ba62a09e0eabbbba52ba9de5e4c92eb559fd4037041ee4db660560f9dc818d909694f7ef2763a059981825db0be0bd3d0314c153cd58375a97e3bd07248bacdf47232765d95c11fda4aba6ba901e9623b5b81d5f3a90dc3aa8afc529f88f43c9c2410166c1c2461bc71e5e793da912fe1519551f904ad1ad306674288cbc9de56bb785595a887243038b2eeeb485342a3a4dff72c1a963d2bc8e0346a81fe5b98a525fa1420127c908afe0f8bb10b4b9b1996b21d0223ad4ac8bfaf1a58ea31c6846466fd7929be9c3f8c1c8f2de3e9054c6f6805026055792b1b9846880c9a10dd842d6e2868caf4d70558b551a4d7253c63f55fab0e6f23c249c5b30cbcf36c97884420bfd057fb171504856cfbf061c7e264a335c7c623d075ab47b17af4f616fd37f4682a9ac4ab93db3b43470035e02a207392f3c22bc952ab1a83988fc0506d98baac12a1749d5cf42bcee509459ca6f89c2a9879f64558e9cf902e0f776a9ddeb0931602ab2c4311fba0d91ff858a41111d7ef9ad37a46f05937102bb52d5a643eb1ab8b763e47d8fc44b40d2b4ed2f4a37ca97fbded5873563e7f24d4609acb991976c63643c9caefd317405376755663852a34eb9a0ce995c946a44f59293c7ab52157776dd30af889ef347b55dcc17b99cb6a85ddb5d4a45f1bb829793aa3646a266e053862f697d25f54ac905dfa93e791f265f80b2f27536ae621c8eb2059fb9fcc4b476b916eb612104110ead60b5327780470dc0fc6dca8f6cd3daebf7b2ca1c0744322ce4d76e2371b49f26a9ee61178004255abe4a5d299547b99d94134e5ce08d472737be8f0f10b97e57f2fc9a45f850a8cc6f8bc21b971aab7e8ad4473248ce70d8660acaa50ab6e50c074376ad7e33329732c54f210f8ce12e8cb51e0cc1f05d18b60d7f5c54f4868883b06a8dfb603c7ad75bf6bbad70a2add9dbe05a35539938e7277155c4bbb3683ef6dd053da30d93b1a16700a416a532ee3c6b3b02b8434297acdb74a5fa42aada8ff8901bddf5b53703d80d4f21384d5e3bbf768b1c0619864d33423b3e92e4c26fd467559c15aec2d8e73e1484dddf094a73f0db13f6094840b6f07ff2fb27ad804f8a0b6e9c7b3aa73a990315497a2d257e88ae7b2ce7d69150c79ac59549b5426d0b9ea341a058ddb7f8efb4943a3153534f723aa1aad5a474db2b86f26efa098edb54af76f32809a2e1e90feda32c4c137655165f2af45504998c45ae639d65c8477c6ea4d4c6b2521bdc78bed64a61b92ee60536ffdd458d161355ef4569d6a398f1500bc8a4bc449b1cbc124843ff9b4050c1768ebb8debc1dbf7f5f09e8424160686989184a23a97b890dcc8925fcf79b1a884ad7c84f4dbf028bf82b57a2f4a7bbff2abb7b663850ae789c20e5b01bdafb577774786d4c6a66d8d1352bcd95d41d7b7accc8952baea316fc27561227f68101f9dc4224d9e0012203197c86180c05f7de38ec2c851b0919b281c5ccf9fca6d933f07561afb840c8b4db38140b07d339728bdad03c9cb48f8d675f7c02eeb2d6921c814496ac81d5255ee187178ca3c21c4260bf66f7d0e85f118f9e6e37462220eb2a2f81bef4f4771aa9621dd669840aede985c262ca6809d18fba16ef425c7bebf1f04c5c2c792a25baf9c13402db2af68486d828523b734c2423f6de76fc657f2a65d300ac7ec75c86c62d230c12c92c0185e061bb5635b49361b426e41a2c4</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">您好, 这里需要密码.</span>
+      </label>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
+      <categories>
+        <category>blog-system</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Install_hugo</title>
+    <url>/blog-system/install-hugo/</url>
+    <content><![CDATA[<h4 id="Windows系统安装hugo博客系统"><a href="#Windows系统安装hugo博客系统" class="headerlink" title="Windows系统安装hugo博客系统"></a>Windows系统安装hugo博客系统</h4><blockquote>
+<ul>
+<li>打开Power Shell</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;Set-ExecutionPolicy RemoteSigned -Scope CurrentUser</span><br><span class="line">执行策略更改</span><br><span class="line">执行策略可帮助你防止执行不信任的脚本。更改执行策略可能会产生安全风险，如 https:/go.microsoft.com/fwlink/?LinkID=135170</span><br><span class="line">中的 about_Execution_Policies 帮助主题所述。是否要更改执行策略?</span><br><span class="line">[Y] 是(Y)  [A] 全是(A)  [N] 否(N)  [L] 全否(L)  [S] 暂停(S)  [?] 帮助 (默认值为“N”): Y</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>安装scoop安装包</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;Invoke-Expression (New-Object System.Net.WebClient).DownloadString(&#x27;https://get.scoop.sh&#x27;)</span><br><span class="line">Initializing...</span><br><span class="line">Downloading...</span><br><span class="line">Extracting...</span><br><span class="line">Creating shim...</span><br><span class="line">Adding ~\scoop\shims to your path.</span><br><span class="line">Scoop was installed successfully!</span><br><span class="line">Type &#x27;scoop help&#x27; for instructions.</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>安装hugo博客系统</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;scoop install hugo</span><br><span class="line">Installing &#x27;hugo&#x27; (0.96.0) [64bit]</span><br><span class="line">hugo_0.96.0_windows-64bit.zip (15.5 MB) [=====================================================================] 100%</span><br><span class="line">Checking hash of hugo_0.96.0_windows-64bit.zip ... ok.</span><br><span class="line">Extracting hugo_0.96.0_windows-64bit.zip ... done.</span><br><span class="line">Linking ~\scoop\apps\hugo\current =&gt; ~\scoop\apps\hugo\0.96.0</span><br><span class="line">Creating shim for &#x27;hugo&#x27;.</span><br><span class="line">&#x27;hugo&#x27; (0.96.0) was installed successfully!  </span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>安装hugo扩展版本</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;scoop install hugo-extended</span><br><span class="line">Installing &#x27;hugo-extended&#x27; (0.96.0) [64bit]</span><br><span class="line">hugo_extended_0.96.0_windows-64bit.zip (16.7 MB) [============================================================] 100%</span><br><span class="line">Checking hash of hugo_extended_0.96.0_windows-64bit.zip ... ok.</span><br><span class="line">Extracting hugo_extended_0.96.0_windows-64bit.zip ... done.</span><br><span class="line">Linking ~\scoop\apps\hugo-extended\current =&gt; ~\scoop\apps\hugo-extended\0.96.0</span><br><span class="line">Creating shim for &#x27;hugo&#x27;.</span><br><span class="line">WARN  Overwriting shim (&#x27;hugo.exe&#x27; -&gt; &#x27;hugo.exe&#x27;) installed from hugo</span><br><span class="line">&#x27;hugo-extended&#x27; (0.96.0) was installed successfully!</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>生成博客目录</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;hugo.exe new site miceblog</span><br><span class="line">Congratulations! Your new Hugo site is created in C:\Users\Andy\miceblog.</span><br><span class="line"></span><br><span class="line">Just a few more steps and you&#x27;re ready to go:</span><br><span class="line"></span><br><span class="line">1. Download a theme into the same-named folder.</span><br><span class="line">   Choose a theme from https://themes.gohugo.io/ or</span><br><span class="line">   create your own with the &quot;hugo new theme &lt;THEMENAME&gt;&quot; command.</span><br><span class="line">2. Perhaps you want to add some content. You can add single files</span><br><span class="line">   with &quot;hugo new &lt;SECTIONNAME&gt;\&lt;FILENAME&gt;.&lt;FORMAT&gt;&quot;.</span><br><span class="line">3. Start the built-in live server via &quot;hugo server&quot;.</span><br><span class="line"></span><br><span class="line">Visit https://gohugo.io/ for quickstart guide and full documentation</span><br></pre></td></tr></table></figure>
+<p><a href="https://themes.gohugo.io/">下载主题</a><br><a href="https://github.com/g1eny0ung/hugo-theme-dream.git">dream</a>  </p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/vaga/hugo-theme-m10c.git themes/m10c</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>启动主题需要nodejs，先安装nodejs然后执行：npm.cmd install postcss-cli</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;hugo.exe server -t m10c --buildDrafts</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>生成博客文件</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;hugo.exe new install_hugo/install_hugo.md</span><br></pre></td></tr></table></figure>
+
+<h4 id="把博客推送到远端"><a href="#把博客推送到远端" class="headerlink" title="把博客推送到远端"></a>把博客推送到远端</h4><blockquote>
+<ul>
+<li>现在GitHub创建一个新项目，项目名称必须是以用户名，开头以：github.io结尾，</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>hugo配置使用主题以及GitHub地址</li>
+</ul>
+</blockquote>
+<blockquote>
+<blockquote>
+<ul>
+<li>–theme： 指定使用主题</li>
+<li></li>
+<li>–baseUrl： 指定远端地址</li>
+<li>–buildDrafts： 启动hugo</li>
+<li>在项目目录下生成public 目录</li>
+</ul>
+</blockquote>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PS C:\Users\Andy&gt;hugo.exe --theme=m10c --baseUrl=&quot;https://username.github.io/&quot; --buildDrafts</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>把public目录推送到远端</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cd public</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git init</span></span><br><span class="line">Initialized empty Git repository in C:/Users/Andy/miceblog/public/.git/</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git add .</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.email <span class="string">&quot;you@example.com&quot;</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.name <span class="string">&quot;Your Name&quot;</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git commit -m <span class="string">&quot;add blog system push github&quot;</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git remote add origin https://github.com/username/username.github.io.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git push -u origin master</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>blog-system</category>
+      </categories>
+      <tags>
+        <tag>hugo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>install_nginx</title>
+    <url>/nginx/install-nginx/</url>
+    <content><![CDATA[<h4 id="1-创建普通用户部署启动nginx"><a href="#1-创建普通用户部署启动nginx" class="headerlink" title="1. 创建普通用户部署启动nginx"></a>1. 创建普通用户部署启动nginx</h4><h5 id="1-1-判断用户是否存在、不存在创建"><a href="#1-1-判断用户是否存在、不存在创建" class="headerlink" title="1.1 判断用户是否存在、不存在创建"></a>1.1 判断用户是否存在、不存在创建</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">id</span> admin</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="keyword">if</span> [ $? -eq 0 ];<span class="keyword">then</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash">   groupadd group &amp;&amp; useradd -g admin admin</span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash">   <span class="built_in">echo</span> <span class="string">&quot;password&quot;</span>|passwd --stdin admin &amp;&gt;/dev/null</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash"><span class="keyword">fi</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="1-2-创建程序所用目录、设置目录权限"><a href="#1-2-创建程序所用目录、设置目录权限" class="headerlink" title="1.2 创建程序所用目录、设置目录权限"></a>1.2 创建程序所用目录、设置目录权限</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -p /opt/&#123;src,deploy,conf,apps,scripts&#125;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> -R admin:admin /opt/*</span> </span><br></pre></td></tr></table></figure>
+
+<h5 id="1-3-授予目录权限"><a href="#1-3-授予目录权限" class="headerlink" title="1.3 授予目录权限"></a>1.3 授予目录权限</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;#########Start/Stop Service###############</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">Cmnd_Alias ADMIN_START_SERVICES = /usr/bin/kill, /etc/init.d/nginx, /opt/apps/*</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">admin ALL=(ALL)NOPASSWD:ADMIN_START_SERVICES&quot;</span> &gt; /etc/sudoers.d/admin</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> 660 /etc/sudoers.d/admin</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="1-4-安装扩展"><a href="#1-4-安装扩展" class="headerlink" title="1.4 安装扩展"></a>1.4 安装扩展</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y wget gcc gcc-c++ pcre-devel zlib-devel openssl openssl-devel git</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="1-5-下载安装nginx"><a href="#1-5-下载安装nginx" class="headerlink" title="1.5 下载安装nginx"></a>1.5 下载安装nginx</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$</span><span class="language-bash">su admin -c <span class="string">&quot;</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  #下载并且安装nginx</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  wget -c https://nginx.org/download/nginx-1.20.2.tar.gz -P /opt/src/</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  tar zxvf  /opt/src/nginx-1.20.2.tar.gz -C /opt/src/</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  cd /opt/src/nginx-1.20.2/</span></span>  </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  ./configure --prefix=/opt/apps/nginx \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --with-http_stub_status_module --with-http_ssl_module \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --with-http_gzip_static_module --with-ipv6 --with-stream \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --with-stream_ssl_module --with-http_v2_module \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --with-pcre --with-http_gzip_static_module \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --with-http_dav_module --with-http_addition_module \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --with-http_sub_module --with-http_flv_module \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --with-http_mp4_module --with-stream \</span></span></span><br><span class="line"><span class="string"><span class="language-bash">&gt;   --user=admin --group=admin·  #配置程序路径以及启用模块,</span></span> </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  sleep 3</span></span>  </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  make -j2 &amp;&amp; make install     #编译安装</span></span>  </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  sleep 8  #等待8秒 m代表分钟(3m代表等待3分钟)  h代表小时 d代表天</span></span>  </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  rm -rf /opt/apps/nginx/conf/nginx.conf</span></span>  </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  git clone https://admin:&quot;</span>frTd3KbJct_pgoBstA5f<span class="string">&quot;@gitlab.com/usererge/nginx-conf.git /opt/conf/</span></span></span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  mv /opt/conf/* /opt/apps/nginx/conf/</span></span>  </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  sudo /opt/apps/nginx/sbin/nginx</span></span>  </span><br><span class="line"><span class="meta prompt_">&gt; </span><span class="language-bash"><span class="string">  &quot;</span></span>  </span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>nginx</category>
+      </categories>
+      <tags>
+        <tag>install_nginx</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>install-redis</title>
     <url>/Redis%E5%AE%89%E8%A3%85/install-redis/</url>
     <content><![CDATA[<h3 id="1-Rdis安装"><a href="#1-Rdis安装" class="headerlink" title="1. Rdis安装"></a>1. Rdis安装</h3><ul>
@@ -968,6 +968,411 @@
       </categories>
       <tags>
         <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>kubernetes使用</title>
+    <url>/Kubernetes%E4%BD%BF%E7%94%A8/kubernetes%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h3 id="1-Kubernetes使用"><a href="#1-Kubernetes使用" class="headerlink" title="1. Kubernetes使用"></a>1. Kubernetes使用</h3><h4 id="1-1-kubectl-get-nodes节点显示-NotReady-是由于节点之间网络不通导致"><a href="#1-1-kubectl-get-nodes节点显示-NotReady-是由于节点之间网络不通导致" class="headerlink" title="1.1 kubectl get nodes节点显示 NotReady 是由于节点之间网络不通导致"></a>1.1 <font color="red"><code>kubectl get nodes</code></font>节点显示 NotReady 是由于节点之间网络不通导致</h4><p><img src="http://oss.linuxtxc.com/images/image-20220407170459496.png" alt="get-nodes"></p>
+<ul>
+<li>查看集群健康状况：<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get  cs</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl cluster-info</span></span><br></pre></td></tr></table></figure>
+<img src="http://oss.linuxtxc.com/images/image-20220407170643950.png" alt="get-sc"></li>
+<li>先处理网络、后处理配置文件<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim  /etc/kubernetes/manifests/kube-controller-manager.yaml （注释掉 - --port=0）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim  /etc/kubernetes/manifests/kube-scheduler.yaml          （注释掉 - --port=0）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start kubelet</span> </span><br></pre></td></tr></table></figure></li>
+<li>再次查看<br><img src="http://oss.linuxtxc.com/images/image-20220407170817379.png" alt="get-cs-2"><br><img src="http://oss.linuxtxc.com/images/image-20220407171343144.png" alt="get-nodes-2"><h4 id="1-2-重置Kubernetes集群"><a href="#1-2-重置Kubernetes集群" class="headerlink" title="1.2  重置Kubernetes集群"></a>1.2  重置Kubernetes集群</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在master、node节点都执行以下命令</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm  reset</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">rm</span> -rf /etc/cni/net.d</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在master上执行</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm init --kubernetes-version=1.19.0 --apiserver-advertise-address=192.168.3.124  --service-cidr=10.64.0.0/24 --pod-network-cidr=10.244.0.0/16</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -p <span class="variable">$HOME</span>/.kube</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cp</span> -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> $(<span class="built_in">id</span> -u):$(<span class="built_in">id</span> -g) <span class="variable">$HOME</span>/.kube/config</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim  /etc/kubernetes/manifests/kube-controller-manager.yaml （注释掉 - --port=0）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim  /etc/kubernetes/manifests/kube-scheduler.yaml          （注释掉 - --port=0）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start kubelet</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在node节点执行</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm reset</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm <span class="built_in">join</span> 192.168.3.124:6443 --token f62e1g.exfdrr8bg2fxpdmu \</span></span><br><span class="line"><span class="language-bash">    --discovery-token-ca-cert-hash sha256:7e4762cccce2e8306b6635cbc2091eae34bbf33577276413521a343c49fc026a</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-kubectl命令"><a href="#3-kubectl命令" class="headerlink" title="3. kubectl命令"></a>3. kubectl命令</h3></li>
+<li><code>kubectl</code>是<code>kubernetes</code>集群的命令行工具，通过它能够对集群本身进行管理，并能够在集群上进行容器化应用的安装和部署</li>
+<li>kubectl命令的语法如下<code>$ kubectl [command] [type] [name] [flags]</code><blockquote>
+<p>command:	<font color="red">指定要对资源执行的操作，比如：create、get、delete。</font><br><font color="red">可以通过–help查看详细的操作命令：<code>kubectl --help</code></font></p>
+</blockquote>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>—</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>基本命令</td>
+<td>create</td>
+<td>创建</td>
+<td>创建一个资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>edit</td>
+<td>编辑</td>
+<td>编辑一个资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>get</td>
+<td>获取</td>
+<td>获取一个资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>patch</td>
+<td>更新</td>
+<td>更新一个资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>delete</td>
+<td>删除</td>
+<td>删除一个资源</td>
+</tr>
+<tr>
+<td>基本命令</td>
+<td>explain</td>
+<td>解释</td>
+<td>展示资源文档</td>
+</tr>
+<tr>
+<td>运行和调试</td>
+<td>run</td>
+<td>运行</td>
+<td>在集群中运行一个指定的镜像</td>
+</tr>
+<tr>
+<td>—</td>
+<td>expose</td>
+<td>暴露</td>
+<td>暴露资源为Service</td>
+</tr>
+<tr>
+<td>—</td>
+<td>describe</td>
+<td>描述</td>
+<td>显示资源内部信息</td>
+</tr>
+<tr>
+<td>—</td>
+<td>logs</td>
+<td>日志</td>
+<td>输出容器在Pod中的日志</td>
+</tr>
+<tr>
+<td>—</td>
+<td>attach</td>
+<td>缠绕</td>
+<td>进入运行中的容器</td>
+</tr>
+<tr>
+<td>—</td>
+<td>exec</td>
+<td>执行</td>
+<td>执行容器中的一个命令</td>
+</tr>
+<tr>
+<td>—</td>
+<td>cp</td>
+<td>复制</td>
+<td>在Pod内外复制文件</td>
+</tr>
+<tr>
+<td>—</td>
+<td>rollout</td>
+<td>首次展示</td>
+<td>管理资源的发布</td>
+</tr>
+<tr>
+<td>—</td>
+<td>scale</td>
+<td>规模</td>
+<td>扩（缩）容Pod的数量</td>
+</tr>
+<tr>
+<td>运行和调试</td>
+<td>autoscale</td>
+<td>自动调整</td>
+<td>自动调整Pod的数量</td>
+</tr>
+<tr>
+<td>高级命令</td>
+<td>apply</td>
+<td>应用</td>
+<td>通过文件对资源进行配置</td>
+</tr>
+<tr>
+<td>高级命令</td>
+<td>label</td>
+<td>标签</td>
+<td>更新资源上的标签</td>
+</tr>
+<tr>
+<td>其他命令</td>
+<td>cluster-info</td>
+<td>集群信息</td>
+<td>显示集群信息</td>
+</tr>
+<tr>
+<td>其他命令</td>
+<td>version</td>
+<td>版本</td>
+<td>输出 client 和 server 的版本信息</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><code>type</code>：指定资源的类型，<font color="red">比如：deployment、pod、service。</font><br><code>kubernetes</code> 中所有的内容都抽象为资源，<font color="red">可以通过<code>kubectl api-resources</code>进行查看</font>  </p>
+<table>
+<thead>
+<tr>
+<th>资源分类</th>
+<th>资源名称</th>
+<th>缩写</th>
+<th>资源作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>集群级别资源</td>
+<td>nodes</td>
+<td>no</td>
+<td>集群组成部分</td>
+</tr>
+<tr>
+<td>集群级别资源</td>
+<td>namespaces</td>
+<td>ns</td>
+<td>隔离Pod</td>
+</tr>
+<tr>
+<td>Pods</td>
+<td>Pods</td>
+<td>po</td>
+<td>装载容器</td>
+</tr>
+<tr>
+<td>Pod资源控制器</td>
+<td>replicationcontrollers</td>
+<td>rc</td>
+<td>控制Pod资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>replicasets</td>
+<td>rs</td>
+<td>控制Pod资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>deployments</td>
+<td>deploy</td>
+<td>控制Pod资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>daemonsets</td>
+<td>ds</td>
+<td>控制Pod资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>jobs</td>
+<td>—</td>
+<td>控制Pod资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>cronjobs</td>
+<td>cj</td>
+<td>控制Pod资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>horizontalpodautoscalers</td>
+<td>hpa</td>
+<td>控制Pod资源</td>
+</tr>
+<tr>
+<td>Pod资源控制器</td>
+<td>statefulsets</td>
+<td>sts</td>
+<td>控制Pod资源</td>
+</tr>
+<tr>
+<td>服务发现资源</td>
+<td>services</td>
+<td>svc</td>
+<td>统一Pod对外接口</td>
+</tr>
+<tr>
+<td>服务发现资源</td>
+<td>ingress</td>
+<td>ing</td>
+<td>统一Pod对外接口</td>
+</tr>
+<tr>
+<td>存储资源</td>
+<td>volumeattachments</td>
+<td>—</td>
+<td>存储</td>
+</tr>
+<tr>
+<td>—</td>
+<td>persistentvolumes</td>
+<td>pv</td>
+<td>存储</td>
+</tr>
+<tr>
+<td>存储资源</td>
+<td>persistentvolumeclaims</td>
+<td>pvc</td>
+<td>存储</td>
+</tr>
+<tr>
+<td>配置资源</td>
+<td>configmaps</td>
+<td>cm</td>
+<td>配置</td>
+</tr>
+<tr>
+<td>配置资源</td>
+<td>secrets</td>
+<td>—</td>
+<td>配置</td>
+</tr>
+</tbody></table>
+</blockquote>
+<ul>
+<li><font color="red"><code>name</code>：指定资源的名称，名称大小写敏感  </font>  </li>
+<li><font color="red"><code>flags</code>：指定额外的可选参数</font>  </li>
+<li><font color="red">使用<code>kubectl create</code>命令生成yaml文件  </font>  <h4 id="3-1-yaml文件详解"><a href="#3-1-yaml文件详解" class="headerlink" title="3.1 yaml文件详解"></a>3.1 <code>yaml</code>文件详解</h4></li>
+<li>yaml文件生成 、<code>create</code>创建命令  <blockquote>
+<ul>
+<li><code>create</code>：创建</li>
+<li><code>deployment</code>：无状态应用部署</li>
+<li><code>java-demo</code>：自定义名称</li>
+<li><code> --image</code>：使用镜像</li>
+<li><code> --dry-run</code>：测试</li>
+<li><code>-o</code>：输出</li>
+<li><code>&gt; deploy.yaml</code>：定向输出到文件，不加<code>&gt;deploy.yaml</code> 输出到屏幕查看</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create  namespace  dev    <span class="comment">#创建一个namespace命名空间</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment java-demo --image=lizhenliang/java-demo --dry-run -o yaml &gt;deploy.yaml</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment nginx --image=nginx:1.17.1 --dry-run=client -n dev -o yaml &gt; test.yam</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create service clusterip ngx-dep --tcp=80:80  <span class="comment">#命令行创建service</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create -f  ns-dev.yaml    <span class="comment">#根据yaml文件创建资源</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">运行构建命令</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f deploy.yaml    <span class="comment">#K8S默认拉去GitHub上镜像</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get deploy,pods</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>生成暴露端口应用方式<blockquote>
+<ul>
+<li><code>expose</code> 端口设置固定选项</li>
+<li><code>deployment</code>：无状态应用部署</li>
+<li><code> java-demo</code>： 自定义名称</li>
+<li><code>--port</code>：集群内部互通端口</li>
+<li><code>--target-port</code>：容器内部端口</li>
+<li><code>--type</code>：随机生成外部访问端口</li>
+<li><code>&gt;java-demo-svc.yaml</code>：定向输出到文件，不加<code>&gt;java-demo-svc.yaml</code>输出到屏幕查看</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl expose --<span class="built_in">help</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl expose deployment java-demo --port=80 --target-port=8080 --<span class="built_in">type</span>=NodePort --dry-run -o yaml &gt;java-demo-svc.yaml</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f java-demo-svc.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">对外发布允许外网访问</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl expose deployment web --port=80 --<span class="built_in">type</span>=NodePort --target-port=80 --name=web</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get service</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">PORT(S):80(集群内部互通端口)、30040/TCP(外部访问端口)</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods,svc</span></span><br><span class="line">NAME                             READY   STATUS    RESTARTS   AGE</span><br><span class="line">pod/java-demo-56d54df448-2m8kr   1/1     Running   0          68m</span><br><span class="line">pod/java-demo-56d54df448-9k5dn   1/1     Running   0          68m</span><br><span class="line">pod/java-demo-56d54df448-wvqkf   1/1     Running   0          68m</span><br><span class="line">pod/nginx-6799fc88d8-5sxfn       1/1     Running   0          3h4m</span><br><span class="line"></span><br><span class="line">NAME                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE</span><br><span class="line">service/java-demo    NodePort    10.103.37.12   &lt;none&gt;        80:30040/TCP   105s</span><br><span class="line">service/kubernetes   ClusterIP   10.96.0.1      &lt;none&gt;        443/TCP        4h35m</span><br><span class="line">service/nginx        NodePort    10.106.61.55   &lt;none&gt;        80:31750/TCP   3h4m</span><br></pre></td></tr></table></figure></li>
+<li>pod数据存储、一个yaml文件创建多个pod<blockquote>
+<ul>
+<li><p><font color="red">infrastructure Container: 基础容器</font>  </p>
+<blockquote>
+<ul>
+<li>维护整个Pod网络空间</li>
+</ul>
+</blockquote>
+</li>
+<li><p><font color="red">initContainers: 初始化容器</font>  </p>
+<blockquote>
+<ul>
+<li>先于业务容器开始允许</li>
+</ul>
+</blockquote>
+</li>
+<li><p><font color="red">Containers：业务容器</font>  </p>
+<blockquote>
+<ul>
+<li>并行启动</li>
+</ul>
+</blockquote>
+</li>
+<li><p>Pod 内所有容器公用一个ip</p>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h4 id="3-2-kubectl应用命令"><a href="#3-2-kubectl应用命令" class="headerlink" title="3.2  kubectl应用命令"></a>3.2  kubectl应用命令</h4><blockquote>
+<ul>
+<li><code>set</code>升级</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">set</span> image deployment/web nginx=nginx1.15</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">查看升级状态</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout status deployment/nginx-deployment</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li><code>undo</code>回滚</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout <span class="built_in">history</span> deployment/web</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout undo deployment/web</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout undo deployment/web --revision=2</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li><code>delete</code>删除</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete deploy/web</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete svc/web</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li><code>api-resources</code></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl api-resources   <span class="comment">#查看k8s所有的资源以及对应的apiversion</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl api-versions    <span class="comment">#查看k8s所有 版本号</span></span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>explain</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain 资源类型（pod,deployment）   <span class="comment"># 查看某种资源可以配置的一级配置</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain 资源类型.属性       <span class="comment">#查看资源的子属性</span></span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li><code>kubectl label</code></li>
+</ul>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>版本类</th>
+<th>标签(release)</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>稳定版</td>
+<td>stable</td>
+<td>—</td>
+</tr>
+<tr>
+<td>金丝雀版</td>
+<td>canary</td>
+<td>可以将其称之为测试版中的测试版</td>
+</tr>
+<tr>
+<td>测试版</td>
+<td>beta</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim emptydir.yaml</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line"> name: my-pod</span><br><span class="line"></span><br><span class="line">spec:</span><br><span class="line"> containers:</span><br><span class="line"> - name: write</span><br><span class="line">   image: centos</span><br><span class="line">   command: [&quot;bash&quot;,&quot;-c&quot;,&quot;for i in &#123;1..100&#125;;do echo $i &gt;&gt;/opt/hello;sleep 1;done&quot;]</span><br><span class="line">   volumeMounts:</span><br><span class="line">    - name: data</span><br><span class="line">      mountPath: /opt</span><br><span class="line"></span><br><span class="line"> - name: read</span><br><span class="line">   image: centos</span><br><span class="line">   command: [&quot;bash&quot;,&quot;-c&quot;,&quot;tail -f /opt/hello&quot;]</span><br><span class="line">   volumeMounts:</span><br><span class="line">    - name: data</span><br><span class="line">      mountPath: /opt</span><br><span class="line"></span><br><span class="line"> volumes:</span><br><span class="line"> - name: data</span><br><span class="line">   emptyDir: &#123;&#125;</span><br><span class="line">   </span><br><span class="line">kubectl apply -f emptydir.yaml    	#创建</span><br><span class="line">kubectl exec -it my-pod --container write -- /bin/bash  #进入 写pod</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Deplyment模板</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;product.yaml&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">apiVersion: apps/v1   	#指定资源版本，kubectl api-version查看api版本</span><br><span class="line">kind: Deployment     	#指定资源类型</span><br><span class="line">metadata:     			#资源元数据</span><br><span class="line"> name: product       	#deploy名称</span><br><span class="line"> namespace: ms       	#指定命名空间</span><br><span class="line">spec:</span><br><span class="line"> replicas: 2   			#创建Pod个数</span><br><span class="line"> selector:    			#标签选择器</span><br><span class="line">  matchLabels:      	#标签选择方式:直接给定标签键值,这里是取交集的,也就是Pod必须满足下面两个标签才能被调度</span><br><span class="line">   project: ms</span><br><span class="line">   app: product        			#此行以上定义Deployment控制器本身，</span><br><span class="line"> template:    			#此行一下定义Pod模板</span><br><span class="line">  metadata:</span><br><span class="line">   labels:  			#Pod label</span><br><span class="line">    project: ms</span><br><span class="line">    app: product        #此行以上到template定义标签</span><br><span class="line">  spec:   				#Pod属性</span><br><span class="line">   hostAliases:   		#/etc/hosts/手动添加解析</span><br><span class="line">   - ip: &quot;192.168.4.110&quot;</span><br><span class="line">     hostnames:</span><br><span class="line">     - &quot;k8s.com&quot;</span><br><span class="line">   imagePullSecrets:</span><br><span class="line">   - name: registry-pull-secret</span><br><span class="line">   containers:       	#Pod中的容器，一个Pod中可以定义多个容器</span><br><span class="line">   - name: product   	#容器前缀</span><br><span class="line">     image: nginx:1.16.1-alpine   	#容器镜像</span><br><span class="line">     imagePullPolicy: Always    	#容器下载策略，不管本地存不存在，都从仓库拉取镜像</span><br><span class="line">     ports:   						#容器暴露的端口</span><br><span class="line">     - name: http    				#服务名称</span><br><span class="line">       containerPort: 80   			#端口</span><br><span class="line">     - protocol: TCP        		#协议</span><br><span class="line">     env:     						#定义变量</span><br><span class="line">      - name: JAVA_OPTS    			#变量名称</span><br><span class="line">        value: &quot;-Xmx1g&quot; 			#定义使用内存</span><br><span class="line">     resources:						#设定使用资源限制</span><br><span class="line">      requests:</span><br><span class="line">       cpu: 0.5						#限定使用几个核心CPU</span><br><span class="line">       memory: 256Mi				#设定使用内存</span><br><span class="line">      limits:						#限定pod最大使用硬件资源</span><br><span class="line">       cpu: 1</span><br><span class="line">       memory: 1Gi</span><br><span class="line">      readinessProbe:				#健康检查</span><br><span class="line">       tcpSocket:					#第一步健康检查，不通过重建pod</span><br><span class="line">        port: 8010</span><br><span class="line">       initialDelaySeconds: 60</span><br><span class="line">       periodSeconds: 10</span><br><span class="line">      livenessprobe:				#第二部健康检查,不通过不转发流量</span><br><span class="line">       tcpSocket:</span><br><span class="line">        port: 8010</span><br><span class="line">       initialDelaySeconds: 60</span><br><span class="line">       periodSeconds: 10</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">cat&gt;nginx.yaml&lt;&lt;-EOF</span></span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line"> name: nginx</span><br><span class="line"> namespace: default</span><br><span class="line"></span><br><span class="line">spec:</span><br><span class="line"> selector: 		#选择关联标签为app：ms的pod</span><br><span class="line">  app: ms</span><br><span class="line"> clusterIP: 10.10.100.100    	#指定service IP，也可以不指定，随机生成</span><br><span class="line"> type: NodePort  				#service类型，NodePort支持集群外部访问</span><br><span class="line"> ports:  #端口</span><br><span class="line"> - port: 80   				#集群端口</span><br><span class="line">   targetPort: 80    		#Pod端口</span><br><span class="line">   nodePort: 30080    		#节点端口</span><br><span class="line">EOF</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>yaml格式</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain deployment.spec.selector   	<span class="comment">#获取yaml格式命令</span></span></span><br><span class="line">KIND:     Deployment</span><br><span class="line">VERSION:  apps/v1</span><br><span class="line"></span><br><span class="line">RESOURCE: selector &lt;Object&gt;</span><br><span class="line"></span><br><span class="line">DESCRIPTION:</span><br><span class="line">     Label selector for pods. Existing ReplicaSets whose pods are selected by</span><br><span class="line">     this will be the ones affected by this deployment. It must match the pod</span><br><span class="line">     template&#x27;s labels.</span><br><span class="line"></span><br><span class="line">     A label selector is a label query over a set of resources. The result of</span><br><span class="line">     matchLabels and matchExpressions are ANDed. An empty label selector matches</span><br><span class="line">     all objects. A null label selector matches no objects.</span><br><span class="line"></span><br><span class="line">FIELDS:</span><br><span class="line">   matchExpressions	&lt;[]Object&gt;</span><br><span class="line">     matchExpressions is a list of label selector requirements. The requirements</span><br><span class="line">     are ANDed.</span><br><span class="line"></span><br><span class="line">   matchLabels	&lt;map[string]string&gt;</span><br><span class="line">     matchLabels is a map of &#123;key,value&#125; pairs. A single &#123;key,value&#125; in the</span><br><span class="line">     matchLabels map is equivalent to an element of matchExpressions, whose key</span><br><span class="line">     field is &quot;key&quot;, the operator is &quot;In&quot;, and the values array contains only</span><br><span class="line">     &quot;value&quot;. The requirements are ANDed.</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">######################################################################################</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pods.spec.affinity    			<span class="comment">#获取yaml高级格式命令</span></span></span><br><span class="line">KIND:     Pod</span><br><span class="line">VERSION:  v1</span><br><span class="line"></span><br><span class="line">RESOURCE: affinity &lt;Object&gt;</span><br><span class="line"></span><br><span class="line">DESCRIPTION:</span><br><span class="line">     If specified, the pod&#x27;s scheduling constraints</span><br><span class="line"></span><br><span class="line">     Affinity is a group of affinity scheduling rules.</span><br><span class="line"></span><br><span class="line">FIELDS:</span><br><span class="line">   nodeAffinity	&lt;Object&gt;</span><br><span class="line">     Describes node affinity scheduling rules for the pod.</span><br><span class="line"></span><br><span class="line">   podAffinity	&lt;Object&gt;</span><br><span class="line">     Describes pod affinity scheduling rules (e.g. co-locate this pod in the</span><br><span class="line">     same node, zone, etc. as some other pod(s)).</span><br><span class="line"></span><br><span class="line">   podAntiAffinity	&lt;Object&gt;</span><br><span class="line">     Describes pod anti-affinity scheduling rules (e.g. avoid putting this pod</span><br><span class="line">     in the same node, zone, etc. as some other pod(s)).</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Kubernetes使用</category>
+      </categories>
+      <tags>
+        <tag>Kubernetes</tag>
       </tags>
   </entry>
 </search>
