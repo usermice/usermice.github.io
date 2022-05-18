@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"usermice.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. Pod详解2.获取yaml命令格式3.apiVersion   1. Pod详解1.1 pod数据存储、一个yaml文件创建多个pod infrastructure Container: 基础容器     维护整个Pod网络空间    initContainers: 初始化容器     先于业务容器开始允许    Containers：业务容器     并行启动    Pod 内所有容器公用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kubernetes-pod详解">
+<meta property="og:url" content="https://usermice.github.io/Kubernetes/kubernetes-pod%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/index.html">
+<meta property="og:site_name" content="二哥">
+<meta property="og:description" content="1. Pod详解2.获取yaml命令格式3.apiVersion   1. Pod详解1.1 pod数据存储、一个yaml文件创建多个pod infrastructure Container: 基础容器     维护整个Pod网络空间    initContainers: 初始化容器     先于业务容器开始允许    Containers：业务容器     并行启动    Pod 内所有容器公用">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-05-15T11:21:27.000Z">
+<meta property="article:modified_time" content="2022-05-18T12:45:36.398Z">
+<meta property="article:author" content="二哥">
+<meta property="article:tag" content="Kubernetes">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://usermice.github.io/Kubernetes/kubernetes-pod%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>kubernetes-pod详解 | 二哥</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="二哥" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">二哥</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tools">
+
+    <a href="/categories/%E5%B7%A5%E5%85%B7%E8%B5%84%E6%BA%90/" rel="section"><i class="fa fa-briefcase fa-fw"></i>tools</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/kubernetes-pod%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/">
+
+<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/Kubernetes/kubernetes-pod%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/">kubernetes-pod详解</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问  的个人博客"></a></p>
+  <p><span>发布时间:</span>2022年05月15日 - 19:21</p>
+  <p><span>最后更新:</span>2022年05月18日 - 20:45</p>
+  <p><span>原始链接:</span><a href="/Kubernetes/kubernetes-pod%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/" title="kubernetes-pod详解">https://usermice.github.io/Kubernetes/kubernetes-pod%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://usermice.github.io/Kubernetes/kubernetes-pod%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+	});
+    });  
+</script>
+
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          kubernetes-pod详解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-15 19:21:27" itemprop="dateCreated datePublished" datetime="2022-05-15T19:21:27+08:00">2022-05-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-18 20:45:36" itemprop="dateModified" datetime="2022-05-18T20:45:36+08:00">2022-05-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a href="#Pod%E8%AF%A6%E8%A7%A3">1. Pod详解</a><br><a href="#%E8%8E%B7%E5%8F%96yaml%E5%91%BD%E4%BB%A4%E6%A0%BC%E5%BC%8F">2.获取yaml命令格式</a><br><a href="#apiVersion">3.apiVersion</a>  </p>
+<h3 id="1-Pod详解"><a href="#1-Pod详解" class="headerlink" title="1. Pod详解"></a><span id="Pod详解">1. Pod详解</span></h3><h4 id="1-1-pod数据存储、一个yaml文件创建多个pod"><a href="#1-1-pod数据存储、一个yaml文件创建多个pod" class="headerlink" title="1.1 pod数据存储、一个yaml文件创建多个pod"></a>1.1 pod数据存储、一个yaml文件创建多个pod</h4><ul>
+<li><p><font color="red">infrastructure Container: 基础容器</font>  </p>
+<blockquote>
+<ul>
+<li>维护整个Pod网络空间</li>
+</ul>
+</blockquote>
+</li>
+<li><p><font color="red">initContainers: 初始化容器</font>  </p>
+<blockquote>
+<ul>
+<li>先于业务容器开始允许</li>
+</ul>
+</blockquote>
+</li>
+<li><p><font color="red">Containers：业务容器</font>  </p>
+<blockquote>
+<ul>
+<li>并行启动</li>
+</ul>
+</blockquote>
+</li>
+<li><p><font color="red">Pod 内所有容器公用一个ip</font>  </p>
+<h3 id="2-获取yaml命令格式"><a href="#2-获取yaml命令格式" class="headerlink" title="2. 获取yaml命令格式"></a><span id="获取yaml命令格式">2. 获取<code>yaml</code>命令格式</span></h3></li>
+<li><p><font color="red"><code>kubectl explain deployment.spec.selector</code>：获取yaml基础格式命令</font>    </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain deployment.spec.selector</span></span><br></pre></td></tr></table></figure></li>
+<li><p><font color="red"><code>kubectl explain deployment.spec.affinity</code>：获取<code>yaml</code>高级格式命令</font>  </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain deployment.spec.affinity</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-apiVersion定义"><a href="#3-apiVersion定义" class="headerlink" title="3. apiVersion定义"></a><span id="apiVersion">3. <code>apiVersion</code>定义</span></h3></li>
+<li><p><font color="red"><code>kubectl api-resources -o wide</code>：获取参数定义命令</font>    </p>
+<table>
+<thead>
+<tr>
+<th>Name(名称)</th>
+<th>ShortNames(简写)</th>
+<th>apiVersion(API版本)</th>
+<th>NameSpaced(命名空间)</th>
+<th>kind(类型)</th>
+<th>Verbs(可执行操作命令)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>configmaps</td>
+<td>cm</td>
+<td>v1</td>
+<td>true</td>
+<td>ConfigMap</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>events</td>
+<td>ev</td>
+<td>v1</td>
+<td>true</td>
+<td>Event</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>limitranges</td>
+<td>limits</td>
+<td>v1</td>
+<td>true</td>
+<td>LimitRange</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>pods</td>
+<td>po</td>
+<td>v1</td>
+<td>true</td>
+<td>Pod</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>serviceaccounts</td>
+<td>sa</td>
+<td>v1</td>
+<td>true</td>
+<td>ServiceAccount</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>services</td>
+<td>svc</td>
+<td>v1</td>
+<td>true</td>
+<td>Service</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>daemonsets</td>
+<td>ds</td>
+<td>apps&#x2F;v1</td>
+<td>true</td>
+<td>DaemonSet</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>deployments</td>
+<td>deploy</td>
+<td>apps&#x2F;v1</td>
+<td>true</td>
+<td>Deployment</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>replicasets</td>
+<td>rs</td>
+<td>apps&#x2F;v1</td>
+<td>true</td>
+<td>ReplicaSet</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>statefulsets</td>
+<td>sts</td>
+<td>apps&#x2F;v1</td>
+<td>true</td>
+<td>StatefulSet</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>cronjobs</td>
+<td>cj</td>
+<td>batch&#x2F;v1</td>
+<td>true</td>
+<td>CronJob</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>jobs</td>
+<td></td>
+<td>batch&#x2F;v1</td>
+<td>true</td>
+<td>Job</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>events</td>
+<td>ev</td>
+<td>events.k8s.io&#x2F;v1</td>
+<td>true</td>
+<td>Event</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>ingresses</td>
+<td>ing</td>
+<td>networking.k8s.io&#x2F;v1</td>
+<td>true</td>
+<td>Ingress</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>networkpolicies</td>
+<td>netpol</td>
+<td>networking.k8s.io&#x2F;v1</td>
+<td>true</td>
+<td>NetworkPolicy</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+<tr>
+<td>poddisruptionbudgets</td>
+<td>pdb</td>
+<td>policy&#x2F;v1</td>
+<td>true</td>
+<td>PodDisruptionBudget</td>
+<td>create、delete、deletecollection、get、list、patch、update、watch</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<h4 id="1-4-yaml必选参数"><a href="#1-4-yaml必选参数" class="headerlink" title="1.4 yaml必选参数"></a>1.4 <font color="red"><code>yaml</code>必选参数</font></h4><table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>字段类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>version</td>
+<td>String</td>
+<td>Kubernetes API 的版本，可以用 kubectl api-versions 命令查询</td>
+</tr>
+<tr>
+<td>kind</td>
+<td>String</td>
+<td>标明 YAML 定义的资源类型和角色，如 Pod、Deployment 等</td>
+</tr>
+<tr>
+<td>metadata</td>
+<td>String</td>
+<td>元数据对象</td>
+</tr>
+<tr>
+<td>metadata.name</td>
+<td>String</td>
+<td>元数据对象的名字，可自定义，比如命名 Pod 的名字</td>
+</tr>
+<tr>
+<td>spec</td>
+<td>Object</td>
+<td>详细定义对象</td>
+</tr>
+<tr>
+<td>spec.containers[]</td>
+<td>List</td>
+<td>容器列表定义</td>
+</tr>
+<tr>
+<td>spec.containers[].name</td>
+<td>String</td>
+<td>定义容器的名字</td>
+</tr>
+<tr>
+<td>spec.containers[].image</td>
+<td>String</td>
+<td>定义容器使用的镜像</td>
+</tr>
+</tbody></table>
+<h3 id="4-Pod基础必选参数-每个YAML文件都包含它们"><a href="#4-Pod基础必选参数-每个YAML文件都包含它们" class="headerlink" title="4. Pod基础必选参数,每个YAML文件都包含它们"></a>4. <font color="red">Pod基础必选参数,每个<code>YAML</code>文件都包含它们</font></h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cat &gt;product.yaml&lt;&lt;-EOF</span><br><span class="line">apiVersion: apps/v1   	# API版本号,不同对象可能会使用不同API，kubectl api-version查看api版本</span><br><span class="line">kind: Deployment     	# 指定类型,资源类型有：Deployment、Service、Pod等</span><br><span class="line">metadata:     			# 资源元数据</span><br><span class="line"> name: product       	# Pod名称：自定义名称</span><br><span class="line"> namespace: ms       	# 指定命名空间：自定义名称、默认为&quot;default&quot;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<ul>
+<li><font color="red"><code>Pod</code>编写可选参数</font>  </li>
+<li><font color="red"><code>kubectl explain pod.metadata</code></font>  <table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>字段类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>metadata.name</td>
+<td></td>
+<td>Pod 名称</td>
+</tr>
+<tr>
+<td>metadata.namespace</td>
+<td></td>
+<td>Pod 名字空间</td>
+</tr>
+<tr>
+<td>metadata.uid</td>
+<td></td>
+<td>Pod 的 UID</td>
+</tr>
+<tr>
+<td>metadata.labels[‘<KEY>‘]</KEY></td>
+<td></td>
+<td>Pod 标签 <code>&lt;KEY&gt;</code> 的值 (例如<code>metadata.labels[&#39;mylabel&#39;]</code>）</td>
+</tr>
+<tr>
+<td>metadata.annotations[‘<KEY>‘]</KEY></td>
+<td></td>
+<td>Pod 的注解 <code>&lt;KEY&gt;</code> 的值（例如, <code>metadata.annotations[&#39;myannotation&#39;]</code>）</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">放在metadata中参数</span></span><br><span class="line">metadata:</span><br><span class="line"> labels:       　　  # 自定义标签名称和值</span><br><span class="line">    - name: string  # 名称值为：key: value键值对方式</span><br><span class="line"> annotations:  		# 自定义注释名称和值</span><br><span class="line">    - name: nginx 	# 名称值为：key: value键值对方式</span><br></pre></td></tr></table></figure>
+<h4 id="4-1-spec-containers编写定义"><a href="#4-1-spec-containers编写定义" class="headerlink" title="4.1 spec.containers编写定义"></a>4.1 <font color="red"><code>spec.containers</code>编写定义</font></h4><blockquote>
+<ul>
+<li><font color="red">容器定义</font>  </li>
+<li><font color="red"><code>kubectl explain pod.spec.containers</code></font>  </li>
+<li><font color="red"><code>kubectl explain pod.spec.affinity</code></font>  <table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>字段类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>spec.containers[].name</td>
+<td>String</td>
+<td>定义容器的名字。</td>
+</tr>
+<tr>
+<td>spec.containers[].image</td>
+<td>String</td>
+<td>定义容器使用的镜像。</td>
+</tr>
+<tr>
+<td>spec.containers[].imagePullSecrets</td>
+<td></td>
+<td>要从私有仓库拉取镜像，Kubernetes 需要凭证。 配置文件中的 <code>imagePullSecrets</code> 字段表明 Kubernetes 应该通过名为 <code>regcred</code> 的 Secret 获取凭证</td>
+</tr>
+<tr>
+<td>spec.containers[].imagePullPolicy</td>
+<td>S</td>
+<td>定义镜像拉取策略,有3个值可选: Always：每次都尝试重新拉取镜像、Never：仅使用本地镜像、IfNotPresent：如果本地有镜像就使用本地镜像，没有就拉取在线镜像。如果上面 3个值都没有设置，则默认是 Always</td>
+</tr>
+<tr>
+<td>spec.containers[].command[]</td>
+<td>List</td>
+<td>指定容器启动命令，因为是数组形式，所以可以指定多个启动命令，不指定则使用镜像打包时的启动命令。</td>
+</tr>
+<tr>
+<td>spec.containers[].args[]</td>
+<td>List</td>
+<td>指定容器启动命令参数，因为是数组形式，所以可以指定多个参数。</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表，一个Pod中可以定义多个容器</span><br><span class="line">  - name: string   	# 必选，容器名称</span><br><span class="line">    image: nginx:1.16.1-alpine   	# 定义使用镜像</span><br><span class="line">    imagePullPolicy: Always   	# 容器下载策略：Always|Never|IfNotPresent，不管本地存不存在，都从仓库拉取镜像</span><br><span class="line">    imagePullSecrets:</span><br><span class="line">    - name: registry-pull-secret</span><br><span class="line">    command: [string]   	# 容器的启动命令列表，如不指定，使用打包时使用的启动命令</span><br><span class="line">    args:   	# 容器的启动命令参数列表</span><br><span class="line">    - /bin/sh</span><br><span class="line">    - -c</span><br><span class="line">    - touch /tmp/healthy; sleep 30; rm -fr /tmp/healthy; sleep 600</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li><font color="red">容器工作目录定义</font>  <table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>字段类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>spec.containers[].workingDir</td>
+<td>String</td>
+<td>指定容器的工作目录</td>
+</tr>
+<tr>
+<td>spec.containers[].volumeMounts[]</td>
+<td>List</td>
+<td>指定容器内部的存储卷配置</td>
+</tr>
+<tr>
+<td>spec.containers[].volumeMounts[].name</td>
+<td>String</td>
+<td>指定可以被容器挂载的存储卷的名称</td>
+</tr>
+<tr>
+<td>spec.containers[].volumeMounts[].mountPath</td>
+<td>String</td>
+<td>指定可以被容器挂载的存储卷的路径。</td>
+</tr>
+<tr>
+<td>spec.containers[].volumeMountsf].readOnly</td>
+<td>String</td>
+<td>设置存储卷路径的读写模式，true 或者 false，默认为读写模式。</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">    workingDir: string   	# 容器的工作目录</span><br><span class="line">    volumeMounts:   	# 挂载到容器内部的存储卷配置</span><br><span class="line">    - name: string   	# 引用pod定义的共享存储卷的名称，需用volumes[]部分定义的的卷名</span><br><span class="line">      mountPath: string   	# 存储卷在容器内mount的绝对路径，应少于512字符</span><br><span class="line">      readOnly: boolean   	# 是否为只读模式</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li><font color="red">容器端口定义</font>  <table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>字段类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>spec.containers[].ports[]</td>
+<td>List</td>
+<td>指定容器需要用到的端口列表。</td>
+</tr>
+<tr>
+<td>spec.containers[].ports[].name</td>
+<td>String</td>
+<td>指定端口名称。</td>
+</tr>
+<tr>
+<td>spec.containers[].ports[].containerPort</td>
+<td>String</td>
+<td>指定容器需要监听的端口号。</td>
+</tr>
+<tr>
+<td>spec.containers[].ports[].hostPort</td>
+<td>String</td>
+<td>指定容器所在主机需要监听的端口号，默认和 spec.containers[].ports[].containerPort 相同。注意，设置了则同一台主机无法启动该容器的相同副本（主机的端口号不能相同，若相同，会引发冲突）。</td>
+</tr>
+<tr>
+<td>spec.containers[].ports[].protocol</td>
+<td>String</td>
+<td>指定端口协议，支持 TCP 和 UDP，默认值为 TCP 。</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">    ports:   						# 容器暴露的端口</span><br><span class="line">    - name: http    				# 服务名称</span><br><span class="line">      containerPort: 80   			# 容器需要监听的端口号</span><br><span class="line">      hostPort: int       # 容器所在主机需要监听的端口号，默认与Container相同</span><br><span class="line">    - protocol: TCP        		# 端口协议，支持TCP和UDP，默认TCP</span><br><span class="line">    - port: 80   	# 集群端口</span><br><span class="line">      targetPort: 80   	# Pod端口</span><br><span class="line">      nodePort: 30080   	# 节点对外端口</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li><font color="red">容器变量定义</font>  <table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>字段类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>spec.containers[].env[]</td>
+<td>List</td>
+<td>指定容器运行前需要设置的环境变量列表。</td>
+</tr>
+<tr>
+<td>spec.containers[].env[].name</td>
+<td>String</td>
+<td>指定环境变量名称。</td>
+</tr>
+<tr>
+<td>spec.containers[].env[].value</td>
+<td>String</td>
+<td>指定环境变量值。</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">    env:   	# 容器运行前需设置的环境变量列表</span><br><span class="line">    - name: JAVA_OPTS   	# 环境变量名称</span><br><span class="line">      value: &quot;-Xmx1g&quot;   	# 定义使用内存、环境变量的值</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li><font color="red">容器资源限制和资源</font>  <table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>字段类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>spec.containers[].resources</td>
+<td>Object</td>
+<td>指定资源限制和资源请求的值（这里开始就是设置容器的资源上限）。</td>
+</tr>
+<tr>
+<td>spec.containers[].resources.limits</td>
+<td>Object</td>
+<td>指定设置容器运行时资源的运行上限。</td>
+</tr>
+<tr>
+<td>spec.containers[].resources.limits.cpu</td>
+<td>String</td>
+<td>指定<code>CPU</code>的限制，单位为<code>core</code>，是用于运行 <code>docker run --cpu-shares</code>命令的参数。</td>
+</tr>
+<tr>
+<td>spec.containers[].resources.limits.memory</td>
+<td>String</td>
+<td>指定内存的限制，单位为 MiB 或 GiB。</td>
+</tr>
+<tr>
+<td>spec.containers[].resources.requests</td>
+<td>Object</td>
+<td>指定容器启动和调度时的限制。</td>
+</tr>
+<tr>
+<td>spec.containers[].resources.requests.cpu</td>
+<td>String</td>
+<td>CPU 请求，单位为 core，容器启动时初始化可用数量。</td>
+</tr>
+<tr>
+<td>spec.containers[].resources.requests.memory</td>
+<td>String</td>
+<td>内存请求，单位为 MiB 或 GiB，容器启动的初始化可用数量。</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">    resources:   	# 资源限制和请求的设置</span><br><span class="line">     limits:   	# 限定Pod最大使用硬件资源</span><br><span class="line">      cpu: 1   	# Cpu的限制，单位为core数</span><br><span class="line">      memory: 1Gi   	# 内存限制，单位可以为Mib/Gib</span><br><span class="line">      </span><br><span class="line">     requests:   	# 资源请求的设置</span><br><span class="line">      cpu: 0.5   	# 限定使用几个核心CPU、容器启动的初始可用数量</span><br><span class="line">      memory: 256Mi   	# 设定使用内存、容器启动的初始可用数量</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li><p><font color="red">Pod 内容器健康检查的设置</font>  </p>
+</li>
+<li><p><font color="red">Kubelet 使用 liveness probe（存活探针）</font>  </p>
+<blockquote>
+<p>Kubelet 使用 liveness probe（存活探针）来确定何时重启容器。例如，当应用程序处于运行状态但无法做进一步操作，liveness 探针将捕获到 deadlock，重启处于该状态下的容器，使应用程序在存在 bug 的情况下依然能够继续运行下去（谁的程序还没几个 bug 呢）。 </p>
+</blockquote>
+</li>
+<li><p><font color="red">Kubelet 使用 readiness probe（就绪探针）</font>  </p>
+<blockquote>
+<p>Kubelet 使用 readiness probe（就绪探针）来确定容器是否已经就绪可以接受流量。只有当 Pod 中的容器都处于就绪状态时 kubelet 才会认定该 Pod 处于就绪状态。该信号的作用是控制哪些 Pod 应该作为 service 的后端。如果 Pod 处于非就绪状态，那么它们将会被从 service 的 load balancer 中移除。</p>
+<table>
+<thead>
+<tr>
+<th>参数名称</th>
+<th>字段类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>spec.containers[].livenessProbe(存活探针)</td>
+<td>Object</td>
+<td>指定 Pod 内容器健康检查的设置，当探测几次无响应后，系统将自动重启该容器。参数可以设置为<code>exec</code>、<code>httpGet</code>、<code>tcpSocket</code>。</td>
+</tr>
+<tr>
+<td>spec.containers[].livenessProbe.exec</td>
+<td>Object</td>
+<td>指定 Pod 内容器健康检查的设置，确定是<code>exec</code>方式。</td>
+</tr>
+<tr>
+<td>spec.containers[].livenessProbe. exec.command[]</td>
+<td>String</td>
+<td>指定<code>exec</code>方式后用这个参数设置需要指定的命令或者脚本。</td>
+</tr>
+<tr>
+<td>spec.containers[].livenessProbe.httpGet</td>
+<td>Object</td>
+<td>指定 Pod 内容器健康检查的设置，确定是<code>httpGet</code>方式。</td>
+</tr>
+<tr>
+<td>spec.containers[].livenessProbe.tcpSocket</td>
+<td>Object</td>
+<td>指定 Pod 内容器健康检查的设置，确定是 <code>tcpSocket</code>方式。</td>
+</tr>
+<tr>
+<td>spec.containers[].livenessProbe.initialDelaySeconds</td>
+<td>Number</td>
+<td>指定容器启动完成后延迟多久开始首次探测的时间间隔，单位为秒。</td>
+</tr>
+<tr>
+<td>spec.containers[].livenessProbe.timeoutSeconds</td>
+<td>Number</td>
+<td>容器健康检查的探测等待时间，单位为秒，默认为 1 秒。若超过该时间，则认为该次探测失败。</td>
+</tr>
+<tr>
+<td>spec.containers[].livenessProbe.periodSeconds</td>
+<td>Number</td>
+<td>对容器健康检查的定期探测时间设置，单位为秒，默认每 10 秒探测一次。Kubernetes如果连续执行3次Liveness探测均失败，则会杀掉并重启容器</td>
+</tr>
+</tbody></table>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">    lifecycle:   	# 生命周期钩子</span><br><span class="line">      postStart: #容器启动后立即执行此钩子,如果执行失败,会根据重启策略进行重启</span><br><span class="line">       exec:</span><br><span class="line">        command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;echo Hello from the postStart handler&gt; /usr/share/message&quot;]</span><br><span class="line">      preStop: #容器终止前执行此钩子,无论结果如何,容器都会终止</span><br><span class="line">       exec:</span><br><span class="line">        command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;nginx -s quit; while killall -0 nginx; do sleep 1; done&quot;]</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">#############################  存活探针编写方式   #########################################</span></span></span><br><span class="line">    livenessprobe:  	#存活探针检查,不通过不转发流量</span><br><span class="line">     exec:</span><br><span class="line">      command:</span><br><span class="line">      - cat</span><br><span class="line">      - /tmp/healthy</span><br><span class="line">     tcpSocket:   		# 使用TcpSocket健康检查</span><br><span class="line">      port: 8010   	# 探测8010端口</span><br><span class="line">     initialDelaySeconds: 60   	# 指定容器启动60s之后开始执行Liveness探测，</span><br><span class="line">     periodSeconds: 10   	# 指定每10秒执行一次Liveness探测。</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">##############################  就绪探针编写方式  #########################################</span></span></span><br><span class="line">    readinessProbe:   	# 就绪探针检查、不通过重建pod</span><br><span class="line">     tcpSocket:</span><br><span class="line">      port: 8010</span><br><span class="line">     initialDelaySeconds: 60</span><br><span class="line">     periodSeconds: 10</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">#############################   httpGet编写   ###########################################</span></span></span><br><span class="line">         httpGet:</span><br><span class="line">            path: / #URI地址</span><br><span class="line">            port: 80 #端口号</span><br><span class="line">            host: 192.168.109.100 #主机地址  </span><br><span class="line">            scheme: HTTP #支持的协议，http或者https</span><br></pre></td></tr></table></figure>
+<h4 id="4-2-spec-volumes编写定义"><a href="#4-2-spec-volumes编写定义" class="headerlink" title="4.2 spec.volumes编写定义"></a>4.2 <font color="red"><code>spec.volumes</code>编写定义</font></h4><ul>
+<li><font color="red"><code>kubectl explain pod.spec.volumes</code></font>  <table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>字段类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>spec.volumes[].name</td>
+<td>String</td>
+<td>定义<code>Pod</code>共享存储卷的名称，容器定义部分 spec.containers[].volumeMounts[].name 的值和这里是一样的。</td>
+</tr>
+<tr>
+<td>spec.volumes[].emptyDir</td>
+<td>Object</td>
+<td>指定 Pod 的临时目录，值为一个空对象：emptyDir:{}。</td>
+</tr>
+<tr>
+<td>spec.volumes[].hostPath</td>
+<td>Object</td>
+<td>指定挂载 Pod 所在宿主机的目录。</td>
+</tr>
+<tr>
+<td>spec.volumes[].hostPath.path</td>
+<td>String</td>
+<td>指定 Pod 所在主机的目录，将被用于容器中 mount 的目录。</td>
+</tr>
+<tr>
+<td>spec.volumes[]</td>
+<td>Object</td>
+<td>指定类型为 Secret 的存储卷，Secret 意为私密、秘密，这很容易理解，它存储一些密码、密钥等敏感安全文件。挂载集群预定义的 Secret 对象到容器内部。</td>
+</tr>
+<tr>
+<td>spec.volumes[].configMap</td>
+<td>Object</td>
+<td>指定类型为 ConfigMap 的存储卷，表示挂载集群预定义的 ConfigMap 对象到容器内部。</td>
+</tr>
+</tbody></table>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">  volumes:   	# 在该pod上定义共享存储卷列表</span><br><span class="line">  - name: string   	# 共享存储卷名称 （volumes类型有很多种）</span><br><span class="line">    emptyDir: &#123;&#125;   		# 类型为emtyDir的存储卷，与Pod同生命周期的一个临时目录。为空值</span><br><span class="line">    hostPath: string   	# 类型为hostPath的存储卷，表示挂载Pod所在宿主机的目录</span><br><span class="line">      path: string   	# Pod所在宿主机的目录，将被用于同期中mount的目录</span><br><span class="line">    secret:       　　　#类型为secret的存储卷，挂载集群与定义的secret对象到容器内部</span><br><span class="line">      scretname: string</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br><span class="line">    </span><br><span class="line">    configMap:         #类型为configMap的存储卷，挂载预定义的configMap对象到容器内部</span><br><span class="line">      name: string</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br></pre></td></tr></table></figure>
+<h4 id="4-3-额外的参数对象"><a href="#4-3-额外的参数对象" class="headerlink" title="4.3 额外的参数对象"></a>4.3 额外的参数对象</h4><table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>参数类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>spec.restartPolicy</td>
+<td>String</td>
+<td>定义<code>Pod</code>的重启策略，可选值为<code>Always</code>、<code>OnFailure</code>，默认值为<code>Always</code>。(1) <code>Always</code>，<code>Pod</code>一旦终止运行，无论容器是如何终止的，<code>kubelet</code>服务都将重启它；<br>(2) <code>OnFailure</code>，只有<code>Pod</code>以非零退出码终止时，<code>kubelet</code>才会重启该容器。如果容器正常结束（退出码为 0），则<code>kubelet</code>将不会重启它；<br> (3)<code>Never</code>，<code>Pod</code>终止后，<code>kubelet</code>将退出码报告给<code>master</code>，不会重启该 <code>Pod</code>。</td>
+</tr>
+<tr>
+<td>spec.nodeSelector</td>
+<td>Object</td>
+<td>定义节点的过滤标签（以 key:value 格式指定）。</td>
+</tr>
+<tr>
+<td>spec.imagePullSecrets</td>
+<td>List</td>
+<td>定义拉取镜像时使用 Secret 名称（以 name:secretkey 格式指定）。</td>
+</tr>
+<tr>
+<td>spec.hostNetwork</td>
+<td>Boolean</td>
+<td>定义是否使用主机网络模式，默认值为 false。 设置 true 表示使用宿主机网络，不使用 Docker 网桥，同时设置了 true 将无法在同一台宿主机上启动第二个副本。</td>
+</tr>
+</tbody></table>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  replicas: 2   	# 创建Pod个数</span><br><span class="line">  selector:   	# 标签选择器</span><br><span class="line">   matchLabels:   # 标签选择方式:直接给定标签键值,这里是取交集的,也就是Pod必须满足下面两个标签才能被调度</span><br><span class="line">    project: ms</span><br><span class="line">    app: product   	# 此行以上定义控制器本身</span><br><span class="line">    </span><br><span class="line">  template:   	# 定义Deployment更新回滚</span><br><span class="line">   metadata:</span><br><span class="line">    labels:</span><br><span class="line">    - name: string</span><br><span class="line">    annotations:</span><br><span class="line">    - name: nginx</span><br><span class="line">     </span><br><span class="line">spec:</span><br><span class="line">  hostAliases:  	# /etc/hosts/手动添加解析</span><br><span class="line">  - ip: &quot;192.168.4.110&quot;</span><br><span class="line">    hostnames:</span><br><span class="line">    - &quot;k8s.com&quot;</span><br><span class="line">   </span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">  restartPolicy: [Always、Never、OnFailure]  #默认K8S-Pod的重启策略,此容器退出后立即创建一个相同容器</span><br><span class="line">  nodeName: &lt;string&gt; #设置NodeName表示将该Pod调度到指定到名称的node节点上</span><br><span class="line">  nodeSelector: obeject #设置NodeSelector表示将该Pod调度到包含这个label的node上</span><br><span class="line">  imagePullSecrets: #Pull镜像时使用的secret名称，以key：secretkey格式指定</span><br><span class="line">  - name: string</span><br><span class="line">  hostNetwork: false   #是否使用主机网络模式，默认为false，如果设置为true，表示使用宿主机网络</span><br></pre></td></tr></table></figure>
+<h3 id="5-yaml编写示例"><a href="#5-yaml编写示例" class="headerlink" title="5. yaml编写示例"></a>5. yaml编写示例</h3><h4 id="5-1-编写适用Nginx的yaml"><a href="#5-1-编写适用Nginx的yaml" class="headerlink" title="5.1 编写适用Nginx的yaml"></a>5.1 <code>编写适用Nginx的yaml</code></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span>&gt;nginx.yaml&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line"> name: nginx</span><br><span class="line"> namespace: default</span><br><span class="line"></span><br><span class="line">spec:</span><br><span class="line"> selector: 		#选择关联标签为app：ms的pod</span><br><span class="line">  app: ms</span><br><span class="line"> clusterIP: 10.10.100.100    	#指定service IP，也可以不指定，随机生成</span><br><span class="line"> type: NodePort  				#service类型，NodePort支持集群外部访问</span><br><span class="line"> ports:  #端口</span><br><span class="line"> - port: 80   				#集群端口</span><br><span class="line">   targetPort: 80    		#Pod端口</span><br><span class="line">   nodePort: 30080    		#节点端口</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><font color="red"><em><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>我是分割线</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></em></font>  </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim emptydir.yaml</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line"> name: my-pod</span><br><span class="line"></span><br><span class="line">spec:</span><br><span class="line"> containers:</span><br><span class="line"> - name: write</span><br><span class="line">   image: centos</span><br><span class="line">   command: [&quot;bash&quot;,&quot;-c&quot;,&quot;for i in &#123;1..100&#125;;do echo $i &gt;&gt;/opt/hello;sleep 1;done&quot;]</span><br><span class="line">   volumeMounts:</span><br><span class="line">    - name: data</span><br><span class="line">      mountPath: /opt</span><br><span class="line"></span><br><span class="line"> - name: read</span><br><span class="line">   image: centos</span><br><span class="line">   command: [&quot;bash&quot;,&quot;-c&quot;,&quot;tail -f /opt/hello&quot;]</span><br><span class="line">   volumeMounts:</span><br><span class="line">    - name: data</span><br><span class="line">      mountPath: /opt</span><br><span class="line"></span><br><span class="line"> volumes:</span><br><span class="line"> - name: data</span><br><span class="line">   emptyDir: &#123;&#125;</span><br><span class="line">   </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f emptydir.yaml    	<span class="comment">#创建</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> -it my-pod --container write -- /bin/bash  <span class="comment">#进入 写pod</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="5-2-编写适用Java的yaml"><a href="#5-2-编写适用Java的yaml" class="headerlink" title="5.2 编写适用Java的yaml"></a>5.2 <code>编写适用Java的yaml</code></h4><h4 id="5-3-编写适用PHP的yaml"><a href="#5-3-编写适用PHP的yaml" class="headerlink" title="5.3 编写适用PHP的yaml"></a>5.3 <code>编写适用PHP的yaml</code></h4><h4 id="5-4-编写适用Redis的yaml"><a href="#5-4-编写适用Redis的yaml" class="headerlink" title="5.4 编写适用Redis的yaml"></a>5.4 <code>编写适用Redis的yaml</code></h4>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>二哥
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://usermice.github.io/Kubernetes/kubernetes-pod%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/" title="kubernetes-pod详解">https://usermice.github.io/Kubernetes/kubernetes-pod详解以及示例模板/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kubernetes/" rel="tag"># <i class="fa fa-tag"></i> Kubernetes</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Kubernetes/kubernetes-%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8/" rel="prev" title="kubernetes使用">
+      <i class="fa fa-chevron-left"></i> kubernetes使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/crontab/install-xxl-job/" rel="next" title="install_xxl-job">
+      install_xxl-job <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+    
+ </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Pod%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">1. Pod详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-pod%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E3%80%81%E4%B8%80%E4%B8%AAyaml%E6%96%87%E4%BB%B6%E5%88%9B%E5%BB%BA%E5%A4%9A%E4%B8%AApod"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 pod数据存储、一个yaml文件创建多个pod</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%8E%B7%E5%8F%96yaml%E5%91%BD%E4%BB%A4%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">2. 获取yaml命令格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-apiVersion%E5%AE%9A%E4%B9%89"><span class="nav-number">3.</span> <span class="nav-text">3. apiVersion定义</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-yaml%E5%BF%85%E9%80%89%E5%8F%82%E6%95%B0"><span class="nav-number">3.1.</span> <span class="nav-text">1.4 yaml必选参数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Pod%E5%9F%BA%E7%A1%80%E5%BF%85%E9%80%89%E5%8F%82%E6%95%B0-%E6%AF%8F%E4%B8%AAYAML%E6%96%87%E4%BB%B6%E9%83%BD%E5%8C%85%E5%90%AB%E5%AE%83%E4%BB%AC"><span class="nav-number">4.</span> <span class="nav-text">4. Pod基础必选参数,每个YAML文件都包含它们</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-spec-containers%E7%BC%96%E5%86%99%E5%AE%9A%E4%B9%89"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 spec.containers编写定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-spec-volumes%E7%BC%96%E5%86%99%E5%AE%9A%E4%B9%89"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 spec.volumes编写定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E9%A2%9D%E5%A4%96%E7%9A%84%E5%8F%82%E6%95%B0%E5%AF%B9%E8%B1%A1"><span class="nav-number">4.3.</span> <span class="nav-text">4.3 额外的参数对象</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-yaml%E7%BC%96%E5%86%99%E7%A4%BA%E4%BE%8B"><span class="nav-number">5.</span> <span class="nav-text">5. yaml编写示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E7%BC%96%E5%86%99%E9%80%82%E7%94%A8Nginx%E7%9A%84yaml"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 编写适用Nginx的yaml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E7%BC%96%E5%86%99%E9%80%82%E7%94%A8Java%E7%9A%84yaml"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 编写适用Java的yaml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-3-%E7%BC%96%E5%86%99%E9%80%82%E7%94%A8PHP%E7%9A%84yaml"><span class="nav-number">5.3.</span> <span class="nav-text">5.3 编写适用PHP的yaml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-4-%E7%BC%96%E5%86%99%E9%80%82%E7%94%A8Redis%E7%9A%84yaml"><span class="nav-number">5.4.</span> <span class="nav-text">5.4 编写适用Redis的yaml</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="二哥"
+      src="/images/IMG_0081.JPG">
+  <p class="site-author-name" itemprop="name">二哥</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="/usererge#gmail.com" title="E-Mail → usererge#gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/yourname" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="二哥"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">二哥</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">104k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:35</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://usermice.github.io/" class="theme-link">二哥</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+-->
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
