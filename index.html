@@ -191,6 +191,202 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Log/configure-Nginx-Log/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Log/configure-Nginx-Log/" class="post-title-link" itemprop="url">configure-Nginx-Log</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-05-22 18:24:07 / 修改时间：18:47:51" itemprop="dateCreated datePublished" datetime="2022-05-22T18:24:07+08:00">2022-05-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Log/" itemprop="url" rel="index"><span itemprop="name">Log</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>516</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-配置Nginx日志切割"><a href="#1-配置Nginx日志切割" class="headerlink" title="1. 配置Nginx日志切割"></a>1. 配置<code>Nginx</code>日志切割</h3><h4 id="1-1-man-logrotate查看logrodate使用详情"><a href="#1-1-man-logrotate查看logrodate使用详情" class="headerlink" title="1.1  man logrotate查看logrodate使用详情"></a>1.1  <font color=red><code>man logrotate</code>查看<code>logrodate</code>使用详情</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新增nginx <span class="built_in">log</span> 每日切割</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">grep <span class="string">&quot;nginx&quot;</span> /etc/logrotate.d/nginx  &amp;&gt; /dev/null</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/logrotate.d/nginx</span></span><br><span class="line">/opt/apps/nginx/logs/*.log&#123;</span><br><span class="line">force		# 强制</span><br><span class="line">copytruncate </span><br><span class="line">daily  		# 安日期轮转日志：daily(天),weekly(月),monthly</span><br><span class="line">rotate 7  	# 保留天数</span><br><span class="line">missingok  	# 如果日志文件丢失，不要显示错误</span><br><span class="line">compress  	# 压缩</span><br><span class="line">size 100k	# 在日志大小大于 logsize（例如 100K，4M）时轮换</span><br><span class="line">su root root</span><br><span class="line">&#125; </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新增刪除7天以前<span class="built_in">log</span>定時腳本</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;###nginx超過七天log刪除</span></span></span><br><span class="line">1 0 * * * /bin/bash /opt/scripts/DEL_NGINX.sh &gt;&gt; ~/del_tom.log 2&gt;&amp;1&quot; &gt;&gt; /var/spool/cron/admin</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Nginx/install-nginx-third-party-modules/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Nginx/install-nginx-third-party-modules/" class="post-title-link" itemprop="url">install-nginx-third-party modules</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-05-22 18:09:54 / 修改时间：18:21:42" itemprop="dateCreated datePublished" datetime="2022-05-22T18:09:54+08:00">2022-05-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Nginx/" itemprop="url" rel="index"><span itemprop="name">Nginx</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-安装Nginx-GeoIP2IP定位模块"><a href="#1-安装Nginx-GeoIP2IP定位模块" class="headerlink" title="1. 安装Nginx GeoIP2IP定位模块"></a>1. 安装<code>Nginx GeoIP2</code>IP定位模块</h3><ul>
+<li><font color=red><code>GeoIP2</code>模块依赖<code>libmaxminddb</code>库</font></li>
+</ul>
+<h4 id="1-1-安装libmaxminddb库"><a href="#1-1-安装libmaxminddb库" class="headerlink" title="1.1 安装libmaxminddb库"></a>1.1 安装<code>libmaxminddb</code>库</h4><pre><code class="shell">$  wget -c https://github.com/maxmind/libmaxminddb/releases/download/1.3.2/libmaxminddb-1.3.2.tar.gz -P /opt/src/    ##下载到指定目录下:-c断点续传、-P下载指定目录，  
+$ tar -zxvf /opt/src/libmaxminddb-1.3.2.tar.gz -C /opt/src/
+$ cd /opt/src/libmaxminddb-1.3.2
+$ ./configure
+$ make -j2 &amp;&amp; make install
+</code></pre>
+<h4 id="1-2-安装GeoIP2"><a href="#1-2-安装GeoIP2" class="headerlink" title="1.2 安装GeoIP2"></a>1.2 安装<code>GeoIP2</code></h4><pre><code class="shell">$ git clone https://github.com/leev/ngx_http_geoip2_module.git /opt/apps/nginx/ngx_http_geoip2_module
+$ ./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_http_geoip2_module
+</code></pre>
+<h3 id="2-安装ngx-brotli压缩算法"><a href="#2-安装ngx-brotli压缩算法" class="headerlink" title="2. 安装ngx_brotli压缩算法"></a>2. 安装<code>ngx_brotli</code>压缩算法</h3><pre><code class="shell">$ git clone https://github.com/google/ngx_brotli /opt/apps/nginx/ngx_brotli
+$ cd /opt/apps/nginx/ngx_brotli
+$ git submodule update --init  #更新ngx_brotli所需依赖库
+$ ./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_brotli
+</code></pre>
+<h3 id="3-安装ngx-http-upstream-check-module后端服务端口检测模块"><a href="#3-安装ngx-http-upstream-check-module后端服务端口检测模块" class="headerlink" title="3. 安装ngx_http_upstream_check_module后端服务端口检测模块"></a>3. 安装<code>ngx_http_upstream_check_module</code>后端服务端口检测模块</h3><pre><code class="shell">$ git clone https://github.com/yaoweibin/nginx_upstream_check_module.git /opt/apps/nginx/nginx_upstream_check_module #下载检测包  
+$ ./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/nginx_upstream_check_module
+</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/Manage%20Downstream%20Kubernetes%20Cluster%20without%20Rancher%20Server/">
 
 <div>
@@ -2301,222 +2497,6 @@ $ kubectl apply -f coredns.yaml
 <div>
     
  </div>
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-Argo-CD/">
-
-<div>
-      
-</div>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/IMG_0081.JPG">
-      <meta itemprop="name" content="二哥">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="二哥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Kubernetes/install-Argo-CD/" class="post-title-link" itemprop="url">install-Argo CD</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-05-11 13:33:28" itemprop="dateCreated datePublished" datetime="2022-05-11T13:33:28+08:00">2022-05-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-18 14:48:21" itemprop="dateModified" datetime="2022-05-18T14:48:21+08:00">2022-05-18</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>813</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-安装Argo-CD"><a href="#1-安装Argo-CD" class="headerlink" title="1. 安装Argo CD"></a>1. 安装Argo CD</h3><ul>
-<li>Argo CD 是一个为 Kubernetes 而生的，遵循声明式 GitOps 理念的持续部署（CD）工具。Argo CD 可在 Git 存储库更改时自动同步和部署应用程序</li>
-<li>应用定义、配置和环境信息是声明式的，并可以进行版本控制</li>
-<li>应用部署和生命周期管理是全自动化的、是可审计的，清晰易懂</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace argocd  <span class="comment">#创建ArgoCD命名空间</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml  <span class="comment">#下载并启动ArgoCD</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl patch service -n argocd argocd-server -p <span class="string">&#x27;&#123;&quot;spec&quot;: &#123;&quot;type&quot;: &quot;NodePort&quot;&#125;&#125;&#x27;</span>   <span class="comment">#使用NodePort方式暴露argocd ui</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=<span class="string">&quot;&#123;.data.password&#125;&quot;</span> | <span class="built_in">base64</span> -d  <span class="comment">#获取ArgoCD的admin登陆密码</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cli：CLI 是用于管理 Argo CD 的命令行工具</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.3/argocd-linux-amd64 &amp;&amp; <span class="built_in">chmod</span> +x /usr/local/bin/argocd</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看argocd-server暴露端口</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get svc -n argocd</span></span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-<div>
-    
- </div>
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-harbor/">
-
-<div>
-      
-</div>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/IMG_0081.JPG">
-      <meta itemprop="name" content="二哥">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="二哥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Kubernetes/install-harbor/" class="post-title-link" itemprop="url">install-harbor</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-05-10 22:04:01" itemprop="dateCreated datePublished" datetime="2022-05-10T22:04:01+08:00">2022-05-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-19 17:27:08" itemprop="dateModified" datetime="2022-05-19T17:27:08+08:00">2022-05-19</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-在安装好docker后安装Harbor私有镜像库"><a href="#1-在安装好docker后安装Harbor私有镜像库" class="headerlink" title="1. 在安装好docker后安装Harbor私有镜像库"></a>1. 在安装好docker后安装Harbor私有镜像库</h3><ul>
-<li>默认用户名：admin  </li>
-<li>默认密码：Harbor12345</li>
-</ul>
-<h4 id="1-1-Harbor依赖docker-compose，先安装docker-compose"><a href="#1-1-Harbor依赖docker-compose，先安装docker-compose" class="headerlink" title="1.1 Harbor依赖docker-compose，先安装docker-compose"></a>1.1 Harbor依赖docker-compose，先安装docker-compose</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -L https://get.daocloud.io/docker/compose/releases/download/1.21.2/docker-compose-`<span class="built_in">uname</span> -s`-`<span class="built_in">uname</span> -m` &gt; /usr/local/bin/docker-compose</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">给予执行权限</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> +x /usr/local/bin/docker-compose</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装Compose命令补全工具</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose version --short)/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl daemon-reload &amp;&amp; systemctl restart docker</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-2-重启docker后安装Harbor"><a href="#1-2-重启docker后安装Harbor" class="headerlink" title="1.2 重启docker后安装Harbor"></a>1.2 重启docker后安装Harbor</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/goharbor/harbor/releases/download/v2.5.0/harbor-offline-installer-v2.5.0.tgz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf harbor-offline-installer-v2.5.0.tgz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim harbor/harbor.yml  <span class="comment">#修改默认端口</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./install.sh</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><font color=red>docker登录Harbor</font>  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker login http://192.168.35.128:8080</span></span><br></pre></td></tr></table></figure></li>
-<li><font color=red>如果报错:Error response from daemon: Get  http: server gave HTTP response to HTTPS client</font>  </li>
-<li>修改配置文件(指定私有仓库，可忽略跳过)</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">tee</span> /etc/docker/daemon.json &lt;&lt;-<span class="string">&#x27;EOF&#x27;</span></span></span><br><span class="line">&#123;</span><br><span class="line">  &quot;storage-driver&quot;: &quot;overlay2&quot;,</span><br><span class="line">  &quot;registry-mirrors&quot;:[&quot;https://r2hd8p9u.mirror.aliyuncs.com&quot;],</span><br><span class="line">  &quot;insecure-registries&quot;:[&quot;*.*.*.*:5000&quot;,&quot;192.168.4.126&quot;]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/docker/daemon.json</span></span><br><span class="line">&#123;</span><br><span class="line">	&quot;insecure-registries&quot;: [&quot;harbor服务器IP:端口&quot;]</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl daemon-reload &amp;&amp; systemctl restart docker</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-3-推送镜像到Harbor仓库"><a href="#1-3-推送镜像到Harbor仓库" class="headerlink" title="1.3. 推送镜像到Harbor仓库"></a>1.3. 推送镜像到Harbor仓库</h4><ul>
-<li><code>SOURCE_IMAGE[:TAG]：</code><font color=red>原镜像名字和tag</font>  </li>
-<li><code>test：</code><font>Harbor项目名称</font>  </li>
-<li><code>IMAGE[:TAG]：</code><font color=red>自定义命名，以及版本标签</font>  <blockquote>
-<p>示例：</p>
-</blockquote>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在项目中标记镜像</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker tag SOURCE_IMAGE[:TAG] 192.168.35.128:9527/test/IMAGE[:TAG]</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">推送镜像到当前项目</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker push 192.168.35.128:9527/test/IMAGE[:TAG]</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-<div>
-    
- </div>
 
   
   <nav class="pagination">
@@ -2588,20 +2568,20 @@ $ kubectl apply -f coredns.yaml
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -2645,12 +2625,12 @@ $ kubectl apply -f coredns.yaml
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">109k</span>
+    <span title="站点总字数">112k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:39</span>
+    <span title="站点阅读时长">1:42</span>
 </div>
 
 <!--
