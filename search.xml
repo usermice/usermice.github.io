@@ -81,6 +81,17 @@
       </tags>
   </entry>
   <entry>
+    <title>configure-Nginx-Log</title>
+    <url>/Log/configure-Nginx-Log/</url>
+    <content><![CDATA[<h3 id="1-配置Nginx日志切割"><a href="#1-配置Nginx日志切割" class="headerlink" title="1. 配置Nginx日志切割"></a>1. 配置<code>Nginx</code>日志切割</h3><h4 id="1-1-man-logrotate查看logrodate使用详情"><a href="#1-1-man-logrotate查看logrodate使用详情" class="headerlink" title="1.1  man logrotate查看logrodate使用详情"></a>1.1  <font color=red><code>man logrotate</code>查看<code>logrodate</code>使用详情</font></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新增nginx <span class="built_in">log</span> 每日切割</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">grep <span class="string">&quot;nginx&quot;</span> /etc/logrotate.d/nginx  &amp;&gt; /dev/null</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/logrotate.d/nginx</span></span><br><span class="line">/opt/apps/nginx/logs/*.log&#123;</span><br><span class="line">force		# 强制</span><br><span class="line">copytruncate </span><br><span class="line">daily  		# 安日期轮转日志：daily(天),weekly(月),monthly</span><br><span class="line">rotate 7  	# 保留天数</span><br><span class="line">missingok  	# 如果日志文件丢失，不要显示错误</span><br><span class="line">compress  	# 压缩</span><br><span class="line">size 100k	# 在日志大小大于 logsize（例如 100K，4M）时轮换</span><br><span class="line">su root root</span><br><span class="line">&#125; </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新增刪除7天以前<span class="built_in">log</span>定時腳本</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;###nginx超過七天log刪除</span></span></span><br><span class="line">1 0 * * * /bin/bash /opt/scripts/DEL_NGINX.sh &gt;&gt; ~/del_tom.log 2&gt;&amp;1&quot; &gt;&gt; /var/spool/cron/admin</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Log</category>
+      </categories>
+      <tags>
+        <tag>Log</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>configure-Redis</title>
     <url>/Redis/configure-Redis/</url>
     <content><![CDATA[<h3 id="1-编写启动文件"><a href="#1-编写启动文件" class="headerlink" title="1. 编写启动文件"></a>1. 编写启动文件</h3><ul>
@@ -201,17 +212,6 @@
       </categories>
       <tags>
         <tag>Redis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>configure-Nginx-Log</title>
-    <url>/Log/configure-Nginx-Log/</url>
-    <content><![CDATA[<h3 id="1-配置Nginx日志切割"><a href="#1-配置Nginx日志切割" class="headerlink" title="1. 配置Nginx日志切割"></a>1. 配置<code>Nginx</code>日志切割</h3><h4 id="1-1-man-logrotate查看logrodate使用详情"><a href="#1-1-man-logrotate查看logrodate使用详情" class="headerlink" title="1.1  man logrotate查看logrodate使用详情"></a>1.1  <font color=red><code>man logrotate</code>查看<code>logrodate</code>使用详情</font></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新增nginx <span class="built_in">log</span> 每日切割</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">grep <span class="string">&quot;nginx&quot;</span> /etc/logrotate.d/nginx  &amp;&gt; /dev/null</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/logrotate.d/nginx</span></span><br><span class="line">/opt/apps/nginx/logs/*.log&#123;</span><br><span class="line">force		# 强制</span><br><span class="line">copytruncate </span><br><span class="line">daily  		# 安日期轮转日志：daily(天),weekly(月),monthly</span><br><span class="line">rotate 7  	# 保留天数</span><br><span class="line">missingok  	# 如果日志文件丢失，不要显示错误</span><br><span class="line">compress  	# 压缩</span><br><span class="line">size 100k	# 在日志大小大于 logsize（例如 100K，4M）时轮换</span><br><span class="line">su root root</span><br><span class="line">&#125; </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新增刪除7天以前<span class="built_in">log</span>定時腳本</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;###nginx超過七天log刪除</span></span></span><br><span class="line">1 0 * * * /bin/bash /opt/scripts/DEL_NGINX.sh &gt;&gt; ~/del_tom.log 2&gt;&amp;1&quot; &gt;&gt; /var/spool/cron/admin</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>Log</category>
-      </categories>
-      <tags>
-        <tag>Log</tag>
       </tags>
   </entry>
   <entry>
@@ -480,6 +480,150 @@ clusterrolebinding.rbac.authorization.k8s.io/dashboard-admin created   #
 #在chrome该页面上，直接键盘敲入这12个字符：`thisisunsafe`
 #**注意：鼠标点击当前页面任意位置，让页面处于最上层即可输入**
 #复制创建cluster-admin生成的token到浏览器登录
+</code></pre>
+]]></content>
+      <categories>
+        <category>Kubernetes</category>
+      </categories>
+      <tags>
+        <tag>Kubernetes</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>install-Rancher</title>
+    <url>/Kubernetes/install-Rancher/</url>
+    <content><![CDATA[<h3 id="1-安装Rancher图形化安装管理Kubernetes工具"><a href="#1-安装Rancher图形化安装管理Kubernetes工具" class="headerlink" title="1. 安装Rancher图形化安装管理Kubernetes工具"></a>1. 安装<code>Rancher</code>图形化安装管理<code>Kubernetes</code>工具</h3><ul>
+<li><code>Rancher</code>是供采用容器的团队使用的完整软件堆栈。它解决了管理多个  </li>
+<li><code>Kubernetes</code>集群的运营和安全挑战，并为<code>DevOps</code>团队提供用于运行容器化工作负载的集成工具  </li>
+<li><font color=red>必须存在<code>Docker</code>环境</font></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>服务器</th>
+<th>IP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>master</td>
+<td>192.168.35.128</td>
+</tr>
+<tr>
+<td>node-1</td>
+<td>192.168.35.129</td>
+</tr>
+<tr>
+<td>node-2</td>
+<td>192.168.35.130</td>
+</tr>
+</tbody></table>
+<h4 id="1-1-安装基础环境"><a href="#1-1-安装基础环境" class="headerlink" title="1.1 安装基础环境"></a>1.1 安装基础环境</h4><ul>
+<li><font color=red><code>Nano</code>：超轻量级开源云平台</font>  <blockquote>
+<ul>
+<li><code>Naco</code>：基于<code>KVM</code>技术，使用Go语言开发，简单易学的虚拟机管理软件，从<code>Web</code>管理门户、主机监控、镜像克隆到故障切换，功能完备，开箱即用，数分钟之内即可将您的服务器集群升级为云主机平台</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y nano</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><font color=red>在所有节点都安装<code>Docker</code></font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y yum-utils</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y docker-ce-19.03.9 docker-ce-cli-19.03.9 --nogpgcheck</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> docker &amp;&amp; systemctl start docker</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ENV configuration</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;/swap / s/^\(.*\)$/#\1/g&#x27;</span> /etc/fstab</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">swapoff -a</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">modprobe br_netfilter</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;br_netfilter&quot;</span> &gt; /etc/modules-load.d/br_netfilter.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;net.bridge.bridge-nf-call-iptables = 1&quot;</span> &gt;&gt; /etc/sysctl.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;net.ipv4.ip_forward = 1&quot;</span> &gt;&gt; /etc/sysctl.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sysctl -p</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/#AllowTcpForwarding/AllowTcpForwarding/g&#x27;</span> /etc/ssh/sshd_config</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl reload sshd</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl stop firewalld &amp;&amp; systemctl <span class="built_in">disable</span> firewalld</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/SELINUX=enforcing/SELINUX=disabled/g&#x27;</span> /etc/selinux/config</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">setenforce 0</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">timedate configration</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">timedatectl set-timezone Asia/Shanghai</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y chrony</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start chronyd &amp;&amp; sudo systemctl <span class="built_in">enable</span> chronyd</span>  </span><br></pre></td></tr></table></figure>
+<h4 id="1-2-安装Rancher"><a href="#1-2-安装Rancher" class="headerlink" title="1.2 安装Rancher"></a>1.2 安装<code>Rancher</code></h4><p><a href="https://rancher.com/docs/rancher/v2.6/en/installation/other-installation-methods/single-node-docker/">使用<code>Docker</code>在单节点上安装<code>Rancher</code></a>  </p>
+<h5 id="1-2-1"><a href="#1-2-1" class="headerlink" title="1.2.1"></a>1.2.1</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker pull rancher/rancher:v2.6.3</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -d --restart=unless-stopped -p 888:80 -p 4443:443 --privileged rancher/rancher:v2.6.3</span></span><br></pre></td></tr></table></figure>
+
+<p><a href="https://rancher.com/docs/rancher/v2.6/en/installation/install-rancher-on-k8s/">在<code>Kubernetes</code>集群上安装&#x2F;升级<code>Rancher</code></a>  </p>
+<h5 id="1-2-2-在Kubernetes集群上安装-x2F-升级Rancher"><a href="#1-2-2-在Kubernetes集群上安装-x2F-升级Rancher" class="headerlink" title="1.2.2 在Kubernetes集群上安装&#x2F;升级Rancher"></a>1.2.2 <font color=red>在<code>Kubernetes</code>集群上安装&#x2F;升级<code>Rancher</code></font></h5><ul>
+<li><font color=red><a href="https://helm.sh/docs/intro/install/">安装<code>Helm</code></a></font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用二进制安装Helm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://get.helm.sh/helm-v3.9.0-linux-amd64.tar.gz</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf helm-v3.9.0-linux-amd64.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> linux-amd64/helm /usr/local/bin/helm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">脚本安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> 700 get_helm.sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./get_helm.sh</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">源代码安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/helm/helm.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> helm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><font color=red>使用<code>Helm</code>安装稳定版<code>Rancher</code></font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加Helm Chart仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add rancher-stable https://releases.rancher.com/server-charts/stable</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">为Rancher创建命名空间</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace cattle-system</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cert-manager自定义所需的自定义资源。</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.0/cert-manager.crds.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加 Jetstack Helm 存储库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add jetstack https://charts.jetstack.io</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更新本地Helm图表存储库缓存</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo update</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cert-manager</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.8.0</span>   </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">验证cert-manager证书管理器是否安装成功</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace cert-manager</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用helm安装Rancher、注意选好版本，版本不对会报错</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install rancher rancher-stable/rancher --namespace cattle-system --<span class="built_in">set</span> hostname=my.rancher.org --<span class="built_in">set</span> bootstrapPassword=admin --<span class="built_in">set</span> replicas=3 --version 2.6.3</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">等待Rancher安装成功</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl -n cattle-system rollout status deploy/rancher</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl -n cattle-system get deploy rancher</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-浏览器登录Rancher页面设置"><a href="#2-浏览器登录Rancher页面设置" class="headerlink" title="2. 浏览器登录Rancher页面设置"></a>2. 浏览器登录<code>Rancher</code>页面设置</h3><ul>
+<li><font color=red>默认用户名：admin</font>  </li>
+<li><font color=red>密码新设置或者随机生成</font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-29-03.png" alt="设置Rancher密码">  </p>
+<ul>
+<li><font color=red>设置<code>Rancher Server</code>地址<code>IP</code>或者域名</font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-31-17.png" alt="设定Rancher地址">  </p>
+<ul>
+<li><font color=red>设置<code>Rancher</code>中文页面</font></li>
+</ul>
+<p><img src="D:\git-library\imgs\Kubernetes_server\Rancher\set-Chinses.png" alt="set-chinses">  </p>
+<ul>
+<li>登录后可以看到目前<code>Rancher</code>所管理只有Rancher本身存在<code>K3S</code>  <blockquote>
+<p><code>Rancher Labs</code>推出<code>Kubernetes</code>开源<code>K3S</code>是一个轻量级，只有<code>40MB</code>大小，易于安装<code>Kubernetes</code>发布版本，转为资源有限和低互动系统设计，适用于边缘应用、物联网、持续整合以及<code>ARM</code>等</p>
+</blockquote>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-34-35.png" alt="初次登录页面">  </p>
+<h3 id="3-使用Rancher创建RKE-Kubernetes集群"><a href="#3-使用Rancher创建RKE-Kubernetes集群" class="headerlink" title="3.使用Rancher创建RKE Kubernetes集群"></a>3.使用<code>Rancher</code>创建<code>RKE Kubernetes</code>集群</h3><ul>
+<li><font color=red>等待被创建的集群都是基于数个实体服务器或虚拟机组成，其中这些机器硬件最低要求<code>1Cores</code>、<code>1GB</code>,并且需要提前安装好<code>Docker</code>服务，操作系统必须符合<code>RKE</code><a href="https://docs.rancher.cn/docs/rke/os/_index/">安装要求</a></font>  </li>
+<li><font color=red>生产环境下不允许把<code>worker</code>角色添加具有<code>etcd</code>或<code>control plane</code>角色节点中</font></li>
+</ul>
+<h4 id="3-1-Web页面配置Kubernetes-Cluster集群"><a href="#3-1-Web页面配置Kubernetes-Cluster集群" class="headerlink" title="3.1 Web页面配置Kubernetes Cluster集群"></a>3.1 <code>Web</code>页面配置<code>Kubernetes Cluster</code>集群</h4><ul>
+<li><font color=red>在<code>Rancher</code>浏览器页面中添加<code>Kubernetes Cluster</code></font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Add-Cluster.png" alt="Add-K8s-Cluster">    </p>
+<ul>
+<li><font color=red>选择<code>Existing nodes(自定义集群)</code></font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Add-Nodes.png" alt="自定义集群">  </p>
+<ul>
+<li><font color=red>定义集群名称、然后下一步</font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_20-41-58.png" alt="填写集群名称">  </p>
+<ul>
+<li><font color=red>先选择<code>etcd</code>、<code>Control Plane</code>角色，把生成的命令复制到节点上执行，然后下一步</font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-14-45.png" alt="部署etcd Control Plane">    </p>
+<ul>
+<li><font color=red>选择<code>Worker</code>工作节点,把生成的命令复制到节点执行</font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-15-51.png" alt="选择`Worker`工作节点"></p>
+<ul>
+<li><font color=red>命令执行完成后，等待节点加入集群，成功后下方显示添加成功</font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-20-56.png">   </p>
+<h4 id="3-2-如果错过复制添加命令选择命名空间点击Edit"><a href="#3-2-如果错过复制添加命令选择命名空间点击Edit" class="headerlink" title="3.2 如果错过复制添加命令选择命名空间点击Edit"></a>3.2 如果错过复制添加命令选择命名空间点击<code>Edit</code></h4><p><img src="D:\git-library\imgs\Kubernetes_server\Rancher\Snipaste_2022-05-20_15-42-56.png"><br><img src="D:\git-library\imgs\Kubernetes_server\Rancher\Snipaste_2022-05-20_15-44-52.png">  </p>
+]]></content>
+      <categories>
+        <category>Kubernetes</category>
+      </categories>
+      <tags>
+        <tag>Kubernetes</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>install-coredns</title>
+    <url>/Kubernetes/install-coredns/</url>
+    <content><![CDATA[<h3 id="1-安装coredns"><a href="#1-安装coredns" class="headerlink" title="1. 安装coredns"></a>1. 安装coredns</h3><ul>
+<li>去官网下载<a href="https://github.com/coredns/deployment/tree/master/kubernetes">CoreDNS</a>deploy.sh和coredns.yam.sed两个文件  </li>
+<li><a href="https://kaerser.github.io/2019/03/11/coredns%E9%85%8D%E7%BD%AE/">CoreDNS配置</a></li>
+</ul>
+<pre><code class="shell">$ wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/deploy.sh
+$ wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/coredns.yaml.sed
+# 查看帮助
+$ ./deploy.sh -h
+</code></pre>
+<ul>
+<li><code>REVERSE_CIDRS=&quot;10.254.0.0/16&quot;</code> # 配置 kubernetes svc 网段  </li>
+<li><code>CLUSTER_DNS_IP=&quot;10.254.0.2&quot;</code> # 配置 kubernetes DNS IP  </li>
+<li><code>CLUSTER_DOMAIN=&quot;cluster.local&quot;</code> # 配置 kubernetes 的域名  </li>
+<li><font color=red>-r</font>：kubernetes svc网段、<font color=red>-i</font>：kubernetes DNS IP、<font color=red>-d</font>：kubernetes 的域名</li>
+</ul>
+<pre><code class="shell">$  ./deploy.sh -s -r 10.254.0.0/16 -i 10.254.0.10 -d cluster.local &gt; coredns.yaml
+# 修改前后对比
+$ diff coredns.yaml coredns.yaml.sed
+
+# 启动Coredns
+$ kubectl apply -f coredns.yaml
 </code></pre>
 ]]></content>
       <categories>
@@ -949,150 +1093,6 @@ clusterrolebinding.rbac.authorization.k8s.io/dashboard-admin created   #
 <li>PVC将会一直处于Pending状态直到我们创建一个Pod使用它</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@k8s-master cfg]# kubectl get pvc</span><br><span class="line">NAME      STATUS    VOLUME    CAPACITY   ACCESS MODES   STORAGECLASS    AGE</span><br><span class="line">pvc1      Pending                                       local-storage   5s</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>Kubernetes</category>
-      </categories>
-      <tags>
-        <tag>Kubernetes</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install-Rancher</title>
-    <url>/Kubernetes/install-Rancher/</url>
-    <content><![CDATA[<h3 id="1-安装Rancher图形化安装管理Kubernetes工具"><a href="#1-安装Rancher图形化安装管理Kubernetes工具" class="headerlink" title="1. 安装Rancher图形化安装管理Kubernetes工具"></a>1. 安装<code>Rancher</code>图形化安装管理<code>Kubernetes</code>工具</h3><ul>
-<li><code>Rancher</code>是供采用容器的团队使用的完整软件堆栈。它解决了管理多个  </li>
-<li><code>Kubernetes</code>集群的运营和安全挑战，并为<code>DevOps</code>团队提供用于运行容器化工作负载的集成工具  </li>
-<li><font color=red>必须存在<code>Docker</code>环境</font></li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>服务器</th>
-<th>IP</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>master</td>
-<td>192.168.35.128</td>
-</tr>
-<tr>
-<td>node-1</td>
-<td>192.168.35.129</td>
-</tr>
-<tr>
-<td>node-2</td>
-<td>192.168.35.130</td>
-</tr>
-</tbody></table>
-<h4 id="1-1-安装基础环境"><a href="#1-1-安装基础环境" class="headerlink" title="1.1 安装基础环境"></a>1.1 安装基础环境</h4><ul>
-<li><font color=red><code>Nano</code>：超轻量级开源云平台</font>  <blockquote>
-<ul>
-<li><code>Naco</code>：基于<code>KVM</code>技术，使用Go语言开发，简单易学的虚拟机管理软件，从<code>Web</code>管理门户、主机监控、镜像克隆到故障切换，功能完备，开箱即用，数分钟之内即可将您的服务器集群升级为云主机平台</li>
-</ul>
-</blockquote>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y nano</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><font color=red>在所有节点都安装<code>Docker</code></font></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y yum-utils</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y docker-ce-19.03.9 docker-ce-cli-19.03.9 --nogpgcheck</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> docker &amp;&amp; systemctl start docker</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ENV configuration</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;/swap / s/^\(.*\)$/#\1/g&#x27;</span> /etc/fstab</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">swapoff -a</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">modprobe br_netfilter</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;br_netfilter&quot;</span> &gt; /etc/modules-load.d/br_netfilter.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;net.bridge.bridge-nf-call-iptables = 1&quot;</span> &gt;&gt; /etc/sysctl.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;net.ipv4.ip_forward = 1&quot;</span> &gt;&gt; /etc/sysctl.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sysctl -p</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/#AllowTcpForwarding/AllowTcpForwarding/g&#x27;</span> /etc/ssh/sshd_config</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl reload sshd</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl stop firewalld &amp;&amp; systemctl <span class="built_in">disable</span> firewalld</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/SELINUX=enforcing/SELINUX=disabled/g&#x27;</span> /etc/selinux/config</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">setenforce 0</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">timedate configration</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">timedatectl set-timezone Asia/Shanghai</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y chrony</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start chronyd &amp;&amp; sudo systemctl <span class="built_in">enable</span> chronyd</span>  </span><br></pre></td></tr></table></figure>
-<h4 id="1-2-安装Rancher"><a href="#1-2-安装Rancher" class="headerlink" title="1.2 安装Rancher"></a>1.2 安装<code>Rancher</code></h4><p><a href="https://rancher.com/docs/rancher/v2.6/en/installation/other-installation-methods/single-node-docker/">使用<code>Docker</code>在单节点上安装<code>Rancher</code></a>  </p>
-<h5 id="1-2-1"><a href="#1-2-1" class="headerlink" title="1.2.1"></a>1.2.1</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker pull rancher/rancher:v2.6.3</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -d --restart=unless-stopped -p 888:80 -p 4443:443 --privileged rancher/rancher:v2.6.3</span></span><br></pre></td></tr></table></figure>
-
-<p><a href="https://rancher.com/docs/rancher/v2.6/en/installation/install-rancher-on-k8s/">在<code>Kubernetes</code>集群上安装&#x2F;升级<code>Rancher</code></a>  </p>
-<h5 id="1-2-2-在Kubernetes集群上安装-x2F-升级Rancher"><a href="#1-2-2-在Kubernetes集群上安装-x2F-升级Rancher" class="headerlink" title="1.2.2 在Kubernetes集群上安装&#x2F;升级Rancher"></a>1.2.2 <font color=red>在<code>Kubernetes</code>集群上安装&#x2F;升级<code>Rancher</code></font></h5><ul>
-<li><font color=red><a href="https://helm.sh/docs/intro/install/">安装<code>Helm</code></a></font></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用二进制安装Helm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://get.helm.sh/helm-v3.9.0-linux-amd64.tar.gz</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf helm-v3.9.0-linux-amd64.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> linux-amd64/helm /usr/local/bin/helm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">脚本安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> 700 get_helm.sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./get_helm.sh</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">源代码安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/helm/helm.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> helm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><font color=red>使用<code>Helm</code>安装稳定版<code>Rancher</code></font></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加Helm Chart仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add rancher-stable https://releases.rancher.com/server-charts/stable</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">为Rancher创建命名空间</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace cattle-system</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cert-manager自定义所需的自定义资源。</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.0/cert-manager.crds.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加 Jetstack Helm 存储库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add jetstack https://charts.jetstack.io</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更新本地Helm图表存储库缓存</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo update</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cert-manager</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.8.0</span>   </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">验证cert-manager证书管理器是否安装成功</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace cert-manager</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用helm安装Rancher、注意选好版本，版本不对会报错</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install rancher rancher-stable/rancher --namespace cattle-system --<span class="built_in">set</span> hostname=my.rancher.org --<span class="built_in">set</span> bootstrapPassword=admin --<span class="built_in">set</span> replicas=3 --version 2.6.3</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">等待Rancher安装成功</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl -n cattle-system rollout status deploy/rancher</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl -n cattle-system get deploy rancher</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-浏览器登录Rancher页面设置"><a href="#2-浏览器登录Rancher页面设置" class="headerlink" title="2. 浏览器登录Rancher页面设置"></a>2. 浏览器登录<code>Rancher</code>页面设置</h3><ul>
-<li><font color=red>默认用户名：admin</font>  </li>
-<li><font color=red>密码新设置或者随机生成</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-29-03.png" alt="设置Rancher密码">  </p>
-<ul>
-<li><font color=red>设置<code>Rancher Server</code>地址<code>IP</code>或者域名</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-31-17.png" alt="设定Rancher地址">  </p>
-<ul>
-<li><font color=red>设置<code>Rancher</code>中文页面</font></li>
-</ul>
-<p><img src="D:\git-library\imgs\Kubernetes_server\Rancher\set-Chinses.png" alt="set-chinses">  </p>
-<ul>
-<li>登录后可以看到目前<code>Rancher</code>所管理只有Rancher本身存在<code>K3S</code>  <blockquote>
-<p><code>Rancher Labs</code>推出<code>Kubernetes</code>开源<code>K3S</code>是一个轻量级，只有<code>40MB</code>大小，易于安装<code>Kubernetes</code>发布版本，转为资源有限和低互动系统设计，适用于边缘应用、物联网、持续整合以及<code>ARM</code>等</p>
-</blockquote>
-</li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-34-35.png" alt="初次登录页面">  </p>
-<h3 id="3-使用Rancher创建RKE-Kubernetes集群"><a href="#3-使用Rancher创建RKE-Kubernetes集群" class="headerlink" title="3.使用Rancher创建RKE Kubernetes集群"></a>3.使用<code>Rancher</code>创建<code>RKE Kubernetes</code>集群</h3><ul>
-<li><font color=red>等待被创建的集群都是基于数个实体服务器或虚拟机组成，其中这些机器硬件最低要求<code>1Cores</code>、<code>1GB</code>,并且需要提前安装好<code>Docker</code>服务，操作系统必须符合<code>RKE</code><a href="https://docs.rancher.cn/docs/rke/os/_index/">安装要求</a></font>  </li>
-<li><font color=red>生产环境下不允许把<code>worker</code>角色添加具有<code>etcd</code>或<code>control plane</code>角色节点中</font></li>
-</ul>
-<h4 id="3-1-Web页面配置Kubernetes-Cluster集群"><a href="#3-1-Web页面配置Kubernetes-Cluster集群" class="headerlink" title="3.1 Web页面配置Kubernetes Cluster集群"></a>3.1 <code>Web</code>页面配置<code>Kubernetes Cluster</code>集群</h4><ul>
-<li><font color=red>在<code>Rancher</code>浏览器页面中添加<code>Kubernetes Cluster</code></font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Add-Cluster.png" alt="Add-K8s-Cluster">    </p>
-<ul>
-<li><font color=red>选择<code>Existing nodes(自定义集群)</code></font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Add-Nodes.png" alt="自定义集群">  </p>
-<ul>
-<li><font color=red>定义集群名称、然后下一步</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_20-41-58.png" alt="填写集群名称">  </p>
-<ul>
-<li><font color=red>先选择<code>etcd</code>、<code>Control Plane</code>角色，把生成的命令复制到节点上执行，然后下一步</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-14-45.png" alt="部署etcd Control Plane">    </p>
-<ul>
-<li><font color=red>选择<code>Worker</code>工作节点,把生成的命令复制到节点执行</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-15-51.png" alt="选择`Worker`工作节点"></p>
-<ul>
-<li><font color=red>命令执行完成后，等待节点加入集群，成功后下方显示添加成功</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-20-56.png">   </p>
-<h4 id="3-2-如果错过复制添加命令选择命名空间点击Edit"><a href="#3-2-如果错过复制添加命令选择命名空间点击Edit" class="headerlink" title="3.2 如果错过复制添加命令选择命名空间点击Edit"></a>3.2 如果错过复制添加命令选择命名空间点击<code>Edit</code></h4><p><img src="D:\git-library\imgs\Kubernetes_server\Rancher\Snipaste_2022-05-20_15-42-56.png"><br><img src="D:\git-library\imgs\Kubernetes_server\Rancher\Snipaste_2022-05-20_15-44-52.png">  </p>
-]]></content>
-      <categories>
-        <category>Kubernetes</category>
-      </categories>
-      <tags>
-        <tag>Kubernetes</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install-coredns</title>
-    <url>/Kubernetes/install-coredns/</url>
-    <content><![CDATA[<h3 id="1-安装coredns"><a href="#1-安装coredns" class="headerlink" title="1. 安装coredns"></a>1. 安装coredns</h3><ul>
-<li>去官网下载<a href="https://github.com/coredns/deployment/tree/master/kubernetes">CoreDNS</a>deploy.sh和coredns.yam.sed两个文件  </li>
-<li><a href="https://kaerser.github.io/2019/03/11/coredns%E9%85%8D%E7%BD%AE/">CoreDNS配置</a></li>
-</ul>
-<pre><code class="shell">$ wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/deploy.sh
-$ wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/coredns.yaml.sed
-# 查看帮助
-$ ./deploy.sh -h
-</code></pre>
-<ul>
-<li><code>REVERSE_CIDRS=&quot;10.254.0.0/16&quot;</code> # 配置 kubernetes svc 网段  </li>
-<li><code>CLUSTER_DNS_IP=&quot;10.254.0.2&quot;</code> # 配置 kubernetes DNS IP  </li>
-<li><code>CLUSTER_DOMAIN=&quot;cluster.local&quot;</code> # 配置 kubernetes 的域名  </li>
-<li><font color=red>-r</font>：kubernetes svc网段、<font color=red>-i</font>：kubernetes DNS IP、<font color=red>-d</font>：kubernetes 的域名</li>
-</ul>
-<pre><code class="shell">$  ./deploy.sh -s -r 10.254.0.0/16 -i 10.254.0.10 -d cluster.local &gt; coredns.yaml
-# 修改前后对比
-$ diff coredns.yaml coredns.yaml.sed
-
-# 启动Coredns
-$ kubectl apply -f coredns.yaml
-</code></pre>
-]]></content>
       <categories>
         <category>Kubernetes</category>
       </categories>
