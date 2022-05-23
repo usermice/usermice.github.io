@@ -601,6 +601,39 @@ clusterrolebinding.rbac.authorization.k8s.io/dashboard-admin created   #
       </tags>
   </entry>
   <entry>
+    <title>install-coredns</title>
+    <url>/Kubernetes/install-coredns/</url>
+    <content><![CDATA[<h3 id="1-安装coredns"><a href="#1-安装coredns" class="headerlink" title="1. 安装coredns"></a>1. 安装coredns</h3><ul>
+<li>去官网下载<a href="https://github.com/coredns/deployment/tree/master/kubernetes">CoreDNS</a>deploy.sh和coredns.yam.sed两个文件  </li>
+<li><a href="https://kaerser.github.io/2019/03/11/coredns%E9%85%8D%E7%BD%AE/">CoreDNS配置</a></li>
+</ul>
+<pre><code class="shell">$ wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/deploy.sh
+$ wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/coredns.yaml.sed
+# 查看帮助
+$ ./deploy.sh -h
+</code></pre>
+<ul>
+<li><code>REVERSE_CIDRS=&quot;10.254.0.0/16&quot;</code> # 配置 kubernetes svc 网段  </li>
+<li><code>CLUSTER_DNS_IP=&quot;10.254.0.2&quot;</code> # 配置 kubernetes DNS IP  </li>
+<li><code>CLUSTER_DOMAIN=&quot;cluster.local&quot;</code> # 配置 kubernetes 的域名  </li>
+<li><font color=red>-r</font>：kubernetes svc网段、<font color=red>-i</font>：kubernetes DNS IP、<font color=red>-d</font>：kubernetes 的域名</li>
+</ul>
+<pre><code class="shell">$  ./deploy.sh -s -r 10.254.0.0/16 -i 10.254.0.10 -d cluster.local &gt; coredns.yaml
+# 修改前后对比
+$ diff coredns.yaml coredns.yaml.sed
+
+# 启动Coredns
+$ kubectl apply -f coredns.yaml
+</code></pre>
+]]></content>
+      <categories>
+        <category>Kubernetes</category>
+      </categories>
+      <tags>
+        <tag>Kubernetes</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>install-Kubernetes</title>
     <url>/Kubernetes/install-Kubernetes/</url>
     <content><![CDATA[<h3 id="1-安装前准备"><a href="#1-安装前准备" class="headerlink" title="1. 安装前准备"></a>1. 安装前准备</h3><ul>
@@ -1060,39 +1093,6 @@ clusterrolebinding.rbac.authorization.k8s.io/dashboard-admin created   #
 <li>PVC将会一直处于Pending状态直到我们创建一个Pod使用它</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@k8s-master cfg]# kubectl get pvc</span><br><span class="line">NAME      STATUS    VOLUME    CAPACITY   ACCESS MODES   STORAGECLASS    AGE</span><br><span class="line">pvc1      Pending                                       local-storage   5s</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>Kubernetes</category>
-      </categories>
-      <tags>
-        <tag>Kubernetes</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install-coredns</title>
-    <url>/Kubernetes/install-coredns/</url>
-    <content><![CDATA[<h3 id="1-安装coredns"><a href="#1-安装coredns" class="headerlink" title="1. 安装coredns"></a>1. 安装coredns</h3><ul>
-<li>去官网下载<a href="https://github.com/coredns/deployment/tree/master/kubernetes">CoreDNS</a>deploy.sh和coredns.yam.sed两个文件  </li>
-<li><a href="https://kaerser.github.io/2019/03/11/coredns%E9%85%8D%E7%BD%AE/">CoreDNS配置</a></li>
-</ul>
-<pre><code class="shell">$ wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/deploy.sh
-$ wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/coredns.yaml.sed
-# 查看帮助
-$ ./deploy.sh -h
-</code></pre>
-<ul>
-<li><code>REVERSE_CIDRS=&quot;10.254.0.0/16&quot;</code> # 配置 kubernetes svc 网段  </li>
-<li><code>CLUSTER_DNS_IP=&quot;10.254.0.2&quot;</code> # 配置 kubernetes DNS IP  </li>
-<li><code>CLUSTER_DOMAIN=&quot;cluster.local&quot;</code> # 配置 kubernetes 的域名  </li>
-<li><font color=red>-r</font>：kubernetes svc网段、<font color=red>-i</font>：kubernetes DNS IP、<font color=red>-d</font>：kubernetes 的域名</li>
-</ul>
-<pre><code class="shell">$  ./deploy.sh -s -r 10.254.0.0/16 -i 10.254.0.10 -d cluster.local &gt; coredns.yaml
-# 修改前后对比
-$ diff coredns.yaml coredns.yaml.sed
-
-# 启动Coredns
-$ kubectl apply -f coredns.yaml
-</code></pre>
-]]></content>
       <categories>
         <category>Kubernetes</category>
       </categories>
