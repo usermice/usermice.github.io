@@ -34,7 +34,7 @@
 <meta property="og:image" content="http://oss.linuxtxc.com/images/image-20220407170817379.png">
 <meta property="og:image" content="http://oss.linuxtxc.com/images/image-20220407171343144.png">
 <meta property="article:published_time" content="2022-05-13T12:11:53.000Z">
-<meta property="article:modified_time" content="2022-05-26T08:23:36.027Z">
+<meta property="article:modified_time" content="2022-05-26T12:25:13.935Z">
 <meta property="article:author" content="二哥">
 <meta property="article:tag" content="Kubernetes">
 <meta name="twitter:card" content="summary">
@@ -216,7 +216,7 @@
   <p><span>本文标题:</span><a href="/Kubernetes/kubernetes-%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8/">kubernetes命令使用</a></p>
   <p><span>文章作者:</span><a href="/" title="访问  的个人博客"></a></p>
   <p><span>发布时间:</span>2022年05月13日 - 20:11</p>
-  <p><span>最后更新:</span>2022年05月26日 - 16:23</p>
+  <p><span>最后更新:</span>2022年05月26日 - 20:25</p>
   <p><span>原始链接:</span><a href="/Kubernetes/kubernetes-%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8/" title="kubernetes命令使用">https://usermice.github.io/Kubernetes/kubernetes-%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8/</a>
     <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://usermice.github.io/Kubernetes/kubernetes-%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8/"  aria-label="复制成功！"></i></span>
   </p>
@@ -267,7 +267,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-26 16:23:36" itemprop="dateModified" datetime="2022-05-26T16:23:36+08:00">2022-05-26</time>
+                <time title="修改时间：2022-05-26 20:25:13" itemprop="dateModified" datetime="2022-05-26T20:25:13+08:00">2022-05-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -292,14 +292,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>7.8k</span>
+              <span>9.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>7 分钟</span>
+              <span>8 分钟</span>
             </span>
 
         </div>
@@ -331,256 +331,18 @@
 <li><font color=red><code>-o wide</code></font>  </li>
 <li><font color=red><code>-o json</code></font>  </li>
 <li><font color=red><code>-o yaml</code></font></li>
+<li><font color=red>Service</font>：Service可以看做是一组同类的Pod对外的访问接口，借助Service，应用可以方便的实现服务发现和负载均衡</li>
 </ul>
 </blockquote>
 </li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get csr  <span class="comment">#查看申请加入kubernetes集群的token信息</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get endpoints  <span class="comment">#获取service对应的所有pod的访问地址</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pod -n web -o wide -w    <span class="comment">#查看namespace web下的pod，--all-namespaces：查看所有namespace下的pod；-w：动态查看；-o wide:查看更多信息</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="1-2-重置Kubernetes集群"><a href="#1-2-重置Kubernetes集群" class="headerlink" title="1.2  重置Kubernetes集群"></a>1.2  重置Kubernetes集群</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在master、node节点都执行以下命令</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm  reset</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">rm</span> -rf /etc/cni/net.d</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在master上执行</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm init --kubernetes-version=1.19.0 --apiserver-advertise-address=192.168.3.124  --service-cidr=10.64.0.0/24 --pod-network-cidr=10.244.0.0/16</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -p <span class="variable">$HOME</span>/.kube</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cp</span> -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> $(<span class="built_in">id</span> -u):$(<span class="built_in">id</span> -g) <span class="variable">$HOME</span>/.kube/config</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim  /etc/kubernetes/manifests/kube-controller-manager.yaml （注释掉 - --port=0）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim  /etc/kubernetes/manifests/kube-scheduler.yaml          （注释掉 - --port=0）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start kubelet</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在node节点执行</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm reset</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm <span class="built_in">join</span> 192.168.3.124:6443 --token f62e1g.exfdrr8bg2fxpdmu \</span></span><br><span class="line"><span class="language-bash">    --discovery-token-ca-cert-hash sha256:7e4762cccce2e8306b6635cbc2091eae34bbf33577276413521a343c49fc026a</span></span><br></pre></td></tr></table></figure>
-<h3 id="3-kubectl命令"><a href="#3-kubectl命令" class="headerlink" title="3. kubectl命令"></a>3. kubectl命令</h3><ul>
-<li><code>kubectl</code>是<code>kubernetes</code>集群的命令行工具，通过它能够对集群本身进行管理，并能够在集群上进行容器化应用的安装和部署  </li>
-<li>kubectl命令的语法如下<code>$ kubectl [command] [type] [name] [flags]</code>  <blockquote>
-<ul>
-<li><code>command</code>:	<font color=red>指定要对资源执行的操作，比如：create、get、delete。</font>  </li>
-<li><code>type</code>：指定资源的类型，<font color=red>比如：deployment、pod、service。</font>  </li>
-<li><font color=red>可以通过–help查看详细的操作命令：<code>kubectl --help</code></font>  </li>
-<li><code>kubernetes</code> 中所有的内容都抽象为资源，<font color=red>可以通过<code>kubectl api-resources</code>进行查看</font></li>
+<h3 id="2-重置Kubernetes集群"><a href="#2-重置Kubernetes集群" class="headerlink" title="2.  重置Kubernetes集群"></a>2.  重置Kubernetes集群</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在master、node节点都执行以下命令</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm  reset</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">rm</span> -rf /etc/cni/net.d</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在master上执行</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm init --kubernetes-version=1.19.0 --apiserver-advertise-address=192.168.3.124  --service-cidr=10.64.0.0/24 --pod-network-cidr=10.244.0.0/16</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -p <span class="variable">$HOME</span>/.kube</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cp</span> -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> $(<span class="built_in">id</span> -u):$(<span class="built_in">id</span> -g) <span class="variable">$HOME</span>/.kube/config</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim  /etc/kubernetes/manifests/kube-controller-manager.yaml （注释掉 - --port=0）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim  /etc/kubernetes/manifests/kube-scheduler.yaml          （注释掉 - --port=0）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start kubelet</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在node节点执行</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm reset</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm <span class="built_in">join</span> 192.168.3.124:6443 --token f62e1g.exfdrr8bg2fxpdmu \</span></span><br><span class="line"><span class="language-bash">    --discovery-token-ca-cert-hash sha256:7e4762cccce2e8306b6635cbc2091eae34bbf33577276413521a343c49fc026a</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-kubectl资源、命令"><a href="#3-kubectl资源、命令" class="headerlink" title="3. kubectl资源、命令"></a>3. <code>kubectl</code>资源、命令</h3><ul>
+<li><font color=red><code>kubectl</code>：是<code>kubernetes</code>集群的命令行工具，通过它能够对集群本身进行管理，并能够在集群上进行容器化应用的安装和部署</font></li>
 </ul>
-</blockquote>
-</li>
-</ul>
-<h4 id="3-1-1-基本命令详解"><a href="#3-1-1-基本命令详解" class="headerlink" title="3.1.1 基本命令详解"></a>3.1.1 基本命令详解</h4><table>
-<thead>
-<tr>
-<th>—</th>
-<th>命令</th>
-<th>翻译</th>
-<th>命令作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>基本命令</td>
-<td>create</td>
-<td>创建</td>
-<td>创建一个资源</td>
-</tr>
-<tr>
-<td>—</td>
-<td>edit</td>
-<td>编辑</td>
-<td>编辑一个资源</td>
-</tr>
-<tr>
-<td>—</td>
-<td>get</td>
-<td>获取</td>
-<td>获取一个资源</td>
-</tr>
-<tr>
-<td>—</td>
-<td>patch</td>
-<td>更新</td>
-<td>更新一个资源</td>
-</tr>
-<tr>
-<td>—</td>
-<td>delete</td>
-<td>删除</td>
-<td>删除一个资源</td>
-</tr>
-<tr>
-<td>基本命令</td>
-<td>explain</td>
-<td>解释</td>
-<td>展示资源文档</td>
-</tr>
-</tbody></table>
-<ul>
-<li><font color=red><code>yaml</code>文件详解、<code>yaml</code>文件生成 、<code>create</code>创建命令</font></li>
-</ul>
-<blockquote>
-<ul>
-<li><code>create</code>：创建  </li>
-<li><code>deployment</code>：无状态应用部署  </li>
-<li><code>java-demo</code>：自定义名称  </li>
-<li><code> --image</code>：使用镜像  </li>
-<li><code> --dry-run</code>：测试  </li>
-<li><code>-o</code>：输出  </li>
-<li><code>&gt; deploy.yaml</code>：定向输出到文件，不加<code>&gt;deploy.yaml</code> 输出到屏幕查看</li>
-</ul>
-</blockquote>
-<h4 id="3-1-2-kubectl-create：创建命令用于创建资源"><a href="#3-1-2-kubectl-create：创建命令用于创建资源" class="headerlink" title="3.1.2  kubectl create：创建命令用于创建资源"></a>3.1.2  <font color=red><code>kubectl create</code>：创建命令用于创建资源</font></h4><blockquote>
-<ul>
-<li><font color=red><code>name</code>：指定资源的名称，名称大小写敏感  </font>  </li>
-<li><font color=red><code>flags</code>：指定额外的可选参数</font>  </li>
-<li><font color=red>使用<code>kubectl create</code>命令生成<code>yaml</code>文件  </font></li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建一个namespace命名空间</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">$ kubectl create namespace dev</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment java-demo --image=lizhenliang/java-demo --dry-run -o yaml &gt;deploy.yaml</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment nginx --image=nginx:1.17.1 --dry-run=client -n dev -o yaml &gt; test.yam</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create service clusterip ngx-dep --tcp=80:80  <span class="comment">#命令行创建service</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create -f  ns-dev.yaml    <span class="comment">#根据yaml文件创建资源</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="3-1-3-kubectl-edit：cm：编辑configMap中的配置"><a href="#3-1-3-kubectl-edit：cm：编辑configMap中的配置" class="headerlink" title="3.1.3  kubectl edit：cm：编辑configMap中的配置"></a>3.1.3  <font color=red><code>kubectl edit</code>：cm：编辑configMap中的配置</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改service中的服务</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl edit service/ingress-nginx-controller-admission -n ingress-nginx</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl edit cm kubeadm-config -n kube-system</span></span><br></pre></td></tr></table></figure>
-<h4 id="3-1-4-kubectl-get：获取资源"><a href="#3-1-4-kubectl-get：获取资源" class="headerlink" title="3.1.4 kubectl get：获取资源"></a>3.1.4 <font color=red><code>kubectl get</code>：获取资源</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get deploy,pods</span></span><br></pre></td></tr></table></figure>
-<h4 id="3-1-5-kubectl-patch：补丁修改、更新资源的字段"><a href="#3-1-5-kubectl-patch：补丁修改、更新资源的字段" class="headerlink" title="3.1.5 kubectl patch：补丁修改、更新资源的字段"></a>3.1.5 <font color=red><code>kubectl patch</code>：补丁修改、更新资源的字段</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl patch pod rc-nginx-2-kpiqt -p <span class="string">&#x27;&#123;&quot;metadata&quot;:&#123;&quot;labels&quot;:&#123;&quot;app&quot;:&quot;nginx-3&quot;&#125;&#125;&#125;&#x27;</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="3-1-6-kubectl-delete：删除"><a href="#3-1-6-kubectl-delete：删除" class="headerlink" title="3.1.6 kubectl delete：删除"></a>3.1.6 <font color=red><code>kubectl delete</code>：删除</font ></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete deploy/web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete svc/web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete -f  deployment-nginx.yaml   <span class="comment">#删除该yaml中创建的资源</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete pod nginx-deployment-798444d598-87hlk -n web  <span class="comment">#删除pod资源</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="3-1-7-kubectl-explain：展示资源文档"><a href="#3-1-7-kubectl-explain：展示资源文档" class="headerlink" title="3.1.7 kubectl explain：展示资源文档"></a>3.1.7 <font color=red><code>kubectl explain</code>：展示资源文档</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain 资源类型（pod,deployment）   <span class="comment"># 查看某种资源可以配置的一级配置</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain 资源类型.属性       <span class="comment">#查看资源的子属性</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="3-2-1-运行、调试命令"><a href="#3-2-1-运行、调试命令" class="headerlink" title="3.2.1 运行、调试命令"></a>3.2.1 <font color=red>运行、调试命令</font></h4><table>
-<thead>
-<tr>
-<th>—</th>
-<th>命令</th>
-<th>翻译</th>
-<th>命令作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>运行和调试</td>
-<td>run</td>
-<td>运行</td>
-<td>在集群中运行一个指定的镜像</td>
-</tr>
-<tr>
-<td>—</td>
-<td>expose</td>
-<td>暴露</td>
-<td>暴露资源为Service</td>
-</tr>
-<tr>
-<td>—</td>
-<td>describe</td>
-<td>描述</td>
-<td>显示资源内部信息</td>
-</tr>
-<tr>
-<td>—</td>
-<td>logs</td>
-<td>日志</td>
-<td>输出容器在Pod中的日志</td>
-</tr>
-<tr>
-<td>—</td>
-<td>attach</td>
-<td>缠绕</td>
-<td>进入运行中的容器</td>
-</tr>
-<tr>
-<td>—</td>
-<td>exec</td>
-<td>执行</td>
-<td>执行容器中的一个命令</td>
-</tr>
-<tr>
-<td>—</td>
-<td>cp</td>
-<td>复制</td>
-<td>在Pod内外复制文件</td>
-</tr>
-<tr>
-<td>—</td>
-<td>rollout</td>
-<td>首次展示</td>
-<td>管理资源的发布</td>
-</tr>
-<tr>
-<td>—</td>
-<td>scale</td>
-<td>规模</td>
-<td>扩（缩）容Pod的数量</td>
-</tr>
-<tr>
-<td>运行和调试</td>
-<td>autoscale</td>
-<td>自动调整</td>
-<td>自动调整Pod的数量</td>
-</tr>
-<tr>
-<td>高级命令</td>
-<td>apply</td>
-<td>应用</td>
-<td>通过文件对资源进行配置</td>
-</tr>
-<tr>
-<td>高级命令</td>
-<td>label</td>
-<td>标签</td>
-<td>更新资源上的标签</td>
-</tr>
-<tr>
-<td>其他命令</td>
-<td>cluster-info</td>
-<td>集群信息</td>
-<td>显示集群信息</td>
-</tr>
-<tr>
-<td>其他命令</td>
-<td>version</td>
-<td>版本</td>
-<td>输出 client 和 server 的版本信息</td>
-</tr>
-</tbody></table>
-<h4 id="3-2-2-kubectl-run：命令使用镜像创建容器"><a href="#3-2-2-kubectl-run：命令使用镜像创建容器" class="headerlink" title="3.2.2 kubectl  run：命令使用镜像创建容器 "></a>3.2.2 <font color=red><code>kubectl  run</code>：命令使用镜像创建容器 </font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl run nginx --image=nginx:1.17.1 -n web</span></span><br></pre></td></tr></table></figure>
-<h4 id="3-2-3-kubectl-expose端口暴露"><a href="#3-2-3-kubectl-expose端口暴露" class="headerlink" title="3.2.3 kubectl expose端口暴露"></a>3.2.3 <font color=red><code>kubectl expose</code>端口暴露</font></h4><blockquote>
-<ul>
-<li><code>expose</code> 端口设置固定选项</li>
-<li><code> java-demo</code>： 自定义名称</li>
-<li><code>--port</code>：集群内部互通端口</li>
-<li><code>--target-port</code>：容器内部端口</li>
-<li><code>--type</code>：随机生成外部访问端口</li>
-<li><code>&gt;java-demo-svc.yaml</code>：定向输出到文件，不加<code>&gt;java-demo-svc.yaml</code>输出到屏幕查看</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl expose --<span class="built_in">help</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl expose deployment java-demo --port=80 --target-port=8080 --<span class="built_in">type</span>=NodePort --dry-run -o yaml &gt;java-demo-svc.yaml</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f java-demo-svc.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">对外发布允许外网访问</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl expose deployment web --port=80 --<span class="built_in">type</span>=NodePort --target-port=80 --name=web</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get service</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl port-forward my-pod 5000:6000  	<span class="comment"># 转发 pod 中的 6000 端口到本地的 5000 端口</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">PORT(S):80(集群内部互通端口)、30040/TCP(外部访问端口)</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods,svc</span></span><br><span class="line">NAME                             READY   STATUS    RESTARTS   AGE</span><br><span class="line">pod/java-demo-56d54df448-2m8kr   1/1     Running   0          68m</span><br><span class="line">pod/java-demo-56d54df448-9k5dn   1/1     Running   0          68m</span><br><span class="line">pod/java-demo-56d54df448-wvqkf   1/1     Running   0          68m</span><br><span class="line">pod/nginx-6799fc88d8-5sxfn       1/1     Running   0          3h4m</span><br><span class="line"></span><br><span class="line">NAME                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE</span><br><span class="line">service/java-demo    NodePort    10.103.37.12   &lt;none&gt;        80:30040/TCP   105s</span><br><span class="line">service/kubernetes   ClusterIP   10.96.0.1      &lt;none&gt;        443/TCP        4h35m</span><br><span class="line">service/nginx        NodePort    10.106.61.55   &lt;none&gt;        80:31750/TCP   3h4m</span><br></pre></td></tr></table></figure>
-<h4 id="3-2-4-kubectl-describe显示资源内部信息"><a href="#3-2-4-kubectl-describe显示资源内部信息" class="headerlink" title="3.2.4 kubectl describe显示资源内部信息"></a>3.2.4 <font color=red><code>kubectl describe</code>显示资源内部信息</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe namespace kube-system</span></span><br><span class="line">Name:         kube-system</span><br><span class="line">Labels:       kubernetes.io/metadata.name=kube-system</span><br><span class="line">Annotations:  &lt;none&gt;</span><br><span class="line">Status:       Active  	# 表示正在使用中，Terminating:表示正在删除命名空间</span><br><span class="line"></span><br><span class="line">No resource quota.  	# 表示：针对命名空间做的资源限制</span><br><span class="line"></span><br><span class="line">No LimitRange resource.  	# 表示：针对命名空间中的每个组件做的资源限制</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe  pod nginx-pod  -n web   <span class="comment">#查看pod 的详细信息</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe service nginx-svc -n web  <span class="comment">#查看service的 详细信息</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe node 192.168.3.125     <span class="comment">#查看node的详细信息</span></span>  </span><br></pre></td></tr></table></figure>
-<h4 id="3-2-5-kubectl-logs日志查看"><a href="#3-2-5-kubectl-logs日志查看" class="headerlink" title="3.2.5 kubectl logs日志查看"></a>3.2.5 <font color=red><code>kubectl logs</code>日志查看</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl logs nginx-deployment-798444d598-87hlk  -n web   <span class="comment">#查看pod日志</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl logs -f  nginx-deployment-798444d598-87hlk -n web  <span class="comment">#实时查看日志</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">log</span>  nginx-deployment-798444d598-87hlk -c &lt;container_name&gt; -n web  <span class="comment">#查看pod中单个容器的日志</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl logs -l app=frontend  -n web    <span class="comment">#返回全部标记为 app=frontend 的 pod 的合并日志</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="3-2-6-kubectl-exec进入容器"><a href="#3-2-6-kubectl-exec进入容器" class="headerlink" title="3.2.6 kubectl exec进入容器"></a>3.2.6 <font color=red><code>kubectl exec</code>进入容器</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> -it  nginx-deployment-798444d598-87hlk  -n web -- /bin/sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> my-pod -- <span class="built_in">ls</span> /  	<span class="comment"># 在已存在的容器中执行命令（只有一个容器的情况下）</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> my-pod -c my-container -- <span class="built_in">ls</span> /  	<span class="comment"># 在已存在的容器中执行命令（pod 中有多个容器的情况下）</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="3-2-7-kubectl-rollout、set升级、undo回滚、"><a href="#3-2-7-kubectl-rollout、set升级、undo回滚、" class="headerlink" title="3.2.7  kubectl  rollout、set升级、undo回滚、"></a>3.2.7  <font color=red><code>kubectl  rollout</code>、<code>set</code>升级</font>、<font color=red><code>undo</code>回滚</font>、</h4><blockquote>
-<ul>
-<li><code>status</code>：显示当前升级状态  </li>
-<li><code>history</code>：显示升级历史记录  </li>
-<li><code>pause</code>：暂停版本升级过程  </li>
-<li><code>resume</code>：继续已经暂停的版本升级过程  </li>
-<li><code>restart</code>：重启版本升级过程  </li>
-<li><code>undo</code>：回滚到上一级版本 （可以使用<code>--to-revision</code>，指定版本）</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">升级</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f pc-deployment.yml --record  <span class="comment">#--record，记录操作记录,便于回滚</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更新镜像</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">set</span> image deployment/web nginx=nginx1.15</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">继续更新过程</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout resume deployment nginx-deployment -n app</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">相当于灰度发布</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout pause deployment nginx-deployment -n app</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">通过修改deployment文件更改</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f nginx-deployment.yml --record</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout pause deployment nginx-deployment -n app</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看升级状态</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout status deployment/nginx-deployment</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看升级历史版本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout <span class="built_in">history</span> deployment/web</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout <span class="built_in">history</span> deployment -n app</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">回滚</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout undo deployment/web --revision=2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout undo deploy nginx-deployment --to-revision=1 -n app <span class="comment"># 版本回滚到v1</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="3-2-8-kubectl-scale：扩缩容Pod的数量"><a href="#3-2-8-kubectl-scale：扩缩容Pod的数量" class="headerlink" title="3.2.8 kubectl scale：扩缩容Pod的数量"></a>3.2.8 <font color=red><code>kubectl scale</code>：扩缩容Pod的数量</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl scale rc redis --replicas=3 -n web    <span class="comment">#操作pod 的扩容和缩容</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl scale --replicas=2 -f redis-slave-deployment.yaml</span></span><br></pre></td></tr></table></figure>
-<h4 id="3-2-9-kubectl-autoscale：使Deployment设定，使用默认的自动伸缩策略，指定目标CPU使用率，使其Pod数量在2到10之间"><a href="#3-2-9-kubectl-autoscale：使Deployment设定，使用默认的自动伸缩策略，指定目标CPU使用率，使其Pod数量在2到10之间" class="headerlink" title="3.2.9 kubectl autoscale：使Deployment设定，使用默认的自动伸缩策略，指定目标CPU使用率，使其Pod数量在2到10之间"></a>3.2.9 <font color=red><code>kubectl autoscale</code>：使<code>Deployment</code>设定，使用默认的自动伸缩策略，指定目标CPU使用率，使其Pod数量在2到10之间</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl autoscale deployment deployment-nginx --cpu-percent=60 --min=2 --max=10</span></span><br></pre></td></tr></table></figure>
-<h4 id="3-2-10-kubectl-apply"><a href="#3-2-10-kubectl-apply" class="headerlink" title="3.2.10 kubectl  apply"></a>3.2.10 <font color=red><code>kubectl  apply</code></font></h4><blockquote>
-<ul>
-<li>如果资源不存在，就创建，相当于<code>kubectl create</code>。  </li>
-<li>如果资源存在，就更新，相当于<code>kubectl patch</code>。</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">运行构建命令</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f deploy.yaml    <span class="comment">#K8S默认拉去GitHub上镜像</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f nginx-pod.yaml -n web --record</span></span><br></pre></td></tr></table></figure>
-<h4 id="3-2-11-kubectl-label：更新资源上的标签"><a href="#3-2-11-kubectl-label：更新资源上的标签" class="headerlink" title="3.2.11 kubectl label：更新资源上的标签"></a>3.2.11 <font color=red><code>kubectl label</code>：更新资源上的标签</font></h4><table>
-<thead>
-<tr>
-<th>版本类</th>
-<th>标签(release)</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>稳定版</td>
-<td>stable</td>
-<td>—</td>
-</tr>
-<tr>
-<td>金丝雀版</td>
-<td>canary</td>
-<td>可以将其称之为测试版中的测试版</td>
-</tr>
-<tr>
-<td>测试版</td>
-<td>beta</td>
-<td>—</td>
-</tr>
-</tbody></table>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kucectl label pod  nginx-pod version=1.0 -n web    <span class="comment">#为pod打上标签</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl label pod  --show-labels -n web            <span class="comment">#显示pod的标签</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kucectl label pod  nginx-pod version=1.0  --overwrite -n web     <span class="comment">#覆盖原来的标签</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="3-2-12-kubectl-taint：污点配置"><a href="#3-2-12-kubectl-taint：污点配置" class="headerlink" title="3.2.12 kubectl  taint：污点配置"></a>3.2.12 <font color=red><code>kubectl  taint</code>：污点配置</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置污点</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl taint node k8s-node1 tag=webapps:PreferNoSchedule</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">去除污点</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl taint node k8s-node1 tag:PreferNoSchedule-</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">去除所有污点</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl taint node k8s-node1 tag-</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">查看节点上的污点</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe nodes k8s-node1 | grep Taints</span></span><br></pre></td></tr></table></figure>
-<h4 id="3-2-13-kubectl-top：资源使用情况、需要安装：metrics-server"><a href="#3-2-13-kubectl-top：资源使用情况、需要安装：metrics-server" class="headerlink" title="3.2.13 kubectl top：资源使用情况、需要安装：metrics-server"></a>3.2.13 <font color=red><code>kubectl top</code>：资源使用情况、需要安装：<code>metrics-server</code></font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl top  pod/node  -n dev</span></span><br></pre></td></tr></table></figure>
-<h4 id="3-2-14-kubectl-replace：根据yaml文件更新修改后配置资源，会停掉原来的资源，重新创建"><a href="#3-2-14-kubectl-replace：根据yaml文件更新修改后配置资源，会停掉原来的资源，重新创建" class="headerlink" title="3.2.14 kubectl replace：根据yaml文件更新修改后配置资源，会停掉原来的资源，重新创建"></a>3.2.14 <font color=red><code>kubectl replace</code>：根据yaml文件更新修改后配置资源，会停掉原来的资源，重新创建</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl replace -f rc-nginx.yaml</span></span><br></pre></td></tr></table></figure>
-<h4 id="3-2-15-kubectl-api-resources"><a href="#3-2-15-kubectl-api-resources" class="headerlink" title="3.2.15 kubectl api-resources"></a>3.2.15 <font color=red><code>kubectl api-resources</code></font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl api-resources   <span class="comment">#查看k8s所有的资源以及对应的apiversion</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl api-versions    <span class="comment">#查看k8s所有 版本号</span></span></span><br></pre></td></tr></table></figure>
-<h3 id="4-资源命令使用"><a href="#4-资源命令使用" class="headerlink" title="4. 资源命令使用"></a>4. 资源命令使用</h3><h4 id="4-1-集群资源使用"><a href="#4-1-集群资源使用" class="headerlink" title="4.1 集群资源使用"></a>4.1 集群资源使用</h4><table>
+<h4 id="3-1-kubectl-api-resources：是查看kubernetes资源命令，Kubernetes中所有的内容都抽象为资源，所有命令都是围绕资源操作、执行。"><a href="#3-1-kubectl-api-resources：是查看kubernetes资源命令，Kubernetes中所有的内容都抽象为资源，所有命令都是围绕资源操作、执行。" class="headerlink" title="3.1 kubectl api-resources：是查看kubernetes资源命令，Kubernetes中所有的内容都抽象为资源，所有命令都是围绕资源操作、执行。"></a>3.1 <font color=red><code>kubectl api-resources</code>：是查看<code>kubernetes</code>资源命令，<code>Kubernetes</code>中所有的内容都抽象为资源，所有命令都是围绕资源操作、执行。</font></h4><table>
 <thead>
 <tr>
 <th>资源分类</th>
@@ -698,7 +460,501 @@
 <td>配置</td>
 </tr>
 </tbody></table>
-<h4 id="4-2-环境命名"><a href="#4-2-环境命名" class="headerlink" title="4.2 环境命名"></a>4.2 环境命名</h4><table>
+<h4 id="3-2-基本命令详解"><a href="#3-2-基本命令详解" class="headerlink" title="3.2 基本命令详解"></a>3.2 基本命令详解</h4><ul>
+<li><font color=red><code>kubectl --help</code>：可以通过–help查看详细的操作命令</font></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>基本命令(初学者)</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>create</td>
+<td>创建</td>
+<td>从文件或标准输入创建资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>expose</td>
+<td>暴露</td>
+<td>将复制控制器、服务、部署或<code>pod</code>暴露为新的<code>Kubernetes</code>服务<code>Service</code></td>
+</tr>
+<tr>
+<td>—</td>
+<td>run</td>
+<td>运行</td>
+<td>在集群中运行一个指定的镜像</td>
+</tr>
+<tr>
+<td>基本命令(初学者)</td>
+<td>set</td>
+<td>设置</td>
+<td>设置一个对象的特定特征</td>
+</tr>
+</tbody></table>
+<ul>
+<li>kubectl命令的语法如下<code>$ kubectl [command] [type] [name] [flags]</code>  <blockquote>
+<ul>
+<li><code>command</code>:	<font color=red>指定要对资源执行的操作，比如：create、get、delete。</font>  </li>
+<li><code>type</code>：<font color=red>指定资源的类型，比如：deployment、pod、service。</font>  </li>
+<li><code>name</code>： <font color=red>指定资源的名称，名称大小写敏感 </font>  </li>
+<li><code>flags</code>： <font color=red>指定额外的可选参数</font></li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h5 id="3-2-1-kubectl-create-help：创建命令用于创建资源"><a href="#3-2-1-kubectl-create-help：创建命令用于创建资源" class="headerlink" title="3.2.1  kubectl create --help：创建命令用于创建资源"></a>3.2.1  <font color=red><code>kubectl create --help</code>：创建命令用于创建资源</font></h5><ul>
+<li><font color=red><code>yaml</code>文件详解、使用<code>kubectl create</code>命令生成<code>yaml</code>文件</font>  <blockquote>
+<ul>
+<li><code>deployment</code>：无状态应用部署  </li>
+<li><code>java-demo</code>：自定义名称  </li>
+<li><code> --image</code>：使用镜像  </li>
+<li><code> --dry-run</code>：测试  </li>
+<li><code>-o</code>：输出  </li>
+<li><code>&gt;/tmp/deploy.yaml</code>：定向输出到文件，不加<code>&gt;/tmp/deploy.yaml</code> 输出到屏幕查看</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建一个namespace命名空间</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace dev</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment java-demo --image=lizhenliang/java-demo --dry-run -o yaml &gt;/tmp/deploy.yaml</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment nginx --image=nginx:1.17.1 --dry-run=client -n dev -o yaml &gt; /tmp/test.yam</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create service clusterip ngx-dep --tcp=80:80  <span class="comment"># 命令行创建service</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create -f  ns-dev.yaml    <span class="comment"># 根据yaml文件创建资源</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-2-2-kubectl-expose-help端口暴露"><a href="#3-2-2-kubectl-expose-help端口暴露" class="headerlink" title="3.2.2 kubectl expose --help端口暴露"></a>3.2.2 <font color=red><code>kubectl expose --help</code>端口暴露</font></h5><blockquote>
+<ul>
+<li><code>expose</code> 端口设置固定选项</li>
+<li><code> java-demo</code>： 自定义名称</li>
+<li><code>--port</code>：集群内部互通端口</li>
+<li><code>--target-port</code>：容器内部端口</li>
+<li><code>--type</code>：随机生成外部访问端口</li>
+<li><code>&gt;java-demo-svc.yaml</code>：定向输出到文件，不加<code>&gt;java-demo-svc.yaml</code>输出到屏幕查看</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl expose --<span class="built_in">help</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl expose deployment java-demo --port=80 --target-port=8080 --<span class="built_in">type</span>=NodePort --dry-run -o yaml &gt;java-demo-svc.yaml</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f java-demo-svc.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">对外发布允许外网访问</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl expose deployment web --port=80 --<span class="built_in">type</span>=NodePort --target-port=80 --name=web</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get service</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">PORT(S):80(集群内部互通端口)、30040/TCP(外部访问端口)</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods,svc</span></span><br><span class="line">NAME                             READY   STATUS    RESTARTS   AGE</span><br><span class="line">pod/java-demo-56d54df448-2m8kr   1/1     Running   0          68m</span><br><span class="line">pod/java-demo-56d54df448-9k5dn   1/1     Running   0          68m</span><br><span class="line">pod/java-demo-56d54df448-wvqkf   1/1     Running   0          68m</span><br><span class="line">pod/nginx-6799fc88d8-5sxfn       1/1     Running   0          3h4m</span><br><span class="line"></span><br><span class="line">NAME                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE</span><br><span class="line">service/java-demo    NodePort    10.103.37.12   &lt;none&gt;        80:30040/TCP   105s</span><br><span class="line">service/kubernetes   ClusterIP   10.96.0.1      &lt;none&gt;        443/TCP        4h35m</span><br><span class="line">service/nginx        NodePort    10.106.61.55   &lt;none&gt;        80:31750/TCP   3h4m</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-2-3-kubectl-run-help：命令使用镜像创建容器"><a href="#3-2-3-kubectl-run-help：命令使用镜像创建容器" class="headerlink" title="3.2.3 kubectl run --help：命令使用镜像创建容器 "></a>3.2.3 <font color=red><code>kubectl run --help</code>：命令使用镜像创建容器 </font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl run nginx --image=nginx:1.17.1 -n web</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-2-4-kubectl-set-help更新镜像、设置一个对象的特定特征"><a href="#3-2-4-kubectl-set-help更新镜像、设置一个对象的特定特征" class="headerlink" title="3.2.4 kubectl set --help更新镜像、设置一个对象的特定特征"></a>3.2.4 <font color=red><code>kubectl set --help</code>更新镜像、设置一个对象的特定特征</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">set</span> image deployment/web nginx=nginx1.15</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-3-中级基本命令：运行、调试命令"><a href="#3-3-中级基本命令：运行、调试命令" class="headerlink" title="3.3  中级基本命令：运行、调试命令"></a>3.3  <font color=red>中级基本命令：运行、调试命令</font></h4><table>
+<thead>
+<tr>
+<th>基本命令(中级)</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>explain</td>
+<td>解释</td>
+<td>展示资源文档</td>
+</tr>
+<tr>
+<td>—</td>
+<td>get</td>
+<td>获取</td>
+<td>获取显示一个或多个资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>edit</td>
+<td>编辑</td>
+<td>编辑服务器上的资源</td>
+</tr>
+<tr>
+<td>基本命令(中级)</td>
+<td>delete</td>
+<td>删除</td>
+<td>delete 按文件名、标准输入、资源和名称，或按资源和标签选择器删除资源</td>
+</tr>
+</tbody></table>
+<h5 id="3-3-1-kubectl-explain-help：展示资源文档"><a href="#3-3-1-kubectl-explain-help：展示资源文档" class="headerlink" title="3.3.1 kubectl explain --help：展示资源文档"></a>3.3.1 <font color=red><code>kubectl explain --help</code>：展示资源文档</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain 资源类型（pod,deployment）   <span class="comment"># 查看某种资源可以配置的一级配置</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain 资源类型.属性       <span class="comment">#查看资源的子属性</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-3-2-kubectl-explain-help：获取资源"><a href="#3-3-2-kubectl-explain-help：获取资源" class="headerlink" title="3.3.2 kubectl explain --help：获取资源"></a>3.3.2 <font color=red><code>kubectl explain --help</code>：获取资源</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get deploy,pods</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-3-3-kubectl-edit-help：cm：编辑configMap中的配置"><a href="#3-3-3-kubectl-edit-help：cm：编辑configMap中的配置" class="headerlink" title="3.3.3  kubectl edit --help：cm：编辑configMap中的配置"></a>3.3.3  <font color=red><code>kubectl edit --help</code>：cm：编辑configMap中的配置</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改service中的服务</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl edit service/ingress-nginx-controller-admission -n ingress-nginx</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl edit cm kubeadm-config -n kube-system</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-3-4-kubectl-delete-help：删除"><a href="#3-3-4-kubectl-delete-help：删除" class="headerlink" title="3.3.4 kubectl delete --help：删除"></a>3.3.4 <font color=red><code>kubectl delete --help</code>：删除</font ></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete deploy/web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete svc/web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete -f  deployment-nginx.yaml   <span class="comment">#删除该yaml中创建的资源</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete pod nginx-deployment-798444d598-87hlk -n web  <span class="comment">#删除pod资源</span></span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-4-Kubernetes部署命令"><a href="#3-4-Kubernetes部署命令" class="headerlink" title="3.4 Kubernetes部署命令"></a>3.4 <font color=red><code>Kubernetes</code>部署命令</font></h4><table>
+<thead>
+<tr>
+<th>部署命令</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>rollout</td>
+<td>首次展示</td>
+<td>管理资源的发布</td>
+</tr>
+<tr>
+<td>—</td>
+<td>scale</td>
+<td>规模</td>
+<td>扩(缩)容<code>Pod</code>的数量,为<code>Deployment</code>、<code>ReplicaSet</code>或<code>Replication</code> <code>Controller</code>设置新的大小</td>
+</tr>
+<tr>
+<td>—</td>
+<td>autoscale</td>
+<td>自动调整</td>
+<td>自动调整Pod的数量，自动缩放<code>Deployment</code>、<code>ReplicaSet</code>、<code>StatefulSet</code>或<code>ReplicationController</code></td>
+</tr>
+</tbody></table>
+<h5 id="3-4-1-kubectl-rollout-help：管理资源"><a href="#3-4-1-kubectl-rollout-help：管理资源" class="headerlink" title="3.4.1 kubectl rollout --help：管理资源"></a>3.4.1 <font color=red><code>kubectl rollout --help</code>：管理资源</font></h5><blockquote>
+<ul>
+<li><code>status</code>：显示当前升级状态  </li>
+<li><code>history</code>：显示升级历史记录  </li>
+<li><code>pause</code>：暂停版本升级过程  </li>
+<li><code>resume</code>：继续已经暂停的版本升级过程  </li>
+<li><code>restart</code>：重启版本升级过程  </li>
+<li><code>undo</code>：回滚到上一级版本 （可以使用<code>--to-revision</code>，指定版本）</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">升级</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f pc-deployment.yml --record  <span class="comment">#--record，记录操作记录,便于回滚</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">继续更新过程</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout resume deployment nginx-deployment -n app</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">相当于灰度发布</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout pause deployment nginx-deployment -n app</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">通过修改deployment文件更改</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f nginx-deployment.yml --record</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout pause deployment nginx-deployment -n app</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看升级状态</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout status deployment/nginx-deployment</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看升级历史版本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout <span class="built_in">history</span> deployment/web</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout <span class="built_in">history</span> deployment -n app</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">回滚</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout undo deployment/web --revision=2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout undo deploy nginx-deployment --to-revision=1 -n app <span class="comment"># 版本回滚到v1</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-4-2-kubectl-scale-help：扩缩容Pod的数量"><a href="#3-4-2-kubectl-scale-help：扩缩容Pod的数量" class="headerlink" title="3.4.2 kubectl scale --help：扩缩容Pod的数量"></a>3.4.2 <font color=red><code>kubectl scale --help</code>：扩缩容Pod的数量</font></h5><ul>
+<li><font color=red><code>--replicas</code></font>：参数定义<code>Pod</code>数量</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl scale rc redis --replicas=3 -n web    <span class="comment">#操作pod 的扩容和缩容</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl scale --replicas=2 -f redis-slave-deployment.yaml</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-4-3-kubectl-autoscale-help：使Deployment设定，使用默认的自动伸缩策略，指定目标CPU使用率，使其Pod数量在2到10之间"><a href="#3-4-3-kubectl-autoscale-help：使Deployment设定，使用默认的自动伸缩策略，指定目标CPU使用率，使其Pod数量在2到10之间" class="headerlink" title="3.4.3 kubectl autoscale --help：使Deployment设定，使用默认的自动伸缩策略，指定目标CPU使用率，使其Pod数量在2到10之间"></a>3.4.3 <font color=red><code>kubectl autoscale --help</code>：使<code>Deployment</code>设定，使用默认的自动伸缩策略，指定目标CPU使用率，使其Pod数量在2到10之间</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl autoscale deployment deployment-nginx --cpu-percent=60 --min=2 --max=10</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-5-集群管理命令"><a href="#3-5-集群管理命令" class="headerlink" title="3.5 集群管理命令"></a>3.5 <font color=red>集群管理命令</font></h4><table>
+<thead>
+<tr>
+<th>集群管理命令</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>certificate</td>
+<td>证书</td>
+<td>修改证书资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>cluster-info</td>
+<td>集群信息</td>
+<td>显示集群信息</td>
+</tr>
+<tr>
+<td>—</td>
+<td>top</td>
+<td></td>
+<td>顶部显示资源（CPU&#x2F;内存）使用情况</td>
+</tr>
+<tr>
+<td>—</td>
+<td>cordon</td>
+<td>警戒线</td>
+<td>警戒线 将节点标记为不可调度</td>
+</tr>
+<tr>
+<td>—</td>
+<td>uncordon</td>
+<td></td>
+<td><code>uncordon</code>将节点标记为可调度</td>
+</tr>
+<tr>
+<td>—</td>
+<td>drain</td>
+<td>排水</td>
+<td>排水节点准备维护</td>
+</tr>
+<tr>
+<td>集群管理命令</td>
+<td>taint</td>
+<td>污点</td>
+<td><code>taint</code>更新一个或多个节点上的污点</td>
+</tr>
+</tbody></table>
+<h5 id="3-5-3-kubectl-top-help：资源使用情况、需要安装：metrics-server"><a href="#3-5-3-kubectl-top-help：资源使用情况、需要安装：metrics-server" class="headerlink" title="3.5.3 kubectl top --help：资源使用情况、需要安装：metrics-server"></a>3.5.3 <font color=red><code>kubectl top --help</code>：资源使用情况、需要安装：<code>metrics-server</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl top  pod/node  -n dev</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-5-7-kubectl-taint-help：污点配置"><a href="#3-5-7-kubectl-taint-help：污点配置" class="headerlink" title="3.5.7 kubectl taint --help：污点配置"></a>3.5.7 <font color=red><code>kubectl taint --help</code>：污点配置</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置污点</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl taint node k8s-node1 tag=webapps:PreferNoSchedule</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">去除污点</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl taint node k8s-node1 tag:PreferNoSchedule-</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">去除所有污点</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl taint node k8s-node1 tag-</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">查看节点上的污点</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe nodes k8s-node1 | grep Taints</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-6-故障排除和调试命令"><a href="#3-6-故障排除和调试命令" class="headerlink" title="3.6 故障排除和调试命令"></a>3.6 <font color=red>故障排除和调试命令</font></h4><table>
+<thead>
+<tr>
+<th>故障排除和调试命令</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>describe</td>
+<td>描述</td>
+<td><code>describe</code>显示特定资源或资源组的详细信息</td>
+</tr>
+<tr>
+<td>—</td>
+<td>logs</td>
+<td>日志</td>
+<td>打印 pod 中容器的日志</td>
+</tr>
+<tr>
+<td>—</td>
+<td>attach</td>
+<td>缠绕</td>
+<td>进入运行中的容器、附加到正在运行的容器</td>
+</tr>
+<tr>
+<td>—</td>
+<td>exec</td>
+<td>执行</td>
+<td>在容器中执行命令</td>
+</tr>
+<tr>
+<td>—</td>
+<td>port-forward</td>
+<td>转发</td>
+<td>将一个或多个本地端口转发到一个<code>pod</code></td>
+</tr>
+<tr>
+<td>—</td>
+<td>proxy</td>
+<td>代理</td>
+<td>运行到<code>Kubernetes API</code>服务器的代理</td>
+</tr>
+<tr>
+<td>—</td>
+<td>cp</td>
+<td>复制</td>
+<td>在Pod内外复制文件</td>
+</tr>
+<tr>
+<td>—</td>
+<td>auth</td>
+<td></td>
+<td>检查授权</td>
+</tr>
+<tr>
+<td>故障排除和调试命令</td>
+<td>debug</td>
+<td>调试</td>
+<td>创建调试会话以对工作负载和节点进行故障排除</td>
+</tr>
+</tbody></table>
+<h5 id="3-6-1-kubectl-describe-help显示资源内部信息"><a href="#3-6-1-kubectl-describe-help显示资源内部信息" class="headerlink" title="3.6.1 kubectl describe --help显示资源内部信息"></a>3.6.1 <font color=red><code>kubectl describe --help</code>显示资源内部信息</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe namespace kube-system</span></span><br><span class="line">Name:         kube-system</span><br><span class="line">Labels:       kubernetes.io/metadata.name=kube-system</span><br><span class="line">Annotations:  &lt;none&gt;</span><br><span class="line">Status:       Active  	# 表示正在使用中，Terminating:表示正在删除命名空间</span><br><span class="line"></span><br><span class="line">No resource quota.  	# 表示：针对命名空间做的资源限制</span><br><span class="line"></span><br><span class="line">No LimitRange resource.  	# 表示：针对命名空间中的每个组件做的资源限制</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe  pod nginx-pod  -n web   <span class="comment">#查看pod 的详细信息</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe service nginx-svc -n web  <span class="comment">#查看service的 详细信息</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe node 192.168.3.125     <span class="comment">#查看node的详细信息</span></span>  </span><br></pre></td></tr></table></figure>
+
+<h5 id="3-6-2-kubectl-logs-help日志查看"><a href="#3-6-2-kubectl-logs-help日志查看" class="headerlink" title="3.6.2 kubectl logs --help日志查看"></a>3.6.2 <font color=red><code>kubectl logs --help</code>日志查看</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl logs nginx-deployment-798444d598-87hlk  -n web   <span class="comment">#查看pod日志</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl logs -f  nginx-deployment-798444d598-87hlk -n web  <span class="comment">#实时查看日志</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">log</span>  nginx-deployment-798444d598-87hlk -c &lt;container_name&gt; -n web  <span class="comment">#查看pod中单个容器的日志</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl logs -l app=frontend  -n web    <span class="comment">#返回全部标记为 app=frontend 的 pod 的合并日志</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-6-4-kubectl-exec-help进入容器"><a href="#3-6-4-kubectl-exec-help进入容器" class="headerlink" title="3.6.4 kubectl exec --help进入容器"></a>3.6.4 <font color=red><code>kubectl exec --help</code>进入容器</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> -it  nginx-deployment-798444d598-87hlk  -n web -- /bin/sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> my-pod -- <span class="built_in">ls</span> /  	<span class="comment"># 在已存在的容器中执行命令（只有一个容器的情况下）</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> my-pod -c my-container -- <span class="built_in">ls</span> /  	<span class="comment"># 在已存在的容器中执行命令（pod 中有多个容器的情况下）</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-6-5-kubectl-port-forward-help转发Pod中端口"><a href="#3-6-5-kubectl-port-forward-help转发Pod中端口" class="headerlink" title="3.6.5 kubectl port-forward --help转发Pod中端口"></a>3.6.5 <font color=red><code>kubectl port-forward --help</code>转发<code>Pod</code>中端口</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl port-forward my-pod 5000:6000  	<span class="comment"># 转发pod中的6000端口到本地的 5000 端口</span></span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-7-高级命令"><a href="#3-7-高级命令" class="headerlink" title="3.7 高级命令"></a>3.7 <font color=red>高级命令</font></h4><table>
+<thead>
+<tr>
+<th>高级命令</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>diff</td>
+<td>对比</td>
+<td>对比实时版本与将要应用的版本之间的差异</td>
+</tr>
+<tr>
+<td>—</td>
+<td>apply</td>
+<td>应用</td>
+<td>通过文件名或标准输入将配置应用于资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>patch</td>
+<td>更新</td>
+<td>更新一个资源，更新资源的字段</td>
+</tr>
+<tr>
+<td>—</td>
+<td>replace</td>
+<td>替换</td>
+<td>用文件名或标准输入替换资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>wait</td>
+<td>等待</td>
+<td>等待实验：等待一个或多个资源的特定条件</td>
+</tr>
+<tr>
+<td>高级命令</td>
+<td>kustomize</td>
+<td></td>
+<td>从目录或 URL 构建一个 kustomization 目标</td>
+</tr>
+</tbody></table>
+<h5 id="3-7-2-kubectl-apply-help"><a href="#3-7-2-kubectl-apply-help" class="headerlink" title="3.7.2 kubectl apply --help"></a>3.7.2 <font color=red><code>kubectl apply --help</code></font></h5><blockquote>
+<ul>
+<li>如果资源不存在，就创建，相当于<code>kubectl create</code>。  </li>
+<li>如果资源存在，就更新，相当于<code>kubectl patch</code>。</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">运行构建命令</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f deploy.yaml    <span class="comment">#K8S默认拉去GitHub上镜像</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f nginx-pod.yaml -n web --record</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-7-3-kubectl-patch-help：补丁修改、更新资源的字段"><a href="#3-7-3-kubectl-patch-help：补丁修改、更新资源的字段" class="headerlink" title="3.7.3 kubectl patch --help：补丁修改、更新资源的字段"></a>3.7.3 <font color=red><code>kubectl patch --help</code>：补丁修改、更新资源的字段</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl patch pod rc-nginx-2-kpiqt -p <span class="string">&#x27;&#123;&quot;metadata&quot;:&#123;&quot;labels&quot;:&#123;&quot;app&quot;:&quot;nginx-3&quot;&#125;&#125;&#125;&#x27;</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-7-4-kubectl-replace-help：根据yaml文件更新修改后配置资源，会停掉原来的资源，重新创建"><a href="#3-7-4-kubectl-replace-help：根据yaml文件更新修改后配置资源，会停掉原来的资源，重新创建" class="headerlink" title="3.7.4 kubectl replace --help：根据yaml文件更新修改后配置资源，会停掉原来的资源，重新创建"></a>3.7.4 <font color=red><code>kubectl replace --help</code>：根据yaml文件更新修改后配置资源，会停掉原来的资源，重新创建</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl replace -f rc-nginx.yaml</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-8-设置命令"><a href="#3-8-设置命令" class="headerlink" title="3.8 设置命令"></a>3.8 <font color=red>设置命令</font></h4><table>
+<thead>
+<tr>
+<th>设置命令</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>label</td>
+<td>标签</td>
+<td>更新资源上的标签</td>
+</tr>
+<tr>
+<td>—</td>
+<td>annotate</td>
+<td>注释</td>
+<td>更新资源上的注释</td>
+</tr>
+<tr>
+<td>—</td>
+<td>completion</td>
+<td></td>
+<td>完成输出指定shell的shell完成代码（bash或zsh）</td>
+</tr>
+</tbody></table>
+<h5 id="3-8-1-kubectl-label-help：更新资源上的标签"><a href="#3-8-1-kubectl-label-help：更新资源上的标签" class="headerlink" title="3.8.1 kubectl label --help：更新资源上的标签"></a>3.8.1 <font color=red><code>kubectl label --help</code>：更新资源上的标签</font></h5><table>
+<thead>
+<tr>
+<th>标签定义</th>
+<th>写法</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>版本标签</td>
+<td>“version”: “release”</td>
+<td>—</td>
+</tr>
+<tr>
+<td>版本标签</td>
+<td>“version”: “stable”</td>
+<td>—</td>
+</tr>
+<tr>
+<td>环境标签</td>
+<td>“environment”: “dev”</td>
+<td>—</td>
+</tr>
+<tr>
+<td>—</td>
+<td>“environment”: “test”</td>
+<td>—</td>
+</tr>
+<tr>
+<td>环境标签</td>
+<td>“environment”: “pro”</td>
+<td>—</td>
+</tr>
+<tr>
+<td>架构标签</td>
+<td>“tier”: “frontend”</td>
+<td>—</td>
+</tr>
+<tr>
+<td>架构标签</td>
+<td>“tier”: “backend”</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>版本类</th>
+<th>标签(release)</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>稳定版</td>
+<td>stable</td>
+<td>—</td>
+</tr>
+<tr>
+<td>金丝雀版</td>
+<td>canary</td>
+<td>可以将其称之为测试版中的测试版</td>
+</tr>
+<tr>
+<td>测试版</td>
+<td>beta</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示pod的标签</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl label pod  --show-labels -n web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">为pod打上标签</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kucectl label pod  nginx-pod version=1.0 -n web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">覆盖原来的标签：--overwrite</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kucectl label pod  nginx-pod version=1.0  --overwrite -n web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除标签</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kucectl label pod  nginx-pod version- -n web</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-9-其他命令"><a href="#3-9-其他命令" class="headerlink" title="3.9 其他命令"></a>3.9 <font color=red>其他命令</font></h4><table>
+<thead>
+<tr>
+<th>其他命令</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td>api-resources</td>
+<td></td>
+<td>打印服务器上支持的 API 资源</td>
+</tr>
+<tr>
+<td></td>
+<td>api-versions</td>
+<td></td>
+<td>打印服务器上支持的 API 版本，格式为“group&#x2F;version”</td>
+</tr>
+<tr>
+<td></td>
+<td>config</td>
+<td></td>
+<td>修改 kubeconfig 文件</td>
+</tr>
+<tr>
+<td></td>
+<td>plugin</td>
+<td></td>
+<td>提供与插件交互的实用程序</td>
+</tr>
+<tr>
+<td>其他命令</td>
+<td>version</td>
+<td>版本</td>
+<td>打印客户端和服务器版本信息</td>
+</tr>
+</tbody></table>
+<h5 id="3-9-1-kubectl-api-resources-help"><a href="#3-9-1-kubectl-api-resources-help" class="headerlink" title="3.9.1 kubectl api-resources --help"></a>3.9.1 <font color=red><code>kubectl api-resources --help</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl api-resources   <span class="comment">#查看k8s所有的资源以及对应的apiversion</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl api-versions    <span class="comment">#查看k8s所有 版本号</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-环境配置"><a href="#4-环境配置" class="headerlink" title="4. 环境配置"></a>4. 环境配置</h3><h4 id="4-2-环境命名"><a href="#4-2-环境命名" class="headerlink" title="4.2 环境命名"></a>4.2 环境命名</h4><table>
 <thead>
 <tr>
 <th>环境类</th>
@@ -826,7 +1082,7 @@
       <i class="fa fa-chevron-left"></i> install-Dashboard
     </a></div>
       <div class="post-nav-item">
-    <a href="/Kubernetes/kubernetes-pod%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/" rel="next" title="kubernetes-pod详解">
+    <a href="/Kubernetes/kubernetes-yaml%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/" rel="next" title="kubernetes-pod详解">
       kubernetes-pod详解 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
@@ -896,7 +1152,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Kubernetes%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">1. Kubernetes命令使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-kubectl-get-nodes%E8%8A%82%E7%82%B9%E6%98%BE%E7%A4%BA-NotReady-%E6%98%AF%E7%94%B1%E4%BA%8E%E8%8A%82%E7%82%B9%E4%B9%8B%E9%97%B4%E7%BD%91%E7%BB%9C%E4%B8%8D%E9%80%9A%E5%AF%BC%E8%87%B4"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 kubectl get nodes节点显示 NotReady 是由于节点之间网络不通导致</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E9%87%8D%E7%BD%AEKubernetes%E9%9B%86%E7%BE%A4"><span class="nav-number">1.2.</span> <span class="nav-text">1.2  重置Kubernetes集群</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-kubectl%E5%91%BD%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">3. kubectl命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-1-%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3"><span class="nav-number">2.1.</span> <span class="nav-text">3.1.1 基本命令详解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-2-kubectl-create%EF%BC%9A%E5%88%9B%E5%BB%BA%E5%91%BD%E4%BB%A4%E7%94%A8%E4%BA%8E%E5%88%9B%E5%BB%BA%E8%B5%84%E6%BA%90"><span class="nav-number">2.2.</span> <span class="nav-text">3.1.2  kubectl create：创建命令用于创建资源</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-3-kubectl-edit%EF%BC%9Acm%EF%BC%9A%E7%BC%96%E8%BE%91configMap%E4%B8%AD%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-number">2.3.</span> <span class="nav-text">3.1.3  kubectl edit：cm：编辑configMap中的配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-4-kubectl-get%EF%BC%9A%E8%8E%B7%E5%8F%96%E8%B5%84%E6%BA%90"><span class="nav-number">2.4.</span> <span class="nav-text">3.1.4 kubectl get：获取资源</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-5-kubectl-patch%EF%BC%9A%E8%A1%A5%E4%B8%81%E4%BF%AE%E6%94%B9%E3%80%81%E6%9B%B4%E6%96%B0%E8%B5%84%E6%BA%90%E7%9A%84%E5%AD%97%E6%AE%B5"><span class="nav-number">2.5.</span> <span class="nav-text">3.1.5 kubectl patch：补丁修改、更新资源的字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-6-kubectl-delete%EF%BC%9A%E5%88%A0%E9%99%A4"><span class="nav-number">2.6.</span> <span class="nav-text">3.1.6 kubectl delete：删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-7-kubectl-explain%EF%BC%9A%E5%B1%95%E7%A4%BA%E8%B5%84%E6%BA%90%E6%96%87%E6%A1%A3"><span class="nav-number">2.7.</span> <span class="nav-text">3.1.7 kubectl explain：展示资源文档</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-1-%E8%BF%90%E8%A1%8C%E3%80%81%E8%B0%83%E8%AF%95%E5%91%BD%E4%BB%A4"><span class="nav-number">2.8.</span> <span class="nav-text">3.2.1 运行、调试命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-2-kubectl-run%EF%BC%9A%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E9%95%9C%E5%83%8F%E5%88%9B%E5%BB%BA%E5%AE%B9%E5%99%A8"><span class="nav-number">2.9.</span> <span class="nav-text">3.2.2 kubectl  run：命令使用镜像创建容器 </span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-3-kubectl-expose%E7%AB%AF%E5%8F%A3%E6%9A%B4%E9%9C%B2"><span class="nav-number">2.10.</span> <span class="nav-text">3.2.3 kubectl expose端口暴露</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-4-kubectl-describe%E6%98%BE%E7%A4%BA%E8%B5%84%E6%BA%90%E5%86%85%E9%83%A8%E4%BF%A1%E6%81%AF"><span class="nav-number">2.11.</span> <span class="nav-text">3.2.4 kubectl describe显示资源内部信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-5-kubectl-logs%E6%97%A5%E5%BF%97%E6%9F%A5%E7%9C%8B"><span class="nav-number">2.12.</span> <span class="nav-text">3.2.5 kubectl logs日志查看</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-6-kubectl-exec%E8%BF%9B%E5%85%A5%E5%AE%B9%E5%99%A8"><span class="nav-number">2.13.</span> <span class="nav-text">3.2.6 kubectl exec进入容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-7-kubectl-rollout%E3%80%81set%E5%8D%87%E7%BA%A7%E3%80%81undo%E5%9B%9E%E6%BB%9A%E3%80%81"><span class="nav-number">2.14.</span> <span class="nav-text">3.2.7  kubectl  rollout、set升级、undo回滚、</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-8-kubectl-scale%EF%BC%9A%E6%89%A9%E7%BC%A9%E5%AE%B9Pod%E7%9A%84%E6%95%B0%E9%87%8F"><span class="nav-number">2.15.</span> <span class="nav-text">3.2.8 kubectl scale：扩缩容Pod的数量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-9-kubectl-autoscale%EF%BC%9A%E4%BD%BFDeployment%E8%AE%BE%E5%AE%9A%EF%BC%8C%E4%BD%BF%E7%94%A8%E9%BB%98%E8%AE%A4%E7%9A%84%E8%87%AA%E5%8A%A8%E4%BC%B8%E7%BC%A9%E7%AD%96%E7%95%A5%EF%BC%8C%E6%8C%87%E5%AE%9A%E7%9B%AE%E6%A0%87CPU%E4%BD%BF%E7%94%A8%E7%8E%87%EF%BC%8C%E4%BD%BF%E5%85%B6Pod%E6%95%B0%E9%87%8F%E5%9C%A82%E5%88%B010%E4%B9%8B%E9%97%B4"><span class="nav-number">2.16.</span> <span class="nav-text">3.2.9 kubectl autoscale：使Deployment设定，使用默认的自动伸缩策略，指定目标CPU使用率，使其Pod数量在2到10之间</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-10-kubectl-apply"><span class="nav-number">2.17.</span> <span class="nav-text">3.2.10 kubectl  apply</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-11-kubectl-label%EF%BC%9A%E6%9B%B4%E6%96%B0%E8%B5%84%E6%BA%90%E4%B8%8A%E7%9A%84%E6%A0%87%E7%AD%BE"><span class="nav-number">2.18.</span> <span class="nav-text">3.2.11 kubectl label：更新资源上的标签</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-12-kubectl-taint%EF%BC%9A%E6%B1%A1%E7%82%B9%E9%85%8D%E7%BD%AE"><span class="nav-number">2.19.</span> <span class="nav-text">3.2.12 kubectl  taint：污点配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-13-kubectl-top%EF%BC%9A%E8%B5%84%E6%BA%90%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5%E3%80%81%E9%9C%80%E8%A6%81%E5%AE%89%E8%A3%85%EF%BC%9Ametrics-server"><span class="nav-number">2.20.</span> <span class="nav-text">3.2.13 kubectl top：资源使用情况、需要安装：metrics-server</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-14-kubectl-replace%EF%BC%9A%E6%A0%B9%E6%8D%AEyaml%E6%96%87%E4%BB%B6%E6%9B%B4%E6%96%B0%E4%BF%AE%E6%94%B9%E5%90%8E%E9%85%8D%E7%BD%AE%E8%B5%84%E6%BA%90%EF%BC%8C%E4%BC%9A%E5%81%9C%E6%8E%89%E5%8E%9F%E6%9D%A5%E7%9A%84%E8%B5%84%E6%BA%90%EF%BC%8C%E9%87%8D%E6%96%B0%E5%88%9B%E5%BB%BA"><span class="nav-number">2.21.</span> <span class="nav-text">3.2.14 kubectl replace：根据yaml文件更新修改后配置资源，会停掉原来的资源，重新创建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-15-kubectl-api-resources"><span class="nav-number">2.22.</span> <span class="nav-text">3.2.15 kubectl api-resources</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E8%B5%84%E6%BA%90%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">4. 资源命令使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E9%9B%86%E7%BE%A4%E8%B5%84%E6%BA%90%E4%BD%BF%E7%94%A8"><span class="nav-number">3.1.</span> <span class="nav-text">4.1 集群资源使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E7%8E%AF%E5%A2%83%E5%91%BD%E5%90%8D"><span class="nav-number">3.2.</span> <span class="nav-text">4.2 环境命名</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Kubernetes%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">1. Kubernetes命令使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-kubectl-get-nodes%E8%8A%82%E7%82%B9%E6%98%BE%E7%A4%BA-NotReady-%E6%98%AF%E7%94%B1%E4%BA%8E%E8%8A%82%E7%82%B9%E4%B9%8B%E9%97%B4%E7%BD%91%E7%BB%9C%E4%B8%8D%E9%80%9A%E5%AF%BC%E8%87%B4"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 kubectl get nodes节点显示 NotReady 是由于节点之间网络不通导致</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%87%8D%E7%BD%AEKubernetes%E9%9B%86%E7%BE%A4"><span class="nav-number">2.</span> <span class="nav-text">2.  重置Kubernetes集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-kubectl%E8%B5%84%E6%BA%90%E3%80%81%E5%91%BD%E4%BB%A4"><span class="nav-number">3.</span> <span class="nav-text">3. kubectl资源、命令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-kubectl-api-resources%EF%BC%9A%E6%98%AF%E6%9F%A5%E7%9C%8Bkubernetes%E8%B5%84%E6%BA%90%E5%91%BD%E4%BB%A4%EF%BC%8CKubernetes%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E5%86%85%E5%AE%B9%E9%83%BD%E6%8A%BD%E8%B1%A1%E4%B8%BA%E8%B5%84%E6%BA%90%EF%BC%8C%E6%89%80%E6%9C%89%E5%91%BD%E4%BB%A4%E9%83%BD%E6%98%AF%E5%9B%B4%E7%BB%95%E8%B5%84%E6%BA%90%E6%93%8D%E4%BD%9C%E3%80%81%E6%89%A7%E8%A1%8C%E3%80%82"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 kubectl api-resources：是查看kubernetes资源命令，Kubernetes中所有的内容都抽象为资源，所有命令都是围绕资源操作、执行。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 基本命令详解</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-1-kubectl-create-help%EF%BC%9A%E5%88%9B%E5%BB%BA%E5%91%BD%E4%BB%A4%E7%94%A8%E4%BA%8E%E5%88%9B%E5%BB%BA%E8%B5%84%E6%BA%90"><span class="nav-number">3.2.1.</span> <span class="nav-text">3.2.1  kubectl create --help：创建命令用于创建资源</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-2-kubectl-expose-help%E7%AB%AF%E5%8F%A3%E6%9A%B4%E9%9C%B2"><span class="nav-number">3.2.2.</span> <span class="nav-text">3.2.2 kubectl expose --help端口暴露</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-3-kubectl-run-help%EF%BC%9A%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E9%95%9C%E5%83%8F%E5%88%9B%E5%BB%BA%E5%AE%B9%E5%99%A8"><span class="nav-number">3.2.3.</span> <span class="nav-text">3.2.3 kubectl run --help：命令使用镜像创建容器 </span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-4-kubectl-set-help%E6%9B%B4%E6%96%B0%E9%95%9C%E5%83%8F%E3%80%81%E8%AE%BE%E7%BD%AE%E4%B8%80%E4%B8%AA%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%89%B9%E5%AE%9A%E7%89%B9%E5%BE%81"><span class="nav-number">3.2.4.</span> <span class="nav-text">3.2.4 kubectl set --help更新镜像、设置一个对象的特定特征</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E4%B8%AD%E7%BA%A7%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4%EF%BC%9A%E8%BF%90%E8%A1%8C%E3%80%81%E8%B0%83%E8%AF%95%E5%91%BD%E4%BB%A4"><span class="nav-number">3.3.</span> <span class="nav-text">3.3  中级基本命令：运行、调试命令</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-1-kubectl-explain-help%EF%BC%9A%E5%B1%95%E7%A4%BA%E8%B5%84%E6%BA%90%E6%96%87%E6%A1%A3"><span class="nav-number">3.3.1.</span> <span class="nav-text">3.3.1 kubectl explain --help：展示资源文档</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-2-kubectl-explain-help%EF%BC%9A%E8%8E%B7%E5%8F%96%E8%B5%84%E6%BA%90"><span class="nav-number">3.3.2.</span> <span class="nav-text">3.3.2 kubectl explain --help：获取资源</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-3-kubectl-edit-help%EF%BC%9Acm%EF%BC%9A%E7%BC%96%E8%BE%91configMap%E4%B8%AD%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-number">3.3.3.</span> <span class="nav-text">3.3.3  kubectl edit --help：cm：编辑configMap中的配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-4-kubectl-delete-help%EF%BC%9A%E5%88%A0%E9%99%A4"><span class="nav-number">3.3.4.</span> <span class="nav-text">3.3.4 kubectl delete --help：删除</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-Kubernetes%E9%83%A8%E7%BD%B2%E5%91%BD%E4%BB%A4"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 Kubernetes部署命令</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-4-1-kubectl-rollout-help%EF%BC%9A%E7%AE%A1%E7%90%86%E8%B5%84%E6%BA%90"><span class="nav-number">3.4.1.</span> <span class="nav-text">3.4.1 kubectl rollout --help：管理资源</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-4-2-kubectl-scale-help%EF%BC%9A%E6%89%A9%E7%BC%A9%E5%AE%B9Pod%E7%9A%84%E6%95%B0%E9%87%8F"><span class="nav-number">3.4.2.</span> <span class="nav-text">3.4.2 kubectl scale --help：扩缩容Pod的数量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-4-3-kubectl-autoscale-help%EF%BC%9A%E4%BD%BFDeployment%E8%AE%BE%E5%AE%9A%EF%BC%8C%E4%BD%BF%E7%94%A8%E9%BB%98%E8%AE%A4%E7%9A%84%E8%87%AA%E5%8A%A8%E4%BC%B8%E7%BC%A9%E7%AD%96%E7%95%A5%EF%BC%8C%E6%8C%87%E5%AE%9A%E7%9B%AE%E6%A0%87CPU%E4%BD%BF%E7%94%A8%E7%8E%87%EF%BC%8C%E4%BD%BF%E5%85%B6Pod%E6%95%B0%E9%87%8F%E5%9C%A82%E5%88%B010%E4%B9%8B%E9%97%B4"><span class="nav-number">3.4.3.</span> <span class="nav-text">3.4.3 kubectl autoscale --help：使Deployment设定，使用默认的自动伸缩策略，指定目标CPU使用率，使其Pod数量在2到10之间</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-5-%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86%E5%91%BD%E4%BB%A4"><span class="nav-number">3.5.</span> <span class="nav-text">3.5 集群管理命令</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-5-3-kubectl-top-help%EF%BC%9A%E8%B5%84%E6%BA%90%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5%E3%80%81%E9%9C%80%E8%A6%81%E5%AE%89%E8%A3%85%EF%BC%9Ametrics-server"><span class="nav-number">3.5.1.</span> <span class="nav-text">3.5.3 kubectl top --help：资源使用情况、需要安装：metrics-server</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-5-7-kubectl-taint-help%EF%BC%9A%E6%B1%A1%E7%82%B9%E9%85%8D%E7%BD%AE"><span class="nav-number">3.5.2.</span> <span class="nav-text">3.5.7 kubectl taint --help：污点配置</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-6-%E6%95%85%E9%9A%9C%E6%8E%92%E9%99%A4%E5%92%8C%E8%B0%83%E8%AF%95%E5%91%BD%E4%BB%A4"><span class="nav-number">3.6.</span> <span class="nav-text">3.6 故障排除和调试命令</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-6-1-kubectl-describe-help%E6%98%BE%E7%A4%BA%E8%B5%84%E6%BA%90%E5%86%85%E9%83%A8%E4%BF%A1%E6%81%AF"><span class="nav-number">3.6.1.</span> <span class="nav-text">3.6.1 kubectl describe --help显示资源内部信息</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-6-2-kubectl-logs-help%E6%97%A5%E5%BF%97%E6%9F%A5%E7%9C%8B"><span class="nav-number">3.6.2.</span> <span class="nav-text">3.6.2 kubectl logs --help日志查看</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-6-4-kubectl-exec-help%E8%BF%9B%E5%85%A5%E5%AE%B9%E5%99%A8"><span class="nav-number">3.6.3.</span> <span class="nav-text">3.6.4 kubectl exec --help进入容器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-6-5-kubectl-port-forward-help%E8%BD%AC%E5%8F%91Pod%E4%B8%AD%E7%AB%AF%E5%8F%A3"><span class="nav-number">3.6.4.</span> <span class="nav-text">3.6.5 kubectl port-forward --help转发Pod中端口</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-7-%E9%AB%98%E7%BA%A7%E5%91%BD%E4%BB%A4"><span class="nav-number">3.7.</span> <span class="nav-text">3.7 高级命令</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-7-2-kubectl-apply-help"><span class="nav-number">3.7.1.</span> <span class="nav-text">3.7.2 kubectl apply --help</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-7-3-kubectl-patch-help%EF%BC%9A%E8%A1%A5%E4%B8%81%E4%BF%AE%E6%94%B9%E3%80%81%E6%9B%B4%E6%96%B0%E8%B5%84%E6%BA%90%E7%9A%84%E5%AD%97%E6%AE%B5"><span class="nav-number">3.7.2.</span> <span class="nav-text">3.7.3 kubectl patch --help：补丁修改、更新资源的字段</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-7-4-kubectl-replace-help%EF%BC%9A%E6%A0%B9%E6%8D%AEyaml%E6%96%87%E4%BB%B6%E6%9B%B4%E6%96%B0%E4%BF%AE%E6%94%B9%E5%90%8E%E9%85%8D%E7%BD%AE%E8%B5%84%E6%BA%90%EF%BC%8C%E4%BC%9A%E5%81%9C%E6%8E%89%E5%8E%9F%E6%9D%A5%E7%9A%84%E8%B5%84%E6%BA%90%EF%BC%8C%E9%87%8D%E6%96%B0%E5%88%9B%E5%BB%BA"><span class="nav-number">3.7.3.</span> <span class="nav-text">3.7.4 kubectl replace --help：根据yaml文件更新修改后配置资源，会停掉原来的资源，重新创建</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-8-%E8%AE%BE%E7%BD%AE%E5%91%BD%E4%BB%A4"><span class="nav-number">3.8.</span> <span class="nav-text">3.8 设置命令</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-8-1-kubectl-label-help%EF%BC%9A%E6%9B%B4%E6%96%B0%E8%B5%84%E6%BA%90%E4%B8%8A%E7%9A%84%E6%A0%87%E7%AD%BE"><span class="nav-number">3.8.1.</span> <span class="nav-text">3.8.1 kubectl label --help：更新资源上的标签</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-9-%E5%85%B6%E4%BB%96%E5%91%BD%E4%BB%A4"><span class="nav-number">3.9.</span> <span class="nav-text">3.9 其他命令</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-9-1-kubectl-api-resources-help"><span class="nav-number">3.9.1.</span> <span class="nav-text">3.9.1 kubectl api-resources --help</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">4. 环境配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E7%8E%AF%E5%A2%83%E5%91%BD%E5%90%8D"><span class="nav-number">4.1.</span> <span class="nav-text">4.2 环境命名</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -969,12 +1225,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">124k</span>
+    <span title="站点总字数">125k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:52</span>
+    <span title="站点阅读时长">1:54</span>
 </div>
 
 <!--
