@@ -191,7 +191,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-Dashboard/">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/kubernetes-%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8/">
 
 <div>
       
@@ -209,7 +209,845 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Kubernetes/install-Dashboard/" class="post-title-link" itemprop="url">install-Dashboard</a>
+            <a href="/Kubernetes/kubernetes-%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">kubernetes命令使用</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-13 20:11:53" itemprop="dateCreated datePublished" datetime="2022-05-13T20:11:53+08:00">2022-05-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-27 17:11:05" itemprop="dateModified" datetime="2022-05-27T17:11:05+08:00">2022-05-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-Kubernetes命令使用"><a href="#1-Kubernetes命令使用" class="headerlink" title="1. Kubernetes命令使用"></a>1. Kubernetes命令使用</h3><h4 id="1-1-kubectl-get-nodes节点显示-NotReady-是由于节点之间网络不通导致"><a href="#1-1-kubectl-get-nodes节点显示-NotReady-是由于节点之间网络不通导致" class="headerlink" title="1.1 kubectl get nodes节点显示 NotReady 是由于节点之间网络不通导致"></a>1.1 <font color=red><code>kubectl get nodes</code></font>节点显示 NotReady 是由于节点之间网络不通导致</h4><p><img src="http://oss.linuxtxc.com/images/image-20220407170459496.png" alt="get-nodes">  </p>
+<ul>
+<li>查看集群健康状况：</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get  cs</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl cluster-info</span></span><br></pre></td></tr></table></figure>
+<p><img src="http://oss.linuxtxc.com/images/image-20220407170643950.png" alt="get-sc">  </p>
+<ul>
+<li>先处理网络、后处理配置文件</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim  /etc/kubernetes/manifests/kube-controller-manager.yaml （注释掉 - --port=0）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim  /etc/kubernetes/manifests/kube-scheduler.yaml          （注释掉 - --port=0）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start kubelet</span> </span><br></pre></td></tr></table></figure>
+<ul>
+<li>再次查看</li>
+</ul>
+<p><img src="http://oss.linuxtxc.com/images/image-20220407170817379.png" alt="get-cs-2"><br><img src="http://oss.linuxtxc.com/images/image-20220407171343144.png" alt="get-nodes-2">  </p>
+<ul>
+<li><font color=red><code>kubectl  get</code>，选择输出的格式</font>  <blockquote>
+<ul>
+<li><font color=red><code>-o wide</code></font>  </li>
+<li><font color=red><code>-o json</code></font>  </li>
+<li><font color=red><code>-o yaml</code></font></li>
+<li><font color=red>Service</font>：Service可以看做是一组同类的Pod对外的访问接口，借助Service，应用可以方便的实现服务发现和负载均衡</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get csr  <span class="comment">#查看申请加入kubernetes集群的token信息</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get endpoints  <span class="comment">#获取service对应的所有pod的访问地址</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pod -n web -o wide -w    <span class="comment">#查看namespace web下的pod，--all-namespaces：查看所有namespace下的pod；-w：动态查看；-o wide:查看更多信息</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="2-重置Kubernetes集群"><a href="#2-重置Kubernetes集群" class="headerlink" title="2.  重置Kubernetes集群"></a>2.  重置Kubernetes集群</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在master、node节点都执行以下命令</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm  reset</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">rm</span> -rf /etc/cni/net.d</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在master上执行</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm init --kubernetes-version=1.19.0 --apiserver-advertise-address=192.168.3.124  --service-cidr=10.64.0.0/24 --pod-network-cidr=10.244.0.0/16</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -p <span class="variable">$HOME</span>/.kube</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cp</span> -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> $(<span class="built_in">id</span> -u):$(<span class="built_in">id</span> -g) <span class="variable">$HOME</span>/.kube/config</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim  /etc/kubernetes/manifests/kube-controller-manager.yaml （注释掉 - --port=0）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim  /etc/kubernetes/manifests/kube-scheduler.yaml          （注释掉 - --port=0）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start kubelet</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在node节点执行</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm reset</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm <span class="built_in">join</span> 192.168.3.124:6443 --token f62e1g.exfdrr8bg2fxpdmu \</span></span><br><span class="line"><span class="language-bash">    --discovery-token-ca-cert-hash sha256:7e4762cccce2e8306b6635cbc2091eae34bbf33577276413521a343c49fc026a</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-kubectl资源、命令"><a href="#3-kubectl资源、命令" class="headerlink" title="3. kubectl资源、命令"></a>3. <code>kubectl</code>资源、命令</h3><ul>
+<li><font color=red><code>kubectl</code>：是<code>kubernetes</code>集群的命令行工具，通过它能够对集群本身进行管理，并能够在集群上进行容器化应用的安装和部署</font></li>
+</ul>
+<h4 id="3-1-kubectl-api-resources：是查看kubernetes资源命令，Kubernetes中所有的内容都抽象为资源，所有命令都是围绕资源操作、执行。"><a href="#3-1-kubectl-api-resources：是查看kubernetes资源命令，Kubernetes中所有的内容都抽象为资源，所有命令都是围绕资源操作、执行。" class="headerlink" title="3.1 kubectl api-resources：是查看kubernetes资源命令，Kubernetes中所有的内容都抽象为资源，所有命令都是围绕资源操作、执行。"></a>3.1 <font color=red><code>kubectl api-resources</code>：是查看<code>kubernetes</code>资源命令，<code>Kubernetes</code>中所有的内容都抽象为资源，所有命令都是围绕资源操作、执行。</font></h4><table>
+<thead>
+<tr>
+<th>资源分类</th>
+<th>资源名称</th>
+<th>缩写</th>
+<th>资源作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>集群级别资源</td>
+<td>nodes</td>
+<td>no</td>
+<td>集群组成部分</td>
+</tr>
+<tr>
+<td>集群级别资源</td>
+<td>namespaces</td>
+<td>ns</td>
+<td>隔离Pod</td>
+</tr>
+<tr>
+<td>Pods</td>
+<td>Pods</td>
+<td>po</td>
+<td>装载容器</td>
+</tr>
+<tr>
+<td>Pod资源控制器</td>
+<td>replicationcontrollers</td>
+<td>rc</td>
+<td>比较原始的Pod控制器，已经被废弃，由ReplicaSet替代。</td>
+</tr>
+<tr>
+<td>—</td>
+<td>replicasets</td>
+<td>rs</td>
+<td>保证指定数量的Pod运行，并支持Pod数量变更，镜像版本变更</td>
+</tr>
+<tr>
+<td>—</td>
+<td>deployments</td>
+<td>deploy</td>
+<td>通过控制ReplicaSet来控制Pod，并支持滚动升级、版本回退。</td>
+</tr>
+<tr>
+<td>—</td>
+<td>daemonsets</td>
+<td>ds</td>
+<td>在集群中的指定Node上都运行一个副本，一般用于守护进程类的任务。</td>
+</tr>
+<tr>
+<td>—</td>
+<td>jobs</td>
+<td>—</td>
+<td>它创建出来的Pod只要完成任务就立即退出，用于执行一次性任务。</td>
+</tr>
+<tr>
+<td>—</td>
+<td>cronjobs</td>
+<td>cj</td>
+<td>它创建的Pod会周期性的执行，用于执行周期性的任务。</td>
+</tr>
+<tr>
+<td>—</td>
+<td>horizontalpodautoscalers</td>
+<td>hpa</td>
+<td>可以根据集群负载自动调整Pod的数量，实现削峰填谷。</td>
+</tr>
+<tr>
+<td>Pod资源控制器</td>
+<td>statefulsets</td>
+<td>sts</td>
+<td>管理有状态的应用。</td>
+</tr>
+<tr>
+<td>服务发现资源</td>
+<td>services</td>
+<td>svc</td>
+<td>统一Pod对外接口</td>
+</tr>
+<tr>
+<td>服务发现资源</td>
+<td>ingress</td>
+<td>ing</td>
+<td>统一Pod对外接口</td>
+</tr>
+<tr>
+<td>存储资源</td>
+<td>volumeattachments</td>
+<td>—</td>
+<td>存储</td>
+</tr>
+<tr>
+<td>—</td>
+<td>persistentvolumes</td>
+<td>pv</td>
+<td>存储</td>
+</tr>
+<tr>
+<td>存储资源</td>
+<td>persistentvolumeclaims</td>
+<td>pvc</td>
+<td>存储</td>
+</tr>
+<tr>
+<td>配置资源</td>
+<td>configmaps</td>
+<td>cm</td>
+<td>配置</td>
+</tr>
+<tr>
+<td>配置资源</td>
+<td>secrets</td>
+<td>—</td>
+<td>配置</td>
+</tr>
+</tbody></table>
+<h4 id="3-2-基本命令详解"><a href="#3-2-基本命令详解" class="headerlink" title="3.2 基本命令详解"></a>3.2 基本命令详解</h4><ul>
+<li><font color=red><code>kubectl --help</code>：可以通过<code>--help</code>查看详细的操作命令</font></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>基本命令(初学者)</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>create</td>
+<td>创建</td>
+<td>从文件或标准输入创建资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>expose</td>
+<td>暴露</td>
+<td>将复制控制器、服务、部署或<code>pod</code>暴露为新的<code>Kubernetes</code>服务<code>Service</code></td>
+</tr>
+<tr>
+<td>—</td>
+<td>run</td>
+<td>运行</td>
+<td>在集群中运行一个指定的镜像</td>
+</tr>
+<tr>
+<td>基本命令(初学者)</td>
+<td>set</td>
+<td>设置</td>
+<td>设置一个对象的特定特征</td>
+</tr>
+</tbody></table>
+<ul>
+<li>kubectl命令的语法如下<code>$ kubectl [command] [type] [name] [flags]</code>  <blockquote>
+<ul>
+<li><code>command</code>:	<font color=red>指定要对资源执行的操作，比如：create、get、delete。</font>  </li>
+<li><code>type</code>：<font color=red>指定资源的类型，比如：deployment、pod、service。</font>  </li>
+<li><code>name</code>： <font color=red>指定资源的名称，名称大小写敏感 </font>  </li>
+<li><code>flags</code>： <font color=red>指定额外的可选参数</font></li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h5 id="3-2-1-kubectl-create-help：创建命令用于创建资源"><a href="#3-2-1-kubectl-create-help：创建命令用于创建资源" class="headerlink" title="3.2.1  kubectl create --help：创建命令用于创建资源"></a>3.2.1  <font color=red><code>kubectl create --help</code>：创建命令用于创建资源</font></h5><ul>
+<li><font color=red><code>yaml</code>文件详解、使用<code>kubectl create</code>命令生成<code>yaml</code>文件</font>  <blockquote>
+<ul>
+<li><code>deployment</code>：无状态应用部署  </li>
+<li><code>java-demo</code>：自定义名称  </li>
+<li><code> --image</code>：使用镜像  </li>
+<li><code> --dry-run</code>：测试  </li>
+<li><code>-o</code>：输出  </li>
+<li><code>&gt;/tmp/deploy.yaml</code>：定向输出到文件，不加<code>&gt;/tmp/deploy.yaml</code> 输出到屏幕查看</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建一个namespace命名空间</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace dev</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment java-demo --image=lizhenliang/java-demo --dry-run -o yaml &gt;/tmp/deploy.yaml</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment nginx --image=nginx:1.17.1 --dry-run=client -n dev -o yaml &gt; /tmp/test.yam</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create service clusterip ngx-dep --tcp=80:80  <span class="comment"># 命令行创建service</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create -f  ns-dev.yaml    <span class="comment"># 根据yaml文件创建资源</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-2-2-kubectl-expose-help端口暴露"><a href="#3-2-2-kubectl-expose-help端口暴露" class="headerlink" title="3.2.2 kubectl expose --help端口暴露"></a>3.2.2 <font color=red><code>kubectl expose --help</code>端口暴露</font></h5><blockquote>
+<ul>
+<li><code>expose</code> 端口设置固定选项</li>
+<li><code> java-demo</code>： 自定义名称</li>
+<li><code>--port</code>：集群内部互通端口</li>
+<li><code>--target-port</code>：容器内部端口</li>
+<li><code>--type</code>：随机生成外部访问端口</li>
+<li><code>&gt;java-demo-svc.yaml</code>：定向输出到文件，不加<code>&gt;java-demo-svc.yaml</code>输出到屏幕查看</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl expose --<span class="built_in">help</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl expose deployment java-demo --port=80 --target-port=8080 --<span class="built_in">type</span>=NodePort --dry-run -o yaml &gt;java-demo-svc.yaml</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f java-demo-svc.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">对外发布允许外网访问</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl expose deployment web --port=80 --<span class="built_in">type</span>=NodePort --target-port=80 --name=web</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get service</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">PORT(S):80(集群内部互通端口)、30040/TCP(外部访问端口)</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods,svc</span></span><br><span class="line">NAME                             READY   STATUS    RESTARTS   AGE</span><br><span class="line">pod/java-demo-56d54df448-2m8kr   1/1     Running   0          68m</span><br><span class="line">pod/java-demo-56d54df448-9k5dn   1/1     Running   0          68m</span><br><span class="line">pod/java-demo-56d54df448-wvqkf   1/1     Running   0          68m</span><br><span class="line">pod/nginx-6799fc88d8-5sxfn       1/1     Running   0          3h4m</span><br><span class="line"></span><br><span class="line">NAME                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE</span><br><span class="line">service/java-demo    NodePort    10.103.37.12   &lt;none&gt;        80:30040/TCP   105s</span><br><span class="line">service/kubernetes   ClusterIP   10.96.0.1      &lt;none&gt;        443/TCP        4h35m</span><br><span class="line">service/nginx        NodePort    10.106.61.55   &lt;none&gt;        80:31750/TCP   3h4m</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-2-3-kubectl-run-help：命令使用镜像创建容器"><a href="#3-2-3-kubectl-run-help：命令使用镜像创建容器" class="headerlink" title="3.2.3 kubectl run --help：命令使用镜像创建容器 "></a>3.2.3 <font color=red><code>kubectl run --help</code>：命令使用镜像创建容器 </font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl run nginx --image=nginx:1.17.1 -n web</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-2-4-kubectl-set-help更新镜像、设置一个对象的特定特征"><a href="#3-2-4-kubectl-set-help更新镜像、设置一个对象的特定特征" class="headerlink" title="3.2.4 kubectl set --help更新镜像、设置一个对象的特定特征"></a>3.2.4 <font color=red><code>kubectl set --help</code>更新镜像、设置一个对象的特定特征</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">set</span> image deployment/web nginx=nginx1.15</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-3-中级基本命令：运行、调试命令"><a href="#3-3-中级基本命令：运行、调试命令" class="headerlink" title="3.3  中级基本命令：运行、调试命令"></a>3.3  <font color=red>中级基本命令：运行、调试命令</font></h4><table>
+<thead>
+<tr>
+<th>基本命令(中级)</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>explain</td>
+<td>解释</td>
+<td>展示资源类型、属性文档</td>
+</tr>
+<tr>
+<td>—</td>
+<td>get</td>
+<td>获取</td>
+<td>获取显示一个或多个资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>edit</td>
+<td>编辑</td>
+<td>编辑服务器上的资源</td>
+</tr>
+<tr>
+<td>基本命令(中级)</td>
+<td>delete</td>
+<td>删除</td>
+<td>delete 按文件名、标准输入、资源和名称，或按资源和标签选择器删除资源</td>
+</tr>
+</tbody></table>
+<h5 id="3-3-1-kubectl-explain-help：展示资源文档"><a href="#3-3-1-kubectl-explain-help：展示资源文档" class="headerlink" title="3.3.1 kubectl explain --help：展示资源文档"></a>3.3.1 <font color=red><code>kubectl explain --help</code>：展示资源文档</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.kind.replicasets <span class="comment"># 查看某种资源可以配置的一级配置如：pod、deployment</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.metadata       <span class="comment"># 查看资源的子属性，资源类型：pod、属性：metadata</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-3-2-kubectl-get-help：获取资源"><a href="#3-3-2-kubectl-get-help：获取资源" class="headerlink" title="3.3.2 kubectl get --help：获取资源"></a>3.3.2 <font color=red><code>kubectl get --help</code>：获取资源</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get deploy,pods</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-3-3-kubectl-edit-help：cm：编辑configMap中的配置"><a href="#3-3-3-kubectl-edit-help：cm：编辑configMap中的配置" class="headerlink" title="3.3.3  kubectl edit --help：cm：编辑configMap中的配置"></a>3.3.3  <font color=red><code>kubectl edit --help</code>：cm：编辑configMap中的配置</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改service中的服务</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl edit service/ingress-nginx-controller-admission -n ingress-nginx</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl edit cm kubeadm-config -n kube-system</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-3-4-kubectl-delete-help：删除"><a href="#3-3-4-kubectl-delete-help：删除" class="headerlink" title="3.3.4 kubectl delete --help：删除"></a>3.3.4 <font color=red><code>kubectl delete --help</code>：删除</font ></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete deploy/web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete svc/web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete -f  deployment-nginx.yaml   <span class="comment">#删除该yaml中创建的资源</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete pod nginx-deployment-798444d598-87hlk -n web  <span class="comment">#删除pod资源</span></span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-4-Kubernetes部署命令"><a href="#3-4-Kubernetes部署命令" class="headerlink" title="3.4 Kubernetes部署命令"></a>3.4 <font color=red><code>Kubernetes</code>部署命令</font></h4><table>
+<thead>
+<tr>
+<th>部署命令</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>rollout</td>
+<td>首次展示</td>
+<td>管理资源的发布</td>
+</tr>
+<tr>
+<td>—</td>
+<td>scale</td>
+<td>规模</td>
+<td>扩(缩)容<code>Pod</code>的数量,为<code>Deployment</code>、<code>ReplicaSet</code>或<code>Replication</code> <code>Controller</code>设置新的大小</td>
+</tr>
+<tr>
+<td>—</td>
+<td>autoscale</td>
+<td>自动调整</td>
+<td>自动调整Pod的数量，自动缩放<code>Deployment</code>、<code>ReplicaSet</code>、<code>StatefulSet</code>或<code>ReplicationController</code></td>
+</tr>
+</tbody></table>
+<h5 id="3-4-1-kubectl-rollout-help：管理资源"><a href="#3-4-1-kubectl-rollout-help：管理资源" class="headerlink" title="3.4.1 kubectl rollout --help：管理资源"></a>3.4.1 <font color=red><code>kubectl rollout --help</code>：管理资源</font></h5><blockquote>
+<ul>
+<li><code>status</code>：显示当前升级状态  </li>
+<li><code>history</code>：显示升级历史记录  </li>
+<li><code>pause</code>：暂停版本升级过程  </li>
+<li><code>resume</code>：继续已经暂停的版本升级过程  </li>
+<li><code>restart</code>：重启版本升级过程  </li>
+<li><code>undo</code>：回滚到上一级版本 （可以使用<code>--to-revision</code>，指定版本）</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">升级</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f pc-deployment.yml --record  <span class="comment">#--record，记录操作记录,便于回滚</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">继续更新过程</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout resume deployment nginx-deployment -n app</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">相当于灰度发布</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout pause deployment nginx-deployment -n app</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">通过修改deployment文件更改</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f nginx-deployment.yml --record</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout pause deployment nginx-deployment -n app</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看升级状态</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout status deployment/nginx-deployment</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看升级历史版本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout <span class="built_in">history</span> deployment/web</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout <span class="built_in">history</span> deployment -n app</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">回滚</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout undo deployment/web --revision=2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl rollout undo deploy nginx-deployment --to-revision=1 -n app <span class="comment"># 版本回滚到v1</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-4-2-kubectl-scale-help：扩缩容Pod的数量"><a href="#3-4-2-kubectl-scale-help：扩缩容Pod的数量" class="headerlink" title="3.4.2 kubectl scale --help：扩缩容Pod的数量"></a>3.4.2 <font color=red><code>kubectl scale --help</code>：扩缩容Pod的数量</font></h5><ul>
+<li><font color=red><code>--replicas</code></font>：参数定义<code>Pod</code>数量</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl scale rc redis --replicas=3 -n web    <span class="comment">#操作pod 的扩容和缩容</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl scale --replicas=2 -f redis-slave-deployment.yaml</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-4-3-kubectl-autoscale-help：使Deployment设定，使用默认的自动伸缩策略，指定目标CPU使用率，使其Pod数量在2到10之间"><a href="#3-4-3-kubectl-autoscale-help：使Deployment设定，使用默认的自动伸缩策略，指定目标CPU使用率，使其Pod数量在2到10之间" class="headerlink" title="3.4.3 kubectl autoscale --help：使Deployment设定，使用默认的自动伸缩策略，指定目标CPU使用率，使其Pod数量在2到10之间"></a>3.4.3 <font color=red><code>kubectl autoscale --help</code>：使<code>Deployment</code>设定，使用默认的自动伸缩策略，指定目标CPU使用率，使其Pod数量在2到10之间</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl autoscale deployment deployment-nginx --cpu-percent=60 --min=2 --max=10</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-5-集群管理命令"><a href="#3-5-集群管理命令" class="headerlink" title="3.5 集群管理命令"></a>3.5 <font color=red>集群管理命令</font></h4><table>
+<thead>
+<tr>
+<th>集群管理命令</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>certificate</td>
+<td>证书</td>
+<td>修改证书资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>cluster-info</td>
+<td>集群信息</td>
+<td>显示集群信息</td>
+</tr>
+<tr>
+<td>—</td>
+<td>top</td>
+<td></td>
+<td>顶部显示资源（CPU&#x2F;内存）使用情况</td>
+</tr>
+<tr>
+<td>—</td>
+<td>cordon</td>
+<td>警戒线</td>
+<td>警戒线 将节点标记为不可调度</td>
+</tr>
+<tr>
+<td>—</td>
+<td>uncordon</td>
+<td></td>
+<td><code>uncordon</code>将节点标记为可调度</td>
+</tr>
+<tr>
+<td>—</td>
+<td>drain</td>
+<td>排水</td>
+<td>排水节点准备维护</td>
+</tr>
+<tr>
+<td>集群管理命令</td>
+<td>taint</td>
+<td>污点</td>
+<td><code>taint</code>更新一个或多个节点上的污点</td>
+</tr>
+</tbody></table>
+<h5 id="3-5-3-kubectl-top-help：资源使用情况"><a href="#3-5-3-kubectl-top-help：资源使用情况" class="headerlink" title="3.5.3 kubectl top --help：资源使用情况"></a>3.5.3 <font color=red><code>kubectl top --help</code>：资源使用情况</font></h5><blockquote>
+<ul>
+<li><font color=red><code>metrics-server</code></font><code>metrics-server</code>可以用来收集集群中的资源使用情况、需要单独安装  </li>
+<li><a target="_blank" rel="noopener" href="https://github.com/kubernetes-sigs/metrics-server"><code>Kubernetes</code>指标服务器</a>  </li>
+<li><font color=red><code>hostNetwork: true</code></font>：新增参数  </li>
+<li><font color=red><code>image: registry.cn-hangzhou.aliyuncs.com/google_containers/metrics-server-amd64:v0.3.6  args:</code></font>：国内修改为阿里云地址  </li>
+<li><font color=red><code>- --kubelet-insecure-tls</code></font>：新增参数  </li>
+<li><font color=red><code>- --kubelet-preferred-address-types=InternalIP,Hostname,InternalDNS,ExternalDNS,ExternalIP</code></font>：替换参数</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.6.1/components.yaml</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim components.yaml  <span class="comment"># 具体添加一下内容</span></span></span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    k8s-app: metrics-server</span><br><span class="line">  name: metrics-server</span><br><span class="line">  namespace: kube-system</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      k8s-app: metrics-server</span><br><span class="line">  strategy:</span><br><span class="line">    rollingUpdate:</span><br><span class="line">      maxUnavailable: 0</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        k8s-app: metrics-server</span><br><span class="line">    spec:</span><br><span class="line">      hostNetwork: true  	# 新增：hostNetwork: true</span><br><span class="line">      containers:</span><br><span class="line">      - args:</span><br><span class="line">        - --cert-dir=/tmp</span><br><span class="line">        - --secure-port=4443</span><br><span class="line">        - --kubelet-preferred-address-types=InternalIP,Hostname,InternalDNS,ExternalDNS,ExternalIP  	# 替换：InternalIP,Hostname,InternalDNS,ExternalDNS,ExternalIP</span><br><span class="line">        - --kubelet-use-node-status-port</span><br><span class="line">        - --metric-resolution=15s</span><br><span class="line">        - --kubelet-insecure-tls  	# 新增：- --kubelet-insecure-tls</span><br><span class="line">        image: k8s.gcr.io/metrics-server/metrics-server:v0.6.1</span><br><span class="line">        imagePullPolicy: IfNotPresent</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f components.yaml</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl top node  --use-protocol-buffers</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl top  pod/node  -n dev</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-5-7-kubectl-taint-help：污点配置"><a href="#3-5-7-kubectl-taint-help：污点配置" class="headerlink" title="3.5.7 kubectl taint --help：污点配置"></a>3.5.7 <font color=red><code>kubectl taint --help</code>：污点配置</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置污点</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl taint node k8s-node1 tag=webapps:PreferNoSchedule</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">去除污点</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl taint node k8s-node1 tag:PreferNoSchedule-</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">去除所有污点</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl taint node k8s-node1 tag-</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">查看节点上的污点</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe node</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe nodes k8s-node1 | grep Taints</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-6-故障排除和调试命令"><a href="#3-6-故障排除和调试命令" class="headerlink" title="3.6 故障排除和调试命令"></a>3.6 <font color=red>故障排除和调试命令</font></h4><table>
+<thead>
+<tr>
+<th>故障排除和调试命令</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>describe</td>
+<td>描述</td>
+<td><code>describe</code>显示特定资源或资源组的详细信息</td>
+</tr>
+<tr>
+<td>—</td>
+<td>logs</td>
+<td>日志</td>
+<td>打印 pod 中容器的日志</td>
+</tr>
+<tr>
+<td>—</td>
+<td>attach</td>
+<td>缠绕</td>
+<td>进入运行中的容器、附加到正在运行的容器</td>
+</tr>
+<tr>
+<td>—</td>
+<td>exec</td>
+<td>执行</td>
+<td>在容器中执行命令</td>
+</tr>
+<tr>
+<td>—</td>
+<td>port-forward</td>
+<td>转发</td>
+<td>将一个或多个本地端口转发到一个<code>pod</code></td>
+</tr>
+<tr>
+<td>—</td>
+<td>proxy</td>
+<td>代理</td>
+<td>运行到<code>Kubernetes API</code>服务器的代理</td>
+</tr>
+<tr>
+<td>—</td>
+<td>cp</td>
+<td>复制</td>
+<td>在Pod内外复制文件</td>
+</tr>
+<tr>
+<td>—</td>
+<td>auth</td>
+<td></td>
+<td>检查授权</td>
+</tr>
+<tr>
+<td>故障排除和调试命令</td>
+<td>debug</td>
+<td>调试</td>
+<td>创建调试会话以对工作负载和节点进行故障排除</td>
+</tr>
+</tbody></table>
+<h5 id="3-6-1-kubectl-describe-help显示资源内部信息"><a href="#3-6-1-kubectl-describe-help显示资源内部信息" class="headerlink" title="3.6.1 kubectl describe --help显示资源内部信息"></a>3.6.1 <font color=red><code>kubectl describe --help</code>显示资源内部信息</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe namespace kube-system</span></span><br><span class="line">Name:         kube-system</span><br><span class="line">Labels:       kubernetes.io/metadata.name=kube-system</span><br><span class="line">Annotations:  &lt;none&gt;</span><br><span class="line">Status:       Active  	# 表示正在使用中，Terminating:表示正在删除命名空间</span><br><span class="line"></span><br><span class="line">No resource quota.  	# 表示：针对命名空间做的资源限制</span><br><span class="line"></span><br><span class="line">No LimitRange resource.  	# 表示：针对命名空间中的每个组件做的资源限制</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe  pod nginx-pod  -n web   <span class="comment">#查看pod 的详细信息</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe service nginx-svc -n web  <span class="comment">#查看service的 详细信息</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe node 192.168.3.125     <span class="comment">#查看node的详细信息</span></span>  </span><br></pre></td></tr></table></figure>
+
+<h5 id="3-6-2-kubectl-logs-help日志查看"><a href="#3-6-2-kubectl-logs-help日志查看" class="headerlink" title="3.6.2 kubectl logs --help日志查看"></a>3.6.2 <font color=red><code>kubectl logs --help</code>日志查看</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl logs nginx-deployment-798444d598-87hlk  -n web   <span class="comment">#查看pod日志</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl logs -f  nginx-deployment-798444d598-87hlk -n web  <span class="comment">#实时查看日志</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">log</span>  nginx-deployment-798444d598-87hlk -c &lt;container_name&gt; -n web  <span class="comment">#查看pod中单个容器的日志</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl logs -l app=frontend  -n web    <span class="comment">#返回全部标记为 app=frontend 的 pod 的合并日志</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-6-4-kubectl-exec-help进入容器"><a href="#3-6-4-kubectl-exec-help进入容器" class="headerlink" title="3.6.4 kubectl exec --help进入容器"></a>3.6.4 <font color=red><code>kubectl exec --help</code>进入容器</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> -it  nginx-deployment-798444d598-87hlk  -n web -- /bin/sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> my-pod -- <span class="built_in">ls</span> /  	<span class="comment"># 在已存在的容器中执行命令（只有一个容器的情况下）</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> my-pod -c my-container -- <span class="built_in">ls</span> /  	<span class="comment"># 在已存在的容器中执行命令（pod 中有多个容器的情况下）</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-6-5-kubectl-port-forward-help转发Pod中端口"><a href="#3-6-5-kubectl-port-forward-help转发Pod中端口" class="headerlink" title="3.6.5 kubectl port-forward --help转发Pod中端口"></a>3.6.5 <font color=red><code>kubectl port-forward --help</code>转发<code>Pod</code>中端口</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl port-forward my-pod 5000:6000  	<span class="comment"># 转发pod中的6000端口到本地的 5000 端口</span></span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-7-高级命令"><a href="#3-7-高级命令" class="headerlink" title="3.7 高级命令"></a>3.7 <font color=red>高级命令</font></h4><table>
+<thead>
+<tr>
+<th>高级命令</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>diff</td>
+<td>对比</td>
+<td>对比实时版本与将要应用的版本之间的差异</td>
+</tr>
+<tr>
+<td>—</td>
+<td>apply</td>
+<td>应用</td>
+<td>通过文件名或标准输入将配置应用于资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>patch</td>
+<td>更新</td>
+<td>更新一个资源，更新资源的字段</td>
+</tr>
+<tr>
+<td>—</td>
+<td>replace</td>
+<td>替换</td>
+<td>用文件名或标准输入替换资源</td>
+</tr>
+<tr>
+<td>—</td>
+<td>wait</td>
+<td>等待</td>
+<td>等待实验：等待一个或多个资源的特定条件</td>
+</tr>
+<tr>
+<td>高级命令</td>
+<td>kustomize</td>
+<td></td>
+<td>从目录或 URL 构建一个 kustomization 目标</td>
+</tr>
+</tbody></table>
+<h5 id="3-7-2-kubectl-apply-help"><a href="#3-7-2-kubectl-apply-help" class="headerlink" title="3.7.2 kubectl apply --help"></a>3.7.2 <font color=red><code>kubectl apply --help</code></font></h5><blockquote>
+<ul>
+<li>如果资源不存在，就创建，相当于<code>kubectl create</code>。  </li>
+<li>如果资源存在，就更新，相当于<code>kubectl patch</code>。</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">运行构建命令</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f deploy.yaml    <span class="comment">#K8S默认拉去GitHub上镜像</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f nginx-pod.yaml -n web --record</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-7-3-kubectl-patch-help：补丁修改、更新资源的字段"><a href="#3-7-3-kubectl-patch-help：补丁修改、更新资源的字段" class="headerlink" title="3.7.3 kubectl patch --help：补丁修改、更新资源的字段"></a>3.7.3 <font color=red><code>kubectl patch --help</code>：补丁修改、更新资源的字段</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl patch pod rc-nginx-2-kpiqt -p <span class="string">&#x27;&#123;&quot;metadata&quot;:&#123;&quot;labels&quot;:&#123;&quot;app&quot;:&quot;nginx-3&quot;&#125;&#125;&#125;&#x27;</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="3-7-4-kubectl-replace-help：根据yaml文件更新修改后配置资源，会停掉原来的资源，重新创建"><a href="#3-7-4-kubectl-replace-help：根据yaml文件更新修改后配置资源，会停掉原来的资源，重新创建" class="headerlink" title="3.7.4 kubectl replace --help：根据yaml文件更新修改后配置资源，会停掉原来的资源，重新创建"></a>3.7.4 <font color=red><code>kubectl replace --help</code>：根据yaml文件更新修改后配置资源，会停掉原来的资源，重新创建</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl replace -f rc-nginx.yaml</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-8-设置命令"><a href="#3-8-设置命令" class="headerlink" title="3.8 设置命令"></a>3.8 <font color=red>设置命令</font></h4><table>
+<thead>
+<tr>
+<th>设置命令</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>label</td>
+<td>标签</td>
+<td>更新资源上的标签</td>
+</tr>
+<tr>
+<td>—</td>
+<td>annotate</td>
+<td>注释</td>
+<td>更新资源上的注释</td>
+</tr>
+<tr>
+<td>—</td>
+<td>completion</td>
+<td></td>
+<td>完成输出指定shell的shell完成代码（bash或zsh）</td>
+</tr>
+</tbody></table>
+<h5 id="3-8-1-kubectl-label-help：更新资源上的标签"><a href="#3-8-1-kubectl-label-help：更新资源上的标签" class="headerlink" title="3.8.1 kubectl label --help：更新资源上的标签"></a>3.8.1 <font color=red><code>kubectl label --help</code>：更新资源上的标签</font></h5><table>
+<thead>
+<tr>
+<th>标签定义</th>
+<th>写法</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>版本标签</td>
+<td>“version”: “release”</td>
+<td>—</td>
+</tr>
+<tr>
+<td>版本标签</td>
+<td>“version”: “stable”</td>
+<td>—</td>
+</tr>
+<tr>
+<td>环境标签</td>
+<td>“environment”: “dev”</td>
+<td>—</td>
+</tr>
+<tr>
+<td>—</td>
+<td>“environment”: “test”</td>
+<td>—</td>
+</tr>
+<tr>
+<td>环境标签</td>
+<td>“environment”: “pro”</td>
+<td>—</td>
+</tr>
+<tr>
+<td>架构标签</td>
+<td>“tier”: “frontend”</td>
+<td>—</td>
+</tr>
+<tr>
+<td>架构标签</td>
+<td>“tier”: “backend”</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>版本类</th>
+<th>标签(release)</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>稳定版</td>
+<td>stable</td>
+<td>—</td>
+</tr>
+<tr>
+<td>金丝雀版</td>
+<td>canary</td>
+<td>可以将其称之为测试版中的测试版</td>
+</tr>
+<tr>
+<td>测试版</td>
+<td>beta</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示pod的标签</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl label pod  --show-labels -n web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">为pod打上标签</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kucectl label pod  nginx-pod version=1.0 -n web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">覆盖原来的标签：--overwrite</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kucectl label pod  nginx-pod version=1.0  --overwrite -n web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除标签</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kucectl label pod  nginx-pod version- -n web</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-9-其他命令"><a href="#3-9-其他命令" class="headerlink" title="3.9 其他命令"></a>3.9 <font color=red>其他命令</font></h4><table>
+<thead>
+<tr>
+<th>其他命令</th>
+<th>命令</th>
+<th>翻译</th>
+<th>命令作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td>api-resources</td>
+<td></td>
+<td>打印服务器上支持的 API 资源</td>
+</tr>
+<tr>
+<td></td>
+<td>api-versions</td>
+<td></td>
+<td>打印服务器上支持的 API 版本，格式为“group&#x2F;version”</td>
+</tr>
+<tr>
+<td></td>
+<td>config</td>
+<td></td>
+<td>修改 kubeconfig 文件</td>
+</tr>
+<tr>
+<td></td>
+<td>plugin</td>
+<td></td>
+<td>提供与插件交互的实用程序</td>
+</tr>
+<tr>
+<td>其他命令</td>
+<td>version</td>
+<td>版本</td>
+<td>打印客户端和服务器版本信息</td>
+</tr>
+</tbody></table>
+<h5 id="3-9-1-kubectl-api-resources-help"><a href="#3-9-1-kubectl-api-resources-help" class="headerlink" title="3.9.1 kubectl api-resources --help"></a>3.9.1 <font color=red><code>kubectl api-resources --help</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl api-resources   <span class="comment">#查看k8s所有的资源以及对应的apiversion</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl api-versions    <span class="comment">#查看k8s所有 版本号</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-环境配置"><a href="#4-环境配置" class="headerlink" title="4. 环境配置"></a>4. 环境配置</h3><h4 id="4-2-环境命名"><a href="#4-2-环境命名" class="headerlink" title="4.2 环境命名"></a>4.2 环境命名</h4><table>
+<thead>
+<tr>
+<th>环境类</th>
+<th>标签(environment)</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>开发</td>
+<td>dev</td>
+<td>—</td>
+</tr>
+<tr>
+<td>测试</td>
+<td>qa</td>
+<td>—</td>
+</tr>
+<tr>
+<td>生产</td>
+<td>production</td>
+<td>—</td>
+</tr>
+<tr>
+<td>运维</td>
+<td>op</td>
+<td>—</td>
+</tr>
+<tr>
+<td>应用类(app)</td>
+<td>ui、as、pc、sc</td>
+<td>—</td>
+</tr>
+<tr>
+<td>架构类</td>
+<td>tier</td>
+<td>—</td>
+</tr>
+<tr>
+<td>前端</td>
+<td>frontend</td>
+<td>—</td>
+</tr>
+<tr>
+<td>后端</td>
+<td>backend</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<p><font color=red><em><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>我是分割线</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></em></font>  </p>
+<table>
+<thead>
+<tr>
+<th>缓存</th>
+<th>cache</th>
+<th>—</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>分区</td>
+<td>标签(partition)</td>
+<td>备注</td>
+</tr>
+<tr>
+<td>客户A</td>
+<td>customerA</td>
+<td>—</td>
+</tr>
+<tr>
+<td>客户B</td>
+<td>customerB</td>
+<td>—</td>
+</tr>
+<tr>
+<td>品控级别(Track)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>每天</td>
+<td>daily</td>
+<td>—</td>
+</tr>
+<tr>
+<td>每周</td>
+<td>weekly</td>
+<td>—</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-k8s-Dashboard/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Kubernetes/install-k8s-Dashboard/" class="post-title-link" itemprop="url">install-Dashboard</a>
         </h2>
 
         <div class="post-meta">
@@ -342,7 +1180,7 @@ clusterrolebinding.rbac.authorization.k8s.io/dashboard-admin created   #
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-coredns/">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-k8s-coredns/">
 
 <div>
       
@@ -360,7 +1198,7 @@ clusterrolebinding.rbac.authorization.k8s.io/dashboard-admin created   #
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Kubernetes/install-coredns/" class="post-title-link" itemprop="url">install-coredns</a>
+            <a href="/Kubernetes/install-k8s-coredns/" class="post-title-link" itemprop="url">install-coredns</a>
         </h2>
 
         <div class="post-meta">
@@ -458,7 +1296,7 @@ $ kubectl apply -f coredns.yaml
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-Argo-CD/">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-k8s-Argo-CD/">
 
 <div>
       
@@ -476,7 +1314,7 @@ $ kubectl apply -f coredns.yaml
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Kubernetes/install-Argo-CD/" class="post-title-link" itemprop="url">install-Argo CD</a>
+            <a href="/Kubernetes/install-k8s-Argo-CD/" class="post-title-link" itemprop="url">install-Argo CD</a>
         </h2>
 
         <div class="post-meta">
@@ -559,7 +1397,7 @@ $ kubectl apply -f coredns.yaml
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-harbor/">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-k8s-harbor/">
 
 <div>
       
@@ -577,7 +1415,7 @@ $ kubectl apply -f coredns.yaml
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Kubernetes/install-harbor/" class="post-title-link" itemprop="url">install-harbor</a>
+            <a href="/Kubernetes/install-k8s-harbor/" class="post-title-link" itemprop="url">install-harbor</a>
         </h2>
 
         <div class="post-meta">
@@ -1805,7 +2643,7 @@ $ chkconfig redis on
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/gitlab/install-git-runner/">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/gitlab/install-gitlab-runner/">
 
 <div>
       
@@ -1823,7 +2661,7 @@ $ chkconfig redis on
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/gitlab/install-git-runner/" class="post-title-link" itemprop="url">install-git-runner</a>
+            <a href="/gitlab/install-gitlab-runner/" class="post-title-link" itemprop="url">install-git-runner</a>
         </h2>
 
         <div class="post-meta">
@@ -1890,169 +2728,6 @@ $ chkconfig redis on
 <h3 id="2-rpm安装git-runner"><a href="#2-rpm安装git-runner" class="headerlink" title="2. rpm安装git-runner"></a>2. rpm安装git-runner</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget --content-disposition https://packages.gitlab.com/runner/gitlab-runner/packages/el/7/gitlab-runner-14.9.1-1.x86_64.rpm/download.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">curl -O https://gitlab-runner-downloads.s3.amazonaws.com/latest/rpm/gitlab-runner_amd64.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">rpm -ivh gitlab-runner_amd64.rpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm -ivh gitlab-runner-14.9.1-1.x86_64.rpm</span></span><br></pre></td></tr></table></figure>
 
 <h4 id="3-docker-安装git-runner"><a href="#3-docker-安装git-runner" class="headerlink" title="3. docker 安装git-runner"></a>3. docker 安装git-runner</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -d --name gitlab-runner --restart always \</span></span><br><span class="line"><span class="language-bash">     -v /srv/gitlab-runner/config:/etc/gitlab-runner \</span></span><br><span class="line"><span class="language-bash">     -v /var/run/docker.sock:/var/run/docker.sock \</span></span><br><span class="line"><span class="language-bash">     gitlab/gitlab-runner:latest</span></span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-<div>
-    
- </div>
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/gitlab/git-command-usage/">
-
-<div>
-      
-</div>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/IMG_0081.JPG">
-      <meta itemprop="name" content="二哥">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="二哥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/gitlab/git-command-usage/" class="post-title-link" itemprop="url">git-command-usage</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-04-22 18:37:11" itemprop="dateCreated datePublished" datetime="2022-04-22T18:37:11+08:00">2022-04-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-24 19:58:00" itemprop="dateModified" datetime="2022-05-24T19:58:00+08:00">2022-05-24</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/gitlab/" itemprop="url" rel="index"><span itemprop="name">gitlab</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-git命令作用"><a href="#1-git命令作用" class="headerlink" title="1. git命令作用"></a>1. git命令作用</h3><ul>
-<li><a target="_blank" rel="noopener" href="https://mirrors.edge.kernel.org/pub/software/scm/git/">Git命令工具下载地址</a></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">初始配置获取仓库</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置环境提交所用账户以及邮箱</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.name <span class="string">&quot;name&quot;</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.emamil <span class="string">&quot;name@gmail.com&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">获取现有仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/zabbix/zabbix.git  <span class="comment">#克隆现有远程代码到本地开发</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">本地创建仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git init  <span class="comment">#初始化git本地仓库，初始化后在本地生成一个.git目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git add .  <span class="comment">#把修改或者添加文件到索引中：-A：参数代表所有</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git commit -m <span class="string">&quot;清除缓存&quot;</span>  <span class="comment">#声明本次修改或添加内容并且交到本地仓库</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">拉取推送仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git pull -u origin master <span class="comment">#拉取master分支到本地-f:强制拉取，</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git push -u origin master <span class="comment">#推送master分支到远程</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">切换、查看、合并分支</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git fetch  	<span class="comment">#查看线上分支,--all:查看线上所有分支</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git branch -a <span class="comment">#-a：查看本地当前分支、dev：创建dev分支、-d：删除分支、-D：强制删除</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout dev <span class="comment">#切换分支，dev：切换到dev分支</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout .   <span class="comment">#放弃本地所有修改</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git merge -m <span class="string">&#x27;合并dev分支到master&#x27;</span> dev  <span class="comment">#先切换到master分支</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">回退版本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git reset --hard  	<span class="comment">#回退版本、可选择版本分支号回退</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">rm</span> -r --cached .  <span class="comment">#清楚本地缓存</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看git仓库状态以及日志</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git status  <span class="comment">#命令查看当前git仓库的状态</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> -5  <span class="comment">#查看最近五次日志,v2.5.. Makefile fs/:找出所有从&quot;v2.5“开始在fs目录下的所有Makefile的修改</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --<span class="built_in">stat</span>  <span class="comment">#显示在每个提交(commit)中哪些文件被修改, 这些文件分别添加或删除多少行内容</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --pretty=oneline  <span class="comment">#格式化日志输出。--pretty参数可以使用若干表现格式，如oneline，--pretty=short，也可用medium,full,fuller,email 或raw，也可以用--pretty=format参数定义格式，</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --graph --pretty=oneline  <span class="comment">#--graph 选项可以可视化你的提交图(commit graph)，会用ASCII字符来画出一个很漂亮的提交历史(commit history)线：</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git diff --cached <span class="comment">#diff比较选项再加上 --cached参数，看看缓存区中哪些文件被修改</span></span></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-处理-git文件过大"><a href="#2-处理-git文件过大" class="headerlink" title="2. 处理.git文件过大"></a>2. 处理.git文件过大</h3><p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/29769130">解决.git提交次数过多导致文件过大</a>  </p>
-<h4 id="2-1-运行-gc-，生成-pack-文件（后面的-prune-now-表示对之前的所有提交做修剪，有的时候仅仅-gc-一下-git-文件就会小很多）"><a href="#2-1-运行-gc-，生成-pack-文件（后面的-prune-now-表示对之前的所有提交做修剪，有的时候仅仅-gc-一下-git-文件就会小很多）" class="headerlink" title="2.1 运行 gc ，生成 pack 文件（后面的 --prune=now 表示对之前的所有提交做修剪，有的时候仅仅 gc 一下.git 文件就会小很多）"></a>2.1 运行 <code>gc</code> ，生成 <code>pack</code> 文件（后面的 <code>--prune=now</code> 表示对之前的所有提交做修剪，有的时候仅仅 <code>gc</code> 一下<code>.git</code> 文件就会小很多）</h4><ul>
-<li>2.1.1 运行 <code>gc</code> ，生成 <code>pack</code> 文件</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git gc --prune=now</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.2 找出最大的三个文件</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git verify-pack -v .git/objects/pack/*.idx | <span class="built_in">sort</span> -k 3 -n | <span class="built_in">tail</span> -3</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">示例输出：</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">1debc758cf31a649c2fc5b0c59ea1b7f01416636 blob   4925660 3655422 14351</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">c43a8da9476f97e84b52e0b34034f8c2d93b4d90 blob   154188651 152549294 12546842</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">2272096493d061489349e0a312df00dcd0ec19a2 blob   155414465 153754005 165096136</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.3 查看那些大文件究竟是谁（<code>c43a8da</code> 是上面大文件的<code>hash</code>码）</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git rev-list --objects --all | grep c43a8da</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">c43a8da9476f97e84b52e0b34034f8c2d93b4d90 data/bigfile</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.4 移除对该文件的引用（也就是 <code>data/bigfile</code>）</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git filter-branch --force --index-filter <span class="string">&quot;git rm --cached --ignore-unmatch &#x27;data/bigfile&#x27;&quot;</span>  --prune-empty --tag-name-filter <span class="built_in">cat</span> -- --all</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.5 进行 <code>repack</code></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git for-each-ref --format=<span class="string">&#x27;delete %(refname)&#x27;</span> refs/original | git update-ref --stdin</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git reflog expire --expire=now --all</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git gc --prune=now</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.6 查看 <code>pack</code> 的空间使用情况</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git count-objects -v</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="2-2-LFS功能压缩大文件"><a href="#2-2-LFS功能压缩大文件" class="headerlink" title="2.2 LFS功能压缩大文件"></a>2.2 LFS功能压缩大文件</h4><ul>
-<li>开启LFS功能</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git lfs install</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>设置LFS要管理的文件类型，pth、mmdb、pack、idx</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git lfs track <span class="string">&quot;*.pth&quot;</span></span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>报LFS错，在执行上面的最后一步上传命令的时候可能会报两个错误</p>
-<ul>
-<li><code>WARNING: Authentication error: Authentication required: LFS only supported repository in paid enterprise.</code></li>
-</ul>
-<blockquote>
-<ul>
-<li>第一个错误可以执行以下命令, 命令中的{your_gitee}&#x2F;{your_repo}是你的远程仓库地址,根据自己情况替换</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config lfs.https://gitee.com/&#123;</span><br><span class="line">    your_gitee&#125;/&#123;</span><br><span class="line">    your_repo&#125;.git/info/lfs.locksverify false</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>第二个错误可以尝试删除<code>./git/hooks/pre-push</code>文件,最后重新push一下即可</li>
-</ul>
-<p><code>batch response: LFS only supported repository in paid enterprise.</code></p>
-</li>
-</ul>
-<h3 id="3-git获取仓库指定目录或文件"><a href="#3-git获取仓库指定目录或文件" class="headerlink" title="3. git获取仓库指定目录或文件"></a>3. git获取仓库指定目录或文件</h3><ul>
-<li>此功能只在<code>1.7.0</code> 以上版本提供</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> <span class="built_in">test</span> &amp;&amp; <span class="built_in">cd</span> <span class="built_in">test</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git init</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git remote add origin https://xxxx.com/xxx.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config core.sparsecheckout <span class="literal">true</span>  <span class="comment">#使用Sparse checkout模式</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> <span class="built_in">echo</span> <span class="string">&quot;redis-conf/*&quot;</span> &gt;&gt; .git/info/sparse-checkout  <span class="comment">#将检出的目录或文件使用文件追加的形式写入到git的配置.git/info/sparse-checkout文件中，允许添加多行</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git pull origin master <span class="comment">#获取到需要的文件或目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout  <span class="comment">#在对配置文件.git/info/sparse-checkout的内容进行增、删、改操作之后，使用下面的命令重新修正目录和文件</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git push origin master</span></span><br></pre></td></tr></table></figure>
-
 
       
     </div>
@@ -2142,7 +2817,7 @@ $ chkconfig redis on
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-count">27</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
