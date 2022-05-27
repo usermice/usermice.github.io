@@ -30,7 +30,7 @@
 <meta property="og:description" content="markdown实现目录跳转1. Pod详解2.获取yaml命令格式3.apiVersion    html标签实现目录跳转    4.yaml必选参数     4.1Pod基础必选参数,每个YAML文件都包含它们   4.2spec.containers编写定义   4.3spec.volumes编写定义   4.4额外的参数对象    5.yaml编写示例     5.1 安装Ingress">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-15T11:21:27.000Z">
-<meta property="article:modified_time" content="2022-05-27T10:26:44.227Z">
+<meta property="article:modified_time" content="2022-05-27T13:46:37.232Z">
 <meta property="article:author" content="二哥">
 <meta property="article:tag" content="Kubernetes">
 <meta name="twitter:card" content="summary">
@@ -211,7 +211,7 @@
   <p><span>本文标题:</span><a href="/Kubernetes/configure-k8s-yaml%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/">kubernetes-pod详解</a></p>
   <p><span>文章作者:</span><a href="/" title="访问  的个人博客"></a></p>
   <p><span>发布时间:</span>2022年05月15日 - 19:21</p>
-  <p><span>最后更新:</span>2022年05月27日 - 18:26</p>
+  <p><span>最后更新:</span>2022年05月27日 - 21:46</p>
   <p><span>原始链接:</span><a href="/Kubernetes/configure-k8s-yaml%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/" title="kubernetes-pod详解">https://usermice.github.io/Kubernetes/configure-k8s-yaml%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/</a>
     <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://usermice.github.io/Kubernetes/configure-k8s-yaml%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/"  aria-label="复制成功！"></i></span>
   </p>
@@ -262,7 +262,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-27 18:26:44" itemprop="dateModified" datetime="2022-05-27T18:26:44+08:00">2022-05-27</time>
+                <time title="修改时间：2022-05-27 21:46:37" itemprop="dateModified" datetime="2022-05-27T21:46:37+08:00">2022-05-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -294,7 +294,7 @@
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>15 分钟</span>
+              <span>16 分钟</span>
             </span>
 
         </div>
@@ -1015,6 +1015,31 @@
 <td>Boolean</td>
 <td>定义是否使用主机网络模式，默认值为 false。 设置 true 表示使用宿主机网络，不使用 Docker 网桥，同时设置了 true 将无法在同一台宿主机上启动第二个副本。</td>
 </tr>
+<tr>
+<td>service.spec.type</td>
+<td></td>
+<td><code>type</code>确定服务的公开方式。 默认为<code>ClusterIP</code>。有效的选项是<code>ExternalName</code>、<code>ClusterIP</code>、<code>NodePort</code>和<code>LoadBalancer</code></td>
+</tr>
+<tr>
+<td>service.spec.type.ClusterIP</td>
+<td></td>
+<td><code>ClusterIP</code>为负载均衡分配集群内部<code>IP</code>地址端点。 端点由选择器确定，或者如果不是通过手动构造<code>Endpoints</code>对象或<code>EndpointSlice</code>指定对象。 如果<code>clusterIP</code>为<code>None</code>，则不分配虚拟<code>IP</code>，并且端点作为一组端点而不是虚拟<code>IP</code>发布。</td>
+</tr>
+<tr>
+<td>service.spec.type.NodePort</td>
+<td></td>
+<td><code>NodePort</code>建立在<code>ClusterIP</code>之上，并在每个节点上分配一个端口路由到与<code>clusterIP</code>相同的端点。</td>
+</tr>
+<tr>
+<td>service.spec.type.LoadBalancer</td>
+<td></td>
+<td><code>LoadBalancer</code>建立在<code>NodePort</code>并创建一个外部负载均衡器（如果当前支持<code>cloud</code>) 路由到与<code>clusterIP</code>相同的端点。</td>
+</tr>
+<tr>
+<td>service.spec.type.ExternalName</td>
+<td></td>
+<td><code>ExternalName</code>将此服务别名为指定的<code>externalName</code>。 其他几个领域不适用于<code>ExternalName</code>服务</td>
+</tr>
 </tbody></table>
 <ul>
 <li><font color=red><code>Pod</code>调度配置</font></li>
@@ -1221,12 +1246,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">137k</span>
+    <span title="站点总字数">140k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:05</span>
+    <span title="站点阅读时长">2:07</span>
 </div>
 
 <!--

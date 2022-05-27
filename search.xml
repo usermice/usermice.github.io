@@ -34,6 +34,77 @@
       </tags>
   </entry>
   <entry>
+    <title>configure-gitlab</title>
+    <url>/gitlab/configure-gitlab/</url>
+    <content><![CDATA[<h3 id="1-修改gitlab配置文件"><a href="#1-修改gitlab配置文件" class="headerlink" title="1. 修改gitlab配置文件"></a>1. 修改gitlab配置文件</h3><p><a href="https://blog.csdn.net/A___LEi/article/details/110476531">GitLab → 搭建中常遇的问题与日常维护</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/gitlab/gitlab/rb   <span class="comment">#修改gitlab默认端口</span></span></span><br><span class="line">external_url &#x27;http://185.167.13.45:12580&#x27;</span><br><span class="line">unicorn[&#x27;port&#x27;] = &#x27;9092&#x27;  #修改默认端口</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-处理gitlab报错"><a href="#2-处理gitlab报错" class="headerlink" title="2. 处理gitlab报错"></a>2. 处理gitlab报错</h3><ul>
+<li><a href="https://blog.csdn.net/fishinhouse/article/details/105131917">gitlab runner 500错误解决</a></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@k8s-node-2 backups]# gitlab-rails console</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line"> Ruby:         ruby 2.7.5p203 (2021-11-24 revision f69aeb8314) [x86_64-linux]</span><br><span class="line"> GitLab:       14.4.4 (838dea1cf23) FOSS</span><br><span class="line"> GitLab Shell: 13.21.1</span><br><span class="line"> PostgreSQL:   12.7</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line">Loading production environment (Rails 6.1.4.1)</span><br><span class="line">irb(main):001:0&gt; ApplicationSetting.current.reset_runners_registration_token!</span><br><span class="line">=&gt; true</span><br><span class="line">irb(main):002:0&gt; exit</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">######################		rpm包方式安装，进入终端命令如下:</span></span></span><br><span class="line">gitlab-rails dbconsole --database main</span><br><span class="line"></span><br><span class="line">-- Clear project tokens(清除项目令牌)</span><br><span class="line">UPDATE projects SET runners_token = null, runners_token_encrypted = null;</span><br><span class="line">-- Clear group tokens(清除组令牌)</span><br><span class="line">UPDATE namespaces SET runners_token = null, runners_token_encrypted = null;</span><br><span class="line">-- Clear instance tokens(清除实例令牌)</span><br><span class="line">UPDATE application_settings SET runners_registration_token_encrypted = null;</span><br><span class="line">-- Clear key used for JWT authentication(用于 JWT 身份验证的清除密钥)</span><br><span class="line">-- This may break the $CI_JWT_TOKEN job variable:</span><br><span class="line">-- https://gitlab.com/gitlab-org/gitlab/-/issues/325965</span><br><span class="line">UPDATE application_settings SET encrypted_ci_jwt_signing_key = null;</span><br><span class="line">-- Clear runner tokens(清除跑步者令牌)</span><br><span class="line">UPDATE ci_runners SET token = null, token_encrypted = null;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-1-处理502报错"><a href="#2-1-处理502报错" class="headerlink" title="2.1 处理502报错"></a>2.1 处理502报错</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/gitlab/gitlab/rb   <span class="comment">#修改gitlab默认端口</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">报错502,下列取消注释</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">unicorn[<span class="string">&#x27;port&#x27;</span>] = 8088</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">postgresql[<span class="string">&#x27;shared_buffers&#x27;</span>] = <span class="string">&quot;256MB&quot;</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">postgresql[<span class="string">&#x27;max_connections&#x27;</span>] = 200</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">然后</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure  <span class="comment">#初始化gitlab</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-gitlab-403-forbidden-报错解决"><a href="#2-2-gitlab-403-forbidden-报错解决" class="headerlink" title="2.2  gitlab 403 forbidden 报错解决"></a>2.2  gitlab 403 forbidden 报错解决</h4><ul>
+<li>gitlab稳定运行有一年多了，今天研发部小伙伴跑来说，他的gitlab访问不了，不一会，还有几位小伙伴也一样的反馈查看他们的报错，为403 forbidden奇怪的是，我访问是正常的</li>
+<li>排查过程</li>
+<li>首先上服务器，查看各服务均正常gitlab-ctl logs 查看日志，发现有一个IP 172.17.2.254访问被拒绝，而这个IP，是无线网段的网关。瞬间明白了，不能用的全是用无线上网的同学，只要是经过2.254的都不能用继续查看日志，有个xiaoxiao用户，有过几次登陆失败，之后就全都是forbidden看来gitlab是有防爆破机制，查看配置文档gitlab.yml，果然有rack_attack的配置，如图： <img src="http://null/" alt="images"></li>
+<li>解决方法</li>
+<li>进入redis，删除被墙的IP地址即可以，命令如下：</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">/opt/gitlab/embedded/bin/redis-cli -s /var/opt/gitlab/redis/redis.socket keys <span class="string">&#x27;*&#x27;</span> | grep <span class="string">&#x27;rack::attack&#x27;</span> | xargs /opt/gitlab/embedded/bin/redis-cli -s /var/opt/gitlab/redis/redis.socket DEL</span></span><br><span class="line">(integer) 1</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">#执行这命令 使用无线连接gitlab的电脑恢复正常。</span></span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-3-postfix启动报错"><a href="#2-3-postfix启动报错" class="headerlink" title="2.3 postfix启动报错"></a>2.3 postfix启动报错</h4><ul>
+<li>修改 &#x2F;etc&#x2F;postfix&#x2F;main.cf中：#myhostname &#x3D; host.domain.tld</li>
+<li>其中：host.domain.tld 必须是：xxx.xxxx.xxx</li>
+</ul>
+<h3 id="3-gitlab8-0版本汉化"><a href="#3-gitlab8-0版本汉化" class="headerlink" title="3. gitlab8.0版本汉化"></a>3. gitlab8.0版本汉化</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install patch git</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">git <span class="built_in">clone</span> https://gitlab.com/xhang/gitlab.git <span class="comment">#汉化版本库</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">git diff v10.0.2 v10.0.2-zh &gt; ../10.0.2-zh.diff</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://gitlab.com/larryli/gitlab.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> gitlab</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git diff origin/8-0-stable..origin/8-0-zh &gt; patch.diff      <span class="comment">#生成:patch.diff文件</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">patch -d /opt/gitlab/embedded/service/gitlab-rails -p1 &lt; /tmp/patch.diff  <span class="comment">#把:patch.diff文件安装到gitlab安装目录下</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart  <span class="comment">#重启gitlab</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在打包补丁 patch -d &#x2F;opt&#x2F;gitlab&#x2F;embedded&#x2F;service&#x2F;gitlab-rails -p1 &lt; …&#x2F;v10.8.4-zh.diff<br>后可能会出来该情况 一路回车跳过即可！</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/gitlab_server/languge-zh.png" alt="汉化"></p>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/gitlab_server/languge-zh-1.png" alt="汉化2">  </p>
+<h3 id="4-修改gitlab管理员密码的三种方式"><a href="#4-修改gitlab管理员密码的三种方式" class="headerlink" title="4. 修改gitlab管理员密码的三种方式"></a>4. 修改gitlab管理员密码的三种方式</h3><ul>
+<li>方法一，使用id：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">irb(main):001:0&gt; user = User.where(id:[user&#x27;s register index]).first</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>方法二，使用邮箱：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">irb(main):001:0&gt; user = User.where(email:[user&#x27;s register email]).first</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>方法三，使用用户名：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">irb(main):001:0&gt; user = User.where(name:[user&#x27;s register name]).first</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rails console production</span></span><br><span class="line">root@84aba16d413e:/# gitlab-rails console -e production</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line"> GitLab:       12.8.6 (5fc76a64537) FOSS</span><br><span class="line"> GitLab Shell: 11.0.0</span><br><span class="line"> PostgreSQL:   10.12</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line">Loading production environment (Rails 6.0.2)</span><br><span class="line">irb(main):001:0&gt; user = User.where(id: 1).first</span><br><span class="line">=&gt; #&lt;User id:1 @root&gt;</span><br><span class="line">irb(main):002:0&gt; user.password = &#x27;12345678&#x27;</span><br><span class="line">=&gt; &quot;12345678&quot;</span><br><span class="line">irb(main):003:0&gt; user.password_confirmation = &#x27;12345678&#x27;</span><br><span class="line">=&gt; &quot;12345678&quot;</span><br><span class="line">irb(main):004:0&gt; user.save!</span><br><span class="line">Enqueued ActionMailer::DeliveryJob (Job ID: b6aca58a-cfde-4890-aa22-a8f491290c96) to Sidekiq(mailers) with arguments: &quot;DeviseMailer&quot;, &quot;password_change&quot;, &quot;deliver_now&quot;, #&lt;GlobalID:0x00007f79cb5f5298 @uri=#&lt;URI::GID gid://gitlab/User/1&gt;&gt;</span><br><span class="line">=&gt; true</span><br><span class="line">irb(main):005:0&gt; exit</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-Gitlab-配置邮箱"><a href="#5-Gitlab-配置邮箱" class="headerlink" title="5. Gitlab 配置邮箱"></a>5. Gitlab 配置邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/gitlab/gitlab/ra</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_enable&#x27;</span>] = <span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_address&#x27;</span>] = <span class="string">&quot;smtp.server&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_port&#x27;</span>] = 465</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_user_name&#x27;</span>] = <span class="string">&quot;smtp user&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_password&#x27;</span>] = <span class="string">&quot;smtp password&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_domain&#x27;</span>] = <span class="string">&quot;example.com&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_authentication&#x27;</span>] = <span class="string">&quot;login&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_enable_starttls_auto&#x27;</span>] = <span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_tls&#x27;</span>] = <span class="literal">false</span></span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/gitlab_server/configure-git-email.png" alt="configure-git-email"></p>
+<h3 id="6-Gitlab版本升级-Gitlab升级"><a href="#6-Gitlab版本升级-Gitlab升级" class="headerlink" title="6. Gitlab版本升级  Gitlab升级"></a>6. <a href="https://zhuanlan.zhihu.com/p/352342116">Gitlab版本升级</a>  <a href="https://docs.gitlab.com/ee/update/index.html#upgrade-paths">Gitlab升级</a></h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-12.10.14 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.0.14 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.1.11 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.8.8 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.12.10 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.12.12 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.0.11 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.1.8 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.2.6 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.3.2 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.3.6 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.4.0 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.4.4 -y</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="7-Gitlab备份还原"><a href="#7-Gitlab备份还原" class="headerlink" title="7. Gitlab备份还原"></a>7. <a href="https://www.jianshu.com/p/a2600f8dffc2">Gitlab备份还原</a></h3><h4 id="7-1-备份还原"><a href="#7-1-备份还原" class="headerlink" title="7.1 备份还原"></a>7.1 备份还原</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">1. 创建备份，创建后会在:/var/opt/gitlab/backups/ 目录下生成备份文件</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rake gitlab:backup:create</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">2. 备份还原前先停止相关服务</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl stop unicorn</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl stop sidekiq</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3.从指定时间戳的备份恢复（backups目录下有多个备份文件时）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rake gitlab:backup:restore BACKUP=1500809139</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">4. 从默认备份恢复（backups目录下只有一个备份文件时）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rake gitlab:backup:restore</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">5.还原后启动Gitlab</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl start</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="7-2-Gitlab恢复数据报错解决方法"><a href="#7-2-Gitlab恢复数据报错解决方法" class="headerlink" title="7.2  Gitlab恢复数据报错解决方法"></a>7.2  <a href="https://www.jianshu.com/p/09a2b0c25ecd">Gitlab恢复数据报错解决方法</a></h4><h5 id="7-2-1-修改postgresql配置"><a href="#7-2-1-修改postgresql配置" class="headerlink" title="7.2.1 修改postgresql配置"></a>7.2.1 修改postgresql配置</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /var/opt/gitlab/postgresql/data/postgresql.conf</span></span><br><span class="line">listen_addresses = &#x27;*&#x27;		#中添加*符号</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">最下面新增两行</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /var/opt/gitlab/postgresql/data/pg_hba.conf</span></span><br><span class="line">local   all         all                               trust</span><br><span class="line">host    all         all                               127.0.0.1/32 trust</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="7-2-3-修改gitlab账号为超级用户"><a href="#7-2-3-修改gitlab账号为超级用户" class="headerlink" title="7.2.3 修改gitlab账号为超级用户"></a>7.2.3 修改gitlab账号为超级用户</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">su - gitlab-psql</span></span><br><span class="line">Last login: Fri Dec 24 17:35:01 CST 2021 on pts/0</span><br><span class="line">-sh-4.2$ /opt/gitlab/embedded/bin/psql -h 127.0.0.1 gitlabhq_production</span><br><span class="line">psql (12.7)</span><br><span class="line">SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)</span><br><span class="line">Type &quot;help&quot; for help.</span><br><span class="line"></span><br><span class="line">gitlabhq_production=# ALTER USER gitlab WITH SUPERUSER;</span><br><span class="line">ALTER ROLE</span><br><span class="line">gitlabhq_production=# \q</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>gitlab</category>
+      </categories>
+      <tags>
+        <tag>gitlab</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>configure-Redis</title>
     <url>/Redis/configure-Redis/</url>
     <content><![CDATA[<h3 id="1-编写启动文件"><a href="#1-编写启动文件" class="headerlink" title="1. 编写启动文件"></a>1. 编写启动文件</h3><ul>
@@ -157,77 +228,6 @@
       </tags>
   </entry>
   <entry>
-    <title>configure-gitlab</title>
-    <url>/gitlab/configure-gitlab/</url>
-    <content><![CDATA[<h3 id="1-修改gitlab配置文件"><a href="#1-修改gitlab配置文件" class="headerlink" title="1. 修改gitlab配置文件"></a>1. 修改gitlab配置文件</h3><p><a href="https://blog.csdn.net/A___LEi/article/details/110476531">GitLab → 搭建中常遇的问题与日常维护</a></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/gitlab/gitlab/rb   <span class="comment">#修改gitlab默认端口</span></span></span><br><span class="line">external_url &#x27;http://185.167.13.45:12580&#x27;</span><br><span class="line">unicorn[&#x27;port&#x27;] = &#x27;9092&#x27;  #修改默认端口</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-处理gitlab报错"><a href="#2-处理gitlab报错" class="headerlink" title="2. 处理gitlab报错"></a>2. 处理gitlab报错</h3><ul>
-<li><a href="https://blog.csdn.net/fishinhouse/article/details/105131917">gitlab runner 500错误解决</a></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@k8s-node-2 backups]# gitlab-rails console</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line"> Ruby:         ruby 2.7.5p203 (2021-11-24 revision f69aeb8314) [x86_64-linux]</span><br><span class="line"> GitLab:       14.4.4 (838dea1cf23) FOSS</span><br><span class="line"> GitLab Shell: 13.21.1</span><br><span class="line"> PostgreSQL:   12.7</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line">Loading production environment (Rails 6.1.4.1)</span><br><span class="line">irb(main):001:0&gt; ApplicationSetting.current.reset_runners_registration_token!</span><br><span class="line">=&gt; true</span><br><span class="line">irb(main):002:0&gt; exit</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">######################		rpm包方式安装，进入终端命令如下:</span></span></span><br><span class="line">gitlab-rails dbconsole --database main</span><br><span class="line"></span><br><span class="line">-- Clear project tokens(清除项目令牌)</span><br><span class="line">UPDATE projects SET runners_token = null, runners_token_encrypted = null;</span><br><span class="line">-- Clear group tokens(清除组令牌)</span><br><span class="line">UPDATE namespaces SET runners_token = null, runners_token_encrypted = null;</span><br><span class="line">-- Clear instance tokens(清除实例令牌)</span><br><span class="line">UPDATE application_settings SET runners_registration_token_encrypted = null;</span><br><span class="line">-- Clear key used for JWT authentication(用于 JWT 身份验证的清除密钥)</span><br><span class="line">-- This may break the $CI_JWT_TOKEN job variable:</span><br><span class="line">-- https://gitlab.com/gitlab-org/gitlab/-/issues/325965</span><br><span class="line">UPDATE application_settings SET encrypted_ci_jwt_signing_key = null;</span><br><span class="line">-- Clear runner tokens(清除跑步者令牌)</span><br><span class="line">UPDATE ci_runners SET token = null, token_encrypted = null;</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="2-1-处理502报错"><a href="#2-1-处理502报错" class="headerlink" title="2.1 处理502报错"></a>2.1 处理502报错</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/gitlab/gitlab/rb   <span class="comment">#修改gitlab默认端口</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">报错502,下列取消注释</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">unicorn[<span class="string">&#x27;port&#x27;</span>] = 8088</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">postgresql[<span class="string">&#x27;shared_buffers&#x27;</span>] = <span class="string">&quot;256MB&quot;</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">postgresql[<span class="string">&#x27;max_connections&#x27;</span>] = 200</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">然后</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure  <span class="comment">#初始化gitlab</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="2-2-gitlab-403-forbidden-报错解决"><a href="#2-2-gitlab-403-forbidden-报错解决" class="headerlink" title="2.2  gitlab 403 forbidden 报错解决"></a>2.2  gitlab 403 forbidden 报错解决</h4><ul>
-<li>gitlab稳定运行有一年多了，今天研发部小伙伴跑来说，他的gitlab访问不了，不一会，还有几位小伙伴也一样的反馈查看他们的报错，为403 forbidden奇怪的是，我访问是正常的</li>
-<li>排查过程</li>
-<li>首先上服务器，查看各服务均正常gitlab-ctl logs 查看日志，发现有一个IP 172.17.2.254访问被拒绝，而这个IP，是无线网段的网关。瞬间明白了，不能用的全是用无线上网的同学，只要是经过2.254的都不能用继续查看日志，有个xiaoxiao用户，有过几次登陆失败，之后就全都是forbidden看来gitlab是有防爆破机制，查看配置文档gitlab.yml，果然有rack_attack的配置，如图： <img src="http://null/" alt="images"></li>
-<li>解决方法</li>
-<li>进入redis，删除被墙的IP地址即可以，命令如下：</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">/opt/gitlab/embedded/bin/redis-cli -s /var/opt/gitlab/redis/redis.socket keys <span class="string">&#x27;*&#x27;</span> | grep <span class="string">&#x27;rack::attack&#x27;</span> | xargs /opt/gitlab/embedded/bin/redis-cli -s /var/opt/gitlab/redis/redis.socket DEL</span></span><br><span class="line">(integer) 1</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">#执行这命令 使用无线连接gitlab的电脑恢复正常。</span></span></span><br></pre></td></tr></table></figure>
-
-<h4 id="2-3-postfix启动报错"><a href="#2-3-postfix启动报错" class="headerlink" title="2.3 postfix启动报错"></a>2.3 postfix启动报错</h4><ul>
-<li>修改 &#x2F;etc&#x2F;postfix&#x2F;main.cf中：#myhostname &#x3D; host.domain.tld</li>
-<li>其中：host.domain.tld 必须是：xxx.xxxx.xxx</li>
-</ul>
-<h3 id="3-gitlab8-0版本汉化"><a href="#3-gitlab8-0版本汉化" class="headerlink" title="3. gitlab8.0版本汉化"></a>3. gitlab8.0版本汉化</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install patch git</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">git <span class="built_in">clone</span> https://gitlab.com/xhang/gitlab.git <span class="comment">#汉化版本库</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">git diff v10.0.2 v10.0.2-zh &gt; ../10.0.2-zh.diff</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://gitlab.com/larryli/gitlab.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> gitlab</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git diff origin/8-0-stable..origin/8-0-zh &gt; patch.diff      <span class="comment">#生成:patch.diff文件</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">patch -d /opt/gitlab/embedded/service/gitlab-rails -p1 &lt; /tmp/patch.diff  <span class="comment">#把:patch.diff文件安装到gitlab安装目录下</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart  <span class="comment">#重启gitlab</span></span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在打包补丁 patch -d &#x2F;opt&#x2F;gitlab&#x2F;embedded&#x2F;service&#x2F;gitlab-rails -p1 &lt; …&#x2F;v10.8.4-zh.diff<br>后可能会出来该情况 一路回车跳过即可！</li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/gitlab_server/languge-zh.png" alt="汉化"></p>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/gitlab_server/languge-zh-1.png" alt="汉化2">  </p>
-<h3 id="4-修改gitlab管理员密码的三种方式"><a href="#4-修改gitlab管理员密码的三种方式" class="headerlink" title="4. 修改gitlab管理员密码的三种方式"></a>4. 修改gitlab管理员密码的三种方式</h3><ul>
-<li>方法一，使用id：</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">irb(main):001:0&gt; user = User.where(id:[user&#x27;s register index]).first</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>方法二，使用邮箱：</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">irb(main):001:0&gt; user = User.where(email:[user&#x27;s register email]).first</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>方法三，使用用户名：</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">irb(main):001:0&gt; user = User.where(name:[user&#x27;s register name]).first</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rails console production</span></span><br><span class="line">root@84aba16d413e:/# gitlab-rails console -e production</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line"> GitLab:       12.8.6 (5fc76a64537) FOSS</span><br><span class="line"> GitLab Shell: 11.0.0</span><br><span class="line"> PostgreSQL:   10.12</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line">Loading production environment (Rails 6.0.2)</span><br><span class="line">irb(main):001:0&gt; user = User.where(id: 1).first</span><br><span class="line">=&gt; #&lt;User id:1 @root&gt;</span><br><span class="line">irb(main):002:0&gt; user.password = &#x27;12345678&#x27;</span><br><span class="line">=&gt; &quot;12345678&quot;</span><br><span class="line">irb(main):003:0&gt; user.password_confirmation = &#x27;12345678&#x27;</span><br><span class="line">=&gt; &quot;12345678&quot;</span><br><span class="line">irb(main):004:0&gt; user.save!</span><br><span class="line">Enqueued ActionMailer::DeliveryJob (Job ID: b6aca58a-cfde-4890-aa22-a8f491290c96) to Sidekiq(mailers) with arguments: &quot;DeviseMailer&quot;, &quot;password_change&quot;, &quot;deliver_now&quot;, #&lt;GlobalID:0x00007f79cb5f5298 @uri=#&lt;URI::GID gid://gitlab/User/1&gt;&gt;</span><br><span class="line">=&gt; true</span><br><span class="line">irb(main):005:0&gt; exit</span><br></pre></td></tr></table></figure>
-
-<h3 id="5-Gitlab-配置邮箱"><a href="#5-Gitlab-配置邮箱" class="headerlink" title="5. Gitlab 配置邮箱"></a>5. Gitlab 配置邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/gitlab/gitlab/ra</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_enable&#x27;</span>] = <span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_address&#x27;</span>] = <span class="string">&quot;smtp.server&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_port&#x27;</span>] = 465</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_user_name&#x27;</span>] = <span class="string">&quot;smtp user&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_password&#x27;</span>] = <span class="string">&quot;smtp password&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_domain&#x27;</span>] = <span class="string">&quot;example.com&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_authentication&#x27;</span>] = <span class="string">&quot;login&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_enable_starttls_auto&#x27;</span>] = <span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_tls&#x27;</span>] = <span class="literal">false</span></span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/gitlab_server/configure-git-email.png" alt="configure-git-email"></p>
-<h3 id="6-Gitlab版本升级-Gitlab升级"><a href="#6-Gitlab版本升级-Gitlab升级" class="headerlink" title="6. Gitlab版本升级  Gitlab升级"></a>6. <a href="https://zhuanlan.zhihu.com/p/352342116">Gitlab版本升级</a>  <a href="https://docs.gitlab.com/ee/update/index.html#upgrade-paths">Gitlab升级</a></h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-12.10.14 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.0.14 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.1.11 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.8.8 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.12.10 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.12.12 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.0.11 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.1.8 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.2.6 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.3.2 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.3.6 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.4.0 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.4.4 -y</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="7-Gitlab备份还原"><a href="#7-Gitlab备份还原" class="headerlink" title="7. Gitlab备份还原"></a>7. <a href="https://www.jianshu.com/p/a2600f8dffc2">Gitlab备份还原</a></h3><h4 id="7-1-备份还原"><a href="#7-1-备份还原" class="headerlink" title="7.1 备份还原"></a>7.1 备份还原</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">1. 创建备份，创建后会在:/var/opt/gitlab/backups/ 目录下生成备份文件</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rake gitlab:backup:create</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">2. 备份还原前先停止相关服务</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl stop unicorn</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl stop sidekiq</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3.从指定时间戳的备份恢复（backups目录下有多个备份文件时）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rake gitlab:backup:restore BACKUP=1500809139</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">4. 从默认备份恢复（backups目录下只有一个备份文件时）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rake gitlab:backup:restore</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">5.还原后启动Gitlab</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl start</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="7-2-Gitlab恢复数据报错解决方法"><a href="#7-2-Gitlab恢复数据报错解决方法" class="headerlink" title="7.2  Gitlab恢复数据报错解决方法"></a>7.2  <a href="https://www.jianshu.com/p/09a2b0c25ecd">Gitlab恢复数据报错解决方法</a></h4><h5 id="7-2-1-修改postgresql配置"><a href="#7-2-1-修改postgresql配置" class="headerlink" title="7.2.1 修改postgresql配置"></a>7.2.1 修改postgresql配置</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /var/opt/gitlab/postgresql/data/postgresql.conf</span></span><br><span class="line">listen_addresses = &#x27;*&#x27;		#中添加*符号</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">最下面新增两行</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /var/opt/gitlab/postgresql/data/pg_hba.conf</span></span><br><span class="line">local   all         all                               trust</span><br><span class="line">host    all         all                               127.0.0.1/32 trust</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="7-2-3-修改gitlab账号为超级用户"><a href="#7-2-3-修改gitlab账号为超级用户" class="headerlink" title="7.2.3 修改gitlab账号为超级用户"></a>7.2.3 修改gitlab账号为超级用户</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">su - gitlab-psql</span></span><br><span class="line">Last login: Fri Dec 24 17:35:01 CST 2021 on pts/0</span><br><span class="line">-sh-4.2$ /opt/gitlab/embedded/bin/psql -h 127.0.0.1 gitlabhq_production</span><br><span class="line">psql (12.7)</span><br><span class="line">SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)</span><br><span class="line">Type &quot;help&quot; for help.</span><br><span class="line"></span><br><span class="line">gitlabhq_production=# ALTER USER gitlab WITH SUPERUSER;</span><br><span class="line">ALTER ROLE</span><br><span class="line">gitlabhq_production=# \q</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>gitlab</category>
-      </categories>
-      <tags>
-        <tag>gitlab</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>configure-gitrunner</title>
     <url>/gitlab/configure-gitrunner/</url>
     <content><![CDATA[<h3 id="1-登录安装好的gitlab配置git-runner"><a href="#1-登录安装好的gitlab配置git-runner" class="headerlink" title="1. 登录安装好的gitlab配置git-runner"></a>1. 登录安装好的gitlab配置git-runner</h3><h4 id="1-1-获取注册使用的token"><a href="#1-1-获取注册使用的token" class="headerlink" title="1.1 获取注册使用的token"></a>1.1 获取注册使用的token</h4><p><img src="https://raw.githubusercontent.com/usermice/imgs/master/gitlab_server/Snipaste_2022-04-22_21-57-46.png">  </p>
@@ -271,7 +271,90 @@
   <entry>
     <title>configure-k8s-Service</title>
     <url>/Kubernetes/configure-k8s-Service/</url>
-    <content><![CDATA[<h3 id="1-Service服务详解"><a href="#1-Service服务详解" class="headerlink" title="1. Service服务详解"></a>1. <code>Service</code>服务详解</h3>]]></content>
+    <content><![CDATA[<h3 id="1-Service服务详解"><a href="#1-Service服务详解" class="headerlink" title="1. Service服务详解"></a>1. <code>Service</code>服务详解</h3><ul>
+<li>在<font color=red><code>kubernetes</code></font>中，<font color=red><code>Pod</code></font>是应用程序的载体，我们可以通过<font color=red><code>Pod</code>的<code>IP</code></font>来访问应用程序，但是<font color=red><code>Pod</code>的<code>IP</code></font>地址不是固定的，这就意味着不方便直接采用<font color=red><code>Pod</code>的<code>IP</code></font>对服务进行访问  </li>
+<li>为了解决这个问题，<font color=red><code>kubernetes</code>提供了<code>Service</code>资源</font>，<font color=red><code>Service</code></font>会对提供同一个服务的多个<code>Pod</code>进行聚合，并且提供一个统一的入口地址，通过访问<font color=red><code>Service</code>的入口地址就能访问到后面的<code>Pod</code>服务</font>  </li>
+<li><font color=red>Service在很多情况下只是一个概念</font>：真正起作用的其实是<code>kube-proxy</code>服务进程，每个<code>Node</code>节点上都运行了一个<code>kube-proxy</code>的服务进程。当创建<code>Service</code>的时候会通过<code>API Server</code>向<code>etcd</code>写入创建的Service的信息，而<code>kube-proxy</code>会基于监听的机制发现这种<code>Service</code>的变化，然后它会将最新的<code>Service</code>信息转换为对应的访问规则  </li>
+<li><font color=red>假如：10.97.97.97:80 是service提供的访问入口</font>：当访问这个入口的时候，可以发现后面有三个pod的服务在等待调用，kube-proxy会基于rr（轮询）的策略，将请求分发到其中一个pod上去，这个规则会同时在集群内的所有节点上都生成，所以在任何一个节点上访问都可以。</li>
+</ul>
+<h4 id="1-1-kube-proxy目前支持的三种工作模式"><a href="#1-1-kube-proxy目前支持的三种工作模式" class="headerlink" title="1.1 kube-proxy目前支持的三种工作模式"></a>1.1 <code>kube-proxy</code>目前支持的三种工作模式</h4><ul>
+<li><p><font color=red><code>userspace</code>模式</font>  </p>
+<blockquote>
+<ul>
+<li><pre><code>`userspace`模式下，`kube-proxy`会为每一个`Service`创建一个监听端口，发向`Cluster IP`的请求被`iptables`规则重定向到`kube-proxy`监听的端口上，`kube-proxy`根据`LB`算法（负载均衡算法）选择一个提供服务的`Pod`并和其建立连接，以便将请求转发到`Pod`上。
+</code></pre>
+</li>
+<li>userspace<code>模式下，</code>kube-proxy<code>充当了一个四层负载均衡器的角色。由于</code>kube-proxy<code>运行在</code>userspace&#96;中，在进行转发处理的时候会增加内核和用户空间之间的数据拷贝，虽然比较稳定，但是效率非常低下。</li>
+</ul>
+</blockquote>
+</li>
+<li><p><font color=red><code>iptables</code>模式</font>  </p>
+<blockquote>
+<ul>
+<li><code>iptables</code>模式下，<code>kube-proxy</code>为<code>Service</code>后端的每个<code>Pod</code>创建对应的<code>iptables</code>规则，直接将发向<code>Cluster IP</code>的请求重定向到一个<code>Pod</code>的<code>IP</code>上</li>
+<li><code>iptables</code>模式下<code>kube-proxy</code>不承担四层负载均衡器的角色，只负责创建<code>iptables</code>规则。该模式的优点在于较<code>userspace</code>模式效率更高，但是不能提供灵活的<code>LB</code>策略，当后端<code>Pod</code>不可用的时候无法进行重试</li>
+</ul>
+</blockquote>
+</li>
+<li><p><font color=red>ipvs模式</font>  </p>
+<blockquote>
+<ul>
+<li><code>ipvs</code>模式和<code>iptables</code>类似，<code>kube-proxy</code>监控<code>Pod</code>的变化并创建相应的<code>ipvs</code>规则。<code>ipvs</code>相对<code>iptables</code>转发效率更高，除此之外，<code>ipvs</code>支持更多的<code>LB</code>算法。</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ipvsadm -Ln  	<span class="comment"># 查看kube-proxy工作模式</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font color=red><code>Service</code>的资源清单，<code>spec.type</code>的说明</font>  <blockquote>
+<ul>
+<li><font color=red><code>ClusterIP</code>默认值</font>：它是<code>kubernetes</code>系统自动分配的虚拟<code>IP</code>，只能在集群内部访问  </li>
+<li><font color=red><code>NodePort</code></font>：将<code>Service</code>通过指定的<code>Node</code>上的端口暴露给外部，通过此方法，就可以在集群外部访问服务  </li>
+<li><font color=red><code>LoadBalancer</code></font>：使用外接负载均衡器完成到服务的负载分发，注意此模式需要外部云环境的支持  </li>
+<li><font color=red><code>ExternalName</code></font>：把集群外部的服务引入集群内部，直接使用</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<pre><code class="shell">$ kubectl explain service.spec.type # 
+</code></pre>
+<pre><code class="shell">apiVersion: v1 # 版本
+kind: Service # 类型
+metadata: # 元数据
+  name: # 资源名称
+  namespace: # 命名空间
+spec:
+  selector: # 标签选择器，用于确定当前Service代理那些Pod
+    app: nginx
+  type: NodePort # Service的类型，指定Service的访问方式
+  clusterIP: # 虚拟服务的IP地址
+  sessionAffinity: # session亲和性，支持ClientIP、None两个选项，默认值为None
+  ports: # 端口信息
+    - port: 8080 # Service端口
+      protocol: TCP # 协议
+      targetPort : # Pod端口
+      nodePort:  # 主机端口
+</code></pre>
+<h4 id="1-2-创建ClusterIP类型的Service"><a href="#1-2-创建ClusterIP类型的Service" class="headerlink" title="1.2 创建ClusterIP类型的Service"></a>1.2 创建<code>ClusterIP</code>类型的<code>Service</code></h4><pre><code class="shell">apiVersion: v1
+kind: Service
+metadata:
+  name: service-clusterip
+  namespace: dev
+spec:
+  selector:
+    app: nginx-pod
+  clusterIP: 10.97.97.97 # service的IP地址，如果不写，默认会生成一个
+  type: ClusterIP
+  ports:
+    - port: 80 # Service的端口
+      targetPort: 80 # Pod的端口
+</code></pre>
+<h4 id="1-3-Endpoint-实际中使用的不多"><a href="#1-3-Endpoint-实际中使用的不多" class="headerlink" title="1.3 Endpoint(实际中使用的不多)"></a>1.3 <code>Endpoint</code>(实际中使用的不多)</h4><ul>
+<li><font color=red><code>Endpoint</code></font>：是<code>kubernete</code>中的一个资源对象，存储在<code>etcd</code>中，用来记录一个service对应的所有Pod的访问地址，它是根据service配置文件中的selector描述产生的  </li>
+<li></li>
+</ul>
+]]></content>
       <categories>
         <category>Kubernetes</category>
       </categories>
@@ -593,86 +676,6 @@
       </categories>
       <tags>
         <tag>Kubernetes</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git-command-usage</title>
-    <url>/gitlab/git-command-usage/</url>
-    <content><![CDATA[<h3 id="1-git命令作用"><a href="#1-git命令作用" class="headerlink" title="1. git命令作用"></a>1. git命令作用</h3><ul>
-<li><a href="https://mirrors.edge.kernel.org/pub/software/scm/git/">Git命令工具下载地址</a></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">初始配置获取仓库</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置环境提交所用账户以及邮箱</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.name <span class="string">&quot;name&quot;</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.emamil <span class="string">&quot;name@gmail.com&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">获取现有仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/zabbix/zabbix.git  <span class="comment">#克隆现有远程代码到本地开发</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">本地创建仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git init  <span class="comment">#初始化git本地仓库，初始化后在本地生成一个.git目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git add .  <span class="comment">#把修改或者添加文件到索引中：-A：参数代表所有</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git commit -m <span class="string">&quot;清除缓存&quot;</span>  <span class="comment">#声明本次修改或添加内容并且交到本地仓库</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">拉取推送仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git pull -u origin master <span class="comment">#拉取master分支到本地-f:强制拉取，</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git push -u origin master <span class="comment">#推送master分支到远程</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">切换、查看、合并分支</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git fetch  	<span class="comment">#查看线上分支,--all:查看线上所有分支</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git branch -a <span class="comment">#-a：查看本地当前分支、dev：创建dev分支、-d：删除分支、-D：强制删除</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout dev <span class="comment">#切换分支，dev：切换到dev分支</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout .   <span class="comment">#放弃本地所有修改</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git merge -m <span class="string">&#x27;合并dev分支到master&#x27;</span> dev  <span class="comment">#先切换到master分支</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">回退版本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git reset --hard  	<span class="comment">#回退版本、可选择版本分支号回退</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">rm</span> -r --cached .  <span class="comment">#清楚本地缓存</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看git仓库状态以及日志</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git status  <span class="comment">#命令查看当前git仓库的状态</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> -5  <span class="comment">#查看最近五次日志,v2.5.. Makefile fs/:找出所有从&quot;v2.5“开始在fs目录下的所有Makefile的修改</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --<span class="built_in">stat</span>  <span class="comment">#显示在每个提交(commit)中哪些文件被修改, 这些文件分别添加或删除多少行内容</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --pretty=oneline  <span class="comment">#格式化日志输出。--pretty参数可以使用若干表现格式，如oneline，--pretty=short，也可用medium,full,fuller,email 或raw，也可以用--pretty=format参数定义格式，</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --graph --pretty=oneline  <span class="comment">#--graph 选项可以可视化你的提交图(commit graph)，会用ASCII字符来画出一个很漂亮的提交历史(commit history)线：</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git diff --cached <span class="comment">#diff比较选项再加上 --cached参数，看看缓存区中哪些文件被修改</span></span></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-处理-git文件过大"><a href="#2-处理-git文件过大" class="headerlink" title="2. 处理.git文件过大"></a>2. 处理.git文件过大</h3><p><a href="https://www.zhihu.com/question/29769130">解决.git提交次数过多导致文件过大</a>  </p>
-<h4 id="2-1-运行-gc-，生成-pack-文件（后面的-prune-now-表示对之前的所有提交做修剪，有的时候仅仅-gc-一下-git-文件就会小很多）"><a href="#2-1-运行-gc-，生成-pack-文件（后面的-prune-now-表示对之前的所有提交做修剪，有的时候仅仅-gc-一下-git-文件就会小很多）" class="headerlink" title="2.1 运行 gc ，生成 pack 文件（后面的 --prune=now 表示对之前的所有提交做修剪，有的时候仅仅 gc 一下.git 文件就会小很多）"></a>2.1 运行 <code>gc</code> ，生成 <code>pack</code> 文件（后面的 <code>--prune=now</code> 表示对之前的所有提交做修剪，有的时候仅仅 <code>gc</code> 一下<code>.git</code> 文件就会小很多）</h4><ul>
-<li>2.1.1 运行 <code>gc</code> ，生成 <code>pack</code> 文件</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git gc --prune=now</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.2 找出最大的三个文件</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git verify-pack -v .git/objects/pack/*.idx | <span class="built_in">sort</span> -k 3 -n | <span class="built_in">tail</span> -3</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">示例输出：</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">1debc758cf31a649c2fc5b0c59ea1b7f01416636 blob   4925660 3655422 14351</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">c43a8da9476f97e84b52e0b34034f8c2d93b4d90 blob   154188651 152549294 12546842</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">2272096493d061489349e0a312df00dcd0ec19a2 blob   155414465 153754005 165096136</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.3 查看那些大文件究竟是谁（<code>c43a8da</code> 是上面大文件的<code>hash</code>码）</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git rev-list --objects --all | grep c43a8da</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">c43a8da9476f97e84b52e0b34034f8c2d93b4d90 data/bigfile</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.4 移除对该文件的引用（也就是 <code>data/bigfile</code>）</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git filter-branch --force --index-filter <span class="string">&quot;git rm --cached --ignore-unmatch &#x27;data/bigfile&#x27;&quot;</span>  --prune-empty --tag-name-filter <span class="built_in">cat</span> -- --all</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.5 进行 <code>repack</code></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git for-each-ref --format=<span class="string">&#x27;delete %(refname)&#x27;</span> refs/original | git update-ref --stdin</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git reflog expire --expire=now --all</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git gc --prune=now</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.6 查看 <code>pack</code> 的空间使用情况</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git count-objects -v</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="2-2-LFS功能压缩大文件"><a href="#2-2-LFS功能压缩大文件" class="headerlink" title="2.2 LFS功能压缩大文件"></a>2.2 LFS功能压缩大文件</h4><ul>
-<li>开启LFS功能</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git lfs install</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>设置LFS要管理的文件类型，pth、mmdb、pack、idx</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git lfs track <span class="string">&quot;*.pth&quot;</span></span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>报LFS错，在执行上面的最后一步上传命令的时候可能会报两个错误</p>
-<ul>
-<li><code>WARNING: Authentication error: Authentication required: LFS only supported repository in paid enterprise.</code></li>
-</ul>
-<blockquote>
-<ul>
-<li>第一个错误可以执行以下命令, 命令中的{your_gitee}&#x2F;{your_repo}是你的远程仓库地址,根据自己情况替换</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git config lfs.https://gitee.com/&#123;</span><br><span class="line">    your_gitee&#125;/&#123;</span><br><span class="line">    your_repo&#125;.git/info/lfs.locksverify false</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>第二个错误可以尝试删除<code>./git/hooks/pre-push</code>文件,最后重新push一下即可</li>
-</ul>
-<p><code>batch response: LFS only supported repository in paid enterprise.</code></p>
-</li>
-</ul>
-<h3 id="3-git获取仓库指定目录或文件"><a href="#3-git获取仓库指定目录或文件" class="headerlink" title="3. git获取仓库指定目录或文件"></a>3. git获取仓库指定目录或文件</h3><ul>
-<li>此功能只在<code>1.7.0</code> 以上版本提供</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> <span class="built_in">test</span> &amp;&amp; <span class="built_in">cd</span> <span class="built_in">test</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git init</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git remote add origin https://xxxx.com/xxx.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config core.sparsecheckout <span class="literal">true</span>  <span class="comment">#使用Sparse checkout模式</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> <span class="built_in">echo</span> <span class="string">&quot;redis-conf/*&quot;</span> &gt;&gt; .git/info/sparse-checkout  <span class="comment">#将检出的目录或文件使用文件追加的形式写入到git的配置.git/info/sparse-checkout文件中，允许添加多行</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git pull origin master <span class="comment">#获取到需要的文件或目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout  <span class="comment">#在对配置文件.git/info/sparse-checkout的内容进行增、删、改操作之后，使用下面的命令重新修正目录和文件</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git push origin master</span></span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>gitlab</category>
-      </categories>
-      <tags>
-        <tag>gitlab</tag>
       </tags>
   </entry>
   <entry>
@@ -1387,6 +1390,31 @@
 <td>Boolean</td>
 <td>定义是否使用主机网络模式，默认值为 false。 设置 true 表示使用宿主机网络，不使用 Docker 网桥，同时设置了 true 将无法在同一台宿主机上启动第二个副本。</td>
 </tr>
+<tr>
+<td>service.spec.type</td>
+<td></td>
+<td><code>type</code>确定服务的公开方式。 默认为<code>ClusterIP</code>。有效的选项是<code>ExternalName</code>、<code>ClusterIP</code>、<code>NodePort</code>和<code>LoadBalancer</code></td>
+</tr>
+<tr>
+<td>service.spec.type.ClusterIP</td>
+<td></td>
+<td><code>ClusterIP</code>为负载均衡分配集群内部<code>IP</code>地址端点。 端点由选择器确定，或者如果不是通过手动构造<code>Endpoints</code>对象或<code>EndpointSlice</code>指定对象。 如果<code>clusterIP</code>为<code>None</code>，则不分配虚拟<code>IP</code>，并且端点作为一组端点而不是虚拟<code>IP</code>发布。</td>
+</tr>
+<tr>
+<td>service.spec.type.NodePort</td>
+<td></td>
+<td><code>NodePort</code>建立在<code>ClusterIP</code>之上，并在每个节点上分配一个端口路由到与<code>clusterIP</code>相同的端点。</td>
+</tr>
+<tr>
+<td>service.spec.type.LoadBalancer</td>
+<td></td>
+<td><code>LoadBalancer</code>建立在<code>NodePort</code>并创建一个外部负载均衡器（如果当前支持<code>cloud</code>) 路由到与<code>clusterIP</code>相同的端点。</td>
+</tr>
+<tr>
+<td>service.spec.type.ExternalName</td>
+<td></td>
+<td><code>ExternalName</code>将此服务别名为指定的<code>externalName</code>。 其他几个领域不适用于<code>ExternalName</code>服务</td>
+</tr>
 </tbody></table>
 <ul>
 <li><font color=red><code>Pod</code>调度配置</font></li>
@@ -1417,6 +1445,86 @@
       </categories>
       <tags>
         <tag>Kubernetes</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git-command-usage</title>
+    <url>/gitlab/git-command-usage/</url>
+    <content><![CDATA[<h3 id="1-git命令作用"><a href="#1-git命令作用" class="headerlink" title="1. git命令作用"></a>1. git命令作用</h3><ul>
+<li><a href="https://mirrors.edge.kernel.org/pub/software/scm/git/">Git命令工具下载地址</a></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">初始配置获取仓库</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置环境提交所用账户以及邮箱</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.name <span class="string">&quot;name&quot;</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.emamil <span class="string">&quot;name@gmail.com&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">获取现有仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/zabbix/zabbix.git  <span class="comment">#克隆现有远程代码到本地开发</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">本地创建仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git init  <span class="comment">#初始化git本地仓库，初始化后在本地生成一个.git目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git add .  <span class="comment">#把修改或者添加文件到索引中：-A：参数代表所有</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git commit -m <span class="string">&quot;清除缓存&quot;</span>  <span class="comment">#声明本次修改或添加内容并且交到本地仓库</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">拉取推送仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git pull -u origin master <span class="comment">#拉取master分支到本地-f:强制拉取，</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git push -u origin master <span class="comment">#推送master分支到远程</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">切换、查看、合并分支</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git fetch  	<span class="comment">#查看线上分支,--all:查看线上所有分支</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git branch -a <span class="comment">#-a：查看本地当前分支、dev：创建dev分支、-d：删除分支、-D：强制删除</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout dev <span class="comment">#切换分支，dev：切换到dev分支</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout .   <span class="comment">#放弃本地所有修改</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git merge -m <span class="string">&#x27;合并dev分支到master&#x27;</span> dev  <span class="comment">#先切换到master分支</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">回退版本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git reset --hard  	<span class="comment">#回退版本、可选择版本分支号回退</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">rm</span> -r --cached .  <span class="comment">#清楚本地缓存</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看git仓库状态以及日志</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git status  <span class="comment">#命令查看当前git仓库的状态</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> -5  <span class="comment">#查看最近五次日志,v2.5.. Makefile fs/:找出所有从&quot;v2.5“开始在fs目录下的所有Makefile的修改</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --<span class="built_in">stat</span>  <span class="comment">#显示在每个提交(commit)中哪些文件被修改, 这些文件分别添加或删除多少行内容</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --pretty=oneline  <span class="comment">#格式化日志输出。--pretty参数可以使用若干表现格式，如oneline，--pretty=short，也可用medium,full,fuller,email 或raw，也可以用--pretty=format参数定义格式，</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --graph --pretty=oneline  <span class="comment">#--graph 选项可以可视化你的提交图(commit graph)，会用ASCII字符来画出一个很漂亮的提交历史(commit history)线：</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git diff --cached <span class="comment">#diff比较选项再加上 --cached参数，看看缓存区中哪些文件被修改</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-处理-git文件过大"><a href="#2-处理-git文件过大" class="headerlink" title="2. 处理.git文件过大"></a>2. 处理.git文件过大</h3><p><a href="https://www.zhihu.com/question/29769130">解决.git提交次数过多导致文件过大</a>  </p>
+<h4 id="2-1-运行-gc-，生成-pack-文件（后面的-prune-now-表示对之前的所有提交做修剪，有的时候仅仅-gc-一下-git-文件就会小很多）"><a href="#2-1-运行-gc-，生成-pack-文件（后面的-prune-now-表示对之前的所有提交做修剪，有的时候仅仅-gc-一下-git-文件就会小很多）" class="headerlink" title="2.1 运行 gc ，生成 pack 文件（后面的 --prune=now 表示对之前的所有提交做修剪，有的时候仅仅 gc 一下.git 文件就会小很多）"></a>2.1 运行 <code>gc</code> ，生成 <code>pack</code> 文件（后面的 <code>--prune=now</code> 表示对之前的所有提交做修剪，有的时候仅仅 <code>gc</code> 一下<code>.git</code> 文件就会小很多）</h4><ul>
+<li>2.1.1 运行 <code>gc</code> ，生成 <code>pack</code> 文件</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git gc --prune=now</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>2.1.2 找出最大的三个文件</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git verify-pack -v .git/objects/pack/*.idx | <span class="built_in">sort</span> -k 3 -n | <span class="built_in">tail</span> -3</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">示例输出：</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">1debc758cf31a649c2fc5b0c59ea1b7f01416636 blob   4925660 3655422 14351</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">c43a8da9476f97e84b52e0b34034f8c2d93b4d90 blob   154188651 152549294 12546842</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">2272096493d061489349e0a312df00dcd0ec19a2 blob   155414465 153754005 165096136</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>2.1.3 查看那些大文件究竟是谁（<code>c43a8da</code> 是上面大文件的<code>hash</code>码）</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git rev-list --objects --all | grep c43a8da</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">c43a8da9476f97e84b52e0b34034f8c2d93b4d90 data/bigfile</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>2.1.4 移除对该文件的引用（也就是 <code>data/bigfile</code>）</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git filter-branch --force --index-filter <span class="string">&quot;git rm --cached --ignore-unmatch &#x27;data/bigfile&#x27;&quot;</span>  --prune-empty --tag-name-filter <span class="built_in">cat</span> -- --all</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>2.1.5 进行 <code>repack</code></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git for-each-ref --format=<span class="string">&#x27;delete %(refname)&#x27;</span> refs/original | git update-ref --stdin</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git reflog expire --expire=now --all</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git gc --prune=now</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>2.1.6 查看 <code>pack</code> 的空间使用情况</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git count-objects -v</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-LFS功能压缩大文件"><a href="#2-2-LFS功能压缩大文件" class="headerlink" title="2.2 LFS功能压缩大文件"></a>2.2 LFS功能压缩大文件</h4><ul>
+<li>开启LFS功能</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git lfs install</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>设置LFS要管理的文件类型，pth、mmdb、pack、idx</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git lfs track <span class="string">&quot;*.pth&quot;</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>报LFS错，在执行上面的最后一步上传命令的时候可能会报两个错误</p>
+<ul>
+<li><code>WARNING: Authentication error: Authentication required: LFS only supported repository in paid enterprise.</code></li>
+</ul>
+<blockquote>
+<ul>
+<li>第一个错误可以执行以下命令, 命令中的{your_gitee}&#x2F;{your_repo}是你的远程仓库地址,根据自己情况替换</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git config lfs.https://gitee.com/&#123;</span><br><span class="line">    your_gitee&#125;/&#123;</span><br><span class="line">    your_repo&#125;.git/info/lfs.locksverify false</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>第二个错误可以尝试删除<code>./git/hooks/pre-push</code>文件,最后重新push一下即可</li>
+</ul>
+<p><code>batch response: LFS only supported repository in paid enterprise.</code></p>
+</li>
+</ul>
+<h3 id="3-git获取仓库指定目录或文件"><a href="#3-git获取仓库指定目录或文件" class="headerlink" title="3. git获取仓库指定目录或文件"></a>3. git获取仓库指定目录或文件</h3><ul>
+<li>此功能只在<code>1.7.0</code> 以上版本提供</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> <span class="built_in">test</span> &amp;&amp; <span class="built_in">cd</span> <span class="built_in">test</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git init</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git remote add origin https://xxxx.com/xxx.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config core.sparsecheckout <span class="literal">true</span>  <span class="comment">#使用Sparse checkout模式</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> <span class="built_in">echo</span> <span class="string">&quot;redis-conf/*&quot;</span> &gt;&gt; .git/info/sparse-checkout  <span class="comment">#将检出的目录或文件使用文件追加的形式写入到git的配置.git/info/sparse-checkout文件中，允许添加多行</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git pull origin master <span class="comment">#获取到需要的文件或目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout  <span class="comment">#在对配置文件.git/info/sparse-checkout的内容进行增、删、改操作之后，使用下面的命令重新修正目录和文件</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git push origin master</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>gitlab</category>
+      </categories>
+      <tags>
+        <tag>gitlab</tag>
       </tags>
   </entry>
   <entry>
@@ -2008,6 +2116,30 @@
       </tags>
   </entry>
   <entry>
+    <title>install-git-runner</title>
+    <url>/gitlab/install-gitlab-runner/</url>
+    <content><![CDATA[<ul>
+<li><p><a href="https://packages.gitlab.com/runner/gitlab-runner">git-runner库</a>  </p>
+</li>
+<li><p><a href="https://gitlab.com/gitlab-org/gitlab-runner">gitlab-runner</a>  </p>
+</li>
+<li><p><a href="https://docs.gitlab.com/runner/install/linux-manually.html">Gitlab 配置runner</a></p>
+</li>
+</ul>
+<h3 id="1-yum安装git-runner"><a href="#1-yum安装git-runner" class="headerlink" title="1. yum安装git-runner"></a>1. yum安装git-runner</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -s https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh | sudo bash</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-runner-14.9.1-1.x86_64</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-rpm安装git-runner"><a href="#2-rpm安装git-runner" class="headerlink" title="2. rpm安装git-runner"></a>2. rpm安装git-runner</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget --content-disposition https://packages.gitlab.com/runner/gitlab-runner/packages/el/7/gitlab-runner-14.9.1-1.x86_64.rpm/download.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">curl -O https://gitlab-runner-downloads.s3.amazonaws.com/latest/rpm/gitlab-runner_amd64.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">rpm -ivh gitlab-runner_amd64.rpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm -ivh gitlab-runner-14.9.1-1.x86_64.rpm</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-docker-安装git-runner"><a href="#3-docker-安装git-runner" class="headerlink" title="3. docker 安装git-runner"></a>3. docker 安装git-runner</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -d --name gitlab-runner --restart always \</span></span><br><span class="line"><span class="language-bash">     -v /srv/gitlab-runner/config:/etc/gitlab-runner \</span></span><br><span class="line"><span class="language-bash">     -v /var/run/docker.sock:/var/run/docker.sock \</span></span><br><span class="line"><span class="language-bash">     gitlab/gitlab-runner:latest</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>gitlab</category>
+      </categories>
+      <tags>
+        <tag>gitlab</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>install-gitlab</title>
     <url>/gitlab/install-gitlab/</url>
     <content><![CDATA[<h3 id="1-gitlab-简介以及安装"><a href="#1-gitlab-简介以及安装" class="headerlink" title="1. gitlab 简介以及安装"></a>1. gitlab 简介以及安装</h3><p><a href="https://packages.gitlab.com/gitlab/gitlab-ce">gitlab安装包库</a></p>
@@ -2050,30 +2182,6 @@
       </categories>
       <tags>
         <tag>Kubernetes</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install-git-runner</title>
-    <url>/gitlab/install-gitlab-runner/</url>
-    <content><![CDATA[<ul>
-<li><p><a href="https://packages.gitlab.com/runner/gitlab-runner">git-runner库</a>  </p>
-</li>
-<li><p><a href="https://gitlab.com/gitlab-org/gitlab-runner">gitlab-runner</a>  </p>
-</li>
-<li><p><a href="https://docs.gitlab.com/runner/install/linux-manually.html">Gitlab 配置runner</a></p>
-</li>
-</ul>
-<h3 id="1-yum安装git-runner"><a href="#1-yum安装git-runner" class="headerlink" title="1. yum安装git-runner"></a>1. yum安装git-runner</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -s https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh | sudo bash</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-runner-14.9.1-1.x86_64</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-rpm安装git-runner"><a href="#2-rpm安装git-runner" class="headerlink" title="2. rpm安装git-runner"></a>2. rpm安装git-runner</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget --content-disposition https://packages.gitlab.com/runner/gitlab-runner/packages/el/7/gitlab-runner-14.9.1-1.x86_64.rpm/download.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">curl -O https://gitlab-runner-downloads.s3.amazonaws.com/latest/rpm/gitlab-runner_amd64.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">rpm -ivh gitlab-runner_amd64.rpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm -ivh gitlab-runner-14.9.1-1.x86_64.rpm</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="3-docker-安装git-runner"><a href="#3-docker-安装git-runner" class="headerlink" title="3. docker 安装git-runner"></a>3. docker 安装git-runner</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -d --name gitlab-runner --restart always \</span></span><br><span class="line"><span class="language-bash">     -v /srv/gitlab-runner/config:/etc/gitlab-runner \</span></span><br><span class="line"><span class="language-bash">     -v /var/run/docker.sock:/var/run/docker.sock \</span></span><br><span class="line"><span class="language-bash">     gitlab/gitlab-runner:latest</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>gitlab</category>
-      </categories>
-      <tags>
-        <tag>gitlab</tag>
       </tags>
   </entry>
   <entry>
@@ -2387,6 +2495,23 @@ $ kubectl apply -f coredns.yaml
       </tags>
   </entry>
   <entry>
+    <title>install-nginx-third-party modules</title>
+    <url>/nginx/install-nginx-third-party-modules/</url>
+    <content><![CDATA[<h3 id="1-安装Nginx-GeoIP2IP定位模块"><a href="#1-安装Nginx-GeoIP2IP定位模块" class="headerlink" title="1. 安装Nginx GeoIP2IP定位模块"></a>1. 安装<code>Nginx GeoIP2</code>IP定位模块</h3><ul>
+<li><font color=red><code>GeoIP2</code>模块依赖<code>libmaxminddb</code>库</font></li>
+</ul>
+<h4 id="1-1-安装libmaxminddb库"><a href="#1-1-安装libmaxminddb库" class="headerlink" title="1.1 安装libmaxminddb库"></a>1.1 安装<code>libmaxminddb</code>库</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> wget -c https://github.com/maxmind/libmaxminddb/releases/download/1.3.2/libmaxminddb-1.3.2.tar.gz -P /opt/src/    <span class="comment">##下载到指定目录下:-c断点续传、-P下载指定目录，</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf /opt/src/libmaxminddb-1.3.2.tar.gz -C /opt/src/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/src/libmaxminddb-1.3.2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make -j2 &amp;&amp; make install</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-2-安装GeoIP2"><a href="#1-2-安装GeoIP2" class="headerlink" title="1.2 安装GeoIP2"></a>1.2 安装<code>GeoIP2</code></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/leev/ngx_http_geoip2_module.git /opt/apps/nginx/ngx_http_geoip2_module</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_http_geoip2_module</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-安装ngx-brotli压缩算法"><a href="#2-安装ngx-brotli压缩算法" class="headerlink" title="2. 安装ngx_brotli压缩算法"></a>2. 安装<code>ngx_brotli</code>压缩算法</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/google/ngx_brotli /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git submodule update --init  <span class="comment">#更新ngx_brotli所需依赖库</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_brotli</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-安装ngx-http-upstream-check-module后端服务端口检测模块"><a href="#3-安装ngx-http-upstream-check-module后端服务端口检测模块" class="headerlink" title="3. 安装ngx_http_upstream_check_module后端服务端口检测模块"></a>3. 安装<code>ngx_http_upstream_check_module</code>后端服务端口检测模块</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/yaoweibin/nginx_upstream_check_module.git /opt/apps/nginx/nginx_upstream_check_module <span class="comment">#下载检测包</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/nginx_upstream_check_module</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>nginx</category>
+      </categories>
+      <tags>
+        <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>install_nginx</title>
     <url>/nginx/install-nginx/</url>
     <content><![CDATA[<h3 id="1-root用户默认安装nginx"><a href="#1-root用户默认安装nginx" class="headerlink" title="1. root用户默认安装nginx"></a>1. <code>root</code>用户默认安装<code>nginx</code></h3><h4 id="1-1-安装依赖扩展包"><a href="#1-1-安装依赖扩展包" class="headerlink" title="1.1 安装依赖扩展包"></a>1.1 安装依赖扩展包</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install wget gcc gcc-c++ pcre-devel zlib-devel openssl openssl-devel</span></span><br></pre></td></tr></table></figure>
@@ -2400,23 +2525,6 @@ $ kubectl apply -f coredns.yaml
 <h4 id="2-3-创建目录-赋予权限"><a href="#2-3-创建目录-赋予权限" class="headerlink" title="2.3 创建目录,赋予权限"></a>2.3 创建目录,赋予权限</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -p /opt/&#123;apps,src,conf,scripts&#125;</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> -R admin:admin /opt/*</span></span><br></pre></td></tr></table></figure>
 <h4 id="2-4-进入解压目录，配置、编译、安装"><a href="#2-4-进入解压目录，配置、编译、安装" class="headerlink" title="2.4 进入解压目录，配置、编译、安装"></a>2.4 进入解压目录，配置、编译、安装</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">su admin -c <span class="string">&quot;</span></span></span><br><span class="line"> cd /opt/src/</span><br><span class="line"> wget http://nginx.org/download/nginx-1.20.2.tar.gz</span><br><span class="line"> tar -zxvf nginx-1.20.2.tar.gz</span><br><span class="line"> cd nginx-1.20.2</span><br><span class="line"> ./configure --prefix=/opt/lucky/nginx \</span><br><span class="line">   --with-http_stub_status_module --with-http_ssl_module \</span><br><span class="line">   --with-http_gzip_static_module --with-ipv6 --with-stream \</span><br><span class="line">   --with-stream_ssl_module --with-http_v2_module \</span><br><span class="line">   --with-pcre --with-http_gzip_static_module \</span><br><span class="line">   --with-http_dav_module --with-http_addition_module \</span><br><span class="line">   --with-http_sub_module --with-http_flv_module \</span><br><span class="line">   --with-http_mp4_module --with-stream --user=admin --group=admin·</span><br><span class="line"> sleep 3</span><br><span class="line"> make -j4 &amp;&amp; make install</span><br><span class="line"> sleep 5</span><br><span class="line"> sudo /opt/lucky/nginx/sbin/nginx</span><br><span class="line"> echo &quot;alias nginx=&#x27;sudo /etc/init.d/nginx&#x27;&quot; &gt;&gt;/home/admin/.bashrc</span><br><span class="line">&quot;</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">sed -i &quot;</span>N;56iexport PATH=/opt/lucky/nginx/sbin:<span class="variable">$PATH</span><span class="string">&quot; /etc/profile</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">ss -unplt|grep 80</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">firewall-cmd --zone=public --add-service=&#123;http,https&#125; --permanent</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">firewall-cmd --reload</span></span></span><br></pre></td></tr></table></figure>
 <h4 id="2-4-编写启动文件"><a href="#2-4-编写启动文件" class="headerlink" title="2.4 编写启动文件"></a>2.4 编写启动文件</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat &gt;/etc/init.d/nginx&lt;&lt;-EOF</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment"># 目录</span></span></span><br><span class="line">NGINX_PATH=&quot;/opt/apps/nginx&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">#</span></span> </span><br><span class="line">start_nginx()&#123;</span><br><span class="line">        $&#123;NGINX_PATH&#125;/sbin/nginx</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stop_nginx()&#123;</span><br><span class="line"><span class="meta prompt_">	$</span><span class="language-bash">&#123;NGINX_PATH&#125;/sbin/nginx -s stop</span></span><br><span class="line">&#125;</span><br><span class="line">reload_nginx()&#123;</span><br><span class="line"><span class="meta prompt_">	$</span><span class="language-bash">&#123;NGINX_PATH&#125;/sbin/nginx -s reload</span></span><br><span class="line">&#125;</span><br><span class="line">check_nginx()&#123;</span><br><span class="line"><span class="meta prompt_">	$</span><span class="language-bash">&#123;NGINX_PATH&#125;/sbin/nginx -t</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## Finally the input handling.</span></span></span><br><span class="line"></span><br><span class="line">case &quot;$1&quot; in</span><br><span class="line">  start)</span><br><span class="line">        start_nginx</span><br><span class="line">        ;;</span><br><span class="line">  stop)</span><br><span class="line">        stop_nginx</span><br><span class="line">        ;;</span><br><span class="line">  reload)</span><br><span class="line">        reload_nginx</span><br><span class="line">        ;;</span><br><span class="line">  -t)</span><br><span class="line">        check_nginx</span><br><span class="line">        ;;</span><br><span class="line">  *)</span><br><span class="line">        echo &quot;Usage: service nginx &#123;start|stop|reload|-t&#125;&quot;</span><br><span class="line">        exit 1</span><br><span class="line">        ;;</span><br><span class="line">esac</span><br><span class="line"></span><br><span class="line">exit</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> +x /etc/init.d/nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">chkconfig --add nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">chkconfig nginx on</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>nginx</category>
-      </categories>
-      <tags>
-        <tag>nginx</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install-nginx-third-party modules</title>
-    <url>/nginx/install-nginx-third-party-modules/</url>
-    <content><![CDATA[<h3 id="1-安装Nginx-GeoIP2IP定位模块"><a href="#1-安装Nginx-GeoIP2IP定位模块" class="headerlink" title="1. 安装Nginx GeoIP2IP定位模块"></a>1. 安装<code>Nginx GeoIP2</code>IP定位模块</h3><ul>
-<li><font color=red><code>GeoIP2</code>模块依赖<code>libmaxminddb</code>库</font></li>
-</ul>
-<h4 id="1-1-安装libmaxminddb库"><a href="#1-1-安装libmaxminddb库" class="headerlink" title="1.1 安装libmaxminddb库"></a>1.1 安装<code>libmaxminddb</code>库</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> wget -c https://github.com/maxmind/libmaxminddb/releases/download/1.3.2/libmaxminddb-1.3.2.tar.gz -P /opt/src/    <span class="comment">##下载到指定目录下:-c断点续传、-P下载指定目录，</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf /opt/src/libmaxminddb-1.3.2.tar.gz -C /opt/src/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/src/libmaxminddb-1.3.2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make -j2 &amp;&amp; make install</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-2-安装GeoIP2"><a href="#1-2-安装GeoIP2" class="headerlink" title="1.2 安装GeoIP2"></a>1.2 安装<code>GeoIP2</code></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/leev/ngx_http_geoip2_module.git /opt/apps/nginx/ngx_http_geoip2_module</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_http_geoip2_module</span></span><br></pre></td></tr></table></figure>
-<h3 id="2-安装ngx-brotli压缩算法"><a href="#2-安装ngx-brotli压缩算法" class="headerlink" title="2. 安装ngx_brotli压缩算法"></a>2. 安装<code>ngx_brotli</code>压缩算法</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/google/ngx_brotli /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git submodule update --init  <span class="comment">#更新ngx_brotli所需依赖库</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_brotli</span></span><br></pre></td></tr></table></figure>
-<h3 id="3-安装ngx-http-upstream-check-module后端服务端口检测模块"><a href="#3-安装ngx-http-upstream-check-module后端服务端口检测模块" class="headerlink" title="3. 安装ngx_http_upstream_check_module后端服务端口检测模块"></a>3. 安装<code>ngx_http_upstream_check_module</code>后端服务端口检测模块</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/yaoweibin/nginx_upstream_check_module.git /opt/apps/nginx/nginx_upstream_check_module <span class="comment">#下载检测包</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/nginx_upstream_check_module</span></span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>nginx</category>
       </categories>
@@ -2575,6 +2683,38 @@ $ chkconfig redis on
       </categories>
       <tags>
         <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>install_xxl-job</title>
+    <url>/crontab/install-xxl-job/</url>
+    <content><![CDATA[<h3 id="1-安装xxl-job"><a href="#1-安装xxl-job" class="headerlink" title="1. 安装xxl-job"></a>1. 安装xxl-job</h3><ul>
+<li><a href="https://www.xuxueli.com/xxl-job/#1.5%20%E4%B8%8B%E8%BD%BD">官方下载部署文档</a>  </li>
+<li><font color=red>Maven3+</font>  </li>
+<li><font color=red>Jdk1.8+</font>  </li>
+<li><font color=red>Mysql5.7+</font></li>
+</ul>
+<h3 id="2-安装Mavent"><a href="#2-安装Mavent" class="headerlink" title="2. 安装Mavent"></a>2. 安装<code>Mavent</code></h3><h4 id="2-1-下载Maven"><a href="#2-1-下载Maven" class="headerlink" title="2.1  下载Maven"></a>2.1  下载<code>Maven</code></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://dlcdn.apache.org/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-2-配置环境变量"><a href="#2-2-配置环境变量" class="headerlink" title="2.2 配置环境变量"></a>2.2 配置环境变量</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&#x27;export PATH=/opt/apache-maven-3.8.5/bin:$PATH&#x27;</span> &gt;&gt;/etc/profile</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-3-国内配置阿里云Maven源"><a href="#2-3-国内配置阿里云Maven源" class="headerlink" title="2.3 国内配置阿里云Maven源"></a>2.3 国内配置阿里云<code>Maven</code>源</h4><p><a href="http://dblab.xmu.edu.cn/blog/2758/">将Maven源改为国内阿里云仓库</a>  </p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim <span class="built_in">cd</span> /usr/local/maven/conf/settings.xml</span></span><br><span class="line"></span><br><span class="line">&lt;settings xmlns=&quot;http://maven.apache.org/SETTINGS/1.0.0&quot;</span><br><span class="line">          xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">          xsi:schemaLocation=&quot;http://maven.apache.org/SETTINGS/1.0.0</span><br><span class="line">                      http://maven.apache.org/xsd/settings-1.0.0.xsd&quot;&gt;</span><br><span class="line">&lt;mirrors&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云公共仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/public&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云谷歌仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/google&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云阿帕奇仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/apache-snapshots&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云spring仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/spring&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云spring插件仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/spring-plugin&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">&lt;/mirrors&gt;</span><br><span class="line">&lt;/settings&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3-安装xxl-job"><a href="#3-安装xxl-job" class="headerlink" title="3. 安装xxl-job"></a>3. 安装<code>xxl-job</code></h3><ul>
+<li><font color=red><code>/xxl-job/doc/db/tables_xxl_job.sql</code>：初始化数据库</font></li>
+</ul>
+<blockquote>
+<p>修改配置文件  </p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /xxl-job/xxl-job-admin/src/main/resources/application.properties</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 调度中心JDBC链接：链接地址请保持和 2.1章节 所创建的调度数据库的地址一致</span></span></span><br><span class="line">spring.datasource.url=jdbc:mysql://127.0.0.1:3306/xxl_job?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;serverTimezone=Asia/Shanghai</span><br><span class="line">spring.datasource.username=root</span><br><span class="line">spring.datasource.password=root_pwd</span><br><span class="line">spring.datasource.driver-class-name=com.mysql.jdbc.Driver</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 报警邮箱</span></span></span><br><span class="line">spring.mail.host=smtp.qq.com</span><br><span class="line">spring.mail.port=25</span><br><span class="line">spring.mail.username=xxx@qq.com</span><br><span class="line">spring.mail.password=xxx</span><br><span class="line">spring.mail.properties.mail.smtp.auth=true</span><br><span class="line">spring.mail.properties.mail.smtp.starttls.enable=true</span><br><span class="line">spring.mail.properties.mail.smtp.starttls.required=true</span><br><span class="line">spring.mail.properties.mail.smtp.socketFactory.class=javax.net.ssl.SSLSocketFactory</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 调度中心通讯TOKEN [选填]：非空时启用；</span></span></span><br><span class="line">xxl.job.accessToken=</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 调度中心国际化配置 [必填]： 默认为 &quot;zh_CN&quot;/中文简体, 可选范围为 &quot;zh_CN&quot;/中文简体, &quot;zh_TC&quot;/中文繁体 and &quot;en&quot;/英文；</span></span></span><br><span class="line">xxl.job.i18n=zh_CN</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment"># 调度线程池最大线程配置【必填】</span></span></span><br><span class="line">xxl.job.triggerpool.fast.max=200</span><br><span class="line">xxl.job.triggerpool.slow.max=100</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 调度中心日志表数据保存天数 [必填]：过期日志自动清理；限制大于等于7时生效，否则, 如-1，关闭自动清理功能；</span></span></span><br><span class="line">xxl.job.logretentiondays=30</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">执行打包</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">mvn package</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><font color=red><code>xxl-job-admin/target</code>：目录下生成：<code>xxl-job-admin-2.3.0.jar</code></font>  </li>
+<li><font color=red><code>java -jar xxl-job-admin-2.3.0.jar</code>：启动xxl-job</font></li>
+</ul>
+]]></content>
+      <categories>
+        <category>crontab</category>
+      </categories>
+      <tags>
+        <tag>crontab</tag>
       </tags>
   </entry>
   <entry>
@@ -2846,7 +2986,7 @@ $ chkconfig redis on
 
 <h5 id="3-3-2-kubectl-get-help：获取资源"><a href="#3-3-2-kubectl-get-help：获取资源" class="headerlink" title="3.3.2 kubectl get --help：获取资源"></a>3.3.2 <font color=red><code>kubectl get --help</code>：获取资源</font></h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get deploy,pods</span></span><br></pre></td></tr></table></figure>
 
-<h5 id="3-3-3-kubectl-edit-help：cm：编辑configMap中的配置"><a href="#3-3-3-kubectl-edit-help：cm：编辑configMap中的配置" class="headerlink" title="3.3.3  kubectl edit --help：cm：编辑configMap中的配置"></a>3.3.3  <font color=red><code>kubectl edit --help</code>：cm：编辑configMap中的配置</font></h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改service中的服务</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl edit service/ingress-nginx-controller-admission -n ingress-nginx</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl edit cm kubeadm-config -n kube-system</span></span><br></pre></td></tr></table></figure>
+<h5 id="3-3-3-kubectl-edit-help：cm：编辑configMap中的配置"><a href="#3-3-3-kubectl-edit-help：cm：编辑configMap中的配置" class="headerlink" title="3.3.3  kubectl edit --help：cm：编辑configMap中的配置"></a>3.3.3  <font color=red><code>kubectl edit --help</code>：cm：编辑configMap中的配置</font></h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改service中的服务</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl edit service/ingress-nginx-controller-admission -n ingress-nginx</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl edit cm kubeadm-config -n kube-system</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl edit cm kube-proxy -n kube-system <span class="comment"># 修改ipvs(必须安装ipvs内核模块，否则会降级为iptables) 修改：mode: &quot;ipvs&quot;</span></span></span><br></pre></td></tr></table></figure>
 
 <h5 id="3-3-4-kubectl-delete-help：删除"><a href="#3-3-4-kubectl-delete-help：删除" class="headerlink" title="3.3.4 kubectl delete --help：删除"></a>3.3.4 <font color=red><code>kubectl delete --help</code>：删除</font ></h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete deploy/web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete svc/web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete -f  deployment-nginx.yaml   <span class="comment">#删除该yaml中创建的资源</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete pod nginx-deployment-798444d598-87hlk -n web  <span class="comment">#删除pod资源</span></span></span><br></pre></td></tr></table></figure>
 
@@ -3033,7 +3173,7 @@ $ chkconfig redis on
 
 <h5 id="3-6-2-kubectl-logs-help日志查看"><a href="#3-6-2-kubectl-logs-help日志查看" class="headerlink" title="3.6.2 kubectl logs --help日志查看"></a>3.6.2 <font color=red><code>kubectl logs --help</code>日志查看</font></h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl logs nginx-deployment-798444d598-87hlk  -n web   <span class="comment">#查看pod日志</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl logs -f  nginx-deployment-798444d598-87hlk -n web  <span class="comment">#实时查看日志</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">log</span>  nginx-deployment-798444d598-87hlk -c &lt;container_name&gt; -n web  <span class="comment">#查看pod中单个容器的日志</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl logs -l app=frontend  -n web    <span class="comment">#返回全部标记为 app=frontend 的 pod 的合并日志</span></span></span><br></pre></td></tr></table></figure>
 
-<h5 id="3-6-4-kubectl-exec-help进入容器"><a href="#3-6-4-kubectl-exec-help进入容器" class="headerlink" title="3.6.4 kubectl exec --help进入容器"></a>3.6.4 <font color=red><code>kubectl exec --help</code>进入容器</font></h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> -it  nginx-deployment-798444d598-87hlk  -n web -- /bin/sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> my-pod -- <span class="built_in">ls</span> /  	<span class="comment"># 在已存在的容器中执行命令（只有一个容器的情况下）</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> my-pod -c my-container -- <span class="built_in">ls</span> /  	<span class="comment"># 在已存在的容器中执行命令（pod 中有多个容器的情况下）</span></span></span><br></pre></td></tr></table></figure>
+<h5 id="3-6-4-kubectl-exec-help进入容器"><a href="#3-6-4-kubectl-exec-help进入容器" class="headerlink" title="3.6.4 kubectl exec --help进入容器"></a>3.6.4 <font color=red><code>kubectl exec --help</code>进入容器</font></h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> -it  nginx-deployment-798444d598-87hlk  -n web -- /bin/sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> my-pod -- <span class="built_in">ls</span> /  	<span class="comment"># 在已存在的容器中执行命令（只有一个容器的情况下）</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> my-pod -c my-container -- <span class="built_in">ls</span> /  	<span class="comment"># 在已存在的容器中执行命令（pod中有多个容器的情况下）</span></span></span><br></pre></td></tr></table></figure>
 
 <h5 id="3-6-5-kubectl-port-forward-help转发Pod中端口"><a href="#3-6-5-kubectl-port-forward-help转发Pod中端口" class="headerlink" title="3.6.5 kubectl port-forward --help转发Pod中端口"></a>3.6.5 <font color=red><code>kubectl port-forward --help</code>转发<code>Pod</code>中端口</font></h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl port-forward my-pod 5000:6000  	<span class="comment"># 转发pod中的6000端口到本地的 5000 端口</span></span></span><br></pre></td></tr></table></figure>
 
@@ -3191,7 +3331,7 @@ $ chkconfig redis on
 <td>—</td>
 </tr>
 </tbody></table>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示pod的标签</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl label pod  --show-labels -n web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">为pod打上标签</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kucectl label pod  nginx-pod version=1.0 -n web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">覆盖原来的标签：--overwrite</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kucectl label pod  nginx-pod version=1.0  --overwrite -n web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除标签</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kucectl label pod  nginx-pod version- -n web</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示pod的标签</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl label pod  --show-labels -n web -o wide</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">为pod打上标签</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kucectl label pod  nginx-pod version=1.0 -n web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">覆盖原来的标签：--overwrite</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kucectl label pod  nginx-pod version=1.0  --overwrite -n web</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除标签</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kucectl label pod  nginx-pod version- -n web</span></span><br></pre></td></tr></table></figure>
 
 <h4 id="3-9-其他命令"><a href="#3-9-其他命令" class="headerlink" title="3.9 其他命令"></a>3.9 <font color=red>其他命令</font></h4><table>
 <thead>
@@ -3330,38 +3470,6 @@ $ chkconfig redis on
       </categories>
       <tags>
         <tag>Kubernetes</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install_xxl-job</title>
-    <url>/crontab/install-xxl-job/</url>
-    <content><![CDATA[<h3 id="1-安装xxl-job"><a href="#1-安装xxl-job" class="headerlink" title="1. 安装xxl-job"></a>1. 安装xxl-job</h3><ul>
-<li><a href="https://www.xuxueli.com/xxl-job/#1.5%20%E4%B8%8B%E8%BD%BD">官方下载部署文档</a>  </li>
-<li><font color=red>Maven3+</font>  </li>
-<li><font color=red>Jdk1.8+</font>  </li>
-<li><font color=red>Mysql5.7+</font></li>
-</ul>
-<h3 id="2-安装Mavent"><a href="#2-安装Mavent" class="headerlink" title="2. 安装Mavent"></a>2. 安装<code>Mavent</code></h3><h4 id="2-1-下载Maven"><a href="#2-1-下载Maven" class="headerlink" title="2.1  下载Maven"></a>2.1  下载<code>Maven</code></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://dlcdn.apache.org/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz</span></span><br></pre></td></tr></table></figure>
-<h4 id="2-2-配置环境变量"><a href="#2-2-配置环境变量" class="headerlink" title="2.2 配置环境变量"></a>2.2 配置环境变量</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&#x27;export PATH=/opt/apache-maven-3.8.5/bin:$PATH&#x27;</span> &gt;&gt;/etc/profile</span></span><br></pre></td></tr></table></figure>
-<h4 id="2-3-国内配置阿里云Maven源"><a href="#2-3-国内配置阿里云Maven源" class="headerlink" title="2.3 国内配置阿里云Maven源"></a>2.3 国内配置阿里云<code>Maven</code>源</h4><p><a href="http://dblab.xmu.edu.cn/blog/2758/">将Maven源改为国内阿里云仓库</a>  </p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim <span class="built_in">cd</span> /usr/local/maven/conf/settings.xml</span></span><br><span class="line"></span><br><span class="line">&lt;settings xmlns=&quot;http://maven.apache.org/SETTINGS/1.0.0&quot;</span><br><span class="line">          xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">          xsi:schemaLocation=&quot;http://maven.apache.org/SETTINGS/1.0.0</span><br><span class="line">                      http://maven.apache.org/xsd/settings-1.0.0.xsd&quot;&gt;</span><br><span class="line">&lt;mirrors&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云公共仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/public&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云谷歌仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/google&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云阿帕奇仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/apache-snapshots&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云spring仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/spring&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云spring插件仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/spring-plugin&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">&lt;/mirrors&gt;</span><br><span class="line">&lt;/settings&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="3-安装xxl-job"><a href="#3-安装xxl-job" class="headerlink" title="3. 安装xxl-job"></a>3. 安装<code>xxl-job</code></h3><ul>
-<li><font color=red><code>/xxl-job/doc/db/tables_xxl_job.sql</code>：初始化数据库</font></li>
-</ul>
-<blockquote>
-<p>修改配置文件  </p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /xxl-job/xxl-job-admin/src/main/resources/application.properties</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 调度中心JDBC链接：链接地址请保持和 2.1章节 所创建的调度数据库的地址一致</span></span></span><br><span class="line">spring.datasource.url=jdbc:mysql://127.0.0.1:3306/xxl_job?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;serverTimezone=Asia/Shanghai</span><br><span class="line">spring.datasource.username=root</span><br><span class="line">spring.datasource.password=root_pwd</span><br><span class="line">spring.datasource.driver-class-name=com.mysql.jdbc.Driver</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 报警邮箱</span></span></span><br><span class="line">spring.mail.host=smtp.qq.com</span><br><span class="line">spring.mail.port=25</span><br><span class="line">spring.mail.username=xxx@qq.com</span><br><span class="line">spring.mail.password=xxx</span><br><span class="line">spring.mail.properties.mail.smtp.auth=true</span><br><span class="line">spring.mail.properties.mail.smtp.starttls.enable=true</span><br><span class="line">spring.mail.properties.mail.smtp.starttls.required=true</span><br><span class="line">spring.mail.properties.mail.smtp.socketFactory.class=javax.net.ssl.SSLSocketFactory</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 调度中心通讯TOKEN [选填]：非空时启用；</span></span></span><br><span class="line">xxl.job.accessToken=</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 调度中心国际化配置 [必填]： 默认为 &quot;zh_CN&quot;/中文简体, 可选范围为 &quot;zh_CN&quot;/中文简体, &quot;zh_TC&quot;/中文繁体 and &quot;en&quot;/英文；</span></span></span><br><span class="line">xxl.job.i18n=zh_CN</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment"># 调度线程池最大线程配置【必填】</span></span></span><br><span class="line">xxl.job.triggerpool.fast.max=200</span><br><span class="line">xxl.job.triggerpool.slow.max=100</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 调度中心日志表数据保存天数 [必填]：过期日志自动清理；限制大于等于7时生效，否则, 如-1，关闭自动清理功能；</span></span></span><br><span class="line">xxl.job.logretentiondays=30</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">执行打包</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">mvn package</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><font color=red><code>xxl-job-admin/target</code>：目录下生成：<code>xxl-job-admin-2.3.0.jar</code></font>  </li>
-<li><font color=red><code>java -jar xxl-job-admin-2.3.0.jar</code>：启动xxl-job</font></li>
-</ul>
-]]></content>
-      <categories>
-        <category>crontab</category>
-      </categories>
-      <tags>
-        <tag>crontab</tag>
       </tags>
   </entry>
 </search>
