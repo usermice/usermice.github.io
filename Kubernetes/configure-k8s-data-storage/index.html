@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"usermice.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. 配置Kubernetes数据存储  都知道容器的生命周期可能很短，会被频繁的创建和销毁。那么容器在销毁的时候，保存在容器中的数据也会被清除。这种结果对用户来说，在某些情况下是不乐意看到的。为了持久化保存容器中的数据，kubernetes引入了Volume的概念    Volume是Pod中能够被多个容器访问的共享目录，它被定义在Pod上，然后被一个Pod里面的多个容器挂载到具体的文件目录下，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="configure-k8s-data-storage">
+<meta property="og:url" content="https://usermice.github.io/Kubernetes/configure-k8s-data-storage/index.html">
+<meta property="og:site_name" content="二哥">
+<meta property="og:description" content="1. 配置Kubernetes数据存储  都知道容器的生命周期可能很短，会被频繁的创建和销毁。那么容器在销毁的时候，保存在容器中的数据也会被清除。这种结果对用户来说，在某些情况下是不乐意看到的。为了持久化保存容器中的数据，kubernetes引入了Volume的概念    Volume是Pod中能够被多个容器访问的共享目录，它被定义在Pod上，然后被一个Pod里面的多个容器挂载到具体的文件目录下，">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-05-29T07:48:51.000Z">
+<meta property="article:modified_time" content="2022-05-29T12:38:20.853Z">
+<meta property="article:author" content="二哥">
+<meta property="article:tag" content="Kubernetes">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://usermice.github.io/Kubernetes/configure-k8s-data-storage/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>configure-k8s-data-storage | 二哥</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="二哥" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">二哥</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tools">
+
+    <a href="/categories/%E5%B7%A5%E5%85%B7%E8%B5%84%E6%BA%90/" rel="section"><i class="fa fa-briefcase fa-fw"></i>tools</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/configure-k8s-data-storage/">
+
+<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/Kubernetes/configure-k8s-data-storage/">configure-k8s-data-storage</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问  的个人博客"></a></p>
+  <p><span>发布时间:</span>2022年05月29日 - 15:48</p>
+  <p><span>最后更新:</span>2022年05月29日 - 20:38</p>
+  <p><span>原始链接:</span><a href="/Kubernetes/configure-k8s-data-storage/" title="configure-k8s-data-storage">https://usermice.github.io/Kubernetes/configure-k8s-data-storage/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://usermice.github.io/Kubernetes/configure-k8s-data-storage/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+	});
+    });  
+</script>
+
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          configure-k8s-data-storage
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-05-29 15:48:51 / 修改时间：20:38:20" itemprop="dateCreated datePublished" datetime="2022-05-29T15:48:51+08:00">2022-05-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1-配置Kubernetes数据存储"><a href="#1-配置Kubernetes数据存储" class="headerlink" title="1. 配置Kubernetes数据存储"></a>1. 配置<code>Kubernetes</code>数据存储</h3><ul>
+<li><ol>
+<li>都知道容器的生命周期可能很短，会被频繁的创建和销毁。那么容器在销毁的时候，保存在容器中的数据也会被清除。这种结果对用户来说，在某些情况下是不乐意看到的。为了持久化保存容器中的数据，<code>kubernetes</code>引入了<font color=red><code>Volume</code></font>的概念</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>Volume</code></font>是<code>Pod</code>中能够被多个容器访问的共享目录，它被定义在Pod上，然后被一个<code>Pod</code>里面的多个容器挂载到具体的文件目录下，<code>kubernetes</code>通过<font color=red><code>Volume</code></font>实现同一个<code>Pod</code>中不同容器之间的数据共享以及数据的持久化存储。<font color=red><code>Volume</code></font>的生命周期不和<code>Pod</code>中的单个容器的生命周期有关，当容器终止或者重启的时候，<font color=red><code>Volume</code></font>中的数据也不会丢失</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><code>kubernetes</code>的<font color=red><code>Volume</code></font>支持多种类型，比较常见的有下面的几个：  <blockquote>
+<ul>
+<li><ol>
+<li><font color=red>简单存储</font>：<code>EmptyDir</code>、<code>HostPath</code>、<code>NFS</code></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>高级存储</font>：<code>PV</code>、<code>PVC</code></li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red>配置存储</font>：<code>ConfigMap</code>、<code>Secret</code></li>
+</ol>
+</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="2-简单存储"><a href="#2-简单存储" class="headerlink" title="2. 简单存储"></a>2. 简单存储</h3><h4 id="2-1-简单存储：EmptyDir"><a href="#2-1-简单存储：EmptyDir" class="headerlink" title="2.1 简单存储：EmptyDir"></a>2.1 简单存储：<font color=red><code>EmptyDir</code></font></h4><ul>
+<li><ol>
+<li><font color=red><code>EmptyDir</code></font>是最基础的<code>Volume</code>类型，一个<font color=red><code>EmptyDir</code></font>就是<code>Host</code>上的一个空目录</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>EmptyDir</code></font>是在<code>Pod</code>被分配到Node时创建的，它的初始内容为空，并且无须指定宿主机上对应的目录文件，因为<code>kubernetes</code>会自动分配一个目录，当<code>Pod</code>销毁时，<font color=red><code>EmptyDir</code></font>中的数据也会被永久删除。</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>EmptyDir</code></font>的用途如下  <blockquote>
+<ul>
+<li><ol>
+<li><font color=red>临时空间</font>例如用于某些应用程序运行时所需的临时目录，且无须永久保留</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>多容器共享目录</font>一个容器需要从另一个容器中获取数据的目录</li>
+</ol>
+</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="4">
+<li><font color=red>接下来，通过一个容器之间的共享案例来使用描述一个<code>EmptyDir</code></font></li>
+</ol>
+</li>
+<li><ol start="5">
+<li><font color=red>在一个Pod中准备两个容器<code>nginx</code>和<code>busybox</code></font>然后声明一个<font color=red><code>volume</code></font>分别挂载到两个容器的目录中，然后<code>nginx</code>容器负责向<code>volume</code>中写日志，<code>busybox</code>中通过命令将日志内容读到控制台</li>
+</ol>
+</li>
+<li><p><code>volume-emptydir.yaml</code>资源清单</p>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod  </span><br><span class="line">metadata:</span><br><span class="line">  name: volume-emptydir  # 定义名称</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:  	# 必选，Pod中容器列表</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到nginx容器中对应的目录，该目录为/var/log/nginx</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /var/log/nginx</span><br><span class="line">    - name: busybox</span><br><span class="line">      image: busybox:1.30</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;tail -f /logs/access.log&quot;] # 初始命令，动态读取指定文件</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到busybox容器中的对应目录，该目录为/logs</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /logs</span><br><span class="line">  volumes:   	# 声明volume，name为logs-volume，类型为emptyDir</span><br><span class="line">    - name: logs-volume  	# 共享存储卷名称 （volumes类型有很多种）</span><br><span class="line">      emptyDir: &#123;&#125;   		# 类型为emtyDir的存储卷，与Pod同生命周期的一个临时目录。为空值</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-简单存储：HostPath"><a href="#2-2-简单存储：HostPath" class="headerlink" title="2.2 简单存储：HostPath"></a>2.2 简单存储：<font color=red><code>HostPath</code></font></h4><ul>
+<li><ol>
+<li>已经知道<font color=red><code>EmptyDir</code></font>中的数据不会被持久化，它会随着<code>Pod</code>的结束而销毁，如果想要简单的将数据持久化到主机中，可以选择<font colo=red><code>HostPath</code></font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>HostPath</code></font>就是将<code>Node</code>主机中的一个实际目录挂载到<code>Pod</code>中，以供容器使用，这样的设计就可以保证<code>Pod</code>销毁了，但是数据依旧可以保存在<code>Node</code>主机上</li>
+</ol>
+</li>
+<li><font color=red><code>volume-hostpath.yaml</code>资源清单</font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain Pod.spec.volumes.hostPath.<span class="built_in">type</span> <span class="comment"># 类型声明</span></span></span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<ul>
+<li>2.2.1 <font color=red><code>DirectoryOrCreate</code></font>：目录存在就使用，不存在就先创建后使用  </li>
+<li>2.2.2 <font color=red><code>Directory</code></font>：目录必须存在  </li>
+<li>2.2.3 <font color=red><code>FileOrCreate</code></font>：文件存在就使用，不存在就先创建后使用  </li>
+<li>2.2.4 <font color=red><code>File</code></font>：文件必须存在  </li>
+<li>2.2.5 <font color=red><code>Socket</code></font>：<code>unix</code>套接字必须存在  </li>
+<li>2.2.6 <font color=red><code>CharDevice</code></font>：字符设备必须存在  </li>
+<li>2.2.7 <font color=red><code>BlockDevice</code></font>：块设备必须存在</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: volume-hostpath</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到nginx容器中对应的目录，该目录为/var/log/nginx</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /var/log/nginx</span><br><span class="line">    - name: busybox</span><br><span class="line">      image: busybox:1.30</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;tail -f /logs/access.log&quot;] # 初始命令，动态读取指定文件</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到busybox容器中的对应目录，该目录为/logs</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /logs</span><br><span class="line">  volumes: # 声明volume，name为logs-volume，类型为hostPath</span><br><span class="line">    - name: logs-volume</span><br><span class="line">      hostPath:  # 类型为hostPath的存储卷，表示挂载Pod所在宿主机的目录</span><br><span class="line">        path: /root/logs  # Pod所在宿主机的目录，将被用于同期中mount的目录</span><br><span class="line">        type: DirectoryOrCreate # 目录存在就使用，不存在就先创建再使用 </span><br></pre></td></tr></table></figure>
+
+<h4 id="2-3-简单存储：NFS"><a href="#2-3-简单存储：NFS" class="headerlink" title="2.3 简单存储：NFS"></a>2.3 简单存储：<font color=red>NFS</font></h4><ul>
+<li><ol>
+<li><font color=red><code>HostPath</code></font>虽然可以解决数据持久化的问题，但是一旦Node节点故障了，<code>Pod</code>如果转移到别的<code>Node</code>节点上，又会出现问题，此时需要准备单独的网络存储系统，比较常用的是<code>NFS</code>和<code>CIFS</code></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>NFS</code></font>是一个网络文件存储系统，可以搭建一台<code>NFS</code>服务器，然后将<code>Pod</code>中的存储直接连接到<code>NFS</code>系统上，这样，无论<code>Pod</code>在节点上怎么转移，只要<code>Node</code>和<code>NFS</code>的对接没有问题，数据就可以成功访问</li>
+</ol>
+</li>
+</ul>
+<h5 id="2-3-1-安装NFS服务"><a href="#2-3-1-安装NFS服务" class="headerlink" title="2.3.1 安装NFS服务"></a>2.3.1 <font color=red>安装<code>NFS</code>服务</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y nfs-utils rpcbind</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -pv /opt/data/nfs   <span class="comment"># 准备共享目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/exports  	<span class="comment"># 授权共享目录读写权限暴露给节点中的IP网段所有主机：192.168.80.0/24,172.16.8.0/24</span></span></span><br><span class="line">/opt/data/nfs 192.168.80.0/24(rw,no_root_squash)</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> 777 -R /opt/data/nfs</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">exportfs -r  <span class="comment"># 加载配置</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start rpcbind &amp;&amp; systemctl <span class="built_in">enable</span> rpcbind</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start nfs &amp;&amp; systemctl <span class="built_in">enable</span> nfs</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">showmount -e 192.168.18.100  	<span class="comment"># Master节点测试是否挂载成功</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在Node节点上安装NFS服务，不需要启动</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install nfs-utils</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">showmount -e 192.168.18.100  	<span class="comment"># Node节点测试是否挂载成功</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">高可用备份方式，在所有节点执行如下挂载命令</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">mount -t  nfs 192.168.18.100:/opt/data/nfs /mnt</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="2-3-2-volume-nfs-yaml"><a href="#2-3-2-volume-nfs-yaml" class="headerlink" title="2.3.2 volume-nfs.yaml"></a>2.3.2 <font color=red><code>volume-nfs.yaml</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: volume-nfs</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到nginx容器中对应的目录，该目录为/var/log/nginx</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /var/log/nginx</span><br><span class="line">    - name: busybox</span><br><span class="line">      image: busybox:1.30</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;tail -f /logs/access.log&quot;] # 初始命令，动态读取指定文件</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到busybox容器中的对应目录，该目录为/logs</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /logs</span><br><span class="line">  volumes: # 声明volume</span><br><span class="line">    - name: logs-volume</span><br><span class="line">      nfs:  # 存储类型，和底层正则的存储对应</span><br><span class="line">        server: 192.168.18.100 # NFS服务器地址</span><br><span class="line">        path: /root/data/nfs # 共享文件路径</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-高级存储"><a href="#3-高级存储" class="headerlink" title="3. 高级存储"></a>3. 高级存储</h3><h4 id="3-1-高级存储：PV"><a href="#3-1-高级存储：PV" class="headerlink" title="3.1 高级存储：PV"></a>3.1 <font color=red>高级存储：<code>PV</code></font></h4><ul>
+<li><ol>
+<li><font color=red><code>PV(Persistent Volume)</code></font>是持久化卷的意思，是对底层的共享存储的一种抽象。一般情况下<code>PV</code>由<code>kubernetes</code>管理员进行创建和配置，它和底层具体的共享存储技术有关，并通过插件完成和共享存储的对接</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>PV</code></font>：<code>kubernetes</code>管理员维护</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">######################################  	定义 Kind：PersistentVolume</span></span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: pv2</span><br><span class="line">spec:</span><br><span class="line">  nfs: # 存储类型，和底层正则的存储对应</span><br><span class="line">    path: /root/data/pv1</span><br><span class="line">    server: 192.168.18.100</span><br><span class="line">  capacity: # 存储能力，目前只支持存储空间的设置</span><br><span class="line">    storage: 2Gi</span><br><span class="line">  accessModes: # 访问模式</span><br><span class="line">    - ReadWriteMany</span><br><span class="line">  storageClassName: # 存储类别</span><br><span class="line">  persistentVolumeReclaimPolicy: Retain # 回收策略</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font color=red><code>pv</code>的关键配置参数说明</font>   <blockquote>
+<ul>
+<li><ol>
+<li><font color=red>存储类型：</font>底层实际存储的类型，<code>kubernetes</code>支持多种存储类型，每种存储类型的配置有所不同</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>capacity</code>(存储能力)：</font>目前只支持存储空间的设置<code>storage=1Gi</code>，不过未来可能会加入<code>IOPS</code>、吞吐量等指标的配置</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>accessModes</code>(访问模式)：</font>用来描述用户应用对存储资源的访问权限，访问权限包括下面几种方式  <blockquote>
+<ul>
+<li>3.1 <font color=red><code>ReadWriteOnce(RWO)</code>：</font>读写权限，但是只能被单个节点挂载  </li>
+<li>3.2 <font color=red><code>ReadOnlyMany(ROX)</code>：</font>只读权限，可以被多个节点挂载  </li>
+<li>3.3 <font color=red><code>ReadWriteMany(RWX</code>)：</font>读写权限，可以被多个节点挂载</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><p><font color=red>需要注意的是，底层不同的存储类型可能支持的访问模式不同</font>  </p>
+</li>
+<li><ol start="4">
+<li><font color=red><code>persistentVolumeReclaimPolicy</code>(回收策略)：</font>当<code>PV</code>不再被使用之后，对其的处理方式，目前支持三种策略  <blockquote>
+<ul>
+<li>4.1 <font color=red><code>Retain</code>(保留)：</font>保留数据，需要管理员手动清理数据  </li>
+<li>4.2 <font color=red><code>Recycle</code>(回收)：</font>清除<code>PV</code>中的数据，效果相当于<code>rm -rf /volume/*</code>  </li>
+<li>4.3 <font color=red><code>Delete</code>(删除)：</font>和<code>PV</code>相连的后端存储完成volume的删除操作，常见于云服务器厂商的存储服务</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><p><font color=red>需要注意的是，底层不同的存储类型可能支持的回收策略不同</font>  </p>
+</li>
+<li><ol start="5">
+<li><font color=red><code>storageClassName</code>(存储类别)：</font><code>PV</code>可以通过<code>storageClassName</code>参数指定一个存储类别  <blockquote>
+<ul>
+<li>5.1 具有特定类型的<code>PV</code>只能和请求了该类别的<code>PVC</code>进行绑定  </li>
+<li>5.2 未设定类别的<code>PV</code>只能和不请求任何类别的<code>PVC</code>进行绑定</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="6">
+<li><font color=red><code>status</code>(状态)：</font>一个<code>PV</code>的生命周期，可能会处于4种不同的阶段  <blockquote>
+<ul>
+<li>6.1 <font color=red><code>Available</code>(可用)：</font>表示可用状态，还未被任何<code>PVC</code>绑定</li>
+<li>6.1 <font color=red><code>Bound</code>(已绑定)：</font>表示<code>PV</code>已经被<code>PVC</code>绑定  </li>
+<li>6.1 <font color=red>Released(已释放)：</font>表示<code>PVC</code>被删除，但是资源还没有被集群重新释放</li>
+<li>6.1 <font color=red>Failed(失败)：</font>表示该<code>PV</code>的自动回收失败</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h4 id="3-2-高级存储：PVC"><a href="#3-2-高级存储：PVC" class="headerlink" title="3.2 高级存储：PVC"></a>3.2 <font color=red>高级存储：<code>PVC</code></font></h4><ul>
+<li><ol>
+<li><font color=red><code>PVC(Persistent Volume Claim)</code></font>是持久化卷声明的意思，是用户对于存储需求的一种声明。换言之，PVC其实就是用户向kubernetes系统发出的一种资源需求申请</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>PVC</code></font>：<code>kubernetes</code>用户维护</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>PVC</code></font>是资源的申请，用来声明对存储空间、访问模式、存储类别需求信息</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################  	定义 Kind：PersistentVolumeClaim</span></span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name: pvc1</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  accessModes: # 访问模式</span><br><span class="line">    - ReadWriteMany</span><br><span class="line">  selector: # 采用标签对PV选择</span><br><span class="line">  storageClassName: # 存储类别</span><br><span class="line">  resources: # 请求空间</span><br><span class="line">    requests:</span><br><span class="line">      storage: 1Gi</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">################################################### 创建 Pod 访问 PVC 类型存储</span></span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: pod1</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: busybox</span><br><span class="line">    image: busybox:1.30</span><br><span class="line">    command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;while true;do echo pod1 &gt;&gt; /root/out.txt; sleep 10; done;&quot;]</span><br><span class="line">    volumeMounts:</span><br><span class="line">    - name: volume</span><br><span class="line">      mountPath: /root/</span><br><span class="line">  volumes:</span><br><span class="line">    - name: volume</span><br><span class="line">      persistentVolumeClaim:</span><br><span class="line">        claimName: pvc1</span><br><span class="line">        readOnly: false</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font color=red><code>PVC</code>的关键配置参数说明</font>  <blockquote>
+<ul>
+<li><ol>
+<li><font color=red><code>accessModes</code>(访客模式)：</font>用于描述用户应用对存储资源的访问权限  <blockquote>
+<ul>
+<li>1.1 <font color=red><code>selector</code>(选择条件)：</font>通过<code>Label Selector</code>的设置，可使<code>PVC</code>对于系统中已存在的<code>PV</code>进行筛选  </li>
+<li>1.2 <font color=red><code>storageClassName</code>(存储类别)：</font><code>PVC</code>在定义时可以设定需要的后端存储的类别，只有设置了该<code>class</code>的<code>pv</code>才能被系统选出  </li>
+<li>1.3 <font color=red><code>resources</code>(资源请求)：</font>描述对存储资源的请求</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h6 id="3-2-1-PVC和PV是一一对应的，PV和PVC之间的相互作用遵循如下的生命周期"><a href="#3-2-1-PVC和PV是一一对应的，PV和PVC之间的相互作用遵循如下的生命周期" class="headerlink" title="3.2.1 PVC和PV是一一对应的，PV和PVC之间的相互作用遵循如下的生命周期"></a>3.2.1 <font color=red><code>PVC</code>和<code>PV</code>是一一对应的，<code>PV</code>和<code>PVC</code>之间的相互作用遵循如下的生命周期</font></h6><ul>
+<li><ol>
+<li><font color=red>资源供应：</font>管理员手动创建底层存储和<code>PV</code></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>资源绑定</font>  <blockquote>
+<ul>
+<li><p>2.1 用户创建<code>PVC``kubernetes</code>负责根据<code>PVC</code>声明去寻找<code>PV</code>，并绑定在用户定义好<code>PVC</code>之后，系统将根据<code>PVC</code>对存储资源的请求在以存在的<code>PV</code>中选择一个满足条件的 。  </p>
+<blockquote>
+<ul>
+<li>2.1.1 一旦找到就将该<code>PV</code>和用户定义的<code>PVC</code>进行绑定，用户的应用就可以使用这个<code>PVC</code>了。    </li>
+<li>2.1.2 如果找不到<code>PVC</code>就会无限期的处于<code>Pending</code>状态，直到系统管理员创建一个符合其要求的<code>PV</code>。</li>
+</ul>
+</blockquote>
+</li>
+<li><p>2.2 <code>PV</code>一旦绑定到某个<code>PVC</code>上就会被这个<code>PVC</code>独占，不能再和其他的<code>PVC</code>进行绑定了。</p>
+</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red>资源使用：</font>用户可以在Pod中像volume一样使用PVC，Pod使用Volume的定义，将PVC挂载到容器内的某个路径进行使用。</li>
+</ol>
+</li>
+<li><ol start="4">
+<li><font color=red>资源释放</font>  <blockquote>
+<ul>
+<li>4.1 用户删除<code>PVC</code>来释放<code>PV</code>  </li>
+<li>4.2 当存储资源使用完毕后，用户可以删除<code>PVC</code>，和该PVC绑定的<code>PV</code>将会标记为“已释放”，但是还不能立刻和其他的<code>PVC</code>进行绑定。通过之前<code>PVC</code>写入的数据可能还留在存储设备上，只有在清除之后该<code>PV</code>才能再次使用</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="5">
+<li><font color=red>资源回收</font>  <blockquote>
+<ul>
+<li>5.1 <code>kubernetes</code>根据<code>PV</code>设置的回收策略进行资源的回收。  </li>
+<li>5.2 对于<code>PV</code>，管理员可以设定回收策略，用于设置与之绑定的<code>PVC</code>释放资源之后如何处理遗留数据的问题。只有<code>PV</code>的存储空间完成回收，才能供新的<code>PVC</code>绑定和使用。</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="6">
+<li><font color=red>创建<code>PVC</code>后一直绑定不了<code>PV</code>的原因</font>  <blockquote>
+<ul>
+<li>①<code>PVC</code>的空间申请大小比<code>PV</code>的空间要大。  </li>
+<li>②<code>PVC</code>的<code>storageClassName</code>和<code>PV</code>的<code>storageClassName</code>不一致。 </li>
+<li>③<code>PVC</code>的<code>accessModes</code>和<code>PV</code>的<code>accessModes</code>不一致。</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="4-配置存储"><a href="#4-配置存储" class="headerlink" title="4. 配置存储"></a>4. 配置存储</h3><h4 id="4-1-配置存储—ConfigMap"><a href="#4-1-配置存储—ConfigMap" class="headerlink" title="4.1 配置存储—ConfigMap"></a>4.1 <font color=red>配置存储—<code>ConfigMap</code></font></h4><ul>
+<li><ol>
+<li><font color=red><code>ConfigMap</code>：</font>是一个比较特殊的存储卷，它的主要作用是用来存储配置信息的。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>ConfigMap</code></font>中的<code>key</code>映射为一个文件，<code>value</code>映射为文件中的内容。如果更新了<code>ConfigMap</code>中的内容，容器中的值也会动态更新。</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: ConfigMap  	# ConfigMap</span><br><span class="line">metadata:</span><br><span class="line">  name: configmap</span><br><span class="line">  namespace: dev</span><br><span class="line">data:  &lt;map[string]string&gt;</span><br><span class="line">  info:</span><br><span class="line">    username:admin</span><br><span class="line">    password:123456</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">########################################## 配置 pod-configmap</span></span>   </span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: pod-configmap</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      volumeMounts:</span><br><span class="line">        - mountPath: /configmap/config</span><br><span class="line">          name: config</span><br><span class="line">  volumes:</span><br><span class="line">    - name: config</span><br><span class="line">      configMap: # 类型为configMap的存储卷，挂载预定义的configMap对象到容器内部</span><br><span class="line">        name: configmap</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="4-2-配置存储—Secret"><a href="#4-2-配置存储—Secret" class="headerlink" title="4.2 配置存储—Secret"></a>4.2 <font color=red>配置存储—<code>Secret</code></font></h4><ul>
+<li><font color=red><code>Secret</code>：</font>在<code>kubernetes</code>中，还存在一种和<code>ConfigMap</code>非常类似的对象，称为<code>Secret</code>对象，它主要用来存储敏感信息，例如密码、密钥、证书等等  </li>
+<li><font color=red>如果同时使用<code>data</code>和<code>stringData</code>，那么<code>data</code>会被忽略</font></li>
+</ul>
+<h5 id="4-2-1-使用base64对准备的数据进行编码"><a href="#4-2-1-使用base64对准备的数据进行编码" class="headerlink" title="4.2.1 使用base64对准备的数据进行编码"></a>4.2.1 使用<code>base64</code>对准备的数据进行编码</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">对用户进行编码</span></span><br><span class="line">echo -n &quot;admin&quot; | base64</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">对密码进行编码</span></span><br><span class="line">echo -n &quot;123456&quot; | base64</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font color=red>准备<code>volumes-secret</code>资源清单</font><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Secret</span><br><span class="line">metadata:</span><br><span class="line">  name: secret</span><br><span class="line">  namespace: dev</span><br><span class="line">type: Opaque</span><br><span class="line">data:  # 提前编码实名：data、使用Kubernetes进行编码使用：stringData</span><br><span class="line">  username: YWRtaW4=  	# 使用kubernetes进行编码写原数据：admin</span><br><span class="line">  password: MTIzNDU2  	#使用kubernetes进行编码写原数据：123456</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">############################################# 配置 pod-secret</span></span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: pod-secret</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      volumeMounts:</span><br><span class="line">        - mountPath: /secret/config</span><br><span class="line">          name: config</span><br><span class="line">  volumes:</span><br><span class="line">    - name: config</span><br><span class="line">      secret: # 类型为secret的存储卷，挂载集群与定义的secret对象到容器内部</span><br><span class="line">        secretName: secret</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看编码后的目录以及信息</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> -it pod-secret -n dev /bin/sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">ls</span> /secret/config</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">more /secret/config/username</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">more /secret/config/password</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="4-2-2-Secret的用途"><a href="#4-2-2-Secret的用途" class="headerlink" title="4.2.2 Secret的用途"></a>4.2.2 <font color=red><code>Secret</code>的用途</font></h5><ul>
+<li><font color=red><code>imagePullSecret</code>：</font><code>Pod</code>拉取私有镜像仓库的时使用的账户密码，会传递给<code>kubelet</code>，然后<code>kubelet</code>就可以拉取有密码的仓库里面的镜像</li>
+</ul>
+<pre><code class="shell"># 创建一个ImagePullSecret
+$ kubectl create secret docker-registry docker-harbor-registrykey --docker-server=192.168.18.119:85 \
+          --docker-username=admin --docker-password=Harbor12345 \
+          --docker-email=1900919313@qq.com
+
+# 查看是否创建成功
+$ kubectl get secret docker-harbor-registrykey
+</code></pre>
+<ul>
+<li><font color=red>新建<code>redis.yaml</code></font></li>
+</ul>
+<pre><code class="shell">apiVersion: v1
+kind: Pod
+metadata:
+  name: redis
+spec:
+  containers:
+    - name: redis
+      image: 192.168.18.119:85/yuncloud/redis # 这是Harbor的镜像私有仓库地址
+  imagePullSecrets:
+    - name: docker-harbor-registrykey
+</code></pre>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>二哥
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://usermice.github.io/Kubernetes/configure-k8s-data-storage/" title="configure-k8s-data-storage">https://usermice.github.io/Kubernetes/configure-k8s-data-storage/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kubernetes/" rel="tag"># <i class="fa fa-tag"></i> Kubernetes</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Kubernetes/configure-k8s-Service/" rel="prev" title="configure-k8s-Service">
+      <i class="fa fa-chevron-left"></i> configure-k8s-Service
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+    
+ </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%85%8D%E7%BD%AEKubernetes%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8"><span class="nav-number">1.</span> <span class="nav-text">1. 配置Kubernetes数据存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%AE%80%E5%8D%95%E5%AD%98%E5%82%A8"><span class="nav-number">2.</span> <span class="nav-text">2. 简单存储</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E7%AE%80%E5%8D%95%E5%AD%98%E5%82%A8%EF%BC%9AEmptyDir"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 简单存储：EmptyDir</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E7%AE%80%E5%8D%95%E5%AD%98%E5%82%A8%EF%BC%9AHostPath"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 简单存储：HostPath</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E7%AE%80%E5%8D%95%E5%AD%98%E5%82%A8%EF%BC%9ANFS"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 简单存储：NFS</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-3-1-%E5%AE%89%E8%A3%85NFS%E6%9C%8D%E5%8A%A1"><span class="nav-number">2.3.1.</span> <span class="nav-text">2.3.1 安装NFS服务</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-3-2-volume-nfs-yaml"><span class="nav-number">2.3.2.</span> <span class="nav-text">2.3.2 volume-nfs.yaml</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%AB%98%E7%BA%A7%E5%AD%98%E5%82%A8"><span class="nav-number">3.</span> <span class="nav-text">3. 高级存储</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E9%AB%98%E7%BA%A7%E5%AD%98%E5%82%A8%EF%BC%9APV"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 高级存储：PV</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E9%AB%98%E7%BA%A7%E5%AD%98%E5%82%A8%EF%BC%9APVC"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 高级存储：PVC</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#3-2-1-PVC%E5%92%8CPV%E6%98%AF%E4%B8%80%E4%B8%80%E5%AF%B9%E5%BA%94%E7%9A%84%EF%BC%8CPV%E5%92%8CPVC%E4%B9%8B%E9%97%B4%E7%9A%84%E7%9B%B8%E4%BA%92%E4%BD%9C%E7%94%A8%E9%81%B5%E5%BE%AA%E5%A6%82%E4%B8%8B%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">3.2.0.1.</span> <span class="nav-text">3.2.1 PVC和PV是一一对应的，PV和PVC之间的相互作用遵循如下的生命周期</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%85%8D%E7%BD%AE%E5%AD%98%E5%82%A8"><span class="nav-number">4.</span> <span class="nav-text">4. 配置存储</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E9%85%8D%E7%BD%AE%E5%AD%98%E5%82%A8%E2%80%94ConfigMap"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 配置存储—ConfigMap</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E9%85%8D%E7%BD%AE%E5%AD%98%E5%82%A8%E2%80%94Secret"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 配置存储—Secret</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#4-2-1-%E4%BD%BF%E7%94%A8base64%E5%AF%B9%E5%87%86%E5%A4%87%E7%9A%84%E6%95%B0%E6%8D%AE%E8%BF%9B%E8%A1%8C%E7%BC%96%E7%A0%81"><span class="nav-number">4.2.1.</span> <span class="nav-text">4.2.1 使用base64对准备的数据进行编码</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-2-2-Secret%E7%9A%84%E7%94%A8%E9%80%94"><span class="nav-number">4.2.2.</span> <span class="nav-text">4.2.2 Secret的用途</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="二哥"
+      src="/images/IMG_0081.JPG">
+  <p class="site-author-name" itemprop="name">二哥</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="/usererge#gmail.com" title="E-Mail → usererge#gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/yourname" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="二哥"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">二哥</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">157k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:23</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://usermice.github.io/" class="theme-link">二哥</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+-->
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

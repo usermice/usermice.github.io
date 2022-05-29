@@ -34,77 +34,6 @@
       </tags>
   </entry>
   <entry>
-    <title>configure-gitlab</title>
-    <url>/gitlab/configure-gitlab/</url>
-    <content><![CDATA[<h3 id="1-修改gitlab配置文件"><a href="#1-修改gitlab配置文件" class="headerlink" title="1. 修改gitlab配置文件"></a>1. 修改gitlab配置文件</h3><p><a href="https://blog.csdn.net/A___LEi/article/details/110476531">GitLab → 搭建中常遇的问题与日常维护</a></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/gitlab/gitlab/rb   <span class="comment">#修改gitlab默认端口</span></span></span><br><span class="line">external_url &#x27;http://185.167.13.45:12580&#x27;</span><br><span class="line">unicorn[&#x27;port&#x27;] = &#x27;9092&#x27;  #修改默认端口</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-处理gitlab报错"><a href="#2-处理gitlab报错" class="headerlink" title="2. 处理gitlab报错"></a>2. 处理gitlab报错</h3><ul>
-<li><a href="https://blog.csdn.net/fishinhouse/article/details/105131917">gitlab runner 500错误解决</a></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@k8s-node-2 backups]# gitlab-rails console</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line"> Ruby:         ruby 2.7.5p203 (2021-11-24 revision f69aeb8314) [x86_64-linux]</span><br><span class="line"> GitLab:       14.4.4 (838dea1cf23) FOSS</span><br><span class="line"> GitLab Shell: 13.21.1</span><br><span class="line"> PostgreSQL:   12.7</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line">Loading production environment (Rails 6.1.4.1)</span><br><span class="line">irb(main):001:0&gt; ApplicationSetting.current.reset_runners_registration_token!</span><br><span class="line">=&gt; true</span><br><span class="line">irb(main):002:0&gt; exit</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">######################		rpm包方式安装，进入终端命令如下:</span></span></span><br><span class="line">gitlab-rails dbconsole --database main</span><br><span class="line"></span><br><span class="line">-- Clear project tokens(清除项目令牌)</span><br><span class="line">UPDATE projects SET runners_token = null, runners_token_encrypted = null;</span><br><span class="line">-- Clear group tokens(清除组令牌)</span><br><span class="line">UPDATE namespaces SET runners_token = null, runners_token_encrypted = null;</span><br><span class="line">-- Clear instance tokens(清除实例令牌)</span><br><span class="line">UPDATE application_settings SET runners_registration_token_encrypted = null;</span><br><span class="line">-- Clear key used for JWT authentication(用于 JWT 身份验证的清除密钥)</span><br><span class="line">-- This may break the $CI_JWT_TOKEN job variable:</span><br><span class="line">-- https://gitlab.com/gitlab-org/gitlab/-/issues/325965</span><br><span class="line">UPDATE application_settings SET encrypted_ci_jwt_signing_key = null;</span><br><span class="line">-- Clear runner tokens(清除跑步者令牌)</span><br><span class="line">UPDATE ci_runners SET token = null, token_encrypted = null;</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="2-1-处理502报错"><a href="#2-1-处理502报错" class="headerlink" title="2.1 处理502报错"></a>2.1 处理502报错</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/gitlab/gitlab/rb   <span class="comment">#修改gitlab默认端口</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">报错502,下列取消注释</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">unicorn[<span class="string">&#x27;port&#x27;</span>] = 8088</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">postgresql[<span class="string">&#x27;shared_buffers&#x27;</span>] = <span class="string">&quot;256MB&quot;</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">postgresql[<span class="string">&#x27;max_connections&#x27;</span>] = 200</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">然后</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure  <span class="comment">#初始化gitlab</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="2-2-gitlab-403-forbidden-报错解决"><a href="#2-2-gitlab-403-forbidden-报错解决" class="headerlink" title="2.2  gitlab 403 forbidden 报错解决"></a>2.2  gitlab 403 forbidden 报错解决</h4><ul>
-<li>gitlab稳定运行有一年多了，今天研发部小伙伴跑来说，他的gitlab访问不了，不一会，还有几位小伙伴也一样的反馈查看他们的报错，为403 forbidden奇怪的是，我访问是正常的</li>
-<li>排查过程</li>
-<li>首先上服务器，查看各服务均正常gitlab-ctl logs 查看日志，发现有一个IP 172.17.2.254访问被拒绝，而这个IP，是无线网段的网关。瞬间明白了，不能用的全是用无线上网的同学，只要是经过2.254的都不能用继续查看日志，有个xiaoxiao用户，有过几次登陆失败，之后就全都是forbidden看来gitlab是有防爆破机制，查看配置文档gitlab.yml，果然有rack_attack的配置，如图： <img src="http://null/" alt="images"></li>
-<li>解决方法</li>
-<li>进入redis，删除被墙的IP地址即可以，命令如下：</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">/opt/gitlab/embedded/bin/redis-cli -s /var/opt/gitlab/redis/redis.socket keys <span class="string">&#x27;*&#x27;</span> | grep <span class="string">&#x27;rack::attack&#x27;</span> | xargs /opt/gitlab/embedded/bin/redis-cli -s /var/opt/gitlab/redis/redis.socket DEL</span></span><br><span class="line">(integer) 1</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">#执行这命令 使用无线连接gitlab的电脑恢复正常。</span></span></span><br></pre></td></tr></table></figure>
-
-<h4 id="2-3-postfix启动报错"><a href="#2-3-postfix启动报错" class="headerlink" title="2.3 postfix启动报错"></a>2.3 postfix启动报错</h4><ul>
-<li>修改 &#x2F;etc&#x2F;postfix&#x2F;main.cf中：#myhostname &#x3D; host.domain.tld</li>
-<li>其中：host.domain.tld 必须是：xxx.xxxx.xxx</li>
-</ul>
-<h3 id="3-gitlab8-0版本汉化"><a href="#3-gitlab8-0版本汉化" class="headerlink" title="3. gitlab8.0版本汉化"></a>3. gitlab8.0版本汉化</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install patch git</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">git <span class="built_in">clone</span> https://gitlab.com/xhang/gitlab.git <span class="comment">#汉化版本库</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">git diff v10.0.2 v10.0.2-zh &gt; ../10.0.2-zh.diff</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://gitlab.com/larryli/gitlab.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> gitlab</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git diff origin/8-0-stable..origin/8-0-zh &gt; patch.diff      <span class="comment">#生成:patch.diff文件</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">patch -d /opt/gitlab/embedded/service/gitlab-rails -p1 &lt; /tmp/patch.diff  <span class="comment">#把:patch.diff文件安装到gitlab安装目录下</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart  <span class="comment">#重启gitlab</span></span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在打包补丁 patch -d &#x2F;opt&#x2F;gitlab&#x2F;embedded&#x2F;service&#x2F;gitlab-rails -p1 &lt; …&#x2F;v10.8.4-zh.diff<br>后可能会出来该情况 一路回车跳过即可！</li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/gitlab_server/languge-zh.png" alt="汉化"></p>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/gitlab_server/languge-zh-1.png" alt="汉化2">  </p>
-<h3 id="4-修改gitlab管理员密码的三种方式"><a href="#4-修改gitlab管理员密码的三种方式" class="headerlink" title="4. 修改gitlab管理员密码的三种方式"></a>4. 修改gitlab管理员密码的三种方式</h3><ul>
-<li>方法一，使用id：</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">irb(main):001:0&gt; user = User.where(id:[user&#x27;s register index]).first</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>方法二，使用邮箱：</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">irb(main):001:0&gt; user = User.where(email:[user&#x27;s register email]).first</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>方法三，使用用户名：</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">irb(main):001:0&gt; user = User.where(name:[user&#x27;s register name]).first</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rails console production</span></span><br><span class="line">root@84aba16d413e:/# gitlab-rails console -e production</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line"> GitLab:       12.8.6 (5fc76a64537) FOSS</span><br><span class="line"> GitLab Shell: 11.0.0</span><br><span class="line"> PostgreSQL:   10.12</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line">Loading production environment (Rails 6.0.2)</span><br><span class="line">irb(main):001:0&gt; user = User.where(id: 1).first</span><br><span class="line">=&gt; #&lt;User id:1 @root&gt;</span><br><span class="line">irb(main):002:0&gt; user.password = &#x27;12345678&#x27;</span><br><span class="line">=&gt; &quot;12345678&quot;</span><br><span class="line">irb(main):003:0&gt; user.password_confirmation = &#x27;12345678&#x27;</span><br><span class="line">=&gt; &quot;12345678&quot;</span><br><span class="line">irb(main):004:0&gt; user.save!</span><br><span class="line">Enqueued ActionMailer::DeliveryJob (Job ID: b6aca58a-cfde-4890-aa22-a8f491290c96) to Sidekiq(mailers) with arguments: &quot;DeviseMailer&quot;, &quot;password_change&quot;, &quot;deliver_now&quot;, #&lt;GlobalID:0x00007f79cb5f5298 @uri=#&lt;URI::GID gid://gitlab/User/1&gt;&gt;</span><br><span class="line">=&gt; true</span><br><span class="line">irb(main):005:0&gt; exit</span><br></pre></td></tr></table></figure>
-
-<h3 id="5-Gitlab-配置邮箱"><a href="#5-Gitlab-配置邮箱" class="headerlink" title="5. Gitlab 配置邮箱"></a>5. Gitlab 配置邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/gitlab/gitlab/ra</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_enable&#x27;</span>] = <span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_address&#x27;</span>] = <span class="string">&quot;smtp.server&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_port&#x27;</span>] = 465</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_user_name&#x27;</span>] = <span class="string">&quot;smtp user&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_password&#x27;</span>] = <span class="string">&quot;smtp password&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_domain&#x27;</span>] = <span class="string">&quot;example.com&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_authentication&#x27;</span>] = <span class="string">&quot;login&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_enable_starttls_auto&#x27;</span>] = <span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_tls&#x27;</span>] = <span class="literal">false</span></span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/gitlab_server/configure-git-email.png" alt="configure-git-email"></p>
-<h3 id="6-Gitlab版本升级-Gitlab升级"><a href="#6-Gitlab版本升级-Gitlab升级" class="headerlink" title="6. Gitlab版本升级  Gitlab升级"></a>6. <a href="https://zhuanlan.zhihu.com/p/352342116">Gitlab版本升级</a>  <a href="https://docs.gitlab.com/ee/update/index.html#upgrade-paths">Gitlab升级</a></h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-12.10.14 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.0.14 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.1.11 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.8.8 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.12.10 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.12.12 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.0.11 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.1.8 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.2.6 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.3.2 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.3.6 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.4.0 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.4.4 -y</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="7-Gitlab备份还原"><a href="#7-Gitlab备份还原" class="headerlink" title="7. Gitlab备份还原"></a>7. <a href="https://www.jianshu.com/p/a2600f8dffc2">Gitlab备份还原</a></h3><h4 id="7-1-备份还原"><a href="#7-1-备份还原" class="headerlink" title="7.1 备份还原"></a>7.1 备份还原</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">1. 创建备份，创建后会在:/var/opt/gitlab/backups/ 目录下生成备份文件</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rake gitlab:backup:create</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">2. 备份还原前先停止相关服务</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl stop unicorn</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl stop sidekiq</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3.从指定时间戳的备份恢复（backups目录下有多个备份文件时）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rake gitlab:backup:restore BACKUP=1500809139</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">4. 从默认备份恢复（backups目录下只有一个备份文件时）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rake gitlab:backup:restore</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">5.还原后启动Gitlab</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl start</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="7-2-Gitlab恢复数据报错解决方法"><a href="#7-2-Gitlab恢复数据报错解决方法" class="headerlink" title="7.2  Gitlab恢复数据报错解决方法"></a>7.2  <a href="https://www.jianshu.com/p/09a2b0c25ecd">Gitlab恢复数据报错解决方法</a></h4><h5 id="7-2-1-修改postgresql配置"><a href="#7-2-1-修改postgresql配置" class="headerlink" title="7.2.1 修改postgresql配置"></a>7.2.1 修改postgresql配置</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /var/opt/gitlab/postgresql/data/postgresql.conf</span></span><br><span class="line">listen_addresses = &#x27;*&#x27;		#中添加*符号</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">最下面新增两行</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /var/opt/gitlab/postgresql/data/pg_hba.conf</span></span><br><span class="line">local   all         all                               trust</span><br><span class="line">host    all         all                               127.0.0.1/32 trust</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="7-2-3-修改gitlab账号为超级用户"><a href="#7-2-3-修改gitlab账号为超级用户" class="headerlink" title="7.2.3 修改gitlab账号为超级用户"></a>7.2.3 修改gitlab账号为超级用户</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">su - gitlab-psql</span></span><br><span class="line">Last login: Fri Dec 24 17:35:01 CST 2021 on pts/0</span><br><span class="line">-sh-4.2$ /opt/gitlab/embedded/bin/psql -h 127.0.0.1 gitlabhq_production</span><br><span class="line">psql (12.7)</span><br><span class="line">SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)</span><br><span class="line">Type &quot;help&quot; for help.</span><br><span class="line"></span><br><span class="line">gitlabhq_production=# ALTER USER gitlab WITH SUPERUSER;</span><br><span class="line">ALTER ROLE</span><br><span class="line">gitlabhq_production=# \q</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>gitlab</category>
-      </categories>
-      <tags>
-        <tag>gitlab</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>configure-Redis</title>
     <url>/Redis/configure-Redis/</url>
     <content><![CDATA[<h3 id="1-编写启动文件"><a href="#1-编写启动文件" class="headerlink" title="1. 编写启动文件"></a>1. 编写启动文件</h3><ul>
@@ -228,6 +157,77 @@
       </tags>
   </entry>
   <entry>
+    <title>configure-gitlab</title>
+    <url>/gitlab/configure-gitlab/</url>
+    <content><![CDATA[<h3 id="1-修改gitlab配置文件"><a href="#1-修改gitlab配置文件" class="headerlink" title="1. 修改gitlab配置文件"></a>1. 修改gitlab配置文件</h3><p><a href="https://blog.csdn.net/A___LEi/article/details/110476531">GitLab → 搭建中常遇的问题与日常维护</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/gitlab/gitlab/rb   <span class="comment">#修改gitlab默认端口</span></span></span><br><span class="line">external_url &#x27;http://185.167.13.45:12580&#x27;</span><br><span class="line">unicorn[&#x27;port&#x27;] = &#x27;9092&#x27;  #修改默认端口</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-处理gitlab报错"><a href="#2-处理gitlab报错" class="headerlink" title="2. 处理gitlab报错"></a>2. 处理gitlab报错</h3><ul>
+<li><a href="https://blog.csdn.net/fishinhouse/article/details/105131917">gitlab runner 500错误解决</a></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@k8s-node-2 backups]# gitlab-rails console</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line"> Ruby:         ruby 2.7.5p203 (2021-11-24 revision f69aeb8314) [x86_64-linux]</span><br><span class="line"> GitLab:       14.4.4 (838dea1cf23) FOSS</span><br><span class="line"> GitLab Shell: 13.21.1</span><br><span class="line"> PostgreSQL:   12.7</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line">Loading production environment (Rails 6.1.4.1)</span><br><span class="line">irb(main):001:0&gt; ApplicationSetting.current.reset_runners_registration_token!</span><br><span class="line">=&gt; true</span><br><span class="line">irb(main):002:0&gt; exit</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">######################		rpm包方式安装，进入终端命令如下:</span></span></span><br><span class="line">gitlab-rails dbconsole --database main</span><br><span class="line"></span><br><span class="line">-- Clear project tokens(清除项目令牌)</span><br><span class="line">UPDATE projects SET runners_token = null, runners_token_encrypted = null;</span><br><span class="line">-- Clear group tokens(清除组令牌)</span><br><span class="line">UPDATE namespaces SET runners_token = null, runners_token_encrypted = null;</span><br><span class="line">-- Clear instance tokens(清除实例令牌)</span><br><span class="line">UPDATE application_settings SET runners_registration_token_encrypted = null;</span><br><span class="line">-- Clear key used for JWT authentication(用于 JWT 身份验证的清除密钥)</span><br><span class="line">-- This may break the $CI_JWT_TOKEN job variable:</span><br><span class="line">-- https://gitlab.com/gitlab-org/gitlab/-/issues/325965</span><br><span class="line">UPDATE application_settings SET encrypted_ci_jwt_signing_key = null;</span><br><span class="line">-- Clear runner tokens(清除跑步者令牌)</span><br><span class="line">UPDATE ci_runners SET token = null, token_encrypted = null;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-1-处理502报错"><a href="#2-1-处理502报错" class="headerlink" title="2.1 处理502报错"></a>2.1 处理502报错</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/gitlab/gitlab/rb   <span class="comment">#修改gitlab默认端口</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">报错502,下列取消注释</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">unicorn[<span class="string">&#x27;port&#x27;</span>] = 8088</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">postgresql[<span class="string">&#x27;shared_buffers&#x27;</span>] = <span class="string">&quot;256MB&quot;</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">postgresql[<span class="string">&#x27;max_connections&#x27;</span>] = 200</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">然后</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure  <span class="comment">#初始化gitlab</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-gitlab-403-forbidden-报错解决"><a href="#2-2-gitlab-403-forbidden-报错解决" class="headerlink" title="2.2  gitlab 403 forbidden 报错解决"></a>2.2  gitlab 403 forbidden 报错解决</h4><ul>
+<li>gitlab稳定运行有一年多了，今天研发部小伙伴跑来说，他的gitlab访问不了，不一会，还有几位小伙伴也一样的反馈查看他们的报错，为403 forbidden奇怪的是，我访问是正常的</li>
+<li>排查过程</li>
+<li>首先上服务器，查看各服务均正常gitlab-ctl logs 查看日志，发现有一个IP 172.17.2.254访问被拒绝，而这个IP，是无线网段的网关。瞬间明白了，不能用的全是用无线上网的同学，只要是经过2.254的都不能用继续查看日志，有个xiaoxiao用户，有过几次登陆失败，之后就全都是forbidden看来gitlab是有防爆破机制，查看配置文档gitlab.yml，果然有rack_attack的配置，如图： <img src="http://null/" alt="images"></li>
+<li>解决方法</li>
+<li>进入redis，删除被墙的IP地址即可以，命令如下：</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">/opt/gitlab/embedded/bin/redis-cli -s /var/opt/gitlab/redis/redis.socket keys <span class="string">&#x27;*&#x27;</span> | grep <span class="string">&#x27;rack::attack&#x27;</span> | xargs /opt/gitlab/embedded/bin/redis-cli -s /var/opt/gitlab/redis/redis.socket DEL</span></span><br><span class="line">(integer) 1</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">#执行这命令 使用无线连接gitlab的电脑恢复正常。</span></span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-3-postfix启动报错"><a href="#2-3-postfix启动报错" class="headerlink" title="2.3 postfix启动报错"></a>2.3 postfix启动报错</h4><ul>
+<li>修改 &#x2F;etc&#x2F;postfix&#x2F;main.cf中：#myhostname &#x3D; host.domain.tld</li>
+<li>其中：host.domain.tld 必须是：xxx.xxxx.xxx</li>
+</ul>
+<h3 id="3-gitlab8-0版本汉化"><a href="#3-gitlab8-0版本汉化" class="headerlink" title="3. gitlab8.0版本汉化"></a>3. gitlab8.0版本汉化</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install patch git</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">git <span class="built_in">clone</span> https://gitlab.com/xhang/gitlab.git <span class="comment">#汉化版本库</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">git diff v10.0.2 v10.0.2-zh &gt; ../10.0.2-zh.diff</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://gitlab.com/larryli/gitlab.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> gitlab</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git diff origin/8-0-stable..origin/8-0-zh &gt; patch.diff      <span class="comment">#生成:patch.diff文件</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">patch -d /opt/gitlab/embedded/service/gitlab-rails -p1 &lt; /tmp/patch.diff  <span class="comment">#把:patch.diff文件安装到gitlab安装目录下</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart  <span class="comment">#重启gitlab</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在打包补丁 patch -d &#x2F;opt&#x2F;gitlab&#x2F;embedded&#x2F;service&#x2F;gitlab-rails -p1 &lt; …&#x2F;v10.8.4-zh.diff<br>后可能会出来该情况 一路回车跳过即可！</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/gitlab_server/languge-zh.png" alt="汉化"></p>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/gitlab_server/languge-zh-1.png" alt="汉化2">  </p>
+<h3 id="4-修改gitlab管理员密码的三种方式"><a href="#4-修改gitlab管理员密码的三种方式" class="headerlink" title="4. 修改gitlab管理员密码的三种方式"></a>4. 修改gitlab管理员密码的三种方式</h3><ul>
+<li>方法一，使用id：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">irb(main):001:0&gt; user = User.where(id:[user&#x27;s register index]).first</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>方法二，使用邮箱：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">irb(main):001:0&gt; user = User.where(email:[user&#x27;s register email]).first</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>方法三，使用用户名：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">irb(main):001:0&gt; user = User.where(name:[user&#x27;s register name]).first</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rails console production</span></span><br><span class="line">root@84aba16d413e:/# gitlab-rails console -e production</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line"> GitLab:       12.8.6 (5fc76a64537) FOSS</span><br><span class="line"> GitLab Shell: 11.0.0</span><br><span class="line"> PostgreSQL:   10.12</span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line">Loading production environment (Rails 6.0.2)</span><br><span class="line">irb(main):001:0&gt; user = User.where(id: 1).first</span><br><span class="line">=&gt; #&lt;User id:1 @root&gt;</span><br><span class="line">irb(main):002:0&gt; user.password = &#x27;12345678&#x27;</span><br><span class="line">=&gt; &quot;12345678&quot;</span><br><span class="line">irb(main):003:0&gt; user.password_confirmation = &#x27;12345678&#x27;</span><br><span class="line">=&gt; &quot;12345678&quot;</span><br><span class="line">irb(main):004:0&gt; user.save!</span><br><span class="line">Enqueued ActionMailer::DeliveryJob (Job ID: b6aca58a-cfde-4890-aa22-a8f491290c96) to Sidekiq(mailers) with arguments: &quot;DeviseMailer&quot;, &quot;password_change&quot;, &quot;deliver_now&quot;, #&lt;GlobalID:0x00007f79cb5f5298 @uri=#&lt;URI::GID gid://gitlab/User/1&gt;&gt;</span><br><span class="line">=&gt; true</span><br><span class="line">irb(main):005:0&gt; exit</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-Gitlab-配置邮箱"><a href="#5-Gitlab-配置邮箱" class="headerlink" title="5. Gitlab 配置邮箱"></a>5. Gitlab 配置邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/gitlab/gitlab/ra</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_enable&#x27;</span>] = <span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_address&#x27;</span>] = <span class="string">&quot;smtp.server&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_port&#x27;</span>] = 465</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_user_name&#x27;</span>] = <span class="string">&quot;smtp user&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_password&#x27;</span>] = <span class="string">&quot;smtp password&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_domain&#x27;</span>] = <span class="string">&quot;example.com&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_authentication&#x27;</span>] = <span class="string">&quot;login&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_enable_starttls_auto&#x27;</span>] = <span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gitlab_rails[<span class="string">&#x27;smtp_tls&#x27;</span>] = <span class="literal">false</span></span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/gitlab_server/configure-git-email.png" alt="configure-git-email"></p>
+<h3 id="6-Gitlab版本升级-Gitlab升级"><a href="#6-Gitlab版本升级-Gitlab升级" class="headerlink" title="6. Gitlab版本升级  Gitlab升级"></a>6. <a href="https://zhuanlan.zhihu.com/p/352342116">Gitlab版本升级</a>  <a href="https://docs.gitlab.com/ee/update/index.html#upgrade-paths">Gitlab升级</a></h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-12.10.14 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.0.14 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.1.11 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.8.8 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.12.10 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-13.12.12 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.0.11 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.1.8 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.2.6 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.3.2 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.3.6 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.4.0 -y</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.4.4 -y</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="7-Gitlab备份还原"><a href="#7-Gitlab备份还原" class="headerlink" title="7. Gitlab备份还原"></a>7. <a href="https://www.jianshu.com/p/a2600f8dffc2">Gitlab备份还原</a></h3><h4 id="7-1-备份还原"><a href="#7-1-备份还原" class="headerlink" title="7.1 备份还原"></a>7.1 备份还原</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">1. 创建备份，创建后会在:/var/opt/gitlab/backups/ 目录下生成备份文件</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rake gitlab:backup:create</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">2. 备份还原前先停止相关服务</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl stop unicorn</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl stop sidekiq</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3.从指定时间戳的备份恢复（backups目录下有多个备份文件时）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rake gitlab:backup:restore BACKUP=1500809139</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">4. 从默认备份恢复（backups目录下只有一个备份文件时）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-rake gitlab:backup:restore</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">5.还原后启动Gitlab</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl start</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="7-2-Gitlab恢复数据报错解决方法"><a href="#7-2-Gitlab恢复数据报错解决方法" class="headerlink" title="7.2  Gitlab恢复数据报错解决方法"></a>7.2  <a href="https://www.jianshu.com/p/09a2b0c25ecd">Gitlab恢复数据报错解决方法</a></h4><h5 id="7-2-1-修改postgresql配置"><a href="#7-2-1-修改postgresql配置" class="headerlink" title="7.2.1 修改postgresql配置"></a>7.2.1 修改postgresql配置</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /var/opt/gitlab/postgresql/data/postgresql.conf</span></span><br><span class="line">listen_addresses = &#x27;*&#x27;		#中添加*符号</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">最下面新增两行</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /var/opt/gitlab/postgresql/data/pg_hba.conf</span></span><br><span class="line">local   all         all                               trust</span><br><span class="line">host    all         all                               127.0.0.1/32 trust</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="7-2-3-修改gitlab账号为超级用户"><a href="#7-2-3-修改gitlab账号为超级用户" class="headerlink" title="7.2.3 修改gitlab账号为超级用户"></a>7.2.3 修改gitlab账号为超级用户</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">su - gitlab-psql</span></span><br><span class="line">Last login: Fri Dec 24 17:35:01 CST 2021 on pts/0</span><br><span class="line">-sh-4.2$ /opt/gitlab/embedded/bin/psql -h 127.0.0.1 gitlabhq_production</span><br><span class="line">psql (12.7)</span><br><span class="line">SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)</span><br><span class="line">Type &quot;help&quot; for help.</span><br><span class="line"></span><br><span class="line">gitlabhq_production=# ALTER USER gitlab WITH SUPERUSER;</span><br><span class="line">ALTER ROLE</span><br><span class="line">gitlabhq_production=# \q</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>gitlab</category>
+      </categories>
+      <tags>
+        <tag>gitlab</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>configure-gitrunner</title>
     <url>/gitlab/configure-gitrunner/</url>
     <content><![CDATA[<h3 id="1-登录安装好的gitlab配置git-runner"><a href="#1-登录安装好的gitlab配置git-runner" class="headerlink" title="1. 登录安装好的gitlab配置git-runner"></a>1. 登录安装好的gitlab配置git-runner</h3><h4 id="1-1-获取注册使用的token"><a href="#1-1-获取注册使用的token" class="headerlink" title="1.1 获取注册使用的token"></a>1.1 获取注册使用的token</h4><p><img src="https://raw.githubusercontent.com/usermice/imgs/master/gitlab_server/Snipaste_2022-04-22_21-57-46.png">  </p>
@@ -269,183 +269,332 @@
       </tags>
   </entry>
   <entry>
-    <title>configure-k8s-Service</title>
-    <url>/Kubernetes/configure-k8s-Service/</url>
-    <content><![CDATA[<h3 id="1-Service服务详解"><a href="#1-Service服务详解" class="headerlink" title="1. Service服务详解"></a>1. <code>Service</code>服务详解</h3><ul>
-<li>在<font color=red><code>kubernetes</code></font>中，<font color=red><code>Pod</code></font>是应用程序的载体，我们可以通过<font color=red><code>Pod</code>的<code>IP</code></font>来访问应用程序，但是<font color=red><code>Pod</code>的<code>IP</code></font>地址不是固定的，这就意味着不方便直接采用<font color=red><code>Pod</code>的<code>IP</code></font>对服务进行访问  </li>
-<li>为了解决这个问题，<font color=red><code>kubernetes</code>提供了<code>Service</code>资源</font>，<font color=red><code>Service</code></font>会对提供同一个服务的多个<code>Pod</code>进行聚合，并且提供一个统一的入口地址，通过访问<font color=red><code>Service</code>的入口地址就能访问到后面的<code>Pod</code>服务</font>  </li>
-<li><font color=red>Service在很多情况下只是一个概念</font>：真正起作用的其实是<code>kube-proxy</code>服务进程，每个<code>Node</code>节点上都运行了一个<code>kube-proxy</code>的服务进程。当创建<code>Service</code>的时候会通过<code>API Server</code>向<code>etcd</code>写入创建的Service的信息，而<code>kube-proxy</code>会基于监听的机制发现这种<code>Service</code>的变化，然后它会将最新的<code>Service</code>信息转换为对应的访问规则  </li>
-<li><font color=red>假如：10.97.97.97:80 是service提供的访问入口</font>：当访问这个入口的时候，可以发现后面有三个pod的服务在等待调用，kube-proxy会基于rr（轮询）的策略，将请求分发到其中一个pod上去，这个规则会同时在集群内的所有节点上都生成，所以在任何一个节点上访问都可以。</li>
-</ul>
-<h4 id="1-1-kube-proxy目前支持的三种工作模式"><a href="#1-1-kube-proxy目前支持的三种工作模式" class="headerlink" title="1.1 kube-proxy目前支持的三种工作模式"></a>1.1 <code>kube-proxy</code>目前支持的三种工作模式</h4><ul>
-<li><p><font color=red><code>userspace</code>模式</font>  </p>
-<blockquote>
-<ul>
-<li><pre><code>`userspace`模式下，`kube-proxy`会为每一个`Service`创建一个监听端口，发向`Cluster IP`的请求被`iptables`规则重定向到`kube-proxy`监听的端口上，`kube-proxy`根据`LB`算法（负载均衡算法）选择一个提供服务的`Pod`并和其建立连接，以便将请求转发到`Pod`上。
-</code></pre>
+    <title>configure-k8s-data-storage</title>
+    <url>/Kubernetes/configure-k8s-data-storage/</url>
+    <content><![CDATA[<h3 id="1-配置Kubernetes数据存储"><a href="#1-配置Kubernetes数据存储" class="headerlink" title="1. 配置Kubernetes数据存储"></a>1. 配置<code>Kubernetes</code>数据存储</h3><ul>
+<li><ol>
+<li>都知道容器的生命周期可能很短，会被频繁的创建和销毁。那么容器在销毁的时候，保存在容器中的数据也会被清除。这种结果对用户来说，在某些情况下是不乐意看到的。为了持久化保存容器中的数据，<code>kubernetes</code>引入了<font color=red><code>Volume</code></font>的概念</li>
+</ol>
 </li>
-<li>userspace<code>模式下，</code>kube-proxy<code>充当了一个四层负载均衡器的角色。由于</code>kube-proxy<code>运行在</code>userspace&#96;中，在进行转发处理的时候会增加内核和用户空间之间的数据拷贝，虽然比较稳定，但是效率非常低下。</li>
+<li><ol start="2">
+<li><font color=red><code>Volume</code></font>是<code>Pod</code>中能够被多个容器访问的共享目录，它被定义在Pod上，然后被一个<code>Pod</code>里面的多个容器挂载到具体的文件目录下，<code>kubernetes</code>通过<font color=red><code>Volume</code></font>实现同一个<code>Pod</code>中不同容器之间的数据共享以及数据的持久化存储。<font color=red><code>Volume</code></font>的生命周期不和<code>Pod</code>中的单个容器的生命周期有关，当容器终止或者重启的时候，<font color=red><code>Volume</code></font>中的数据也不会丢失</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><code>kubernetes</code>的<font color=red><code>Volume</code></font>支持多种类型，比较常见的有下面的几个：  <blockquote>
+<ul>
+<li><ol>
+<li><font color=red>简单存储</font>：<code>EmptyDir</code>、<code>HostPath</code>、<code>NFS</code></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>高级存储</font>：<code>PV</code>、<code>PVC</code></li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red>配置存储</font>：<code>ConfigMap</code>、<code>Secret</code></li>
+</ol>
+</li>
 </ul>
 </blockquote>
 </li>
-<li><p><font color=red><code>iptables</code>模式</font>  </p>
-<blockquote>
+</ol>
+</li>
+</ul>
+<h3 id="2-简单存储"><a href="#2-简单存储" class="headerlink" title="2. 简单存储"></a>2. 简单存储</h3><h4 id="2-1-简单存储：EmptyDir"><a href="#2-1-简单存储：EmptyDir" class="headerlink" title="2.1 简单存储：EmptyDir"></a>2.1 简单存储：<font color=red><code>EmptyDir</code></font></h4><ul>
+<li><ol>
+<li><font color=red><code>EmptyDir</code></font>是最基础的<code>Volume</code>类型，一个<font color=red><code>EmptyDir</code></font>就是<code>Host</code>上的一个空目录</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>EmptyDir</code></font>是在<code>Pod</code>被分配到Node时创建的，它的初始内容为空，并且无须指定宿主机上对应的目录文件，因为<code>kubernetes</code>会自动分配一个目录，当<code>Pod</code>销毁时，<font color=red><code>EmptyDir</code></font>中的数据也会被永久删除。</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>EmptyDir</code></font>的用途如下  <blockquote>
 <ul>
-<li><code>iptables</code>模式下，<code>kube-proxy</code>为<code>Service</code>后端的每个<code>Pod</code>创建对应的<code>iptables</code>规则，直接将发向<code>Cluster IP</code>的请求重定向到一个<code>Pod</code>的<code>IP</code>上</li>
-<li><code>iptables</code>模式下<code>kube-proxy</code>不承担四层负载均衡器的角色，只负责创建<code>iptables</code>规则。该模式的优点在于较<code>userspace</code>模式效率更高，但是不能提供灵活的<code>LB</code>策略，当后端<code>Pod</code>不可用的时候无法进行重试</li>
+<li><ol>
+<li><font color=red>临时空间</font>例如用于某些应用程序运行时所需的临时目录，且无须永久保留</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>多容器共享目录</font>一个容器需要从另一个容器中获取数据的目录</li>
+</ol>
+</li>
 </ul>
 </blockquote>
 </li>
-<li><p><font color=red>ipvs模式</font>  </p>
-<blockquote>
-<ul>
-<li><code>ipvs</code>模式和<code>iptables</code>类似，<code>kube-proxy</code>监控<code>Pod</code>的变化并创建相应的<code>ipvs</code>规则。<code>ipvs</code>相对<code>iptables</code>转发效率更高，除此之外，<code>ipvs</code>支持更多的<code>LB</code>算法。</li>
-</ul>
-</blockquote>
+</ol>
+</li>
+<li><ol start="4">
+<li><font color=red>接下来，通过一个容器之间的共享案例来使用描述一个<code>EmptyDir</code></font></li>
+</ol>
+</li>
+<li><ol start="5">
+<li><font color=red>在一个Pod中准备两个容器<code>nginx</code>和<code>busybox</code></font>然后声明一个<font color=red><code>volume</code></font>分别挂载到两个容器的目录中，然后<code>nginx</code>容器负责向<code>volume</code>中写日志，<code>busybox</code>中通过命令将日志内容读到控制台</li>
+</ol>
+</li>
+<li><p><code>volume-emptydir.yaml</code>资源清单</p>
 </li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ipvsadm -Ln  	<span class="comment"># 查看kube-proxy工作模式</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod  </span><br><span class="line">metadata:</span><br><span class="line">  name: volume-emptydir  # 定义名称</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:  	# 必选，Pod中容器列表</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到nginx容器中对应的目录，该目录为/var/log/nginx</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /var/log/nginx</span><br><span class="line">    - name: busybox</span><br><span class="line">      image: busybox:1.30</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;tail -f /logs/access.log&quot;] # 初始命令，动态读取指定文件</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到busybox容器中的对应目录，该目录为/logs</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /logs</span><br><span class="line">  volumes:   	# 声明volume，name为logs-volume，类型为emptyDir</span><br><span class="line">    - name: logs-volume  	# 共享存储卷名称 （volumes类型有很多种）</span><br><span class="line">      emptyDir: &#123;&#125;   		# 类型为emtyDir的存储卷，与Pod同生命周期的一个临时目录。为空值</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-简单存储：HostPath"><a href="#2-2-简单存储：HostPath" class="headerlink" title="2.2 简单存储：HostPath"></a>2.2 简单存储：<font color=red><code>HostPath</code></font></h4><ul>
+<li><ol>
+<li>已经知道<font color=red><code>EmptyDir</code></font>中的数据不会被持久化，它会随着<code>Pod</code>的结束而销毁，如果想要简单的将数据持久化到主机中，可以选择<font colo=red><code>HostPath</code></font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>HostPath</code></font>就是将<code>Node</code>主机中的一个实际目录挂载到<code>Pod</code>中，以供容器使用，这样的设计就可以保证<code>Pod</code>销毁了，但是数据依旧可以保存在<code>Node</code>主机上</li>
+</ol>
+</li>
+<li><font color=red><code>volume-hostpath.yaml</code>资源清单</font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain Pod.spec.volumes.hostPath.<span class="built_in">type</span> <span class="comment"># 类型声明</span></span></span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<ul>
+<li>2.2.1 <font color=red><code>DirectoryOrCreate</code></font>：目录存在就使用，不存在就先创建后使用  </li>
+<li>2.2.2 <font color=red><code>Directory</code></font>：目录必须存在  </li>
+<li>2.2.3 <font color=red><code>FileOrCreate</code></font>：文件存在就使用，不存在就先创建后使用  </li>
+<li>2.2.4 <font color=red><code>File</code></font>：文件必须存在  </li>
+<li>2.2.5 <font color=red><code>Socket</code></font>：<code>unix</code>套接字必须存在  </li>
+<li>2.2.6 <font color=red><code>CharDevice</code></font>：字符设备必须存在  </li>
+<li>2.2.7 <font color=red><code>BlockDevice</code></font>：块设备必须存在</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: volume-hostpath</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到nginx容器中对应的目录，该目录为/var/log/nginx</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /var/log/nginx</span><br><span class="line">    - name: busybox</span><br><span class="line">      image: busybox:1.30</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;tail -f /logs/access.log&quot;] # 初始命令，动态读取指定文件</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到busybox容器中的对应目录，该目录为/logs</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /logs</span><br><span class="line">  volumes: # 声明volume，name为logs-volume，类型为hostPath</span><br><span class="line">    - name: logs-volume</span><br><span class="line">      hostPath:  # 类型为hostPath的存储卷，表示挂载Pod所在宿主机的目录</span><br><span class="line">        path: /root/logs  # Pod所在宿主机的目录，将被用于同期中mount的目录</span><br><span class="line">        type: DirectoryOrCreate # 目录存在就使用，不存在就先创建再使用 </span><br></pre></td></tr></table></figure>
+
+<h4 id="2-3-简单存储：NFS"><a href="#2-3-简单存储：NFS" class="headerlink" title="2.3 简单存储：NFS"></a>2.3 简单存储：<font color=red>NFS</font></h4><ul>
+<li><ol>
+<li><font color=red><code>HostPath</code></font>虽然可以解决数据持久化的问题，但是一旦Node节点故障了，<code>Pod</code>如果转移到别的<code>Node</code>节点上，又会出现问题，此时需要准备单独的网络存储系统，比较常用的是<code>NFS</code>和<code>CIFS</code></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>NFS</code></font>是一个网络文件存储系统，可以搭建一台<code>NFS</code>服务器，然后将<code>Pod</code>中的存储直接连接到<code>NFS</code>系统上，这样，无论<code>Pod</code>在节点上怎么转移，只要<code>Node</code>和<code>NFS</code>的对接没有问题，数据就可以成功访问</li>
+</ol>
+</li>
+</ul>
+<h5 id="2-3-1-安装NFS服务"><a href="#2-3-1-安装NFS服务" class="headerlink" title="2.3.1 安装NFS服务"></a>2.3.1 <font color=red>安装<code>NFS</code>服务</font></h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y nfs-utils rpcbind</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -pv /opt/data/nfs   <span class="comment"># 准备共享目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/exports  	<span class="comment"># 授权共享目录读写权限暴露给节点中的IP网段所有主机：192.168.80.0/24,172.16.8.0/24</span></span></span><br><span class="line">/opt/data/nfs 192.168.80.0/24(rw,no_root_squash)</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> 777 -R /opt/data/nfs</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">exportfs -r  <span class="comment"># 加载配置</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start rpcbind &amp;&amp; systemctl <span class="built_in">enable</span> rpcbind</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start nfs &amp;&amp; systemctl <span class="built_in">enable</span> nfs</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">showmount -e 192.168.18.100  	<span class="comment"># Master节点测试是否挂载成功</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在Node节点上安装NFS服务，不需要启动</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install nfs-utils</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">showmount -e 192.168.18.100  	<span class="comment"># Node节点测试是否挂载成功</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">高可用备份方式，在所有节点执行如下挂载命令</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">mount -t  nfs 192.168.18.100:/opt/data/nfs /mnt</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="2-3-2-volume-nfs-yaml"><a href="#2-3-2-volume-nfs-yaml" class="headerlink" title="2.3.2 volume-nfs.yaml"></a>2.3.2 <font color=red><code>volume-nfs.yaml</code></font></h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: volume-nfs</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到nginx容器中对应的目录，该目录为/var/log/nginx</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /var/log/nginx</span><br><span class="line">    - name: busybox</span><br><span class="line">      image: busybox:1.30</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;tail -f /logs/access.log&quot;] # 初始命令，动态读取指定文件</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到busybox容器中的对应目录，该目录为/logs</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /logs</span><br><span class="line">  volumes: # 声明volume</span><br><span class="line">    - name: logs-volume</span><br><span class="line">      nfs:  # 存储类型，和底层正则的存储对应</span><br><span class="line">        server: 192.168.18.100 # NFS服务器地址</span><br><span class="line">        path: /root/data/nfs # 共享文件路径</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-高级存储"><a href="#3-高级存储" class="headerlink" title="3. 高级存储"></a>3. 高级存储</h3><h4 id="3-1-高级存储：PV"><a href="#3-1-高级存储：PV" class="headerlink" title="3.1 高级存储：PV"></a>3.1 <font color=red>高级存储：<code>PV</code></font></h4><ul>
+<li><ol>
+<li><font color=red><code>PV(Persistent Volume)</code></font>是持久化卷的意思，是对底层的共享存储的一种抽象。一般情况下<code>PV</code>由<code>kubernetes</code>管理员进行创建和配置，它和底层具体的共享存储技术有关，并通过插件完成和共享存储的对接</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>PV</code></font>：<code>kubernetes</code>管理员维护</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">######################################  	定义 Kind：PersistentVolume</span></span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: pv2</span><br><span class="line">spec:</span><br><span class="line">  nfs: # 存储类型，和底层正则的存储对应</span><br><span class="line">    path: /root/data/pv1</span><br><span class="line">    server: 192.168.18.100</span><br><span class="line">  capacity: # 存储能力，目前只支持存储空间的设置</span><br><span class="line">    storage: 2Gi</span><br><span class="line">  accessModes: # 访问模式</span><br><span class="line">    - ReadWriteMany</span><br><span class="line">  storageClassName: # 存储类别</span><br><span class="line">  persistentVolumeReclaimPolicy: Retain # 回收策略</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><font color=red><code>Service</code>的资源清单，<code>spec.type</code>的说明</font>  <blockquote>
+<li><font color=red><code>pv</code>的关键配置参数说明</font>   <blockquote>
 <ul>
-<li><font color=red><code>ClusterIP</code>默认值</font>：它是<code>kubernetes</code>系统自动分配的虚拟<code>IP</code>，只能在集群内部访问  </li>
-<li><font color=red><code>NodePort</code></font>：将<code>Service</code>通过指定的<code>Node</code>上的端口暴露给外部，通过此方法，就可以在集群外部访问服务  </li>
-<li><font color=red><code>LoadBalancer</code></font>：使用外接负载均衡器完成到服务的负载分发，注意此模式需要外部云环境的支持  </li>
-<li><font color=red><code>ExternalName</code></font>：把集群外部的服务引入集群内部，直接使用</li>
+<li><ol>
+<li><font color=red>存储类型：</font>底层实际存储的类型，<code>kubernetes</code>支持多种存储类型，每种存储类型的配置有所不同</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>capacity</code>(存储能力)：</font>目前只支持存储空间的设置<code>storage=1Gi</code>，不过未来可能会加入<code>IOPS</code>、吞吐量等指标的配置</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>accessModes</code>(访问模式)：</font>用来描述用户应用对存储资源的访问权限，访问权限包括下面几种方式  <blockquote>
+<ul>
+<li>3.1 <font color=red><code>ReadWriteOnce(RWO)</code>：</font>读写权限，但是只能被单个节点挂载  </li>
+<li>3.2 <font color=red><code>ReadOnlyMany(ROX)</code>：</font>只读权限，可以被多个节点挂载  </li>
+<li>3.3 <font color=red><code>ReadWriteMany(RWX</code>)：</font>读写权限，可以被多个节点挂载</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><p><font color=red>需要注意的是，底层不同的存储类型可能支持的访问模式不同</font>  </p>
+</li>
+<li><ol start="4">
+<li><font color=red><code>persistentVolumeReclaimPolicy</code>(回收策略)：</font>当<code>PV</code>不再被使用之后，对其的处理方式，目前支持三种策略  <blockquote>
+<ul>
+<li>4.1 <font color=red><code>Retain</code>(保留)：</font>保留数据，需要管理员手动清理数据  </li>
+<li>4.2 <font color=red><code>Recycle</code>(回收)：</font>清除<code>PV</code>中的数据，效果相当于<code>rm -rf /volume/*</code>  </li>
+<li>4.3 <font color=red><code>Delete</code>(删除)：</font>和<code>PV</code>相连的后端存储完成volume的删除操作，常见于云服务器厂商的存储服务</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><p><font color=red>需要注意的是，底层不同的存储类型可能支持的回收策略不同</font>  </p>
+</li>
+<li><ol start="5">
+<li><font color=red><code>storageClassName</code>(存储类别)：</font><code>PV</code>可以通过<code>storageClassName</code>参数指定一个存储类别  <blockquote>
+<ul>
+<li>5.1 具有特定类型的<code>PV</code>只能和请求了该类别的<code>PVC</code>进行绑定  </li>
+<li>5.2 未设定类别的<code>PV</code>只能和不请求任何类别的<code>PVC</code>进行绑定</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="6">
+<li><font color=red><code>status</code>(状态)：</font>一个<code>PV</code>的生命周期，可能会处于4种不同的阶段  <blockquote>
+<ul>
+<li>6.1 <font color=red><code>Available</code>(可用)：</font>表示可用状态，还未被任何<code>PVC</code>绑定</li>
+<li>6.1 <font color=red><code>Bound</code>(已绑定)：</font>表示<code>PV</code>已经被<code>PVC</code>绑定  </li>
+<li>6.1 <font color=red>Released(已释放)：</font>表示<code>PVC</code>被删除，但是资源还没有被集群重新释放</li>
+<li>6.1 <font color=red>Failed(失败)：</font>表示该<code>PV</code>的自动回收失败</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
 </ul>
 </blockquote>
 </li>
 </ul>
-<pre><code class="shell">$ kubectl explain service.spec.type # 
+<h4 id="3-2-高级存储：PVC"><a href="#3-2-高级存储：PVC" class="headerlink" title="3.2 高级存储：PVC"></a>3.2 <font color=red>高级存储：<code>PVC</code></font></h4><ul>
+<li><ol>
+<li><font color=red><code>PVC(Persistent Volume Claim)</code></font>是持久化卷声明的意思，是用户对于存储需求的一种声明。换言之，PVC其实就是用户向kubernetes系统发出的一种资源需求申请</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>PVC</code></font>：<code>kubernetes</code>用户维护</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>PVC</code></font>是资源的申请，用来声明对存储空间、访问模式、存储类别需求信息</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################  	定义 Kind：PersistentVolumeClaim</span></span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name: pvc1</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  accessModes: # 访问模式</span><br><span class="line">    - ReadWriteMany</span><br><span class="line">  selector: # 采用标签对PV选择</span><br><span class="line">  storageClassName: # 存储类别</span><br><span class="line">  resources: # 请求空间</span><br><span class="line">    requests:</span><br><span class="line">      storage: 1Gi</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">################################################### 创建 Pod 访问 PVC 类型存储</span></span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: pod1</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: busybox</span><br><span class="line">    image: busybox:1.30</span><br><span class="line">    command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;while true;do echo pod1 &gt;&gt; /root/out.txt; sleep 10; done;&quot;]</span><br><span class="line">    volumeMounts:</span><br><span class="line">    - name: volume</span><br><span class="line">      mountPath: /root/</span><br><span class="line">  volumes:</span><br><span class="line">    - name: volume</span><br><span class="line">      persistentVolumeClaim:</span><br><span class="line">        claimName: pvc1</span><br><span class="line">        readOnly: false</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font color=red><code>PVC</code>的关键配置参数说明</font>  <blockquote>
+<ul>
+<li><ol>
+<li><font color=red><code>accessModes</code>(访客模式)：</font>用于描述用户应用对存储资源的访问权限  <blockquote>
+<ul>
+<li>1.1 <font color=red><code>selector</code>(选择条件)：</font>通过<code>Label Selector</code>的设置，可使<code>PVC</code>对于系统中已存在的<code>PV</code>进行筛选  </li>
+<li>1.2 <font color=red><code>storageClassName</code>(存储类别)：</font><code>PVC</code>在定义时可以设定需要的后端存储的类别，只有设置了该<code>class</code>的<code>pv</code>才能被系统选出  </li>
+<li>1.3 <font color=red><code>resources</code>(资源请求)：</font>描述对存储资源的请求</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h6 id="3-2-1-PVC和PV是一一对应的，PV和PVC之间的相互作用遵循如下的生命周期"><a href="#3-2-1-PVC和PV是一一对应的，PV和PVC之间的相互作用遵循如下的生命周期" class="headerlink" title="3.2.1 PVC和PV是一一对应的，PV和PVC之间的相互作用遵循如下的生命周期"></a>3.2.1 <font color=red><code>PVC</code>和<code>PV</code>是一一对应的，<code>PV</code>和<code>PVC</code>之间的相互作用遵循如下的生命周期</font></h6><ul>
+<li><ol>
+<li><font color=red>资源供应：</font>管理员手动创建底层存储和<code>PV</code></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>资源绑定</font>  <blockquote>
+<ul>
+<li><p>2.1 用户创建<code>PVC``kubernetes</code>负责根据<code>PVC</code>声明去寻找<code>PV</code>，并绑定在用户定义好<code>PVC</code>之后，系统将根据<code>PVC</code>对存储资源的请求在以存在的<code>PV</code>中选择一个满足条件的 。  </p>
+<blockquote>
+<ul>
+<li>2.1.1 一旦找到就将该<code>PV</code>和用户定义的<code>PVC</code>进行绑定，用户的应用就可以使用这个<code>PVC</code>了。    </li>
+<li>2.1.2 如果找不到<code>PVC</code>就会无限期的处于<code>Pending</code>状态，直到系统管理员创建一个符合其要求的<code>PV</code>。</li>
+</ul>
+</blockquote>
+</li>
+<li><p>2.2 <code>PV</code>一旦绑定到某个<code>PVC</code>上就会被这个<code>PVC</code>独占，不能再和其他的<code>PVC</code>进行绑定了。</p>
+</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red>资源使用：</font>用户可以在Pod中像volume一样使用PVC，Pod使用Volume的定义，将PVC挂载到容器内的某个路径进行使用。</li>
+</ol>
+</li>
+<li><ol start="4">
+<li><font color=red>资源释放</font>  <blockquote>
+<ul>
+<li>4.1 用户删除<code>PVC</code>来释放<code>PV</code>  </li>
+<li>4.2 当存储资源使用完毕后，用户可以删除<code>PVC</code>，和该PVC绑定的<code>PV</code>将会标记为“已释放”，但是还不能立刻和其他的<code>PVC</code>进行绑定。通过之前<code>PVC</code>写入的数据可能还留在存储设备上，只有在清除之后该<code>PV</code>才能再次使用</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="5">
+<li><font color=red>资源回收</font>  <blockquote>
+<ul>
+<li>5.1 <code>kubernetes</code>根据<code>PV</code>设置的回收策略进行资源的回收。  </li>
+<li>5.2 对于<code>PV</code>，管理员可以设定回收策略，用于设置与之绑定的<code>PVC</code>释放资源之后如何处理遗留数据的问题。只有<code>PV</code>的存储空间完成回收，才能供新的<code>PVC</code>绑定和使用。</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="6">
+<li><font color=red>创建<code>PVC</code>后一直绑定不了<code>PV</code>的原因</font>  <blockquote>
+<ul>
+<li>①<code>PVC</code>的空间申请大小比<code>PV</code>的空间要大。  </li>
+<li>②<code>PVC</code>的<code>storageClassName</code>和<code>PV</code>的<code>storageClassName</code>不一致。 </li>
+<li>③<code>PVC</code>的<code>accessModes</code>和<code>PV</code>的<code>accessModes</code>不一致。</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="4-配置存储"><a href="#4-配置存储" class="headerlink" title="4. 配置存储"></a>4. 配置存储</h3><h4 id="4-1-配置存储—ConfigMap"><a href="#4-1-配置存储—ConfigMap" class="headerlink" title="4.1 配置存储—ConfigMap"></a>4.1 <font color=red>配置存储—<code>ConfigMap</code></font></h4><ul>
+<li><ol>
+<li><font color=red><code>ConfigMap</code>：</font>是一个比较特殊的存储卷，它的主要作用是用来存储配置信息的。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>ConfigMap</code></font>中的<code>key</code>映射为一个文件，<code>value</code>映射为文件中的内容。如果更新了<code>ConfigMap</code>中的内容，容器中的值也会动态更新。</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: ConfigMap  	# ConfigMap</span><br><span class="line">metadata:</span><br><span class="line">  name: configmap</span><br><span class="line">  namespace: dev</span><br><span class="line">data:  &lt;map[string]string&gt;</span><br><span class="line">  info:</span><br><span class="line">    username:admin</span><br><span class="line">    password:123456</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">########################################## 配置 pod-configmap</span></span>   </span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: pod-configmap</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      volumeMounts:</span><br><span class="line">        - mountPath: /configmap/config</span><br><span class="line">          name: config</span><br><span class="line">  volumes:</span><br><span class="line">    - name: config</span><br><span class="line">      configMap: # 类型为configMap的存储卷，挂载预定义的configMap对象到容器内部</span><br><span class="line">        name: configmap</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="4-2-配置存储—Secret"><a href="#4-2-配置存储—Secret" class="headerlink" title="4.2 配置存储—Secret"></a>4.2 <font color=red>配置存储—<code>Secret</code></font></h4><ul>
+<li><font color=red><code>Secret</code>：</font>在<code>kubernetes</code>中，还存在一种和<code>ConfigMap</code>非常类似的对象，称为<code>Secret</code>对象，它主要用来存储敏感信息，例如密码、密钥、证书等等  </li>
+<li><font color=red>如果同时使用<code>data</code>和<code>stringData</code>，那么<code>data</code>会被忽略</font></li>
+</ul>
+<h5 id="4-2-1-使用base64对准备的数据进行编码"><a href="#4-2-1-使用base64对准备的数据进行编码" class="headerlink" title="4.2.1 使用base64对准备的数据进行编码"></a>4.2.1 使用<code>base64</code>对准备的数据进行编码</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">对用户进行编码</span></span><br><span class="line">echo -n &quot;admin&quot; | base64</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">对密码进行编码</span></span><br><span class="line">echo -n &quot;123456&quot; | base64</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font color=red>准备<code>volumes-secret</code>资源清单</font><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Secret</span><br><span class="line">metadata:</span><br><span class="line">  name: secret</span><br><span class="line">  namespace: dev</span><br><span class="line">type: Opaque</span><br><span class="line">data:  # 提前编码实名：data、使用Kubernetes进行编码使用：stringData</span><br><span class="line">  username: YWRtaW4=  	# 使用kubernetes进行编码写原数据：admin</span><br><span class="line">  password: MTIzNDU2  	#使用kubernetes进行编码写原数据：123456</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">############################################# 配置 pod-secret</span></span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: pod-secret</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      volumeMounts:</span><br><span class="line">        - mountPath: /secret/config</span><br><span class="line">          name: config</span><br><span class="line">  volumes:</span><br><span class="line">    - name: config</span><br><span class="line">      secret: # 类型为secret的存储卷，挂载集群与定义的secret对象到容器内部</span><br><span class="line">        secretName: secret</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看编码后的目录以及信息</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> -it pod-secret -n dev /bin/sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">ls</span> /secret/config</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">more /secret/config/username</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">more /secret/config/password</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="4-2-2-Secret的用途"><a href="#4-2-2-Secret的用途" class="headerlink" title="4.2.2 Secret的用途"></a>4.2.2 <font color=red><code>Secret</code>的用途</font></h5><ul>
+<li><font color=red><code>imagePullSecret</code>：</font><code>Pod</code>拉取私有镜像仓库的时使用的账户密码，会传递给<code>kubelet</code>，然后<code>kubelet</code>就可以拉取有密码的仓库里面的镜像</li>
+</ul>
+<pre><code class="shell"># 创建一个ImagePullSecret
+$ kubectl create secret docker-registry docker-harbor-registrykey --docker-server=192.168.18.119:85 \
+          --docker-username=admin --docker-password=Harbor12345 \
+          --docker-email=1900919313@qq.com
+
+# 查看是否创建成功
+$ kubectl get secret docker-harbor-registrykey
 </code></pre>
-<pre><code class="shell">apiVersion: v1 # 版本
-kind: Service # 类型
-metadata: # 元数据
-  name: # 资源名称
-  namespace: # 命名空间
-spec:
-  selector: # 标签选择器，用于确定当前Service代理那些Pod
-    app: nginx
-  type: NodePort # Service的类型，指定Service的访问方式
-  clusterIP: # 虚拟服务的IP地址
-  sessionAffinity: # session亲和性，支持ClientIP、None两个选项，默认值为None
-  ports: # 端口信息
-    - port: 8080 # Service端口
-      protocol: TCP # 协议
-      targetPort : # Pod端口
-      nodePort:  # 主机端口
-</code></pre>
-<h4 id="1-2-创建ClusterIP类型的Service"><a href="#1-2-创建ClusterIP类型的Service" class="headerlink" title="1.2 创建ClusterIP类型的Service"></a>1.2 创建<code>ClusterIP</code>类型的<code>Service</code></h4><pre><code class="shell">apiVersion: v1
-kind: Service
+<ul>
+<li><font color=red>新建<code>redis.yaml</code></font></li>
+</ul>
+<pre><code class="shell">apiVersion: v1
+kind: Pod
 metadata:
-  name: service-clusterip
-  namespace: dev
+  name: redis
 spec:
-  selector:
-    app: nginx-pod
-  clusterIP: 10.97.97.97 # service的IP地址，如果不写，默认会生成一个
-  type: ClusterIP
-  ports:
-    - port: 80 # Service的端口
-      targetPort: 80 # Pod的端口
+  containers:
+    - name: redis
+      image: 192.168.18.119:85/yuncloud/redis # 这是Harbor的镜像私有仓库地址
+  imagePullSecrets:
+    - name: docker-harbor-registrykey
 </code></pre>
-<h4 id="1-3-Endpoint-实际中使用的不多"><a href="#1-3-Endpoint-实际中使用的不多" class="headerlink" title="1.3 Endpoint(实际中使用的不多)"></a>1.3 <code>Endpoint</code>(实际中使用的不多)</h4><ul>
-<li><font color=red><code>Endpoint</code></font>：是<code>kubernete</code>中的一个资源对象，存储在<code>etcd</code>中，用来记录一个service对应的所有Pod的访问地址，它是根据service配置文件中的selector描述产生的  </li>
-<li></li>
-</ul>
-]]></content>
-      <categories>
-        <category>Kubernetes</category>
-      </categories>
-      <tags>
-        <tag>Kubernetes</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>没有Rancher Server情况下管理下游Kubernetes集群</title>
-    <url>/Kubernetes/configure-k8s-Rancher/</url>
-    <content><![CDATA[<h3 id="1-Rancher服务宕机情况下使用Kubernetes-Cluster"><a href="#1-Rancher服务宕机情况下使用Kubernetes-Cluster" class="headerlink" title="1. Rancher服务宕机情况下使用Kubernetes Cluster"></a>1. <code>Rancher</code>服务宕机情况下使用<code>Kubernetes Cluster</code></h3><ul>
-<li><code>Rancher Server</code>是上游中心管理角色，控制或创建旗下<code>N</code>个<code>Kubernetes Cluster</code>集群，不管是测试中的单个节点或者是<code>Kubernetes Cluster</code>集群失效都无法读取，运维仍需要对下游所有<code>Kubernetes Cluster</code>集群管控</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>服务器</th>
-<th>IP</th>
-<th>CPU</th>
-<th>内存</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>master</td>
-<td>192.168.35.128</td>
-<td>8<code>core</code></td>
-<td>8G</td>
-</tr>
-<tr>
-<td>node-1</td>
-<td>192.168.35.129</td>
-<td>4<code>core</code></td>
-<td>4G</td>
-</tr>
-<tr>
-<td>node-2</td>
-<td>192.168.35.130</td>
-<td>4<code>core</code></td>
-<td>4G</td>
-</tr>
-</tbody></table>
-<blockquote>
-<ul>
-<li>前提条件<br>所有机器都是<code>CentOS 7</code><br><code>Rancher Server</code>是以<code>Docker</code>方式单独建立<br><code>test-cluster Kubernetes Cluster</code>集群是以<code>Rancher Server</code>自定义方式创建</li>
-</ul>
-</blockquote>
-<ul>
-<li><font color=red>模拟<code>Racnher Server</code>服务失效对<code>Kubernetes Cluster</code>集群进行管控</font>  <blockquote>
-<ul>
-<li><font color=red>点击创建集群名称</font></li>
-</ul>
-</blockquote>
-</li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_15-47-45.png">     </p>
-<blockquote>
-<ul>
-<li><font color=red>提前下载<code>Kubernetesfig</code>文件</font></li>
-</ul>
-</blockquote>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_15-49-19.png">    </p>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_16-16-23.png" alt="下k8s file">  </p>
-<h3 id="2-模拟Rancher服务宕机"><a href="#2-模拟Rancher服务宕机" class="headerlink" title="2. 模拟Rancher服务宕机"></a>2. 模拟<code>Rancher</code>服务宕机</h3><ul>
-<li><font color=red>停止<code>Rancher Server</code>服务<code>docker stop rancher</code></font>  <blockquote>
-<ul>
-<li><font color=red><code>查看Kubernetes</code>集群版本号</font></li>
-</ul>
-</blockquote>
-</li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-25_20-04-18.png" alt="查看`Rancher`安装`Kubernetes`集群版本">  </p>
-<h4 id="2-1-安装Kubectl"><a href="#2-1-安装Kubectl" class="headerlink" title="2.1 安装Kubectl"></a>2.1 安装<code>Kubectl</code></h4><ul>
-<li><font color=red>在能连接<code>test-kubernetes-cluster</code>集群中任意一个节点部署<code>Kubectl</code></font>  </li>
-<li><font color=red><code>Kubectl</code>版本需和<code>test-cluster-cluster</code>版本相同或者高于</font></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/yum.repos.d/kubernetes.repo&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">[kubernetes] </span><br><span class="line">name=Kubernetes </span><br><span class="line">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">repo_gpgcheck=0</span><br><span class="line">gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">yum -y install kubectl-1.23.6-0</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="2-2-创建-kube目录修改文件"><a href="#2-2-创建-kube目录修改文件" class="headerlink" title="2.2 创建.kube目录修改文件"></a>2.2 创建<code>.kube</code>目录修改文件</h4><ul>
-<li><font color=red>并且将下载的<code>Kubernetesfig</code>文件改名为<code>config</code>，然后放到<code>$&#123;HOME&#125;/.kube/</code>目录中</font></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> <span class="variable">$&#123;HOME&#125;</span>/.kube</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> <span class="variable">$&#123;HOME&#125;</span>/.kube/test-kubernetes-cluster.yaml <span class="variable">$&#123;HOME&#125;</span>/.kube/config</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><font color=red><code>$&#123;HOME&#125;/.kube/config</code>文件没修改前</font></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> <span class="variable">$&#123;HOME&#125;</span>/.kube/config</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Config</span><br><span class="line">clusters:</span><br><span class="line">- name: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">  cluster:</span><br><span class="line">    server: &quot;https://192.168.80.210:4443/k8s/clusters/c-gwknl&quot;</span><br><span class="line">    certificate-authority-data: &quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJwekNDQ\</span><br><span class="line">      VUyZ0F3SUJBZ0lCQURBS0JnZ3Foa2pPUFFRREFqQTdNUnd3R2dZRFZRUUtFeE5rZVc1aGJXbGoKY\</span><br><span class="line">      kdsemRHVnVaWEl0YjNKbk1Sc3dHUVlEVlFRREV4SmtlVzVoYldsamJHbHpkR1Z1WlhJdFkyRXdIa\</span><br><span class="line">      GNOTWpJdwpOVEkxTVRFeE9UUXhXaGNOTXpJd05USXlNVEV4T1RReFdqQTdNUnd3R2dZRFZRUUtFe\</span><br><span class="line">      E5rZVc1aGJXbGpiR2x6CmRHVnVaWEl0YjNKbk1Sc3dHUVlEVlFRREV4SmtlVzVoYldsamJHbHpkR\</span><br><span class="line">      1Z1WlhJdFkyRXdXVEFUQmdjcWhrak8KUFFJQkJnZ3Foa2pPUFFNQkJ3TkNBQVJTb3NwRzE4OHJBQ\</span><br><span class="line">      mZabTAwQnRqcjAyL29udnZGVnppU09wZUdVd09SUApoSHpUbk1acTRmazVpRFhPV2lIUy9iQ0hvT\</span><br><span class="line">      WQra1VtYkx6QVRPNkd2azdtSm8wSXdRREFPQmdOVkhROEJBZjhFCkJBTUNBcVF3RHdZRFZSMFRBU\</span><br><span class="line">      UgvQkFVd0F3RUIvekFkQmdOVkhRNEVGZ1FVZ1YzR1g0Z2tXN3hPZVZWQURWem0KVEpxSW95b3dDZ\</span><br><span class="line">      1lJS29aSXpqMEVBd0lEU0FBd1JRSWdlTHh3WTVGcGkweDBGNXhBQUNZMnNPbVQ4aHBqNjVCWApUc\</span><br><span class="line">      1lsQk1sOGx0RUNJUURkNmlONTJmbG9hVzZybXpvWXRLQy9nOEJRRW00b2UrcGN0YldCaGY0UENRP\</span><br><span class="line">      T0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ==&quot;</span><br><span class="line">- name: &quot;test-kubernetes-cluster-node-1-80-211&quot;</span><br><span class="line">  cluster:</span><br><span class="line">    server: &quot;https://192.168.80.211:6443&quot;</span><br><span class="line">    certificate-authority-data: &quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM0VENDQ\</span><br><span class="line">      WNtZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFTTVJBd0RnWURWUVFERXdkcmRXSmwKT\</span><br><span class="line">      FdOaE1CNFhEVEl5TURVeU5URXhNek0xTUZvWERUTXlNRFV5TWpFeE16TTFNRm93RWpFUU1BNEdBM\</span><br><span class="line">      VVFQXhNSAphM1ZpWlMxallUQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ\</span><br><span class="line">      0VCQUtJSzVRVy84eHB3CkRHUzMrN0M2Q0lobS8zcWFUUENvVmdFeU91YkVtR1EzbnAvYk9qTUJKY\</span><br><span class="line">      3Ayck05cW5CV2M4ZmtUUWhCNHZsL24Kay8zSkUrMkdta1RBbVAwaGpLa3d6d1JiT2lrYzdYVEtnd\</span><br><span class="line">      ElTQ3I2cjRkOWhZTElERElzTTJtUzZYYnhNdGd1SApoamk3MTJYQmNoZ3lEamxjREl3S1k5WXRYc\</span><br><span class="line">      3lDY3hPejdFNXN4YmpLTk1nb2sxK3VZSTlHaHhYYUlGcGp0VWFUClJXUW00dE9JOFplWWlUWG9aT\</span><br><span class="line">      nJldTU1SVkyZ3pQVjZ1dURTWGQybFRHMEtmVng0Y1FYSDJIekdSODJ4NWZkK3kKS01HY0M1N21DN\</span><br><span class="line">      HpiM3pET1Z2NVNEdmxOZEhyQ0g3QmpVYzh0MlFpU2JyQUwrQ216NnhMVFF4dlp1YkVLejU2TApKe\</span><br><span class="line">      ElKUGFhNkdSY0NBd0VBQWFOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdLa01BOEdBMVVkRXdFQi93U\</span><br><span class="line">      UZNQU1CCkFmOHdIUVlEVlIwT0JCWUVGSkN3bmVCVXZUMUtoeWtCUjF6bmxWQ2I1T2RnTUEwR0NTc\</span><br><span class="line">      UdTSWIzRFFFQkN3VUEKQTRJQkFRQnRwa0doRDJ1RFdYTmZaSUhaa0NNclNpSkZXaGxIUGNPa2VPZ\</span><br><span class="line">      TJwcmp1UEZ0bzFWMVpyNlloWWVpcQp1cGxRdWlpenBwbEthZncxR1lpSnY4SCsrcHpjUFZoS3JTM\</span><br><span class="line">      2F5Ykp1T2hxdnFyYUVZbzJDbjVVbkFpVWxBb2g1CnRqY1lNcVFKdkVzODd5UlFtUVhMSVNEMkdYb\</span><br><span class="line">      3UwN24ySy9wTVZXQWpHYjRsUTk0VmpHcjI3dHppSlhIYkh2L04KbHNNZklJV2czbTFKSW9SMlBNa\</span><br><span class="line">      3gvY1FpcGl6a3JRVHRpalhMbW0xbUFGOEtMR2JZcnNaTk1sMFdITWZWWjdXcgplemRBVjhVNDdsb\</span><br><span class="line">      GowKzUzQ0FkZk0rYWpiSk5uMUtYMWF1Sm8rb1JXVTJjVno0SkYydUllMnBjcFcxUUplY1NPCmZ2U\</span><br><span class="line">      ysyOU9FK09GZW5tenRINTdZTStTWk1jRE8KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=&quot;</span><br><span class="line"></span><br><span class="line">users:</span><br><span class="line">- name: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">  user:</span><br><span class="line">    token: &quot;kubeconfig-user-j85xz8pbjt:ls679hfqpvf9c25nswd5gdfm2hf4qtxj2kvqmj6kzzrjkj48lwwlpd&quot;</span><br><span class="line"></span><br><span class="line">contexts:</span><br><span class="line">- name: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">  context:</span><br><span class="line">    user: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">    cluster: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">- name: &quot;test-kubernetes-cluster-node-1-80-211&quot;</span><br><span class="line">  context:</span><br><span class="line">    user: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">    cluster: &quot;test-kubernetes-cluster-node-1-80-211&quot;</span><br><span class="line"></span><br><span class="line">current-context: &quot;test-kubernetes-cluster&quot;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><font color=red><code>$&#123;HOME&#125;/.kube/config</code>文件修改后</font></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> <span class="variable">$&#123;HOME&#125;</span>/.kube/config</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Config</span><br><span class="line">clusters:</span><br><span class="line">- name: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">  cluster:</span><br><span class="line">    server: &quot;https://192.168.80.211:6443&quot;</span><br><span class="line">    certificate-authority-data: &quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM0VENDQ\</span><br><span class="line">      WNtZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFTTVJBd0RnWURWUVFERXdkcmRXSmwKT\</span><br><span class="line">      FdOaE1CNFhEVEl5TURVeU5URXhNek0xTUZvWERUTXlNRFV5TWpFeE16TTFNRm93RWpFUU1BNEdBM\</span><br><span class="line">      VVFQXhNSAphM1ZpWlMxallUQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ\</span><br><span class="line">      0VCQUtJSzVRVy84eHB3CkRHUzMrN0M2Q0lobS8zcWFUUENvVmdFeU91YkVtR1EzbnAvYk9qTUJKY\</span><br><span class="line">      3Ayck05cW5CV2M4ZmtUUWhCNHZsL24Kay8zSkUrMkdta1RBbVAwaGpLa3d6d1JiT2lrYzdYVEtnd\</span><br><span class="line">      ElTQ3I2cjRkOWhZTElERElzTTJtUzZYYnhNdGd1SApoamk3MTJYQmNoZ3lEamxjREl3S1k5WXRYc\</span><br><span class="line">      3lDY3hPejdFNXN4YmpLTk1nb2sxK3VZSTlHaHhYYUlGcGp0VWFUClJXUW00dE9JOFplWWlUWG9aT\</span><br><span class="line">      nJldTU1SVkyZ3pQVjZ1dURTWGQybFRHMEtmVng0Y1FYSDJIekdSODJ4NWZkK3kKS01HY0M1N21DN\</span><br><span class="line">      HpiM3pET1Z2NVNEdmxOZEhyQ0g3QmpVYzh0MlFpU2JyQUwrQ216NnhMVFF4dlp1YkVLejU2TApKe\</span><br><span class="line">      ElKUGFhNkdSY0NBd0VBQWFOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdLa01BOEdBMVVkRXdFQi93U\</span><br><span class="line">      UZNQU1CCkFmOHdIUVlEVlIwT0JCWUVGSkN3bmVCVXZUMUtoeWtCUjF6bmxWQ2I1T2RnTUEwR0NTc\</span><br><span class="line">      UdTSWIzRFFFQkN3VUEKQTRJQkFRQnRwa0doRDJ1RFdYTmZaSUhaa0NNclNpSkZXaGxIUGNPa2VPZ\</span><br><span class="line">      TJwcmp1UEZ0bzFWMVpyNlloWWVpcQp1cGxRdWlpenBwbEthZncxR1lpSnY4SCsrcHpjUFZoS3JTM\</span><br><span class="line">      2F5Ykp1T2hxdnFyYUVZbzJDbjVVbkFpVWxBb2g1CnRqY1lNcVFKdkVzODd5UlFtUVhMSVNEMkdYb\</span><br><span class="line">      3UwN24ySy9wTVZXQWpHYjRsUTk0VmpHcjI3dHppSlhIYkh2L04KbHNNZklJV2czbTFKSW9SMlBNa\</span><br><span class="line">      3gvY1FpcGl6a3JRVHRpalhMbW0xbUFGOEtMR2JZcnNaTk1sMFdITWZWWjdXcgplemRBVjhVNDdsb\</span><br><span class="line">      GowKzUzQ0FkZk0rYWpiSk5uMUtYMWF1Sm8rb1JXVTJjVno0SkYydUllMnBjcFcxUUplY1NPCmZ2U\</span><br><span class="line">      ysyOU9FK09GZW5tenRINTdZTStTWk1jRE8KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=&quot;</span><br><span class="line"></span><br><span class="line">users:</span><br><span class="line">- name: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">  user:</span><br><span class="line">    token: &quot;kubeconfig-user-j85xz8pbjt:ls679hfqpvf9c25nswd5gdfm2hf4qtxj2kvqmj6kzzrjkj48lwwlpd&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">contexts:</span><br><span class="line">- name: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">  context:</span><br><span class="line">    user: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">    cluster: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line"></span><br><span class="line">current-context: &quot;test-kubernetes-cluster-rke-master&quot;</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-3-使用Kubectl控制Kubernetes-Cluster集群"><a href="#2-3-使用Kubectl控制Kubernetes-Cluster集群" class="headerlink" title="2.3 使用Kubectl控制Kubernetes Cluster集群"></a>2.3 使用<code>Kubectl</code>控制<code>Kubernetes Cluster</code>集群</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl --kubeconfig <span class="variable">$&#123;HOME&#125;</span>/.kube/config get pods -n kube-system</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create ns dev</span></span><br></pre></td></tr></table></figure>
-
 ]]></content>
       <categories>
         <category>Kubernetes</category>
@@ -541,7 +690,7 @@ spec:
 <li><p><font color=red>Deployment的资源清单</font></p>
 </li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: apps/v1 # 版本号 </span><br><span class="line">kind: Deployment # 类型 </span><br><span class="line">metadata: # 元数据 </span><br><span class="line">  name: pc-deployment # deployment的名称</span><br><span class="line">  namespace: dev # 命名类型</span><br><span class="line">  labels: #标签 </span><br><span class="line">    controller: deploy </span><br><span class="line">spec: # 详情描述 </span><br><span class="line">  replicas: 3 # 副本数量 </span><br><span class="line">  revisionHistoryLimit: 3 # 保留历史版本，默认为10 </span><br><span class="line">  paused: false # 暂停部署，默认是false </span><br><span class="line">  progressDeadlineSeconds: 600 # 部署超时时间（s），默认是600 </span><br><span class="line">  strategy: # 策略 </span><br><span class="line">    type: RollingUpdate # 更新策略</span><br><span class="line">    rollingUpdate: # 当type为RollingUpdate的时候生效，用于为rollingUpdate设置参数</span><br><span class="line">      maxUnavailable： # 用来指定在升级过程中不可用的Pod的最大数量，默认为25%。</span><br><span class="line">      maxSurge: 30% #  用来指定在升级过程中可以超过期望的Pod的最大数量，默认为25%</span><br><span class="line">  selector: # 选择器，通过它指定该控制器管理哪些pod </span><br><span class="line">    matchLabels: # Labels匹配规则 </span><br><span class="line">      app: nginx-pod </span><br><span class="line">    matchExpressions: # Expressions匹配规则 </span><br><span class="line">      - &#123;key: app, operator: In, values: [nginx-pod]&#125; </span><br><span class="line">  template: # 模板，当副本数量不足时，会根据下面的模板创建pod副本 </span><br><span class="line">    metadata: </span><br><span class="line">      labels: </span><br><span class="line">        app: nginx-pod </span><br><span class="line">    spec: </span><br><span class="line">      containers: </span><br><span class="line">      - name: nginx </span><br><span class="line">        image: nginx:1.17.1 </span><br><span class="line">        ports: </span><br><span class="line">        - containerPort: 80</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: apps/v1 # 版本号 </span><br><span class="line">kind: Deployment # 类型 </span><br><span class="line">metadata: # 元数据 </span><br><span class="line">  name: pc-deployment # deployment的名称</span><br><span class="line">  namespace: dev # 命名类型</span><br><span class="line">  labels: #标签 </span><br><span class="line">    controller: deploy </span><br><span class="line">spec: # 详情描述 </span><br><span class="line">  replicas: 3 # 副本数量 </span><br><span class="line">  revisionHistoryLimit: 3 # 保留历史版本，默认为10 </span><br><span class="line">  paused: false # 暂停部署，默认是false </span><br><span class="line">  progressDeadlineSeconds: 600 # 部署超时时间（s），默认是600 </span><br><span class="line">  strategy: # 策略 </span><br><span class="line">    type: RollingUpdate # 更新策略</span><br><span class="line">    rollingUpdate: # 当type为RollingUpdate的时候生效，用于为rollingUpdate设置参数</span><br><span class="line">      maxUnavailable：30% # 用来指定在升级过程中不可用的Pod的最大数量，默认为25%。</span><br><span class="line">      maxSurge: 30% #  用来指定在升级过程中可以超过期望的Pod的最大数量，默认为25%</span><br><span class="line">  selector: # 选择器，通过它指定该控制器管理哪些pod </span><br><span class="line">    matchLabels: # Labels匹配规则 </span><br><span class="line">      app: nginx-pod </span><br><span class="line">    matchExpressions: # Expressions匹配规则 </span><br><span class="line">      - &#123;key: app, operator: In, values: [nginx-pod]&#125; </span><br><span class="line">  template: # 模板，当副本数量不足时，会根据下面的模板创建pod副本 </span><br><span class="line">    metadata: </span><br><span class="line">      labels: </span><br><span class="line">        app: nginx-pod </span><br><span class="line">    spec: </span><br><span class="line">      containers: </span><br><span class="line">      - name: nginx </span><br><span class="line">        image: nginx:1.17.1 </span><br><span class="line">        ports: </span><br><span class="line">        - containerPort: 80</span><br></pre></td></tr></table></figure>
 
 <h4 id="1-3-部署HPA"><a href="#1-3-部署HPA" class="headerlink" title="1.3 部署HPA"></a>1.3 部署HPA</h4><ul>
 <li><font color=red><code>kind: HorizontalPodAutoscaler</code></font></li>
@@ -671,6 +820,275 @@ spec:
 </li>
 </ul>
 ]]></content>
+      <categories>
+        <category>Kubernetes</category>
+      </categories>
+      <tags>
+        <tag>Kubernetes</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>没有Rancher Server情况下管理下游Kubernetes集群</title>
+    <url>/Kubernetes/configure-k8s-Rancher/</url>
+    <content><![CDATA[<h3 id="1-Rancher服务宕机情况下使用Kubernetes-Cluster"><a href="#1-Rancher服务宕机情况下使用Kubernetes-Cluster" class="headerlink" title="1. Rancher服务宕机情况下使用Kubernetes Cluster"></a>1. <code>Rancher</code>服务宕机情况下使用<code>Kubernetes Cluster</code></h3><ul>
+<li><code>Rancher Server</code>是上游中心管理角色，控制或创建旗下<code>N</code>个<code>Kubernetes Cluster</code>集群，不管是测试中的单个节点或者是<code>Kubernetes Cluster</code>集群失效都无法读取，运维仍需要对下游所有<code>Kubernetes Cluster</code>集群管控</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>服务器</th>
+<th>IP</th>
+<th>CPU</th>
+<th>内存</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>master</td>
+<td>192.168.35.128</td>
+<td>8<code>core</code></td>
+<td>8G</td>
+</tr>
+<tr>
+<td>node-1</td>
+<td>192.168.35.129</td>
+<td>4<code>core</code></td>
+<td>4G</td>
+</tr>
+<tr>
+<td>node-2</td>
+<td>192.168.35.130</td>
+<td>4<code>core</code></td>
+<td>4G</td>
+</tr>
+</tbody></table>
+<blockquote>
+<ul>
+<li>前提条件<br>所有机器都是<code>CentOS 7</code><br><code>Rancher Server</code>是以<code>Docker</code>方式单独建立<br><code>test-cluster Kubernetes Cluster</code>集群是以<code>Rancher Server</code>自定义方式创建</li>
+</ul>
+</blockquote>
+<ul>
+<li><font color=red>模拟<code>Racnher Server</code>服务失效对<code>Kubernetes Cluster</code>集群进行管控</font>  <blockquote>
+<ul>
+<li><font color=red>点击创建集群名称</font></li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_15-47-45.png">     </p>
+<blockquote>
+<ul>
+<li><font color=red>提前下载<code>Kubernetesfig</code>文件</font></li>
+</ul>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_15-49-19.png">    </p>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_16-16-23.png" alt="下k8s file">  </p>
+<h3 id="2-模拟Rancher服务宕机"><a href="#2-模拟Rancher服务宕机" class="headerlink" title="2. 模拟Rancher服务宕机"></a>2. 模拟<code>Rancher</code>服务宕机</h3><ul>
+<li><font color=red>停止<code>Rancher Server</code>服务<code>docker stop rancher</code></font>  <blockquote>
+<ul>
+<li><font color=red><code>查看Kubernetes</code>集群版本号</font></li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-25_20-04-18.png" alt="查看`Rancher`安装`Kubernetes`集群版本">  </p>
+<h4 id="2-1-安装Kubectl"><a href="#2-1-安装Kubectl" class="headerlink" title="2.1 安装Kubectl"></a>2.1 安装<code>Kubectl</code></h4><ul>
+<li><font color=red>在能连接<code>test-kubernetes-cluster</code>集群中任意一个节点部署<code>Kubectl</code></font>  </li>
+<li><font color=red><code>Kubectl</code>版本需和<code>test-cluster-cluster</code>版本相同或者高于</font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/yum.repos.d/kubernetes.repo&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">[kubernetes] </span><br><span class="line">name=Kubernetes </span><br><span class="line">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">repo_gpgcheck=0</span><br><span class="line">gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">yum -y install kubectl-1.23.6-0</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="2-2-创建-kube目录修改文件"><a href="#2-2-创建-kube目录修改文件" class="headerlink" title="2.2 创建.kube目录修改文件"></a>2.2 创建<code>.kube</code>目录修改文件</h4><ul>
+<li><font color=red>并且将下载的<code>Kubernetesfig</code>文件改名为<code>config</code>，然后放到<code>$&#123;HOME&#125;/.kube/</code>目录中</font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> <span class="variable">$&#123;HOME&#125;</span>/.kube</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> <span class="variable">$&#123;HOME&#125;</span>/.kube/test-kubernetes-cluster.yaml <span class="variable">$&#123;HOME&#125;</span>/.kube/config</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><font color=red><code>$&#123;HOME&#125;/.kube/config</code>文件没修改前</font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> <span class="variable">$&#123;HOME&#125;</span>/.kube/config</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Config</span><br><span class="line">clusters:</span><br><span class="line">- name: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">  cluster:</span><br><span class="line">    server: &quot;https://192.168.80.210:4443/k8s/clusters/c-gwknl&quot;</span><br><span class="line">    certificate-authority-data: &quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJwekNDQ\</span><br><span class="line">      VUyZ0F3SUJBZ0lCQURBS0JnZ3Foa2pPUFFRREFqQTdNUnd3R2dZRFZRUUtFeE5rZVc1aGJXbGoKY\</span><br><span class="line">      kdsemRHVnVaWEl0YjNKbk1Sc3dHUVlEVlFRREV4SmtlVzVoYldsamJHbHpkR1Z1WlhJdFkyRXdIa\</span><br><span class="line">      GNOTWpJdwpOVEkxTVRFeE9UUXhXaGNOTXpJd05USXlNVEV4T1RReFdqQTdNUnd3R2dZRFZRUUtFe\</span><br><span class="line">      E5rZVc1aGJXbGpiR2x6CmRHVnVaWEl0YjNKbk1Sc3dHUVlEVlFRREV4SmtlVzVoYldsamJHbHpkR\</span><br><span class="line">      1Z1WlhJdFkyRXdXVEFUQmdjcWhrak8KUFFJQkJnZ3Foa2pPUFFNQkJ3TkNBQVJTb3NwRzE4OHJBQ\</span><br><span class="line">      mZabTAwQnRqcjAyL29udnZGVnppU09wZUdVd09SUApoSHpUbk1acTRmazVpRFhPV2lIUy9iQ0hvT\</span><br><span class="line">      WQra1VtYkx6QVRPNkd2azdtSm8wSXdRREFPQmdOVkhROEJBZjhFCkJBTUNBcVF3RHdZRFZSMFRBU\</span><br><span class="line">      UgvQkFVd0F3RUIvekFkQmdOVkhRNEVGZ1FVZ1YzR1g0Z2tXN3hPZVZWQURWem0KVEpxSW95b3dDZ\</span><br><span class="line">      1lJS29aSXpqMEVBd0lEU0FBd1JRSWdlTHh3WTVGcGkweDBGNXhBQUNZMnNPbVQ4aHBqNjVCWApUc\</span><br><span class="line">      1lsQk1sOGx0RUNJUURkNmlONTJmbG9hVzZybXpvWXRLQy9nOEJRRW00b2UrcGN0YldCaGY0UENRP\</span><br><span class="line">      T0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ==&quot;</span><br><span class="line">- name: &quot;test-kubernetes-cluster-node-1-80-211&quot;</span><br><span class="line">  cluster:</span><br><span class="line">    server: &quot;https://192.168.80.211:6443&quot;</span><br><span class="line">    certificate-authority-data: &quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM0VENDQ\</span><br><span class="line">      WNtZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFTTVJBd0RnWURWUVFERXdkcmRXSmwKT\</span><br><span class="line">      FdOaE1CNFhEVEl5TURVeU5URXhNek0xTUZvWERUTXlNRFV5TWpFeE16TTFNRm93RWpFUU1BNEdBM\</span><br><span class="line">      VVFQXhNSAphM1ZpWlMxallUQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ\</span><br><span class="line">      0VCQUtJSzVRVy84eHB3CkRHUzMrN0M2Q0lobS8zcWFUUENvVmdFeU91YkVtR1EzbnAvYk9qTUJKY\</span><br><span class="line">      3Ayck05cW5CV2M4ZmtUUWhCNHZsL24Kay8zSkUrMkdta1RBbVAwaGpLa3d6d1JiT2lrYzdYVEtnd\</span><br><span class="line">      ElTQ3I2cjRkOWhZTElERElzTTJtUzZYYnhNdGd1SApoamk3MTJYQmNoZ3lEamxjREl3S1k5WXRYc\</span><br><span class="line">      3lDY3hPejdFNXN4YmpLTk1nb2sxK3VZSTlHaHhYYUlGcGp0VWFUClJXUW00dE9JOFplWWlUWG9aT\</span><br><span class="line">      nJldTU1SVkyZ3pQVjZ1dURTWGQybFRHMEtmVng0Y1FYSDJIekdSODJ4NWZkK3kKS01HY0M1N21DN\</span><br><span class="line">      HpiM3pET1Z2NVNEdmxOZEhyQ0g3QmpVYzh0MlFpU2JyQUwrQ216NnhMVFF4dlp1YkVLejU2TApKe\</span><br><span class="line">      ElKUGFhNkdSY0NBd0VBQWFOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdLa01BOEdBMVVkRXdFQi93U\</span><br><span class="line">      UZNQU1CCkFmOHdIUVlEVlIwT0JCWUVGSkN3bmVCVXZUMUtoeWtCUjF6bmxWQ2I1T2RnTUEwR0NTc\</span><br><span class="line">      UdTSWIzRFFFQkN3VUEKQTRJQkFRQnRwa0doRDJ1RFdYTmZaSUhaa0NNclNpSkZXaGxIUGNPa2VPZ\</span><br><span class="line">      TJwcmp1UEZ0bzFWMVpyNlloWWVpcQp1cGxRdWlpenBwbEthZncxR1lpSnY4SCsrcHpjUFZoS3JTM\</span><br><span class="line">      2F5Ykp1T2hxdnFyYUVZbzJDbjVVbkFpVWxBb2g1CnRqY1lNcVFKdkVzODd5UlFtUVhMSVNEMkdYb\</span><br><span class="line">      3UwN24ySy9wTVZXQWpHYjRsUTk0VmpHcjI3dHppSlhIYkh2L04KbHNNZklJV2czbTFKSW9SMlBNa\</span><br><span class="line">      3gvY1FpcGl6a3JRVHRpalhMbW0xbUFGOEtMR2JZcnNaTk1sMFdITWZWWjdXcgplemRBVjhVNDdsb\</span><br><span class="line">      GowKzUzQ0FkZk0rYWpiSk5uMUtYMWF1Sm8rb1JXVTJjVno0SkYydUllMnBjcFcxUUplY1NPCmZ2U\</span><br><span class="line">      ysyOU9FK09GZW5tenRINTdZTStTWk1jRE8KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=&quot;</span><br><span class="line"></span><br><span class="line">users:</span><br><span class="line">- name: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">  user:</span><br><span class="line">    token: &quot;kubeconfig-user-j85xz8pbjt:ls679hfqpvf9c25nswd5gdfm2hf4qtxj2kvqmj6kzzrjkj48lwwlpd&quot;</span><br><span class="line"></span><br><span class="line">contexts:</span><br><span class="line">- name: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">  context:</span><br><span class="line">    user: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">    cluster: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">- name: &quot;test-kubernetes-cluster-node-1-80-211&quot;</span><br><span class="line">  context:</span><br><span class="line">    user: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">    cluster: &quot;test-kubernetes-cluster-node-1-80-211&quot;</span><br><span class="line"></span><br><span class="line">current-context: &quot;test-kubernetes-cluster&quot;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><font color=red><code>$&#123;HOME&#125;/.kube/config</code>文件修改后</font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> <span class="variable">$&#123;HOME&#125;</span>/.kube/config</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Config</span><br><span class="line">clusters:</span><br><span class="line">- name: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">  cluster:</span><br><span class="line">    server: &quot;https://192.168.80.211:6443&quot;</span><br><span class="line">    certificate-authority-data: &quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM0VENDQ\</span><br><span class="line">      WNtZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFTTVJBd0RnWURWUVFERXdkcmRXSmwKT\</span><br><span class="line">      FdOaE1CNFhEVEl5TURVeU5URXhNek0xTUZvWERUTXlNRFV5TWpFeE16TTFNRm93RWpFUU1BNEdBM\</span><br><span class="line">      VVFQXhNSAphM1ZpWlMxallUQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ\</span><br><span class="line">      0VCQUtJSzVRVy84eHB3CkRHUzMrN0M2Q0lobS8zcWFUUENvVmdFeU91YkVtR1EzbnAvYk9qTUJKY\</span><br><span class="line">      3Ayck05cW5CV2M4ZmtUUWhCNHZsL24Kay8zSkUrMkdta1RBbVAwaGpLa3d6d1JiT2lrYzdYVEtnd\</span><br><span class="line">      ElTQ3I2cjRkOWhZTElERElzTTJtUzZYYnhNdGd1SApoamk3MTJYQmNoZ3lEamxjREl3S1k5WXRYc\</span><br><span class="line">      3lDY3hPejdFNXN4YmpLTk1nb2sxK3VZSTlHaHhYYUlGcGp0VWFUClJXUW00dE9JOFplWWlUWG9aT\</span><br><span class="line">      nJldTU1SVkyZ3pQVjZ1dURTWGQybFRHMEtmVng0Y1FYSDJIekdSODJ4NWZkK3kKS01HY0M1N21DN\</span><br><span class="line">      HpiM3pET1Z2NVNEdmxOZEhyQ0g3QmpVYzh0MlFpU2JyQUwrQ216NnhMVFF4dlp1YkVLejU2TApKe\</span><br><span class="line">      ElKUGFhNkdSY0NBd0VBQWFOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdLa01BOEdBMVVkRXdFQi93U\</span><br><span class="line">      UZNQU1CCkFmOHdIUVlEVlIwT0JCWUVGSkN3bmVCVXZUMUtoeWtCUjF6bmxWQ2I1T2RnTUEwR0NTc\</span><br><span class="line">      UdTSWIzRFFFQkN3VUEKQTRJQkFRQnRwa0doRDJ1RFdYTmZaSUhaa0NNclNpSkZXaGxIUGNPa2VPZ\</span><br><span class="line">      TJwcmp1UEZ0bzFWMVpyNlloWWVpcQp1cGxRdWlpenBwbEthZncxR1lpSnY4SCsrcHpjUFZoS3JTM\</span><br><span class="line">      2F5Ykp1T2hxdnFyYUVZbzJDbjVVbkFpVWxBb2g1CnRqY1lNcVFKdkVzODd5UlFtUVhMSVNEMkdYb\</span><br><span class="line">      3UwN24ySy9wTVZXQWpHYjRsUTk0VmpHcjI3dHppSlhIYkh2L04KbHNNZklJV2czbTFKSW9SMlBNa\</span><br><span class="line">      3gvY1FpcGl6a3JRVHRpalhMbW0xbUFGOEtMR2JZcnNaTk1sMFdITWZWWjdXcgplemRBVjhVNDdsb\</span><br><span class="line">      GowKzUzQ0FkZk0rYWpiSk5uMUtYMWF1Sm8rb1JXVTJjVno0SkYydUllMnBjcFcxUUplY1NPCmZ2U\</span><br><span class="line">      ysyOU9FK09GZW5tenRINTdZTStTWk1jRE8KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=&quot;</span><br><span class="line"></span><br><span class="line">users:</span><br><span class="line">- name: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">  user:</span><br><span class="line">    token: &quot;kubeconfig-user-j85xz8pbjt:ls679hfqpvf9c25nswd5gdfm2hf4qtxj2kvqmj6kzzrjkj48lwwlpd&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">contexts:</span><br><span class="line">- name: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">  context:</span><br><span class="line">    user: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">    cluster: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line"></span><br><span class="line">current-context: &quot;test-kubernetes-cluster-rke-master&quot;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-3-使用Kubectl控制Kubernetes-Cluster集群"><a href="#2-3-使用Kubectl控制Kubernetes-Cluster集群" class="headerlink" title="2.3 使用Kubectl控制Kubernetes Cluster集群"></a>2.3 使用<code>Kubectl</code>控制<code>Kubernetes Cluster</code>集群</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl --kubeconfig <span class="variable">$&#123;HOME&#125;</span>/.kube/config get pods -n kube-system</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create ns dev</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Kubernetes</category>
+      </categories>
+      <tags>
+        <tag>Kubernetes</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>configure-k8s-Service</title>
+    <url>/Kubernetes/configure-k8s-Service/</url>
+    <content><![CDATA[<h3 id="1-Service服务详解"><a href="#1-Service服务详解" class="headerlink" title="1. Service服务详解"></a>1. <font color=red><code>Service</code>服务详解</font></h3><ul>
+<li>在<font color=red><code>kubernetes</code></font>中，<font color=red><code>Pod</code></font>是应用程序的载体，我们可以通过<font color=red><code>Pod</code>的<code>IP</code></font>来访问应用程序，但是<font color=red><code>Pod</code>的<code>IP</code></font>地址不是固定的，这就意味着不方便直接采用<font color=red><code>Pod</code>的<code>IP</code></font>对服务进行访问  </li>
+<li>为了解决这个问题，<font color=red><code>kubernetes</code>提供了<code>Service</code>资源</font>，<font color=red><code>Service</code></font>会对提供同一个服务的多个<code>Pod</code>进行聚合，并且提供一个统一的入口地址，通过访问<font color=red><code>Service</code>的入口地址就能访问到后面的<code>Pod</code>服务</font>  </li>
+<li><font color=red>Service在很多情况下只是一个概念</font>：真正起作用的其实是<code>kube-proxy</code>服务进程，每个<code>Node</code>节点上都运行了一个<code>kube-proxy</code>的服务进程。当创建<code>Service</code>的时候会通过<code>API Server</code>向<code>etcd</code>写入创建的Service的信息，而<code>kube-proxy</code>会基于监听的机制发现这种<code>Service</code>的变化，然后它会将最新的<code>Service</code>信息转换为对应的访问规则  </li>
+<li><font color=red>假如：10.97.97.97:80 是service提供的访问入口</font>：当访问这个入口的时候，可以发现后面有三个pod的服务在等待调用，kube-proxy会基于rr（轮询）的策略，将请求分发到其中一个pod上去，这个规则会同时在集群内的所有节点上都生成，所以在任何一个节点上访问都可以。</li>
+</ul>
+<h3 id="2-kube-proxy目前支持的三种工作模式"><a href="#2-kube-proxy目前支持的三种工作模式" class="headerlink" title="2. kube-proxy目前支持的三种工作模式"></a>2. <font color=red><code>kube-proxy</code>目前支持的三种工作模式</font></h3><ul>
+<li><p><font color=red><code>userspace</code>模式</font>  </p>
+<blockquote>
+<ul>
+<li><pre><code>`userspace`模式下，`kube-proxy`会为每一个`Service`创建一个监听端口，发向`Cluster IP`的请求被`iptables`规则重定向到`kube-proxy`监听的端口上，`kube-proxy`根据`LB`算法（负载均衡算法）选择一个提供服务的`Pod`并和其建立连接，以便将请求转发到`Pod`上。
+</code></pre>
+</li>
+<li>userspace<code>模式下，</code>kube-proxy<code>充当了一个四层负载均衡器的角色。由于</code>kube-proxy<code>运行在</code>userspace&#96;中，在进行转发处理的时候会增加内核和用户空间之间的数据拷贝，虽然比较稳定，但是效率非常低下。</li>
+</ul>
+</blockquote>
+</li>
+<li><p><font color=red><code>iptables</code>模式</font>  </p>
+<blockquote>
+<ul>
+<li><code>iptables</code>模式下，<code>kube-proxy</code>为<code>Service</code>后端的每个<code>Pod</code>创建对应的<code>iptables</code>规则，直接将发向<code>Cluster IP</code>的请求重定向到一个<code>Pod</code>的<code>IP</code>上</li>
+<li><code>iptables</code>模式下<code>kube-proxy</code>不承担四层负载均衡器的角色，只负责创建<code>iptables</code>规则。该模式的优点在于较<code>userspace</code>模式效率更高，但是不能提供灵活的<code>LB</code>策略，当后端<code>Pod</code>不可用的时候无法进行重试</li>
+</ul>
+</blockquote>
+</li>
+<li><p><font color=red>ipvs模式</font>  </p>
+<blockquote>
+<ul>
+<li><code>ipvs</code>模式和<code>iptables</code>类似，<code>kube-proxy</code>监控<code>Pod</code>的变化并创建相应的<code>ipvs</code>规则。<code>ipvs</code>相对<code>iptables</code>转发效率更高，除此之外，<code>ipvs</code>支持更多的<code>LB</code>算法。  </li>
+<li><font color=red><code>ipvs</code>的映射规则，<code>rr</code>表示轮询</font></li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ipvsadm -Ln  	<span class="comment"># 查看kube-proxy工作模式</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-Service的资源清单，spec-type的说明"><a href="#3-Service的资源清单，spec-type的说明" class="headerlink" title="3. Service的资源清单，spec.type的说明"></a>3. <font color=red><code>Service</code>的资源清单，<code>spec.type</code>的说明</font></h3><ul>
+<li><p><font color=red><code>ClusterIP</code>默认值</font>：它是<code>kubernetes</code>系统自动分配的虚拟<code>IP</code>，只能在集群内部访问  </p>
+</li>
+<li><p><font color=red><code>NodePort</code></font>：将<code>Service</code>通过指定的<code>Node</code>上的端口暴露给外部，通过此方法，就可以在集群外部访问服务  </p>
+<blockquote>
+<ul>
+<li>创建的<code>Service</code>的<code>IP</code>地址只能在集群内部才可以访问，如果希望<code>Service</code>暴露给集群外部使用，那么就需要使用到另外一种类型的<code>Service</code>，称为<font color=red><code>NodePort</code></font>类型的<code>Service</code>。<font color=red><code>NodePort</code></font>的工作原理就是将<font color=red><code>Service</code></font>的端口映射到<font color=red><code>Node</code></font>的一个端口上，然后就可以通过<font color=red><code>NodeIP:NodePort</code></font>来访问<code>Service</code>了</li>
+</ul>
+</blockquote>
+</li>
+<li><p><font color=red><code>LoadBalancer</code></font>：使用外接负载均衡器完成到服务的负载分发，注意此模式需要外部云环境的支持  </p>
+<blockquote>
+<ul>
+<li><font color=red><code> LoadBalancer</code>和<code>NodePort</code>很相似</font>，目的都是向外部暴露一个端口，区别在于<font color=red><code>LoadBalancer</code></font>会在集群的外部再来做一个负载均衡设备，而这个设备需要外部环境的支持，外部服务发送到这个设备上的请求，会被设备负载之后转发到集群中</li>
+</ul>
+</blockquote>
+</li>
+<li><p><font color=red><code>ExternalName</code></font>：把集群外部的服务引入集群内部，直接使用  </p>
+<blockquote>
+<ul>
+<li><font color=red><code>ExternalName</code></font>类型的Service用于引入集群外部的服务，它通过<font color=red><code>externalName</code></font>属性指定一个服务的地址，然后在集群内部访问此Service就可以访问到外部的服务了</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain service.spec.type <span class="comment">#</span></span> </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1 # 版本</span><br><span class="line">kind: Service # 类型</span><br><span class="line">metadata: # 元数据</span><br><span class="line">  name: service-cluster-ip # 资源名称、service-nodeport-ip</span><br><span class="line">  namespace: # 命名空间</span><br><span class="line">spec:</span><br><span class="line">  selector: # 标签选择器，用于确定当前Service代理那些Pod</span><br><span class="line">    app: nginx</span><br><span class="line">  type: NodePort # 指定Service的类型访问方式、ClusterIP、NodePort、ExternalName</span><br><span class="line">  externalName: www.baidu.com # 改成IP地址也可以,只有 type 类型为：ExternalName</span><br><span class="line">  clusterIP: 10.97.97.97 # 虚拟Service的IP地址，如果不写，默认会生成一个</span><br><span class="line">  sessionAffinity: # 分发策略、session亲和性，支持ClientIP、None两个选项，默认值为None</span><br><span class="line">  ports: # 端口信息</span><br><span class="line">    - port: 8080 # Service端口</span><br><span class="line">      protocol: TCP # 协议</span><br><span class="line">      targetPort : 80 # Pod的端口</span><br><span class="line">      nodePort: 30002  # 指定绑定的node的端口（默认取值范围是30000~32767），如果不指定，会默认分配</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-负载分发"><a href="#4-负载分发" class="headerlink" title="4. 负载分发"></a>4. <font color=red>负载分发</font></h3><ul>
+<li><p><font color=red>对Service的访问被分发到了后端的Pod上去，目前kubernetes提供了两种负载分发策略</font>  </p>
+<blockquote>
+<ul>
+<li><font colo=red>默认使用<code>kube-proxy</code>的策略，比如随机、轮询等</font>  </li>
+<li><font color=red><code>sessionAffinity</code></font>：基于客户端地址的会话保持模式，即来自同一个客户端发起的所有请求都会转发到固定的一个<code>Pod</code>上，这对于传统基于<font color=red><code>Session</code></font>的认证项目来说很友好，此模式可以在<font color=red><code>spec</code></font>中添加<font color=red><code>sessionAffinity: ClusterIP</code></font>选项</li>
+</ul>
+</blockquote>
+</li>
+<li><p><font color=red><code>HeadLiness</code>类型负载均的<code>Service</code></font>  </p>
+<blockquote>
+<ul>
+<li>在某些场景中，开发人员可能不想使用<code>Service</code>提供的负载均衡功能，而希望自己来控制负载均衡策略，针对这种情况，<code>kubernetes</code>提供了<code>HeadLinesss Service</code>，这类<code>Service不</code>会分配<code>Cluster IP</code>，如果想要访问<code>Service</code>，只能通过<code>Service</code>的域名进行查询</li>
+<li><font color=red>clusterIP: None</font>：将<code>clusterIP</code>设置为<code>None</code>，即可创建<code>headliness Service</code></li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h3 id="5-Endpoint-实际中使用的不多"><a href="#5-Endpoint-实际中使用的不多" class="headerlink" title="5. Endpoint(实际中使用的不多)"></a>5. <font color=red><code>Endpoint</code>(实际中使用的不多)</font></h3><ul>
+<li><font color=red><code>Endpoint</code></font>：是<code>kubernete</code>中的一个资源对象，存储在<code>etcd</code>中，用来记录一个service对应的所有Pod的访问地址，它是根据service配置文件中的selector描述产生的  </li>
+<li>一个<code>service</code>由一组<code>Pod</code>组成，这些<code>Pod</code>通过<font color=red><code>Endpoints</code></font>暴露出来，<font color=red><code>Endpoints</code></font>是实现实际服务的端点集合。换言之<code>servic</code>和<code>Pod</code>之间的联系是通过<font color=red><code>Endpoints</code></font>实现的</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe svc nginx-service -n app</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get endpoints -n dev -o wide</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-Ingress介绍"><a href="#6-Ingress介绍" class="headerlink" title="6. Ingress介绍"></a>6. <font color=red><code>Ingress</code>介绍</font></h3><ul>
+<li><ol>
+<li>我们已经知道，<code>Service对集群</code>之外暴露服务的主要方式有两种：<code>NodePort</code>和<code>LoadBalancer</code>，但是这两种方式，都有一定的缺点：  <blockquote>
+<ul>
+<li><ol>
+<li><font color=red><code>NodePort</code></font>方式的缺点是会占用很多集群机器的端口，那么当集群服务变多的时候，这个缺点就愈发明显</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>LoadBalancer</code></font>的缺点是每个<code>Service</code>都需要一个<code>LB</code>，浪费，麻烦，并且需要<code>kubernetes</code>之外的设备的支持</li>
+</ol>
+</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>基于这种现状，<font color=red><code>kubernetes</code></font>提供了<font color=red><code>Ingress</code></font>资源对象，<font color=red><code>Ingress</code></font>只需要一个<font color=red><code>NodePort</code></font>或者一个<code>LB</code>就可以满足暴露多个<code>Service</code>的需求</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>实际上，<code>Ingress</code>相当于一个七层的负载均衡器，是<code>kubernetes</code>对反向代理的一个抽象，它的工作原理类似于<code>Nginx</code>，可以理解为<code>Ingress</code>里面建立了诸多映射规则，<code>Ingress Controller</code>通过监听这些配置规则并转化为<code>Nginx</code>的反向代理配置，然后对外提供服务  <blockquote>
+<ul>
+<li><ol>
+<li><font color=red><code>Ingress</code>：</font><code>kubernetes</code>中的一个对象，作用是定义请求如何转发到Service的规则</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>Ingress Controller</code>：</font>具体实现反向代理及负载均衡的程序，对<code>Ingress</code>定义的规则进行解析，根据配置的规则来实现请求转发，实现的方式有很多，比如<font color=red><code>Nginx</code>，<code>Contour</code>，<code>Haproxy</code></font>等。</li>
+</ol>
+</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<h4 id="6-1-Ingress-以Nginx-的工作原理如下："><a href="#6-1-Ingress-以Nginx-的工作原理如下：" class="headerlink" title="6.1 Ingress(以Nginx)的工作原理如下："></a>6.1 <font color=red><code>Ingress</code>(以<code>Nginx</code>)的工作原理如下：</font></h4><ul>
+<li><font color=red>用户编写<code>Ingress</code>规则</font>：说明那个域名对应<code>kubernetes</code>集群中的那个<code>Service</code>。  </li>
+<li><font color=red><code>Ingress</code></font>控制器动态感知Ingress服务规则的变化，然后生成一段对应的<code>Nginx</code>的反向代理配置  </li>
+<li><font color=red><code>Ingress</code></font>控制器会将生成的<code>Nginx</code>配置写入到一个运行着的<code>Nginx</code>服务中，并动态更新，到此为止，其实真正在工作的就是一个<code>Nginx</code>了，内部配置了用户定义的请求规则</li>
+</ul>
+<h5 id="6-1-1-Ingress-Nginx使用"><a href="#6-1-1-Ingress-Nginx使用" class="headerlink" title="6.1.1 Ingress-Nginx使用"></a>6.1.1 <code>Ingress-Nginx</code>使用</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> ingress-controller &amp;&amp; <span class="built_in">cd</span> ingress-controller</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/provider/baremetal/service-nodeport.yaml</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f ./</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>准备<code>Service</code>和<code>Pod</code>：一个<code>Nginx</code>一个<code>Tomcat</code></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-deployment</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:  # 标签选择器，用于确定当前Service代理那些Pod</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: nginx-pod</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx-pod</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: nginx</span><br><span class="line">        image: nginx:1.17.1</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: tomcat-deployment</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: tomcat-pod</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: tomcat-pod</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: tomcat</span><br><span class="line">        image: tomcat:8.5-jre10-slim</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 8080</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-service</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    app: nginx-pod</span><br><span class="line">  clusterIP: None</span><br><span class="line">  type: ClusterIP</span><br><span class="line">  ports:</span><br><span class="line">  - port: 80</span><br><span class="line">    targetPort: 80</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: tomcat-service</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    app: tomcat-pod</span><br><span class="line">  clusterIP: None</span><br><span class="line">  type: ClusterIP</span><br><span class="line">  ports:</span><br><span class="line">  - port: 8080  # Service端口</span><br><span class="line">    targetPort: 8080</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>Ingress-Nginx</code>的<code>Http</code>和<code>Https</code>配置的<code>yaml</code>  <blockquote>
+<ul>
+<li><code>http</code></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Ingress</span><br><span class="line">metadata:</span><br><span class="line">  name: ingress-http</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  rules:</span><br><span class="line">  - host: nginx.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: nginx-service</span><br><span class="line">          servicePort: 80</span><br><span class="line">  - host: tomcat.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: tomcat-service</span><br><span class="line">          servicePort: 8080</span><br></pre></td></tr></table></figure></li>
+</ul>
+<blockquote>
+<ul>
+<li><code>https</code>   <blockquote>
+<ul>
+<li><font color=red><code>req</code>：</font>产生证书签发申请命令  </li>
+<li><font color=red><code>-newkey</code>：</font>生成新私钥  </li>
+<li><font color=red><code>rsa:4096</code>：</font>生成秘钥位数  </li>
+<li><font color=red><code>-nodes</code>：</font>表示私钥不加密  </li>
+<li><font color=red><code>-sha256</code>：</font>使用<code>SHA-2</code>哈希算法  </li>
+<li><font color=red><code>-keyout</code>：</font>将新创建的私钥写入的文件名  </li>
+<li><font color=red><code>-x509</code>：</font>签发<code>X.509格</code>式证书命令。<code>X.509</code>是最通用的一种签名证书格式。  </li>
+<li><font color=red><code>-out</code>：</font>指定要写入的输出文件名  </li>
+<li><font color=red><code>-subj</code>：</font>指定用户信息  </li>
+<li><font color=red><code>-days</code>：</font>有效期</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成密钥</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout /opt/k8s/tls.key -out -x509 /opt/k8s/tls.crt -subj <span class="string">&quot;/C=CN/ST=BJ/L=BJ/O=nginx/CN=erge.com&quot;</span> -days 3650</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成密钥</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create secret tls tls-erge.com --key =/opt/k8s/https/tls.key --cert /opt/k8s/https/tls.crt</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Ingress</span><br><span class="line">metadata:</span><br><span class="line">  name: ingress-https</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  tls:</span><br><span class="line">    - hosts:</span><br><span class="line">      - nginx.rege.com</span><br><span class="line">      - tomcat.erge.com</span><br><span class="line">      secretName: tls-erge.com # 指定秘钥</span><br><span class="line">  rules:</span><br><span class="line">  - host: nginx.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: nginx-service</span><br><span class="line">          servicePort: 80</span><br><span class="line">  - host: tomcat.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: tomcat-service</span><br><span class="line">          servicePort: 8080</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>Kubernetes</category>
       </categories>
@@ -1316,6 +1734,21 @@ spec:
 <td>指定<code>Pod</code>所在主机的目录，将被用于容器中<code>mount</code>的目录。</td>
 </tr>
 <tr>
+<td>spec.volumes.nfs</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td>spec.volumes[]</td>
 <td>Object</td>
 <td>指定类型为<code>Secret</code>的存储卷，<code>Secret</code>意为私密、秘密，这很容易理解，它存储一些密码、密钥等敏感安全文件。挂载集群预定义的<code>Secret</code>对象到容器内部。</td>
@@ -1326,7 +1759,76 @@ spec:
 <td>指定类型为<code>ConfigMap</code>的存储卷，表示挂载集群预定义的<code>ConfigMap</code>对象到容器内部。</td>
 </tr>
 </tbody></table>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">  volumes:   	# 在该pod上定义共享存储卷列表</span><br><span class="line">  - name: string   	# 共享存储卷名称 （volumes类型有很多种）</span><br><span class="line">    emptyDir: &#123;&#125;   		# 类型为emtyDir的存储卷，与Pod同生命周期的一个临时目录。为空值</span><br><span class="line">    hostPath: string   	# 类型为hostPath的存储卷，表示挂载Pod所在宿主机的目录</span><br><span class="line">      path: string   	# Pod所在宿主机的目录，将被用于同期中mount的目录</span><br><span class="line">    secret:       　　　#类型为secret的存储卷，挂载集群与定义的secret对象到容器内部</span><br><span class="line">      scretname: string</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br><span class="line">    </span><br><span class="line">    configMap:         #类型为configMap的存储卷，挂载预定义的configMap对象到容器内部</span><br><span class="line">      name: string</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol>
+<li><font color=red>简单存储模式—<code>volume-emptydir</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod  </span><br><span class="line">metadata:</span><br><span class="line">  name: volume-emptydir  # 定义名称</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:  	# 必选，Pod中容器列表</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到nginx容器中对应的目录，该目录为/var/log/nginx</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /var/log/nginx</span><br><span class="line">    - name: busybox</span><br><span class="line">      image: busybox:1.30</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;tail -f /logs/access.log&quot;] # 初始命令，动态读取指定文件</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到busybox容器中的对应目录，该目录为/logs</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /logs</span><br><span class="line">  volumes:   	# 声明volume，name为logs-volume，类型为emptyDir</span><br><span class="line">    - name: logs-volume  	# 共享存储卷名称 （volumes类型有很多种）</span><br><span class="line">      emptyDir: &#123;&#125;   		# 类型为emtyDir的存储卷，与Pod同生命周期的一个临时目录。为空值</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>简单存储模式—<code>volume-HostPath</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain Pod.spec.volumes.hostPath.<span class="built_in">type</span> <span class="comment"># 类型声明</span></span>  </span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>2.1 <font color=red><code>DirectoryOrCreate</code></font>：目录存在就使用，不存在就先创建后使用  </li>
+<li>2.2 <font color=red><code>Directory</code></font>：目录必须存在  </li>
+<li>2.3 <font color=red><code>FileOrCreate</code></font>：文件存在就使用，不存在就先创建后使用  </li>
+<li>2.4 <font color=red><code>File</code></font>：文件必须存在  </li>
+<li>2.5 <font color=red><code>Socket</code></font>：<code>unix</code>套接字必须存在  </li>
+<li>2.6 <font color=red><code>CharDevice</code></font>：字符设备必须存在  </li>
+<li>2.7 <font color=red><code>BlockDevice</code></font>：块设备必须存在</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: volume-hostpath</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到nginx容器中对应的目录，该目录为/var/log/nginx</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /var/log/nginx</span><br><span class="line">    - name: busybox</span><br><span class="line">      image: busybox:1.30</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;tail -f /logs/access.log&quot;] # 初始命令，动态读取指定文件</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到busybox容器中的对应目录，该目录为/logs</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /logs</span><br><span class="line">  volumes: # 声明volume，name为logs-volume，类型为hostPath</span><br><span class="line">    - name: logs-volume</span><br><span class="line">      hostPath:  # 类型为hostPath的存储卷，表示挂载Pod所在宿主机的目录</span><br><span class="line">        path: /root/logs  # Pod所在宿主机的目录，将被用于同期中mount的目录</span><br><span class="line">        type: DirectoryOrCreate # 目录存在就使用，不存在就先创建再使用 </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>简单存储模式—<code>volume-nfs</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: volume-nfs</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到nginx容器中对应的目录，该目录为/var/log/nginx</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /var/log/nginx</span><br><span class="line">    - name: busybox</span><br><span class="line">      image: busybox:1.30</span><br><span class="line">      imagePullPolicy: IfNotPresent</span><br><span class="line">      command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;tail -f /logs/access.log&quot;] # 初始命令，动态读取指定文件</span><br><span class="line">      volumeMounts: # 将logs-volume挂载到busybox容器中的对应目录，该目录为/logs</span><br><span class="line">        - name: logs-volume</span><br><span class="line">          mountPath: /logs</span><br><span class="line">  volumes: # 声明volume</span><br><span class="line">    - name: logs-volume</span><br><span class="line">      nfs:  # 存储类型，和底层正则的存储对应</span><br><span class="line">        server: 192.168.18.100 # NFS服务器地址</span><br><span class="line">        path: /root/data/nfs # 共享文件路径</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>高级存储模式—<code>volume-pv</code></font>  <blockquote>
+<ul>
+<li>4.1 <font color=red><code>PV：kubernetes</code>管理员维护</font></li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: pv2</span><br><span class="line">spec:</span><br><span class="line">  nfs: # 存储类型，和底层正则的存储对应</span><br><span class="line">    path: /root/data/pv1</span><br><span class="line">    server: 192.168.18.100</span><br><span class="line">  capacity: # 存储能力，目前只支持存储空间的设置</span><br><span class="line">    storage: 2Gi</span><br><span class="line">  accessModes: # 访问模式</span><br><span class="line">    - ReadWriteMany</span><br><span class="line">  storageClassName: # 存储类别</span><br><span class="line">  persistentVolumeReclaimPolicy: Retain # 回收策略</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li><font color=red>高级存储—<code>volume-pvc</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name: pvc1</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  accessModes: # 访客模式</span><br><span class="line">    - ReadWriteMany</span><br><span class="line">  selector: # 采用标签对PV选择</span><br><span class="line">  storageClassName: # 存储类别</span><br><span class="line">  resources: # 请求空间</span><br><span class="line">    requests:</span><br><span class="line">      storage: 1Gi</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">################################################### 创建 Pod 访问 PVC 类型存储</span></span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: pod1</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: busybox</span><br><span class="line">    image: busybox:1.30</span><br><span class="line">    command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;while true;do echo pod1 &gt;&gt; /root/out.txt; sleep 10; done;&quot;]</span><br><span class="line">    volumeMounts:</span><br><span class="line">    - name: volume</span><br><span class="line">      mountPath: /root/</span><br><span class="line">  volumes:</span><br><span class="line">    - name: volume</span><br><span class="line">      persistentVolumeClaim:</span><br><span class="line">        claimName: pvc1</span><br><span class="line">        readOnly: false</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="6">
+<li><font color=red>配置存储—<code>volumes-ConfigMap</code></font>  <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: ConfigMap  	# ConfigMap</span><br><span class="line">metadata:</span><br><span class="line">  name: configmap</span><br><span class="line">  namespace: dev</span><br><span class="line">data:  &lt;map[string]string&gt;</span><br><span class="line">  info:</span><br><span class="line">    username:admin</span><br><span class="line">    password:123456</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">########################################## 配置 pod-configmap</span></span>   </span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: pod-configmap</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      volumeMounts:</span><br><span class="line">        - mountPath: /configmap/config</span><br><span class="line">          name: config</span><br><span class="line">  volumes:</span><br><span class="line">    - name: config</span><br><span class="line">      configMap: # 类型为configMap的存储卷，挂载预定义的configMap对象到容器内部</span><br><span class="line">        name: configmap</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><ol start="7">
+<li><font color=red>配置存储—<code>volumes-secret</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Secret</span><br><span class="line">metadata:</span><br><span class="line">  name: secret</span><br><span class="line">  namespace: dev</span><br><span class="line">type: Opaque</span><br><span class="line">data:  # 提前编码实名：data、使用Kubernetes进行编码使用：stringData</span><br><span class="line">  username: YWRtaW4=  	# 使用kubernetes进行编码写原数据：admin</span><br><span class="line">  password: MTIzNDU2  	#使用kubernetes进行编码写原数据：123456</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">############################################# 配置 pod-secret</span></span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: pod-secret</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      volumeMounts:</span><br><span class="line">        - mountPath: /secret/config</span><br><span class="line">          name: config</span><br><span class="line">  volumes:</span><br><span class="line">    - name: config</span><br><span class="line">      secret: # 类型为secret的存储卷，挂载集群与定义的secret对象到容器内部</span><br><span class="line">        secretName: secret</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br></pre></td></tr></table></figure>
+
 <h4 id="4-4-额外的参数对象"><a href="#4-4-额外的参数对象" class="headerlink" title="4.4 额外的参数对象"></a><span id="额外的参数对象">4.4 <font color=red>额外的参数对象</font></span></h4><table>
 <thead>
 <tr>
@@ -1427,12 +1929,12 @@ spec:
 </ul>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出到文件，编辑修改文件</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment nginx --image=nginx:1.17.1 --dry-run=client -n dev -o yaml &gt;/tmp/test.yam</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用kubectl get命令导出yaml文件</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pod coredns-558bd4d5db-9h55s  -n kube-system -o yaml &gt; /tmp/coredns-558bd4d5db-9h55s.yaml</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="5-1-Kubernetes-Cluster集群安装Ingress-Nginx"><a href="#5-1-Kubernetes-Cluster集群安装Ingress-Nginx" class="headerlink" title="5.1 Kubernetes Cluster集群安装Ingress-Nginx"></a><span id="安装Ingress-Nginx">5.1 <a href="https://kubernetes.github.io/ingress-nginx/deploy/"><code>Kubernetes Cluster</code>集群安装<code>Ingress-Nginx</code></a></span></h4><ul>
-<li><a href="https://github.com/kubernetes/ingress-nginx/tree/main/deploy/static/provider/baremetal"><code>Ingress-Nginx</code>文件找到对应<code>K8S</code>版本下载</a>  </li>
+<h4 id="5-1-Kubernetes-Cluster集群安装文档、常用裸机安装Ingress-Nginx"><a href="#5-1-Kubernetes-Cluster集群安装文档、常用裸机安装Ingress-Nginx" class="headerlink" title="5.1 Kubernetes Cluster集群安装文档、常用裸机安装Ingress-Nginx"></a><span id="安装Ingress-Nginx">5.1 <a href="https://github.com/kubernetes/ingress-nginx/tree/main/deploy/static/provider/baremetal"><code>Kubernetes Cluster</code>集群安装文档、常用裸机安装<code>Ingress-Nginx</code></a></span></h4><ul>
+<li><a href="https://github.com/kubernetes/ingress-nginx/tree/controller-v1.2.0/deploy/static/provider">找到对应的<code>Ingress-Nginx</code>安装版本</a>   </li>
 <li><font color=red>下载<code>ingress-nginx</code>的<code>yaml</code>文件后把<code>LoadBalancer</code>修改为<code>NodePort</code></font>  </li>
 <li><a href="https://blog.csdn.net/qq_37481017/article/details/118999716">基于<code>K8S 1.21.2</code>集群安装<code>Ingress-Nginx 0.48.1</code></a></li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/1.21/deploy.yaml</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/1.21/deploy.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">一些pod在ingress-nginx命名空间中启动</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace=ingress-nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将等待入口控制器 pod 启动、运行并准备就绪</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">wait</span> --namespace ingress-nginx --<span class="keyword">for</span>=condition=ready pod --selector=app.kubernetes.io/component=controller --<span class="built_in">timeout</span>=120s</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建一个入口资源。以下示例使用映射到的主机localhost</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create ingress demo-localhost --class=nginx --rule=demo.localdev.me/*=demo:80</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将本地端口转发到入口控制器</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl port-forward --namespace=ingress-nginx service/ingress-nginx-controller 8080:80</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">一些pod在ingress-nginx命名空间中启动</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace=ingress-nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第一种方式</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/deploy.yaml  	<span class="comment"># baremetal 表示裸机安装</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第二种方式</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/provider/baremetal/service-nodeport.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将等待入口控制器 pod 启动、运行并准备就绪</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">wait</span> --namespace ingress-nginx --<span class="keyword">for</span>=condition=ready pod --selector=app.kubernetes.io/component=controller --<span class="built_in">timeout</span>=120s</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建一个入口资源。以下示例使用映射到的主机localhost</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create ingress demo-localhost --class=nginx --rule=demo.localdev.me/*=demo:80</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将本地端口转发到入口控制器</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl port-forward --namespace=ingress-nginx service/ingress-nginx-controller 8080:80</span></span><br></pre></td></tr></table></figure>
 
 <h4 id="5-2-Pod的资源清单"><a href="#5-2-Pod的资源清单" class="headerlink" title="5.2 Pod的资源清单"></a>5.2 <span id="Pod的资源清单"><font color=red><code>Pod</code>的资源清单</font></span></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1     #必选，版本号，例如v1</span><br><span class="line">kind: Pod       　 #必选，资源类型，例如 Pod</span><br><span class="line">metadata:       　 #必选，元数据</span><br><span class="line">  name: string     #必选，Pod名称</span><br><span class="line">  namespace: string  #Pod所属的命名空间,默认为&quot;default&quot;</span><br><span class="line">  labels:       　　  #自定义标签列表</span><br><span class="line">    - name: string      　          </span><br><span class="line">spec:  #必选，Pod中容器的详细定义</span><br><span class="line">  containers:  #必选，Pod中容器列表</span><br><span class="line">  - name: string   #必选，容器名称</span><br><span class="line">    image: string  #必选，容器的镜像名称</span><br><span class="line">    imagePullPolicy: [ Always|Never|IfNotPresent ]  #获取镜像的策略 </span><br><span class="line">    command: [string]   #容器的启动命令列表，如不指定，使用打包时使用的启动命令</span><br><span class="line">    args: [string]      #容器的启动命令参数列表</span><br><span class="line">    workingDir: string  #容器的工作目录</span><br><span class="line">    </span><br><span class="line">    volumeMounts:       #挂载到容器内部的存储卷配置</span><br><span class="line">    - name: string      #引用pod定义的共享存储卷的名称，需用volumes[]部分定义的的卷名</span><br><span class="line">      mountPath: string #存储卷在容器内mount的绝对路径，应少于512字符</span><br><span class="line">      readOnly: boolean #是否为只读模式</span><br><span class="line">      </span><br><span class="line">    ports: #需要暴露的端口库号列表</span><br><span class="line">    - name: string        #端口的名称</span><br><span class="line">      containerPort: int  #容器需要监听的端口号</span><br><span class="line">      hostPort: int       #容器所在主机需要监听的端口号，默认与Container相同</span><br><span class="line">      protocol: string    #端口协议，支持TCP和UDP，默认TCP</span><br><span class="line">      </span><br><span class="line">    env:   #容器运行前需设置的环境变量列表</span><br><span class="line">    - name: string  #环境变量名称</span><br><span class="line">      value: string #环境变量的值</span><br><span class="line">      </span><br><span class="line">    resources: #资源限制和请求的设置</span><br><span class="line">      limits:  #资源限制的设置</span><br><span class="line">        cpu: string     #Cpu的限制，单位为core数，将用于docker run --cpu-shares参数</span><br><span class="line">        memory: string  #内存限制，单位可以为Mib/Gib，将用于docker run --memory参数</span><br><span class="line">      requests: #资源请求的设置</span><br><span class="line">        cpu: string    #Cpu请求，容器启动的初始可用数量</span><br><span class="line">        memory: string #内存请求,容器启动的初始可用数量</span><br><span class="line">        </span><br><span class="line">    lifecycle: #生命周期钩子</span><br><span class="line">		postStart: #容器启动后立即执行此钩子,如果执行失败,会根据重启策略进行重启</span><br><span class="line">		preStop: #容器终止前执行此钩子,无论结果如何,容器都会终止</span><br><span class="line">		</span><br><span class="line">    livenessProbe:  #对Pod内各容器健康检查的设置，当探测无响应几次后将自动重启该容器</span><br><span class="line">      exec:       　 #对Pod容器内检查方式设置为exec方式</span><br><span class="line">        command: [string]  #exec方式需要制定的命令或脚本</span><br><span class="line">      httpGet:       #对Pod内个容器健康检查方法设置为HttpGet，需要制定Path、port</span><br><span class="line">        path: string</span><br><span class="line">        port: number</span><br><span class="line">        host: string</span><br><span class="line">        scheme: string</span><br><span class="line">        HttpHeaders:</span><br><span class="line">        - name: string</span><br><span class="line">          value: string</span><br><span class="line">      tcpSocket:     #对Pod内个容器健康检查方式设置为tcpSocket方式</span><br><span class="line">         port: number</span><br><span class="line">       initialDelaySeconds: 0       #容器启动完成后首次探测的时间，单位为秒</span><br><span class="line">       timeoutSeconds: 0    　　    #对容器健康检查探测等待响应的超时时间，单位秒，默认1秒</span><br><span class="line">       periodSeconds: 0     　　    #对容器监控检查的定期探测时间设置，单位秒，默认10秒一次</span><br><span class="line">       successThreshold: 0</span><br><span class="line">       failureThreshold: 0</span><br><span class="line">       securityContext:</span><br><span class="line">         privileged: false</span><br><span class="line">  restartPolicy: [Always | Never | OnFailure]  #Pod的重启策略</span><br><span class="line">  nodeName: &lt;string&gt; #设置NodeName表示将该Pod调度到指定到名称的node节点上</span><br><span class="line">  nodeSelector: obeject #设置NodeSelector表示将该Pod调度到包含这个label的node上</span><br><span class="line">  imagePullSecrets: #Pull镜像时使用的secret名称，以key：secretkey格式指定</span><br><span class="line">  - name: string</span><br><span class="line">  hostNetwork: false   #是否使用主机网络模式，默认为false，如果设置为true，表示使用宿主机网络</span><br><span class="line">  volumes:   #在该pod上定义共享存储卷列表</span><br><span class="line">  - name: string    #共享存储卷名称 （volumes类型有很多种）</span><br><span class="line">    emptyDir: &#123;&#125;       #类型为emtyDir的存储卷，与Pod同生命周期的一个临时目录。为空值</span><br><span class="line">    hostPath: string   #类型为hostPath的存储卷，表示挂载Pod所在宿主机的目录</span><br><span class="line">      path: string      　　        #Pod所在宿主机的目录，将被用于同期中mount的目录</span><br><span class="line">    secret:       　　　#类型为secret的存储卷，挂载集群与定义的secret对象到容器内部</span><br><span class="line">      scretname: string  </span><br><span class="line">      items:     </span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br><span class="line">    configMap:         #类型为configMap的存储卷，挂载预定义的configMap对象到容器内部</span><br><span class="line">      name: string</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br></pre></td></tr></table></figure>
 
@@ -2429,6 +2931,57 @@ $ kubectl apply -f coredns.yaml
       </tags>
   </entry>
   <entry>
+    <title>install_es-head</title>
+    <url>/Log/install-log-es-head/</url>
+    <content><![CDATA[<h3 id="1-安装elasticsearch-head"><a href="#1-安装elasticsearch-head" class="headerlink" title="1. 安装elasticsearch-head"></a>1. 安装<code>elasticsearch-head</code></h3><ul>
+<li><a href="https://github.com/mobz/elasticsearch-head">elasticsearch-head Github地址</a>  <h4 id="1-1-安装nodejs、npm国内安装cnpm"><a href="#1-1-安装nodejs、npm国内安装cnpm" class="headerlink" title="1.1 安装nodejs、npm国内安装cnpm"></a>1.1 安装<code>nodejs、npm</code>国内安装<code>cnpm</code></h4></li>
+<li>安装<code>nodejs</code>前先安装<code>epel-release</code>源<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install epel-release</span></span><br></pre></td></tr></table></figure></li>
+<li>安装<code>nodejs、npm</code><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install nodejs npm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更新npm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install -g npm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装 n 模块</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install -g n</span></span><br></pre></td></tr></table></figure></li>
+<li>更换国内阿里云源<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看npm 使用地址</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm config get registry</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更换源</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm config <span class="built_in">set</span> registry https://registry.npm.taobao.org</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用cnpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install -g cnpm --registry=https://registry.npm.taobao.org</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-2-安装elasticsearch-head"><a href="#1-2-安装elasticsearch-head" class="headerlink" title="1.2 安装elasticsearch-head"></a>1.2 安装<code>elasticsearch-head</code></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/mobz/elasticsearch-head/archive/refs/tags/v5.0.0.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar zxvf v5.0.0.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> elasticsearch-head</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm run start</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Log</category>
+      </categories>
+      <tags>
+        <tag>Log</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>install-Finder</title>
+    <url>/Log/install-log-Finder/</url>
+    <content><![CDATA[<h3 id="1-安装Finder日志系统"><a href="#1-安装Finder日志系统" class="headerlink" title="1. 安装Finder日志系统"></a>1. 安装<code>Finder</code>日志系统</h3><ul>
+<li><font color=red><code>JDK1.8</code></font>  </li>
+<li><font color=red><code>Tomcat8</code></font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用root登录</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. 创建用户: tomcat</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">如果已有可忽略</span></span><br><span class="line">useradd tomcat</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. 设置临时变量: TOMCAT_HOME</span></span><br><span class="line">TOMCAT_HOME=Tomcat根目录</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3. 删除并重建ROOT目录, 如有重要资料请注意备份</span></span><br><span class="line">rm -rf $TOMCAT_HOME/webapps/ROOT</span><br><span class="line">mkdir -p $TOMCAT_HOME/webapps/ROOT</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">4. 下载并解压到ROOT目录</span></span><br><span class="line">wget -O /tmp/finder-web-2.5.8.zip http://www.finderweb.net/download/finder-web-2.5.8.war</span><br><span class="line">unzip -o -d $TOMCAT_HOME/webapps/ROOT /tmp/finder-web-2.5.8.zip</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">rm</span> -f /tmp/finder-web-2.5.8.zip</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">5. 为应用目录赋权限</span></span><br><span class="line">chown -R tomcat:tomcat $TOMCAT_HOME</span><br><span class="line">chmod -R 755 $TOMCAT_HOME</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">6. 启动Tomcat</span></span><br><span class="line">sudo -u tomcat $TOMCAT_HOME/bin/startup.sh</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">7. 访问地址：http://ip:8080/finder</span></span><br><span class="line">tomcat默认的端口号为8080，如需修改，请手动编辑TOMCAT_HOME/conf/server.xml，需重启Tomcat。</span><br><span class="line">默认的用户名密码：</span><br><span class="line">admin 1234</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Log</category>
+      </categories>
+      <tags>
+        <tag>Log</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>install-nginx-third-party modules</title>
+    <url>/nginx/install-nginx-third-party-modules/</url>
+    <content><![CDATA[<h3 id="1-安装Nginx-GeoIP2IP定位模块"><a href="#1-安装Nginx-GeoIP2IP定位模块" class="headerlink" title="1. 安装Nginx GeoIP2IP定位模块"></a>1. 安装<code>Nginx GeoIP2</code>IP定位模块</h3><ul>
+<li><font color=red><code>GeoIP2</code>模块依赖<code>libmaxminddb</code>库</font></li>
+</ul>
+<h4 id="1-1-安装libmaxminddb库"><a href="#1-1-安装libmaxminddb库" class="headerlink" title="1.1 安装libmaxminddb库"></a>1.1 安装<code>libmaxminddb</code>库</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> wget -c https://github.com/maxmind/libmaxminddb/releases/download/1.3.2/libmaxminddb-1.3.2.tar.gz -P /opt/src/    <span class="comment">##下载到指定目录下:-c断点续传、-P下载指定目录，</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf /opt/src/libmaxminddb-1.3.2.tar.gz -C /opt/src/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/src/libmaxminddb-1.3.2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make -j2 &amp;&amp; make install</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-2-安装GeoIP2"><a href="#1-2-安装GeoIP2" class="headerlink" title="1.2 安装GeoIP2"></a>1.2 安装<code>GeoIP2</code></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/leev/ngx_http_geoip2_module.git /opt/apps/nginx/ngx_http_geoip2_module</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_http_geoip2_module</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-安装ngx-brotli压缩算法"><a href="#2-安装ngx-brotli压缩算法" class="headerlink" title="2. 安装ngx_brotli压缩算法"></a>2. 安装<code>ngx_brotli</code>压缩算法</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/google/ngx_brotli /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git submodule update --init  <span class="comment">#更新ngx_brotli所需依赖库</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_brotli</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-安装ngx-http-upstream-check-module后端服务端口检测模块"><a href="#3-安装ngx-http-upstream-check-module后端服务端口检测模块" class="headerlink" title="3. 安装ngx_http_upstream_check_module后端服务端口检测模块"></a>3. 安装<code>ngx_http_upstream_check_module</code>后端服务端口检测模块</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/yaoweibin/nginx_upstream_check_module.git /opt/apps/nginx/nginx_upstream_check_module <span class="comment">#下载检测包</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/nginx_upstream_check_module</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>nginx</category>
+      </categories>
+      <tags>
+        <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>install-harbor</title>
     <url>/Kubernetes/install-k8s-harbor/</url>
     <content><![CDATA[<h3 id="1-在安装好docker后安装Harbor私有镜像库"><a href="#1-在安装好docker后安装Harbor私有镜像库" class="headerlink" title="1. 在安装好docker后安装Harbor私有镜像库"></a>1. 在安装好docker后安装Harbor私有镜像库</h3><ul>
@@ -2458,57 +3011,6 @@ $ kubectl apply -f coredns.yaml
       </categories>
       <tags>
         <tag>Kubernetes</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install-Finder</title>
-    <url>/Log/install-log-Finder/</url>
-    <content><![CDATA[<h3 id="1-安装Finder日志系统"><a href="#1-安装Finder日志系统" class="headerlink" title="1. 安装Finder日志系统"></a>1. 安装<code>Finder</code>日志系统</h3><ul>
-<li><font color=red><code>JDK1.8</code></font>  </li>
-<li><font color=red><code>Tomcat8</code></font></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用root登录</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. 创建用户: tomcat</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">如果已有可忽略</span></span><br><span class="line">useradd tomcat</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. 设置临时变量: TOMCAT_HOME</span></span><br><span class="line">TOMCAT_HOME=Tomcat根目录</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3. 删除并重建ROOT目录, 如有重要资料请注意备份</span></span><br><span class="line">rm -rf $TOMCAT_HOME/webapps/ROOT</span><br><span class="line">mkdir -p $TOMCAT_HOME/webapps/ROOT</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">4. 下载并解压到ROOT目录</span></span><br><span class="line">wget -O /tmp/finder-web-2.5.8.zip http://www.finderweb.net/download/finder-web-2.5.8.war</span><br><span class="line">unzip -o -d $TOMCAT_HOME/webapps/ROOT /tmp/finder-web-2.5.8.zip</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">rm</span> -f /tmp/finder-web-2.5.8.zip</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">5. 为应用目录赋权限</span></span><br><span class="line">chown -R tomcat:tomcat $TOMCAT_HOME</span><br><span class="line">chmod -R 755 $TOMCAT_HOME</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">6. 启动Tomcat</span></span><br><span class="line">sudo -u tomcat $TOMCAT_HOME/bin/startup.sh</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">7. 访问地址：http://ip:8080/finder</span></span><br><span class="line">tomcat默认的端口号为8080，如需修改，请手动编辑TOMCAT_HOME/conf/server.xml，需重启Tomcat。</span><br><span class="line">默认的用户名密码：</span><br><span class="line">admin 1234</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Log</category>
-      </categories>
-      <tags>
-        <tag>Log</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install_es-head</title>
-    <url>/Log/install-log-es-head/</url>
-    <content><![CDATA[<h3 id="1-安装elasticsearch-head"><a href="#1-安装elasticsearch-head" class="headerlink" title="1. 安装elasticsearch-head"></a>1. 安装<code>elasticsearch-head</code></h3><ul>
-<li><a href="https://github.com/mobz/elasticsearch-head">elasticsearch-head Github地址</a>  <h4 id="1-1-安装nodejs、npm国内安装cnpm"><a href="#1-1-安装nodejs、npm国内安装cnpm" class="headerlink" title="1.1 安装nodejs、npm国内安装cnpm"></a>1.1 安装<code>nodejs、npm</code>国内安装<code>cnpm</code></h4></li>
-<li>安装<code>nodejs</code>前先安装<code>epel-release</code>源<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install epel-release</span></span><br></pre></td></tr></table></figure></li>
-<li>安装<code>nodejs、npm</code><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install nodejs npm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更新npm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install -g npm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装 n 模块</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install -g n</span></span><br></pre></td></tr></table></figure></li>
-<li>更换国内阿里云源<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看npm 使用地址</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm config get registry</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更换源</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm config <span class="built_in">set</span> registry https://registry.npm.taobao.org</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用cnpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install -g cnpm --registry=https://registry.npm.taobao.org</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-2-安装elasticsearch-head"><a href="#1-2-安装elasticsearch-head" class="headerlink" title="1.2 安装elasticsearch-head"></a>1.2 安装<code>elasticsearch-head</code></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/mobz/elasticsearch-head/archive/refs/tags/v5.0.0.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar zxvf v5.0.0.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> elasticsearch-head</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm run start</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-]]></content>
-      <categories>
-        <category>Log</category>
-      </categories>
-      <tags>
-        <tag>Log</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install-nginx-third-party modules</title>
-    <url>/nginx/install-nginx-third-party-modules/</url>
-    <content><![CDATA[<h3 id="1-安装Nginx-GeoIP2IP定位模块"><a href="#1-安装Nginx-GeoIP2IP定位模块" class="headerlink" title="1. 安装Nginx GeoIP2IP定位模块"></a>1. 安装<code>Nginx GeoIP2</code>IP定位模块</h3><ul>
-<li><font color=red><code>GeoIP2</code>模块依赖<code>libmaxminddb</code>库</font></li>
-</ul>
-<h4 id="1-1-安装libmaxminddb库"><a href="#1-1-安装libmaxminddb库" class="headerlink" title="1.1 安装libmaxminddb库"></a>1.1 安装<code>libmaxminddb</code>库</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> wget -c https://github.com/maxmind/libmaxminddb/releases/download/1.3.2/libmaxminddb-1.3.2.tar.gz -P /opt/src/    <span class="comment">##下载到指定目录下:-c断点续传、-P下载指定目录，</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf /opt/src/libmaxminddb-1.3.2.tar.gz -C /opt/src/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/src/libmaxminddb-1.3.2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make -j2 &amp;&amp; make install</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-2-安装GeoIP2"><a href="#1-2-安装GeoIP2" class="headerlink" title="1.2 安装GeoIP2"></a>1.2 安装<code>GeoIP2</code></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/leev/ngx_http_geoip2_module.git /opt/apps/nginx/ngx_http_geoip2_module</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_http_geoip2_module</span></span><br></pre></td></tr></table></figure>
-<h3 id="2-安装ngx-brotli压缩算法"><a href="#2-安装ngx-brotli压缩算法" class="headerlink" title="2. 安装ngx_brotli压缩算法"></a>2. 安装<code>ngx_brotli</code>压缩算法</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/google/ngx_brotli /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git submodule update --init  <span class="comment">#更新ngx_brotli所需依赖库</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_brotli</span></span><br></pre></td></tr></table></figure>
-<h3 id="3-安装ngx-http-upstream-check-module后端服务端口检测模块"><a href="#3-安装ngx-http-upstream-check-module后端服务端口检测模块" class="headerlink" title="3. 安装ngx_http_upstream_check_module后端服务端口检测模块"></a>3. 安装<code>ngx_http_upstream_check_module</code>后端服务端口检测模块</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/yaoweibin/nginx_upstream_check_module.git /opt/apps/nginx/nginx_upstream_check_module <span class="comment">#下载检测包</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/nginx_upstream_check_module</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>nginx</category>
-      </categories>
-      <tags>
-        <tag>nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -3229,7 +3731,7 @@ $ chkconfig redis on
 <li>如果资源存在，就更新，相当于<code>kubectl patch</code>。</li>
 </ul>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">运行构建命令</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f deploy.yaml    <span class="comment">#K8S默认拉去GitHub上镜像</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f nginx-pod.yaml -n web --record</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">运行构建命令</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f ./  	<span class="comment"># 应用当前目录下所有yaml文件</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f deploy.yaml    <span class="comment">#K8S默认拉去GitHub上镜像</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f nginx-pod.yaml -n web --record</span></span><br></pre></td></tr></table></figure>
 
 <h5 id="3-7-3-kubectl-patch-help：补丁修改、更新资源的字段"><a href="#3-7-3-kubectl-patch-help：补丁修改、更新资源的字段" class="headerlink" title="3.7.3 kubectl patch --help：补丁修改、更新资源的字段"></a>3.7.3 <font color=red><code>kubectl patch --help</code>：补丁修改、更新资源的字段</font></h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl patch pod rc-nginx-2-kpiqt -p <span class="string">&#x27;&#123;&quot;metadata&quot;:&#123;&quot;labels&quot;:&#123;&quot;app&quot;:&quot;nginx-3&quot;&#125;&#125;&#125;&#x27;</span></span></span><br></pre></td></tr></table></figure>
 
