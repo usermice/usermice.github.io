@@ -191,7 +191,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/configure-k8s-data-storage/">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/configure-k8s-Helm/">
 
 <div>
       
@@ -209,7 +209,611 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Kubernetes/configure-k8s-data-storage/" class="post-title-link" itemprop="url">configure-k8s-data-storage</a>
+            <a href="/Kubernetes/configure-k8s-Helm/" class="post-title-link" itemprop="url">configure-k8s-Helm</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-29 21:29:01" itemprop="dateCreated datePublished" datetime="2022-05-29T21:29:01+08:00">2022-05-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-30 15:18:09" itemprop="dateModified" datetime="2022-05-30T15:18:09+08:00">2022-05-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>11 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-使用-Helm配置管理Kubernetes"><a href="#1-使用-Helm配置管理Kubernetes" class="headerlink" title="1. 使用 Helm配置管理Kubernetes"></a>1. 使用 Helm配置管理Kubernetes</h3><ul>
+<li><ol>
+<li><code>kubernetes</code>上的应用对象，都是由特定的资源描述组成，包括<code>Deployment</code>、<code>Service</code>等，都保存在各自文件中或者集中写在一个配置文件，然后通过<code>kubectl apply -f </code>部署。如果应用只由一个或几个这样的服务组成，上面的部署方式就足够了。但是对于一个复杂的应用，会有很多类似上面的资源描述文件，例如微服务架构应用，组成应用的服务可能多达几十、上百个，如果有更新或回滚应用的需求，可能要修改和维护所涉及到大量的资源文件，而这种组织和管理应用的方式就显得力不从心了。并且由于缺少对发布过的应用进行版本管理和控制，使得<code>kubernetes</code>上的应用维护和更新面临诸多的挑战，主要面临以下的问题：   <blockquote>
+<ul>
+<li>1.1 如何将这些服务作为一个整体管理？  </li>
+<li>1.2 这些资源文件如何高效复用？  </li>
+<li>1.3 应用级别的版本如何管理？</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>Helm</font>是一个<code>kubernetes</code>的包管理工具，就像<code>Linux</code>下的包管理器，如<code>yum</code>、<code>apt</code>等，可以很方便的将之前打包好的<code>yaml</code>文件部署到<code>kubernetes</code>上</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>Helm</code>有3个重要概念</font>  <blockquote>
+<ul>
+<li>3.1 <font color=red><code>helm</code>：</font>一个命令行客户端工具，主要用于<code>kubernetes</code>应用chart的创建、打包、发布和管理  </li>
+<li>3.2 <font color=red><code>chart</code>：</font>应用描述，一系列用于描述<code>kubernetes</code>资源相关文件的集合  </li>
+<li>3.3 <font color=red><code>release</code>：</font>基于<code>chart</code>的部署实体，一个<code>chart</code>被<code>Helm</code>运行后将会生成对应的一个<code>release</code>，将在<code>kubernetes</code>中创建出真实运行的资源对象</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><p>4.<font color=red><code>Helm v3</code>变化</font>   </p>
+<blockquote>
+<ul>
+<li>4.1 最明显变化删除<code>Tiller</code>  </li>
+<li>4.2 <code>release</code>名称可以在不同的命名空间重用。  </li>
+<li>4.3 支持将<code>chart</code>推动到<code>Docker</code>镜像仓库中  </li>
+<li>4.4 使用<code>JSONSchema</code>验证<code>chart values</code></li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h4 id="1-1-安装Helm"><a href="#1-1-安装Helm" class="headerlink" title="1.1 安装Helm"></a>1.1 <font color=red>安装<code>Helm</code></font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用二进制安装Helm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://get.helm.sh/helm-v3.9.0-linux-amd64.tar.gz</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf helm-v3.9.0-linux-amd64.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> linux-amd64/helm /usr/local/bin/helm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">脚本安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> 700 get_helm.sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./get_helm.sh</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">源代码安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/helm/helm.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> helm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-配置chart仓库"><a href="#1-2-配置chart仓库" class="headerlink" title="1.2 配置chart仓库"></a>1.2 <font color=red>配置<code>chart</code>仓库</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add 仓库名 仓库地址  <span class="comment"># 可以添加多个仓库</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用官方仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add helm https://hub.kubeapps.com/charts/incubator</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">国内添加阿里云、微软仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add aliyun https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用微软仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add microsoft http://mirror.azure.cn/kubernetes/charts</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更新仓库命令</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo update</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除存储库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo remove 仓库名</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">获取配置的存储库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo list</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="1-3-Helm常用命令"><a href="#1-3-Helm常用命令" class="headerlink" title="1.3 Helm常用命令"></a>1.3 <font color=red><code>Helm</code>常用命令</font></h4><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>create</td>
+<td>创建一个chart并指定名字</td>
+</tr>
+<tr>
+<td>dependency</td>
+<td>管理chart依赖</td>
+</tr>
+<tr>
+<td>get</td>
+<td>下载一个release。可用的子命令：all、hooks、manifest、notes、values。</td>
+</tr>
+<tr>
+<td>history</td>
+<td>获取release历史。</td>
+</tr>
+<tr>
+<td>install</td>
+<td>安装一个chart。</td>
+</tr>
+<tr>
+<td>list</td>
+<td>列出release。</td>
+</tr>
+<tr>
+<td>package</td>
+<td>将chart目录打包到chart存档文件中。</td>
+</tr>
+<tr>
+<td>pull</td>
+<td>从远程仓库中下载chart并解压到本地。比如：helm install stable&#x2F;mysql –untar。</td>
+</tr>
+<tr>
+<td>repo</td>
+<td>添加、列出、移除、更新和索引chart仓库。可用的子命令：add、index、list、remove、update。</td>
+</tr>
+<tr>
+<td>rollback</td>
+<td>从之前的版本回退。</td>
+</tr>
+<tr>
+<td>search</td>
+<td>根据关键字搜索chart。可用的子命令：all、chart、readme、values。</td>
+</tr>
+<tr>
+<td>show</td>
+<td>查看chart的详细信息。可用的子命令：all、chart、readme、values。</td>
+</tr>
+<tr>
+<td>status</td>
+<td>显示已命名版本的状态。</td>
+</tr>
+<tr>
+<td>template</td>
+<td>本地呈现模板。</td>
+</tr>
+<tr>
+<td>uninstall</td>
+<td>卸载一个release。</td>
+</tr>
+<tr>
+<td>upgrade</td>
+<td>更新一个release。</td>
+</tr>
+<tr>
+<td>version</td>
+<td>查看Helm客户端版本。</td>
+</tr>
+</tbody></table>
+<h3 id="2-Helm基本使用"><a href="#2-Helm基本使用" class="headerlink" title="2. Helm基本使用"></a>2. <code>Helm</code>基本使用</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">根据关键字搜索chart</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm search repo|hub chart名称</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm search repo weave    <span class="comment"># 示例</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看chart信息</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm show chart 仓库名/chart名称</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm show chart stable/mysql</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-1-安装chart，形成release"><a href="#2-1-安装chart，形成release" class="headerlink" title="2.1 安装chart，形成release"></a>2.1 <font color=red>安装<code>chart</code>，形成<code>release</code></font></h4><ul>
+<li><ol>
+<li>自定义选项是因为并不是所有的chart都能按照默认配置运行成功，可能会需要一些环境依赖，例如PV。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>所以需要自定义chart配置选项，安装过程中有两种方法可以传递配置数据： <blockquote>
+<ul>
+<li>2.1 <font color=red><code>--values或-f</code>：</font>指定带有覆盖的<code>YAML</code>文件。这里可以多次指定，最右边的文件优先。  </li>
+<li>2.2 <font color=red><code>--set</code>：</font>在命令行上指定替代。如果两种都用，那么<code>--set</code>的优先级高</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<h5 id="2-1-1-values的使用-麻烦、不推荐"><a href="#2-1-1-values的使用-麻烦、不推荐" class="headerlink" title="2.1.1 --values的使用(麻烦、不推荐)"></a>2.1.1 <font color=red><code>--values</code>的使用(麻烦、不推荐)</font></h5><ul>
+<li>安装可能报错，需要自己手动安装<code>PV</code></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">先将修改的变量写到一个文件中，并修改此文件</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm show values stable/mysql &gt; config.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> config.yaml</span></span><br><span class="line">-- 修改部分</span><br><span class="line">persistence:</span><br><span class="line">  enabled: true</span><br><span class="line">  accessMode: ReadWriteOnce</span><br><span class="line">  size: 8Gi</span><br><span class="line"></span><br><span class="line">mysqlUser: &quot;k8s&quot;</span><br><span class="line">mysqlPassword: &quot;123456&quot;</span><br><span class="line">mysqlDatabase: &quot;k8s&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用--values来替换默认的配置</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install -f config.yaml self-mysql stable/mysql</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="2-1-2-推荐使用命令行替代变量"><a href="#2-1-2-推荐使用命令行替代变量" class="headerlink" title="2.1.2 推荐使用命令行替代变量"></a>2.1.2 <font color=red>推荐使用命令行替代变量</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install db --<span class="built_in">set</span> persistence.storageClass=<span class="string">&quot;managed-nfs-storage&quot;</span> stable/mysql</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="2-1-3-安装chart"><a href="#2-1-3-安装chart" class="headerlink" title="2.1.3 安装chart"></a>2.1.3 <font color=red>安装chart</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install 安装之后的名称 仓库名/chart的名称(即搜索之后的应用名称)</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install ui stable/weave-scope  <span class="comment"># 安装stable/weave-scope，并将其命名为ui</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看当前的release列表</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm list</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看已命名release的状态</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm status 安装之后的名称</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm status ui</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="2-1-4-使用Helm构建一个Chart"><a href="#2-1-4-使用Helm构建一个Chart" class="headerlink" title="2.1.4 使用Helm构建一个Chart"></a>2.1.4 <font color=red>使用<code>Helm</code>构建一个<code>Chart</code></font></h5><ul>
+<li><ol>
+<li><font color=red>使用<code>helm create</code>创建<code>chart</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm create chart名称</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>进入自定义<code>char</code>t目录的<code>templates</code>目录中，修改其中的<code>deployment.yaml</code>和<code>service.yaml</code>等文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> chart名称/templates</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="D:\git-library\imgs\Kubernetes_server\Helm\Chart中的信息.png" alt="Chart中的信息">  </p>
+<ul>
+<li><ol start="3">
+<li><font color=red>通过刚才创建的<code>chart</code>目录，将其部署</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install xxx chart名称</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>打包<code>chart</code>，让别人共享</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm package chart名称</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-查看Service，并将其改为NodePort"><a href="#2-2-查看Service，并将其改为NodePort" class="headerlink" title="2.2 查看Service，并将其改为NodePort"></a>2.2 <font color=red>查看<code>Service</code>，并将其改为<code>NodePort</code></font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl edit svc xxx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl edit svc ui-weave-scope</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-3-应用示例"><a href="#2-3-应用示例" class="headerlink" title="2.3 应用示例"></a>2.3 <font color=red>应用示例</font></h4><ul>
+<li><ol>
+<li><code>root</code>目录下操作的</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>创建<code>chart</code></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm create nginx</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li>进入<code>chart</code>目录，修改<code>values.yaml</code>文件，内容如下</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> nginx/values.yaml</span></span><br><span class="line">replicas: 3</span><br><span class="line">image: nginx </span><br><span class="line">tag: 1.17 </span><br><span class="line">serviceport: 80 </span><br><span class="line">targetport: 80 </span><br><span class="line">label: nginx</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li>删除<code>templates</code>目录中的文件和文件夹</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">rm</span> -rf emplates/*</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li>修改<code>deployment.yaml</code>文件，内容如下</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> deployment.yaml</span></span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    app: &#123;&#123; .Values.label &#125;&#125; </span><br><span class="line">  name: &#123;&#123; .Release.Name &#125;&#125;</span><br><span class="line">spec:</span><br><span class="line">  replicas: &#123;&#123; .Values.replicas &#125;&#125; </span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: &#123;&#123; .Values.label &#125;&#125; </span><br><span class="line">  strategy: &#123;&#125;</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: &#123;&#123; .Values.label &#125;&#125; </span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - image: &#123;&#123; .Values.image &#125;&#125;:&#123;&#123; .Values.tag &#125;&#125; </span><br><span class="line">        name: &#123;&#123; .Values.image &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="6">
+<li>修改service.yaml文件，内容如下：</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> service.yaml</span></span><br><span class="line">apiVersion:   v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    app: &#123;&#123; .Values.label &#125;&#125; </span><br><span class="line">  name:  &#123;&#123; .Release.Name &#125;&#125;</span><br><span class="line">spec: </span><br><span class="line">  ports:</span><br><span class="line">    -  port: &#123;&#123; .Values.serviceport &#125;&#125; </span><br><span class="line">       protocol: TCP</span><br><span class="line">       targetPort: &#123;&#123; .Values.targetport &#125;&#125; </span><br><span class="line">  selector:</span><br><span class="line">    app: &#123;&#123; .Values.label &#125;&#125; </span><br><span class="line">  type: NodePort</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="7">
+<li>切换到<code>chart</code>目录的上一层目录、并且安装</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> ~</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install nginx nginx/</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-4-调试"><a href="#2-4-调试" class="headerlink" title="2.4 调试"></a>2.4 <font color=red>调试</font></h4><ul>
+<li><ol>
+<li><code>Helm</code>也提供了<code>--dry-run</code>和<code>--debug</code>调试参数，帮助你验证模板的正确性。在执行<code>helm install</code>的时候带上这两个参数就可以把对应的<code>values</code>值和渲染的资源清单打印出来，而不是真正的做部署一个<code>release</code></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install nginx nginx/ --dry-run --debug</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>一些常用的内置对象：</font></li>
+</ol>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>内置对象</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Release.Name</td>
+<td>release的名称</td>
+</tr>
+<tr>
+<td>Release.Namespace</td>
+<td>release的命名空间</td>
+</tr>
+<tr>
+<td>Release.Service</td>
+<td>release的服务的名称</td>
+</tr>
+<tr>
+<td>Release.Revision</td>
+<td>release的修订版本号，从1开始累加</td>
+</tr>
+</tbody></table>
+<h4 id="2-5-Values"><a href="#2-5-Values" class="headerlink" title="2.5 Values"></a>2.5 <font color=red>Values</font></h4><ul>
+<li><ol>
+<li><font color=red><code>Values</code></font>对象是为<code>Chart</code>模板提供值，这个对象的值有4个来源：<blockquote>
+<ul>
+<li>1.1 <code>chart</code>包中的<code>values.yaml</code>文件</li>
+<li>1.2   父<code>chart</code>包的<code>values.yaml</code>文件</li>
+<li>1.3 通过<code>helm install</code>或者<code>helm upgrade</code>的<code>-f</code>或者<code>--values</code>参数传入的自定义的<code>yaml</code>文件  </li>
+<li>1.4 通过<code>--set</code>参数传入的值</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>Chart</code>的<code>values.yaml</code></font>提供的值可以被用户提供的<code>values</code>文件覆盖，而该文件同样可以被<code>--set</code>参数所覆盖，换言之，<code>--set</code>参数的优先级高</li>
+</ol>
+</li>
+</ul>
+<h3 id="3-升级、回滚和卸载发行版本"><a href="#3-升级、回滚和卸载发行版本" class="headerlink" title="3. 升级、回滚和卸载发行版本"></a>3. 升级、回滚和卸载发行版本</h3><h4 id="3-1-升级发布新版本的chart时，或者当我们需要更改发布的配置，可以使用helm-upgrade命令"><a href="#3-1-升级发布新版本的chart时，或者当我们需要更改发布的配置，可以使用helm-upgrade命令" class="headerlink" title="3.1 升级发布新版本的chart时，或者当我们需要更改发布的配置，可以使用helm upgrade命令"></a>3.1 <font color=red>升级</font>发布新版本的<code>chart</code>时，或者当我们需要更改发布的配置，可以使用<code>helm upgrade</code>命令</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm upgrade --<span class="built_in">set</span> imageTag=1.18 nginx nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm upgrade -f values.yaml nginx nginx</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-回滚如果在发布后没有达到预期的效果，则可以使用helm-rollback回滚到之前的版本"><a href="#3-2-回滚如果在发布后没有达到预期的效果，则可以使用helm-rollback回滚到之前的版本" class="headerlink" title="3.2 回滚如果在发布后没有达到预期的效果，则可以使用helm rollback回滚到之前的版本"></a>3.2 <font color=red>回滚</font>如果在发布后没有达到预期的效果，则可以使用<code>helm rollback</code>回滚到之前的版本</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm rollback nginx 1</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-3-卸载发行版本卸载发行版本，可以使用helm-uninstall命令"><a href="#3-3-卸载发行版本卸载发行版本，可以使用helm-uninstall命令" class="headerlink" title="3.3 卸载发行版本卸载发行版本，可以使用helm uninstall命令"></a>3.3 <font color=red>卸载发行版本</font>卸载发行版本，可以使用<code>helm uninstall</code>命令</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm uninstall nginx</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-4-查看历史版本配置信息"><a href="#3-4-查看历史版本配置信息" class="headerlink" title="3.4  查看历史版本配置信息"></a>3.4 <font color=red> 查看历史版本配置信息</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm get all --revision 1 nginx</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-管道、函数"><a href="#4-管道、函数" class="headerlink" title="4. 管道、函数"></a>4. 管道、函数</h3><h4 id="4-1-管道"><a href="#4-1-管道" class="headerlink" title="4.1 管道"></a>4.1 <font color=red>管道</font></h4><ul>
+<li><font color=red><code>quote</code>  <code>.Values.label.app</code></font>将后面的值作为参数传递过<code>quote</code>函数  </li>
+<li>模板函数调用语法为：<font color=red>functionName arg1 arg2…</font>  </li>
+<li><ol>
+<li>在上面的案例中，其实是将值传递给模板引擎进行渲染，模板引擎还支持对拿到的数据进行二次处理</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>示例：从<code>.Values</code>中读取的值变成字符串，可以使用<code>quote</code>函数实现。</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> templates/deployment.yaml</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">略</span></span><br><span class="line">app: &#123;&#123; quote  .Values.label.app    &#125;&#125;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">略</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install --dry-run nginx ../nginx/ app:<span class="string">&quot;nginx&quot;</span></span></span><br></pre></td></tr></table></figure>
+
+<h4 id="4-2-函数"><a href="#4-2-函数" class="headerlink" title="4.2 函数"></a>4.2 <font color=red>函数</font></h4><ul>
+<li><ol>
+<li><font color=red><code>default</code></font>函数运行在模板中指定默认值，以防止该值会忽略掉。如果忘记定义，执行<code>helm install</code>的时候会因为缺少字段而无法创建资源，这时就可以定义一个默认值了，示例：</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> templates/deployment.yaml</span></span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    app: &#123;&#123; .Values.label &#125;&#125;</span><br><span class="line">  name: &#123;&#123; .Release.Name &#125;&#125;</span><br><span class="line">spec:</span><br><span class="line">  replicas: &#123;&#123; .Values.replicas &#125;&#125;</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: &#123;&#123; .Values.label &#125;&#125;</span><br><span class="line">  strategy: &#123;&#125;</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: &#123;&#123; .Values.label &#125;&#125;</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - image: &#123;&#123; .Values.image| default &quot;nginx&quot; &#125;&#125;:&#123;&#123; .Values.tag &#125;&#125;</span><br><span class="line">        name: &#123;&#123; .Values.image &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>缩进函数：</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123; <span class="string">.Values.resources</span> <span class="string">|</span> <span class="string">indent</span> <span class="number">12</span> &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>大写函数</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123; <span class="string">upper</span> <span class="string">.Values.resources</span> &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>首字母大写函数</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123; <span class="string">title</span> <span class="string">.Values.resources</span> &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-流程控制"><a href="#5-流程控制" class="headerlink" title="5. 流程控制"></a>5. 流程控制</h3><ul>
+<li><ol>
+<li>流程控制是为模板提供了一种能力，满足更复杂的数据逻辑处理</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><code>Helm</code>模板语言提供以下流程控制语句：  <blockquote>
+<ul>
+<li>2.1 <font color=red><code>if/else</code>条件块</font>  </li>
+<li>2.2 <font color=red><code>with</code>指定范围</font>  </li>
+<li>2.3 <font color=red><code>range</code>循环块</font></li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<h4 id="5-1-if-else：块是用于在模板有条件的包含文本块的方法"><a href="#5-1-if-else：块是用于在模板有条件的包含文本块的方法" class="headerlink" title="5.1 if/else：块是用于在模板有条件的包含文本块的方法"></a>5.1 <font color=red><code>if/else</code>：</font>块是用于在模板有条件的包含文本块的方法</h4><ul>
+<li><ol>
+<li><font color=red>条件判断：</font>就是判断条件是否为真，如果值为以下几种情况则为<code>false</code>，否则为<code>true</code>：  <blockquote>
+<ul>
+<li>1.1   一个布尔类型的<code>false</code>  </li>
+<li>1.2   一个数字0  </li>
+<li>1.3   一个空的字符串  </li>
+<li>1.4 一个空的集合(<code>map</code>、<code>slice</code>、<code>tuple</code>、<code>dict</code>、<code>array</code>)</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>还可以使用<code>ne</code>、<code>lt</code>、<code>gt</code>、<code>and</code>、<code>or</code>等运算符</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123; <span class="string">if</span> <span class="string">条件表达式</span>&#125;&#125;</span><br><span class="line"><span class="comment"># xxx</span></span><br><span class="line">&#123;&#123; <span class="string">else</span> <span class="string">if</span> <span class="string">条件表达式</span>&#125;&#125;</span><br><span class="line"><span class="comment"># xxx</span></span><br><span class="line">&#123;&#123; <span class="string">else</span> &#125;&#125;</span><br><span class="line"><span class="comment"># xxx</span></span><br><span class="line">&#123;&#123; <span class="string">end</span> &#125;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 示例</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> &#123;&#123; <span class="string">.Values.label</span> &#125;&#125;</span><br><span class="line">  <span class="attr">name:</span> &#123;&#123; <span class="string">.Release.Name</span> &#125;&#125;</span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> &#123;&#123; <span class="string">.Values.replicas</span> &#125;&#125;</span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> &#123;&#123; <span class="string">.Values.label</span> &#125;&#125;</span><br><span class="line">  <span class="attr">strategy:</span> &#123;&#125;</span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> &#123;&#123; <span class="string">.Values.label</span> &#125;&#125;</span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">image:</span> &#123;&#123; <span class="string">.Values.image|</span> <span class="string">default</span> <span class="string">&quot;nginx&quot;</span> &#125;&#125;<span class="string">:&#123;&#123;</span> <span class="string">.Values.tag</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">name:</span> &#123;&#123; <span class="string">.Values.image</span> &#125;&#125;</span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            &#123;&#123; <span class="string">if</span> <span class="string">eq</span> <span class="string">.Values.devops</span> <span class="string">&quot;k8s&quot;</span> &#125;&#125;</span><br><span class="line">          <span class="bullet">-</span> <span class="attr">name :</span> <span class="string">hello</span></span><br><span class="line">            <span class="attr">value:</span> <span class="string">&quot;123&quot;</span></span><br><span class="line">            &#123;&#123; <span class="string">else</span> &#125;&#125;</span><br><span class="line">          <span class="bullet">-</span> <span class="attr">name :</span> <span class="string">hello</span></span><br><span class="line">            <span class="attr">value:</span> <span class="string">&quot;456&quot;</span></span><br><span class="line">            &#123;&#123; <span class="string">end</span> &#125;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 模板引擎渲染一下，会得到如下的结果：</span></span><br><span class="line"><span class="string">$</span> <span class="string">helm</span> <span class="string">install</span> <span class="string">--dry-run</span> <span class="string">nginx</span> <span class="string">nginx</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li>可以看到渲染出来会有多余的空行，这是因为当模板引擎运行的时候，会将控制指令删除，所以之前占的位置也就空白了，需要使用<code>&#123;&#123;- if ...&#125;&#125;</code>的方式消除此空行</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> &#123;&#123; <span class="string">.Values.label</span> &#125;&#125;</span><br><span class="line">  <span class="attr">name:</span> &#123;&#123; <span class="string">.Release.Name</span> &#125;&#125;</span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> &#123;&#123; <span class="string">.Values.replicas</span> &#125;&#125;</span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> &#123;&#123; <span class="string">.Values.label</span> &#125;&#125;</span><br><span class="line">  <span class="attr">strategy:</span> &#123;&#125;</span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> &#123;&#123; <span class="string">.Values.label</span> &#125;&#125;</span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">image:</span> &#123;&#123; <span class="string">.Values.image|</span> <span class="string">default</span> <span class="string">&quot;nginx&quot;</span> &#125;&#125;<span class="string">:&#123;&#123;</span> <span class="string">.Values.tag</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">name:</span> &#123;&#123; <span class="string">.Values.image</span> &#125;&#125;</span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            &#123;&#123;<span class="bullet">-</span> <span class="string">if</span> <span class="string">eq</span> <span class="string">.Values.devops</span> <span class="string">&quot;k8s&quot;</span> &#125;&#125;</span><br><span class="line">          <span class="bullet">-</span> <span class="attr">name :</span> <span class="string">hello</span></span><br><span class="line">            <span class="attr">value:</span> <span class="string">&quot;123&quot;</span></span><br><span class="line">            &#123;&#123;<span class="bullet">-</span> <span class="string">else</span> &#125;&#125;</span><br><span class="line">          <span class="bullet">-</span> <span class="attr">name :</span> <span class="string">hello</span></span><br><span class="line">            <span class="attr">value:</span> <span class="string">&quot;456&quot;</span></span><br><span class="line">            &#123;&#123;<span class="bullet">-</span> <span class="string">end</span> &#125;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 通过模板引擎渲染，会得到如下的结果</span></span><br><span class="line"><span class="string">$</span> <span class="string">helm</span> <span class="string">install</span> <span class="string">--dry-run</span> <span class="string">nginx</span> <span class="string">nginx</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li>如果使用<code>&#123;&#123;- if ... -&#125;&#125;</code>那么就需要谨慎，比如：</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> &#123;&#123; <span class="string">.Values.label</span> &#125;&#125;</span><br><span class="line">  <span class="attr">name:</span> &#123;&#123; <span class="string">.Release.Name</span> &#125;&#125;</span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> &#123;&#123; <span class="string">.Values.replicas</span> &#125;&#125;</span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> &#123;&#123; <span class="string">.Values.label</span> &#125;&#125;</span><br><span class="line">  <span class="attr">strategy:</span> &#123;&#125;</span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> &#123;&#123; <span class="string">.Values.label</span> &#125;&#125;</span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">image:</span> &#123;&#123; <span class="string">.Values.image|</span> <span class="string">default</span> <span class="string">&quot;nginx&quot;</span> &#125;&#125;<span class="string">:&#123;&#123;</span> <span class="string">.Values.tag</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">name:</span> &#123;&#123; <span class="string">.Values.image</span> &#125;&#125;</span><br><span class="line">          <span class="attr">env:</span></span><br><span class="line">            &#123;&#123;<span class="bullet">-</span> <span class="string">if</span> <span class="string">eq</span> <span class="string">.Values.devops</span> <span class="string">&quot;k8s&quot;</span> <span class="string">-</span>&#125;&#125;</span><br><span class="line">          <span class="bullet">-</span> <span class="attr">name :</span> <span class="string">hello</span></span><br><span class="line">            <span class="attr">value:</span> <span class="string">&quot;123&quot;</span></span><br><span class="line">            &#123;&#123;<span class="bullet">-</span> <span class="string">else</span> &#125;&#125;</span><br><span class="line">          <span class="bullet">-</span> <span class="attr">name :</span> <span class="string">hello</span></span><br><span class="line">            <span class="attr">value:</span> <span class="string">&quot;456&quot;</span></span><br><span class="line">            &#123;&#123;<span class="bullet">-</span> <span class="string">end</span> &#125;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 通过模板引擎渲染，会得到如下的结果：</span></span><br><span class="line"><span class="string">$</span> <span class="string">helm</span> <span class="string">install</span> <span class="string">--dry-run</span> <span class="string">nginx</span> <span class="string">nginx</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li>相当于下面这种格式<blockquote>
+<ul>
+<li>5.1 当然不对，因为<code>&#123;&#123;- if ... -&#125;&#125;</code>删除了双方的换行符。</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">NAME: nginx</span><br><span class="line">LAST DEPLOYED: Mon Jan 11 20:46:10 2021</span><br><span class="line">NAMESPACE: default</span><br><span class="line">STATUS: pending-install</span><br><span class="line">REVISION: 1</span><br><span class="line">TEST SUITE: None</span><br><span class="line">HOOKS:</span><br><span class="line">MANIFEST:</span><br><span class="line">---</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Source: nginx/templates/service.yaml</span></span><br><span class="line">apiVersion:   v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    app: nginx </span><br><span class="line">  name:  nginx</span><br><span class="line">spec: </span><br><span class="line">  ports:</span><br><span class="line">    -  port: 80 </span><br><span class="line">       protocol: TCP</span><br><span class="line">       targetPort: 80 </span><br><span class="line">  selector:</span><br><span class="line">    app: nginx </span><br><span class="line">  type: NodePort</span><br><span class="line">---</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Source: nginx/templates/deployment.yaml</span></span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    app: nginx</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: nginx</span><br><span class="line">  strategy: &#123;&#125;</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">        - image: nginx:1.17</span><br><span class="line">          name: nginx</span><br><span class="line">          env: - name: hello value: 123</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-2-range循环块"><a href="#5-2-range循环块" class="headerlink" title="5.2 range循环块"></a>5.2 <font color=red><code>range</code>循环块</font></h4><ul>
+<li><ol>
+<li>在<code>Helm</code>模板语言中，使用<code>range</code>关键字来进行循环操作</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>在<code>values.yaml</code>中添加一个变量列表：</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">test:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="number">1</span> </span><br><span class="line">  <span class="bullet">-</span> <span class="number">2</span> </span><br><span class="line">  <span class="bullet">-</span> <span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li>循环打印该列表：</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span> </span><br><span class="line"><span class="attr">kind:</span> <span class="string">ConfigMap</span> </span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span>    &#123;&#123;   <span class="string">.Release.Name</span>    &#125;&#125; </span><br><span class="line"><span class="attr">data:</span></span><br><span class="line">  <span class="attr">test:</span>    </span><br><span class="line">    &#123;&#123;<span class="bullet">-</span> <span class="string">range</span> <span class="string">.</span> <span class="string">Values.test</span> &#125;&#125;</span><br><span class="line">      &#123;&#123;   <span class="string">.</span>    &#125;&#125;</span><br><span class="line">    &#123;&#123;<span class="bullet">-</span>   <span class="string">end</span>   &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-3-with指定范围"><a href="#5-3-with指定范围" class="headerlink" title="5.3 with指定范围"></a>5.3 <font color=red><code>with</code>指定范围</font></h4><ul>
+<li><ol>
+<li><font color=red><code>with</code></font>可以用来控制变量作用域</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>前面我们使用<code>&#123;&#123; .Release.xxx &#125;&#125;</code>或者<code>&#123;&#123; .Values.xxx &#125;&#125;</code>，其中.就是表示对当前范围的引用，<code>.values</code>就是告诉模板在当前范围中查找Values对象的值</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>with</code></font>语句就可以用来控制变量的作用域范围，其语法和一个简单的if语句类似：</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123; <span class="string">with</span> <span class="string">条件表达式</span> &#125;&#125;</span><br><span class="line"><span class="comment"># xxx</span></span><br><span class="line">&#123;&#123; <span class="string">end</span> &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red><code>with</code></font>语句可以允许将当前范围的.设置为特定的对象，比如我们前面一直使用的<code>.Values.label</code>，我们可以使用with来将.范围指向<code>.Values.label</code>。</li>
+</ol>
+</li>
+<li><ol start="5">
+<li>示例：values.yaml</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">nodeSelector:</span> </span><br><span class="line">  <span class="attr">team:</span> <span class="string">a</span> </span><br><span class="line">  <span class="attr">gpu:</span>   <span class="literal">yes</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li>deployment.yaml</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span>   <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span>   <span class="string">Deployment</span> </span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> &#123;&#123; <span class="string">.Release.Name</span> &#125;&#125;<span class="string">-deployment</span> </span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">1</span> </span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span> </span><br><span class="line">      <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">template:</span> </span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span> </span><br><span class="line">        <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      &#123;&#123;<span class="bullet">-</span> <span class="string">with</span> <span class="string">.Values.nodeSelector</span> &#125;&#125;</span><br><span class="line">      <span class="attr">nodeSelector:</span></span><br><span class="line">        <span class="attr">team:</span> &#123;&#123;  <span class="string">.team</span> &#125;&#125;</span><br><span class="line">        <span class="attr">gpu:</span> &#123;&#123;  <span class="string">.gpu</span>  &#125;&#125;</span><br><span class="line">      &#123;&#123;<span class="bullet">-</span> <span class="string">end</span> &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-命名模板"><a href="#6-命名模板" class="headerlink" title="6 命名模板"></a>6 命名模板</h3><ul>
+<li><ol>
+<li>需要复用代码的地方可以使用命名模板</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>命名模板：</font>使用<code>define</code>定义，<code>template</code>引入，在<code>templates</code>目录中默认下划线开头的文件为公共模板,比如：<code>_helpers.tpl</code>。</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>示例：<code> _helpers.tpl</code></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;<span class="bullet">-</span>   <span class="string">define</span>   <span class="string">&quot;demo.fullname&quot;</span>   <span class="string">-</span>&#125;&#125;</span><br><span class="line">&#123;&#123;<span class="bullet">-</span> <span class="string">.Chart.Name</span> <span class="string">-</span>&#125;&#125;<span class="string">-&#123;&#123;</span> <span class="string">.Release.Name</span> <span class="string">&#125;&#125;</span></span><br><span class="line">&#123;&#123;<span class="bullet">-</span>   <span class="string">end</span>   <span class="string">-</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><code>deployment.yaml</code></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">apiVersion:   apps/v1 </span><br><span class="line">kind:   Deployment </span><br><span class="line">metadata:</span><br><span class="line">  name:  &#123;&#123;   template&quot;demo.fullname&quot;   .    &#125;&#125;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">其他略</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>4.1 <font color=red><code>template</code></font>指令是将一个模板包含在另一个模板中的方法。但是，<font color=red><code>template</code></font>函数不能用于<code>Go</code>模板管道，为了解决该问题，增加了<code>include</code>功能。  </li>
+<li>4.2 <code>_helpers.tpl：</code></li>
+</ul>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;<span class="bullet">-</span>   <span class="string">define</span>   <span class="string">&quot;demo.labels&quot;</span>    <span class="string">-</span>&#125;&#125;</span><br><span class="line"><span class="attr">app:</span>   &#123;&#123;   <span class="string">template&quot;demo.fullname&quot;</span>   <span class="string">.</span>   &#125;&#125;</span><br><span class="line"><span class="attr">chart:</span>   <span class="string">&quot;<span class="template-variable">&#123;&#123;   .Chart.Name   &#125;&#125;</span>-<span class="template-variable">&#123;&#123;    .Chart.Version   &#125;&#125;</span>&quot;</span> </span><br><span class="line"><span class="attr">release:</span>   <span class="string">&quot;<span class="template-variable">&#123;&#123;   .Release.Name   &#125;&#125;</span>&quot;</span></span><br><span class="line">&#123;&#123;<span class="bullet">-</span>   <span class="string">end</span>   <span class="string">-</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>4.3 <code>deployment.yaml</code>  <blockquote>
+<ul>
+<li>4.3.1 下面包含一个名为<code>demo.labels</code>的模板，然后将值  . 传递给模板，最后将该模板的 输出传递给<code>nindent</code>函数。</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span>   <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span>   <span class="string">Deployment</span> </span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span>    &#123;&#123;   <span class="string">include&quot;demo.fullname&quot;</span>   <span class="string">.</span>    &#125;&#125; </span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    &#123;&#123;<span class="bullet">-</span>   <span class="string">include</span>   <span class="string">&quot;demo.labels&quot;</span>   <span class="string">.</span>    <span class="string">|</span>   <span class="string">nindent</span>   <span class="number">4</span>    &#125;&#125;</span><br><span class="line"><span class="string">...</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">A(创建模板) --&gt;B(修改Chart.yaml &lt;p&gt;Values.yaml文件&lt;br&gt; &lt;p&gt;添加常用变量&lt;br&gt;)</span><br><span class="line">    B --&gt; C(在Templates目录下&lt;p&gt;创建部署镜像所需的yaml文件&lt;br&gt; &lt;p&gt;并且使用变量&lt;br&gt;&lt;p&gt;引用yaml文件里面的常变动字段&lt;br&gt;)</span><br><span class="line">    </span><br><span class="line">    C --&gt;|a=1| D&#123;暂未启用&#125;</span><br><span class="line">    C --&gt;|a=2| E[暂未启用]</span><br><span class="line">    F[开发自己的chart]</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/configure-k8s-Data-Storage/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Kubernetes/configure-k8s-Data-Storage/" class="post-title-link" itemprop="url">configure-k8s-data-storage</a>
         </h2>
 
         <div class="post-meta">
@@ -220,7 +824,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-05-29 15:48:51 / 修改时间：20:38:20" itemprop="dateCreated datePublished" datetime="2022-05-29T15:48:51+08:00">2022-05-29</time>
+              <time title="创建时间：2022-05-29 15:48:51 / 修改时间：21:26:36" itemprop="dateCreated datePublished" datetime="2022-05-29T15:48:51+08:00">2022-05-29</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -238,14 +842,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>9.2k</span>
+              <span>14k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
+              <span>13 分钟</span>
             </span>
 
         </div>
@@ -543,8 +1147,26 @@
 <li><font color=red><code>ConfigMap</code></font>中的<code>key</code>映射为一个文件，<code>value</code>映射为文件中的内容。如果更新了<code>ConfigMap</code>中的内容，容器中的值也会动态更新。</li>
 </ol>
 </li>
+<li><ol start="3">
+<li><font color=red><code>ConfigMap</code></font>是一种<code>API</code>对象，用来将非加密数据保存到键值对中。可以用作环境变量、命令行参数或者存储卷中的配置文件</li>
+</ol>
+</li>
+<li><ol start="4">
+<li><font color=red><code>ConfigMap</code></font>可以将环境变量配置信息和容器镜像解耦，便于应用配置的修改。如果需要存储加密信息时可以使用Secret对象</li>
+</ol>
+</li>
+<li><ol start="5">
+<li><font color=red>使用<code>ConfigMap</code>有以下几个限制条件：</font>  <blockquote>
+<ul>
+<li>5.1 <font color=red><code>ConfigMap</code></font>必须在pod之前创建  </li>
+<li>5.2 <font color=red><code>ConfigMap</code></font>受<code>namespace</code>的限制，只能相同<code>namespace</code>的<code>pod</code>才可以引用</li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: ConfigMap  	# ConfigMap</span><br><span class="line">metadata:</span><br><span class="line">  name: configmap</span><br><span class="line">  namespace: dev</span><br><span class="line">data:  &lt;map[string]string&gt;</span><br><span class="line">  info:</span><br><span class="line">    username:admin</span><br><span class="line">    password:123456</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">########################################## 配置 pod-configmap</span></span>   </span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: pod-configmap</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      volumeMounts:</span><br><span class="line">        - mountPath: /configmap/config</span><br><span class="line">          name: config</span><br><span class="line">  volumes:</span><br><span class="line">    - name: config</span><br><span class="line">      configMap: # 类型为configMap的存储卷，挂载预定义的configMap对象到容器内部</span><br><span class="line">        name: configmap</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: ConfigMap  	# ConfigMap</span><br><span class="line">metadata:</span><br><span class="line">  name: configmap</span><br><span class="line">  namespace: dev</span><br><span class="line">data:  &lt;map[string]string&gt;</span><br><span class="line">  info:</span><br><span class="line">    username:admin</span><br><span class="line">    password:123456</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################  挂载数据方式</span></span></span><br><span class="line">data:</span><br><span class="line">  stream.conf: |   </span><br><span class="line">    stream.conf &#123;</span><br><span class="line">      server &#123;</span><br><span class="line">        listen 1550;</span><br><span class="line">        proxy_pass  192.168.3.125:16303;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">     &#125;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">########################################## 配置 pod-configmap</span></span>   </span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: pod-configmap</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      volumeMounts:</span><br><span class="line">        - mountPath: /configmap/config # 没有则会自动创建,目录下有文件则会覆盖掉</span><br><span class="line">          name: config</span><br><span class="line">  volumes:</span><br><span class="line">    - name: config</span><br><span class="line">      configMap: # 类型为configMap的存储卷，挂载预定义的configMap对象到容器内部</span><br><span class="line">        name: configmap # 指的是要从哪个configmap里读取数据</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br></pre></td></tr></table></figure>
 
 
 <h4 id="4-2-配置存储—Secret"><a href="#4-2-配置存储—Secret" class="headerlink" title="4.2 配置存储—Secret"></a>4.2 <font color=red>配置存储—<code>Secret</code></font></h4><ul>
@@ -559,28 +1181,73 @@
 <h5 id="4-2-2-Secret的用途"><a href="#4-2-2-Secret的用途" class="headerlink" title="4.2.2 Secret的用途"></a>4.2.2 <font color=red><code>Secret</code>的用途</font></h5><ul>
 <li><font color=red><code>imagePullSecret</code>：</font><code>Pod</code>拉取私有镜像仓库的时使用的账户密码，会传递给<code>kubelet</code>，然后<code>kubelet</code>就可以拉取有密码的仓库里面的镜像</li>
 </ul>
-<pre><code class="shell"># 创建一个ImagePullSecret
-$ kubectl create secret docker-registry docker-harbor-registrykey --docker-server=192.168.18.119:85 \
-          --docker-username=admin --docker-password=Harbor12345 \
-          --docker-email=1900919313@qq.com
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建一个ImagePullSecret</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create secret docker-registry docker-harbor-registrykey --docker-server=192.168.18.119:85 \</span></span><br><span class="line"><span class="language-bash">          --docker-username=admin --docker-password=Harbor12345 \</span></span><br><span class="line"><span class="language-bash">          --docker-email=1900919313@qq.com</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看是否创建成功</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get secret docker-harbor-registrykey</span></span><br></pre></td></tr></table></figure>
 
-# 查看是否创建成功
-$ kubectl get secret docker-harbor-registrykey
-</code></pre>
 <ul>
 <li><font color=red>新建<code>redis.yaml</code></font></li>
 </ul>
-<pre><code class="shell">apiVersion: v1
-kind: Pod
-metadata:
-  name: redis
-spec:
-  containers:
-    - name: redis
-      image: 192.168.18.119:85/yuncloud/redis # 这是Harbor的镜像私有仓库地址
-  imagePullSecrets:
-    - name: docker-harbor-registrykey
-</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: redis</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: redis</span><br><span class="line">      image: 192.168.18.119:85/yuncloud/redis # 这是Harbor的镜像私有仓库地址</span><br><span class="line">  imagePullSecrets:</span><br><span class="line">    - name: docker-harbor-registrykey</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f redis.yaml</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-高级存储—ConfigMap高级使用方式"><a href="#5-高级存储—ConfigMap高级使用方式" class="headerlink" title="5. 高级存储—ConfigMap高级使用方式"></a>5. <font color=red>高级存储—<code>ConfigMap</code>高级使用方式</font></h3><ul>
+<li><font color=red>注意事项</font>  <blockquote>
+<ul>
+<li>1.1 <font color=red><code>ConfigMap</code></font>在设计上不是用来保存大量数据的。在<code>ConfigMap</code>中保存的数据不可超过<code>1 MiB</code>  </li>
+<li>1.2 如果需要保存超出此尺寸限制的数据，需要考虑挂载存储卷或者使用独立的数据库或者文件服务。</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h4 id="5-1-从一个目录中创建ConfigMap"><a href="#5-1-从一个目录中创建ConfigMap" class="headerlink" title="5.1 从一个目录中创建ConfigMap"></a>5.1 <font color=red>从一个目录中创建<code>ConfigMap</code></font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create configmap &lt;map-name&gt; &lt;data-source&gt;  	<span class="comment"># 命令使用方式</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -pv configure-pod-container/configmap/</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://kubernetes.io/examples/configmap/game.properties -O configure-pod-container/configmap/game.properties</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://kubernetes.io/examples/configmap/ui.properties -O configure-pod-container/configmap/ui.properties</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">--from-file，指定在目录下的所有文件都会被用在ConfigMap里面创建一个键值对，键的名字就是文件名，值就是文件的内容</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create configmap cm1 --from-file=configure-pod-container/configmap/</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get cm cm1 -o yaml</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="5-2-从一个文件中创建ConfigMap"><a href="#5-2-从一个文件中创建ConfigMap" class="headerlink" title="5.2 从一个文件中创建ConfigMap"></a>5.2 <font color=red>从一个文件中创建<code>ConfigMap</code></font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -pv configure-pod-container/configmap/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://kubernetes.io/examples/configmap/game.properties -O configure-pod-container/configmap/game.properties</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">默认情况下的key的名称是文件的名称，--from-file，可以使用多次，同样键为文件名，值为文件中的内容</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create configmap cm2 --from-file=configure-pod-container/configmap/game.properties</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="5-3-从文件中创建ConfigMap，并自定义ConfigMap中key的名称"><a href="#5-3-从文件中创建ConfigMap，并自定义ConfigMap中key的名称" class="headerlink" title="5.3 从文件中创建ConfigMap，并自定义ConfigMap中key的名称"></a>5.3 <font color=red>从文件中创建<code>ConfigMap</code>，并自定义<code>ConfigMap</code>中<code>key</code>的名称</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -pv configure-pod-container/configmap/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://kubernetes.io/examples/configmap/game.properties -O configure-pod-container/configmap/game.properties</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">--from-literal=key1=123 --from-literal=key2=234</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create configmap cm3 --from-file=cm3=configure-pod-container/configmap/game.properties</span> </span><br></pre></td></tr></table></figure>
+
+<h4 id="5-4-从环境变量文件创建ConfigMap"><a href="#5-4-从环境变量文件创建ConfigMap" class="headerlink" title="5.4 从环境变量文件创建ConfigMap"></a>5.4 <font color=red>从环境变量文件创建<code>ConfigMap</code></font></h4><ul>
+<li><font color=red>注意：</font>当<code>--from-env-file</code>从多个数据源创建<code>ConfigMap</code>的时候，仅仅最后一个<code>env</code>文件有效</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim configure-pod-container/configmap/env-file.properties</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">语法规则:</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">  <span class="built_in">env</span> 文件中的每一行必须为 VAR = VAL 格式。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">  以＃开头的行(即注释)将被忽略。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">  空行将被忽略。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">  引号没有特殊处理(即它们将成为 ConfigMap 值的一部分)</span></span><br><span class="line">enemies=aliens</span><br><span class="line">lives=3</span><br><span class="line">allowed=&quot;true&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create cm cm4 --from-env-file=configure-pod-container/configmap/env-file.properties</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create configmap configmap名 --from-env-file=env.txt</span> </span><br><span class="line">其中，env.txt的文件格式为:</span><br><span class="line">key1=***</span><br><span class="line">key2=***</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-5-在命令行根据键值对创建ConfigMap"><a href="#5-5-在命令行根据键值对创建ConfigMap" class="headerlink" title="5.5 在命令行根据键值对创建ConfigMap"></a>5.5 <font color=red>在命令行根据键值对创建<code>ConfigMap</code></font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create configmap cm5 --from-literal=special.how=very --from-literal=special.type=charm</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="5-6-使用ConfigMap定义容器环境变量"><a href="#5-6-使用ConfigMap定义容器环境变量" class="headerlink" title="5.6 使用ConfigMap定义容器环境变量"></a>5.6 <font color=red>使用<code>ConfigMap</code>定义容器环境变量</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create configmap cm6 --from-literal=special.how=very --from-literal=special.type=charm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim test-pod.yaml</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: test-pod</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: test-container</span><br><span class="line">      image: busybox</span><br><span class="line">      command: [ &quot;/bin/sh&quot;, &quot;-c&quot;, &quot;env&quot; ]</span><br><span class="line">      env:</span><br><span class="line">        # 定义环境变量</span><br><span class="line">        - name: SPECIAL_LEVEL_KEY</span><br><span class="line">          valueFrom:</span><br><span class="line">            configMapKeyRef:</span><br><span class="line">              # ConfigMap的名称</span><br><span class="line">              name: cm6</span><br><span class="line">              # ConfigMap的key</span><br><span class="line">              key: special.how</span><br><span class="line">  restartPolicy: Never</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f test-pod.yaml</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="5-7-将ConfigMap中的所有键值对配置为容器环境变量"><a href="#5-7-将ConfigMap中的所有键值对配置为容器环境变量" class="headerlink" title="5.7 将ConfigMap中的所有键值对配置为容器环境变量"></a>5.7 <font color=red>将<code>ConfigMap</code>中的所有键值对配置为容器环境变量</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create configmap cm7 --from-literal=special.how=very --from-literal=special.type=charm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim test-pod.yaml</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: test-pod</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: test-container</span><br><span class="line">      image: busybox</span><br><span class="line">      command: [ &quot;/bin/sh&quot;, &quot;-c&quot;, &quot;env&quot; ]</span><br><span class="line">      envFrom:</span><br><span class="line">      - configMapRef:</span><br><span class="line">          name: cm7</span><br><span class="line">  restartPolicy: Never</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f test-pod.yaml</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="5-8-使用存储在ConfigMap中的数据填充容器"><a href="#5-8-使用存储在ConfigMap中的数据填充容器" class="headerlink" title="5.8 使用存储在ConfigMap中的数据填充容器"></a>5.8 <font color=red>使用存储在<code>ConfigMap</code>中的数据填充容器</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create configmap cm8 --from-literal=special.how=very --from-literal=special.type=charm</span></span><br><span class="line">vim test-pod.yaml</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: test-pod</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: test-container</span><br><span class="line">      image: busybox</span><br><span class="line">      command: [ &quot;/bin/sh&quot;, &quot;-c&quot;, &quot;ls /etc/config/&quot; ]</span><br><span class="line">      volumeMounts:</span><br><span class="line">      - name: config-volume</span><br><span class="line">        mountPath: /etc/config</span><br><span class="line">  volumes:</span><br><span class="line">    - name: config-volume</span><br><span class="line">      configMap:</span><br><span class="line">        # configMap的名称</span><br><span class="line">        name: cm8</span><br><span class="line">  restartPolicy: Never</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f test-pod.yaml</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-高级存储—Secret高级使用方式"><a href="#6-高级存储—Secret高级使用方式" class="headerlink" title="6. 高级存储—Secret高级使用方式"></a>6. <font color=red>高级存储—<code>Secret</code>高级使用方式</font></h3><ul>
+<li><ol>
+<li><font color=red>和<code>ConfigMap</code>高级类似</font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><code>ConfigMap</code>&amp;&amp;<code>Secret</code>使用<code>SubPath</code>解决目录覆盖问题<blockquote>
+<ul>
+<li>2.1 <code>ConfigMap</code>和<code>Secret</code>在进行目录挂载的时候会覆盖目录，我们可以使用<code>SubPath</code>解决这个问题。</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建一个Pod</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl run nginx --image=nginx:1.17.1</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将nginx.conf导出到本地</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> -it nginx -- <span class="built_in">cat</span> /etc/nginx/nginx.conf &gt; nginx.conf</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建ConfigMap</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create cm nginx-conf --from-file=nginx.conf</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl delete pod nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim nginx.yaml</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      command: [ &quot;/bin/sh&quot;, &quot;-c&quot;, &quot;sleep 3600&quot; ]</span><br><span class="line">      volumeMounts:</span><br><span class="line">      - name: nginx-conf</span><br><span class="line">        mountPath: /etc/nginx</span><br><span class="line">  volumes:</span><br><span class="line">    - name: nginx-conf</span><br><span class="line">      configMap:</span><br><span class="line">        # configMap的名称</span><br><span class="line">        name: nginx-conf</span><br><span class="line">  restartPolicy: Never</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f nginx.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> -it nginx -- <span class="built_in">ls</span> /etc/nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim nginx.yaml</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: nginx</span><br><span class="line">      image: nginx:1.17.1</span><br><span class="line">      command: [ &quot;/bin/sh&quot;, &quot;-c&quot;, &quot;sleep 3600&quot; ]</span><br><span class="line">      volumeMounts:</span><br><span class="line">      - name: nginx-conf</span><br><span class="line">        mountPath: /etc/nginx/nginx.conf</span><br><span class="line">        subPath: nginx.conf # subPath：要覆盖文件的相对路径</span><br><span class="line">  volumes:</span><br><span class="line">    - name: nginx-conf</span><br><span class="line">      configMap:</span><br><span class="line">        # configMap的名称</span><br><span class="line">        name: nginx-conf</span><br><span class="line">        items:</span><br><span class="line">         - key: nginx.conf # key：ConfigMap中的key的名称</span><br><span class="line">           path: nginx.conf # 此处的path相当于 mv nginx.conf nginx.conf</span><br><span class="line">  restartPolicy: Never</span><br><span class="line"><span class="meta prompt_">  </span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f nginx.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> -it nginx -- <span class="built_in">ls</span> /etc/nginx</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="6-1-ConfigMap-amp-amp-Secret的热更新"><a href="#6-1-ConfigMap-amp-amp-Secret的热更新" class="headerlink" title="6.1 ConfigMap&amp;&amp;Secret的热更新"></a>6.1 <font color=red><code>ConfigMap</code>&amp;&amp;<code>Secret</code>的热更新</font></h4><ul>
+<li><font color=red>注意事项</font>  <blockquote>
+<ul>
+<li><ol>
+<li>如果<code>ConfigMap</code>和<code>Secret</code>是以<code>subPath</code>的形式挂载的，那么<code>Pod</code>是不会感知到<code>ConfigMap</code>和<code>Secret</code>的更新的</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>如果<code>Pod</code>的变量来自<code>ConfigMap</code>和<code>Secret</code>中定义的内容，那么<code>ConfigMap</code>和<code>Secret</code>更新后，也不会更新<code>Pod</code>中的变量</li>
+</ol>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
 
       
     </div>
@@ -863,7 +1530,7 @@ spec:
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/configure-k8s-kind/">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/configure-k8s-Kind/">
 
 <div>
       
@@ -881,7 +1548,7 @@ spec:
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Kubernetes/configure-k8s-kind/" class="post-title-link" itemprop="url">configure-k8s-kind</a>
+            <a href="/Kubernetes/configure-k8s-Kind/" class="post-title-link" itemprop="url">configure-k8s-kind</a>
         </h2>
 
         <div class="post-meta">
@@ -898,7 +1565,7 @@ spec:
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-29 20:35:56" itemprop="dateModified" datetime="2022-05-29T20:35:56+08:00">2022-05-29</time>
+                <time title="修改时间：2022-05-30 17:11:54" itemprop="dateModified" datetime="2022-05-30T17:11:54+08:00">2022-05-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -916,7 +1583,7 @@ spec:
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>7.2k</span>
+              <span>7.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -935,7 +1602,9 @@ spec:
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="1-Pod控制器详解"><a href="#1-Pod控制器详解" class="headerlink" title="1. Pod控制器详解"></a>1. Pod控制器详解</h3><table>
+          <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">A3[(PVC)] --&gt;A1((Pod)) &amp; A2((Pod)) &lt;--&gt;A[Namespace-dev]</span><br><span class="line">B3[(PVC)] --&gt;B1((Pod)) &amp; B2((Pod)) &lt;--&gt;B[Namespace-test]</span><br><span class="line"></span><br><span class="line">Z[&lt;b&gt;Namespace是kubernetes系统中一种非常重要的资源&lt;br&gt;&lt;b&gt;它的主要作用是用来实现&lt;br&gt;多套系统的资源隔离或者多租户的资源隔离]</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-Pod控制器详解"><a href="#1-Pod控制器详解" class="headerlink" title="1. Pod控制器详解"></a>1. Pod控制器详解</h3><table>
 <thead>
 <tr>
 <th>资源分类</th>
@@ -987,6 +1656,8 @@ spec:
 <td>管理有状态的应用。</td>
 </tr>
 </tbody></table>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">A[&lt;p&gt;user containerN&lt;br&gt;user ImageN&lt;br&gt;&lt;p&gt;user container1&lt;br&gt;user Image1&lt;br&gt;&lt;p&gt;&lt;br&gt;&lt;p&gt;Pause&lt;br&gt;gcr.io/google_containers/pause-amd64&lt;br&gt;] </span><br><span class="line">    Z[Pod]</span><br></pre></td></tr></table></figure>
+
 <h4 id="1-1-ReplicaSet（RS）控制器"><a href="#1-1-ReplicaSet（RS）控制器" class="headerlink" title="1.1 ReplicaSet（RS）控制器"></a>1.1 ReplicaSet（RS）控制器</h4><ul>
 <li><p><font color=red><code>ReplicaSet</code></font>：主要作用是保证一定数量的Pod能够正常运行，它会持续监听这些Pod的运行状态，一旦Pod发生故障，就会重启或重建。同时它还支持对Pod数量的扩缩容和版本镜像的升级  </p>
 </li>
@@ -995,7 +1666,9 @@ spec:
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: apps/v1 # 版本号 </span><br><span class="line">kind: ReplicaSet # 类型 </span><br><span class="line">metadata: # 元数据 </span><br><span class="line">  name: pc-replicaset # rs名称</span><br><span class="line">  namespace: dev # 所属命名空间 </span><br><span class="line">  labels: #标签 </span><br><span class="line">    controller: rs </span><br><span class="line">spec: # 详情描述 </span><br><span class="line">  replicas: 3 # 指定副本数量，其实就是当然rs创建出来的Pod的数量，默认为1.</span><br><span class="line">  selector: # 选择器，它的作用是建立Pod控制器和Pod之间的关联关系，采用了Label Selector机制（在Pod模块上定义Label，在控制器上定义选择器，就可以表明当前控制器能管理哪些Pod了）</span><br><span class="line">    matchLabels: # Labels匹配规则 </span><br><span class="line">      app: nginx-pod </span><br><span class="line">    matchExpressions: # Expressions匹配规则 </span><br><span class="line">      - &#123;key: app, operator: In, values: [nginx-pod]&#125; </span><br><span class="line">template: # 模块 当副本数据不足的时候，会根据下面的模板创建Pod副本</span><br><span class="line">  metadata: </span><br><span class="line">    labels: </span><br><span class="line">      app: nginx-pod </span><br><span class="line">  spec: </span><br><span class="line">    containers: </span><br><span class="line">      - name: nginx # 容器名称</span><br><span class="line">        image: nginx:1.17.1 # 容器需要的镜像地址</span><br><span class="line">        ports: </span><br><span class="line">        - containerPort: 80 # 容器所监听的端口</span><br></pre></td></tr></table></figure>
 
-<h4 id="1-2-Deployment（Deploy）控制器"><a href="#1-2-Deployment（Deploy）控制器" class="headerlink" title="1.2 Deployment（Deploy）控制器"></a>1.2 Deployment（Deploy）控制器</h4><ul>
+<h4 id="1-2-Deployment（Deploy）控制器"><a href="#1-2-Deployment（Deploy）控制器" class="headerlink" title="1.2 Deployment（Deploy）控制器"></a>1.2 Deployment（Deploy）控制器</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">A[&lt;p&gt;Deployment&lt;br&gt;seletor:env=dev] --&gt; A1((&lt;p&gt;Pod&lt;br&gt;label:env=dev))</span><br><span class="line">A[&lt;p&gt;Deployment&lt;br&gt;seletor:env=dev] --&gt; A2((&lt;p&gt;Pod&lt;br&gt;label:env=dev))</span><br><span class="line">A[&lt;p&gt;Deployment&lt;br&gt;seletor:env=dev] --&gt; A3((&lt;p&gt;Pod&lt;br&gt;label:env=dev))</span><br><span class="line">    Z[Deployment控制Pod]</span><br></pre></td></tr></table></figure>
+
+<ul>
 <li><p><font color=red>Deployment</font>：为了更好的解决服务编排的问题，kubernetes在v1.2版本开始，引入了Deployment控制器。值得一提的是，Deployment控制器并不直接管理Pod，而是通过管理ReplicaSet来间接管理Pod，即：Deployment管理ReplicaSet，ReplicaSet管理Pod。所以Deployment的功能比ReplicaSet强大  </p>
 </li>
 <li><p><font color=red>支持ReplicaSet的所有功能</font>  </p>
@@ -1949,121 +2622,6 @@ $ kubectl get pods --show-labels -n cattle-system
 <div>
     
  </div>
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/crontab/install-xxl-job/">
-
-<div>
-      
-</div>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/IMG_0081.JPG">
-      <meta itemprop="name" content="二哥">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="二哥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/crontab/install-xxl-job/" class="post-title-link" itemprop="url">install_xxl-job</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-05-18 13:45:51" itemprop="dateCreated datePublished" datetime="2022-05-18T13:45:51+08:00">2022-05-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-19 16:53:06" itemprop="dateModified" datetime="2022-05-19T16:53:06+08:00">2022-05-19</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/crontab/" itemprop="url" rel="index"><span itemprop="name">crontab</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-安装xxl-job"><a href="#1-安装xxl-job" class="headerlink" title="1. 安装xxl-job"></a>1. 安装xxl-job</h3><ul>
-<li><a target="_blank" rel="noopener" href="https://www.xuxueli.com/xxl-job/#1.5%20%E4%B8%8B%E8%BD%BD">官方下载部署文档</a>  </li>
-<li><font color=red>Maven3+</font>  </li>
-<li><font color=red>Jdk1.8+</font>  </li>
-<li><font color=red>Mysql5.7+</font></li>
-</ul>
-<h3 id="2-安装Mavent"><a href="#2-安装Mavent" class="headerlink" title="2. 安装Mavent"></a>2. 安装<code>Mavent</code></h3><h4 id="2-1-下载Maven"><a href="#2-1-下载Maven" class="headerlink" title="2.1  下载Maven"></a>2.1  下载<code>Maven</code></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://dlcdn.apache.org/maven/maven-3/3.8.5/binaries/apache-maven-3.8.5-bin.tar.gz</span></span><br></pre></td></tr></table></figure>
-<h4 id="2-2-配置环境变量"><a href="#2-2-配置环境变量" class="headerlink" title="2.2 配置环境变量"></a>2.2 配置环境变量</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&#x27;export PATH=/opt/apache-maven-3.8.5/bin:$PATH&#x27;</span> &gt;&gt;/etc/profile</span></span><br></pre></td></tr></table></figure>
-<h4 id="2-3-国内配置阿里云Maven源"><a href="#2-3-国内配置阿里云Maven源" class="headerlink" title="2.3 国内配置阿里云Maven源"></a>2.3 国内配置阿里云<code>Maven</code>源</h4><p><a target="_blank" rel="noopener" href="http://dblab.xmu.edu.cn/blog/2758/">将Maven源改为国内阿里云仓库</a>  </p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim <span class="built_in">cd</span> /usr/local/maven/conf/settings.xml</span></span><br><span class="line"></span><br><span class="line">&lt;settings xmlns=&quot;http://maven.apache.org/SETTINGS/1.0.0&quot;</span><br><span class="line">          xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">          xsi:schemaLocation=&quot;http://maven.apache.org/SETTINGS/1.0.0</span><br><span class="line">                      http://maven.apache.org/xsd/settings-1.0.0.xsd&quot;&gt;</span><br><span class="line">&lt;mirrors&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云公共仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/public&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云谷歌仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/google&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云阿帕奇仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/apache-snapshots&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云spring仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/spring&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">        &lt;id&gt;aliyunmaven&lt;/id&gt;</span><br><span class="line">        &lt;mirrorOf&gt;*&lt;/mirrorOf&gt;</span><br><span class="line">        &lt;name&gt;阿里云spring插件仓库&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;https://maven.aliyun.com/repository/spring-plugin&lt;/url&gt;</span><br><span class="line">    &lt;/mirror&gt;</span><br><span class="line">&lt;/mirrors&gt;</span><br><span class="line">&lt;/settings&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="3-安装xxl-job"><a href="#3-安装xxl-job" class="headerlink" title="3. 安装xxl-job"></a>3. 安装<code>xxl-job</code></h3><ul>
-<li><font color=red><code>/xxl-job/doc/db/tables_xxl_job.sql</code>：初始化数据库</font></li>
-</ul>
-<blockquote>
-<p>修改配置文件  </p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /xxl-job/xxl-job-admin/src/main/resources/application.properties</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 调度中心JDBC链接：链接地址请保持和 2.1章节 所创建的调度数据库的地址一致</span></span></span><br><span class="line">spring.datasource.url=jdbc:mysql://127.0.0.1:3306/xxl_job?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;serverTimezone=Asia/Shanghai</span><br><span class="line">spring.datasource.username=root</span><br><span class="line">spring.datasource.password=root_pwd</span><br><span class="line">spring.datasource.driver-class-name=com.mysql.jdbc.Driver</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 报警邮箱</span></span></span><br><span class="line">spring.mail.host=smtp.qq.com</span><br><span class="line">spring.mail.port=25</span><br><span class="line">spring.mail.username=xxx@qq.com</span><br><span class="line">spring.mail.password=xxx</span><br><span class="line">spring.mail.properties.mail.smtp.auth=true</span><br><span class="line">spring.mail.properties.mail.smtp.starttls.enable=true</span><br><span class="line">spring.mail.properties.mail.smtp.starttls.required=true</span><br><span class="line">spring.mail.properties.mail.smtp.socketFactory.class=javax.net.ssl.SSLSocketFactory</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 调度中心通讯TOKEN [选填]：非空时启用；</span></span></span><br><span class="line">xxl.job.accessToken=</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 调度中心国际化配置 [必填]： 默认为 &quot;zh_CN&quot;/中文简体, 可选范围为 &quot;zh_CN&quot;/中文简体, &quot;zh_TC&quot;/中文繁体 and &quot;en&quot;/英文；</span></span></span><br><span class="line">xxl.job.i18n=zh_CN</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment"># 调度线程池最大线程配置【必填】</span></span></span><br><span class="line">xxl.job.triggerpool.fast.max=200</span><br><span class="line">xxl.job.triggerpool.slow.max=100</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 调度中心日志表数据保存天数 [必填]：过期日志自动清理；限制大于等于7时生效，否则, 如-1，关闭自动清理功能；</span></span></span><br><span class="line">xxl.job.logretentiondays=30</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">执行打包</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">mvn package</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><font color=red><code>xxl-job-admin/target</code>：目录下生成：<code>xxl-job-admin-2.3.0.jar</code></font>  </li>
-<li><font color=red><code>java -jar xxl-job-admin-2.3.0.jar</code>：启动xxl-job</font></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-<div>
-    
- </div>
 
   
   <nav class="pagination">
@@ -2135,7 +2693,7 @@ $ kubectl get pods --show-labels -n cattle-system
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2192,12 +2750,12 @@ $ kubectl get pods --show-labels -n cattle-system
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">157k</span>
+    <span title="站点总字数">178k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:23</span>
+    <span title="站点阅读时长">2:41</span>
 </div>
 
 <!--
