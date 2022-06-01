@@ -191,6 +191,232 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-k8s-Rancher/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Kubernetes/install-k8s-Rancher/" class="post-title-link" itemprop="url">install-Rancher</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-19 18:00:24" itemprop="dateCreated datePublished" datetime="2022-05-19T18:00:24+08:00">2022-05-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-26 13:55:42" itemprop="dateModified" datetime="2022-05-26T13:55:42+08:00">2022-05-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-安装Rancher图形化安装管理Kubernetes工具"><a href="#1-安装Rancher图形化安装管理Kubernetes工具" class="headerlink" title="1. 安装Rancher图形化安装管理Kubernetes工具"></a>1. 安装<code>Rancher</code>图形化安装管理<code>Kubernetes</code>工具</h3><ul>
+<li><code>Rancher</code>是供采用容器的团队使用的完整软件堆栈。它解决了管理多个  </li>
+<li><code>Kubernetes</code>集群的运营和安全挑战，并为<code>DevOps</code>团队提供用于运行容器化工作负载的集成工具  </li>
+<li><font color=red>必须存在<code>Docker</code>环境</font></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>服务器</th>
+<th>IP</th>
+<th>内存</th>
+<th>CPU</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>master</td>
+<td>192.168.35.128</td>
+<td>8G</td>
+<td>8<code>core</code></td>
+</tr>
+<tr>
+<td>node-1</td>
+<td>192.168.35.129</td>
+<td>4G</td>
+<td>4<code>core</code></td>
+</tr>
+<tr>
+<td>node-2</td>
+<td>192.168.35.130</td>
+<td>4G</td>
+<td>4<code>core</code></td>
+</tr>
+</tbody></table>
+<h4 id="1-1-安装基础环境"><a href="#1-1-安装基础环境" class="headerlink" title="1.1 安装基础环境"></a>1.1 安装基础环境</h4><ul>
+<li><font color=red><code>Nano</code>：超轻量级开源云平台</font>  <blockquote>
+<ul>
+<li><code>Naco</code>：基于<code>KVM</code>技术，使用Go语言开发，简单易学的虚拟机管理软件，从<code>Web</code>管理门户、主机监控、镜像克隆到故障切换，功能完备，开箱即用，数分钟之内即可将您的服务器集群升级为云主机平台</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y nano</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font color=red>在所有节点都安装<code>Docker</code></font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ENV configuration</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;/swap / s/^\(.*\)$/#\1/g&#x27;</span> /etc/fstab</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">swapoff -a</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">modprobe br_netfilter</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;br_netfilter&quot;</span> &gt; /etc/modules-load.d/br_netfilter.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;net.bridge.bridge-nf-call-iptables = 1&quot;</span> &gt;&gt; /etc/sysctl.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;net.ipv4.ip_forward = 1&quot;</span> &gt;&gt; /etc/sysctl.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sysctl -p</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/#AllowTcpForwarding/AllowTcpForwarding/g&#x27;</span> /etc/ssh/sshd_config</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl reload sshd</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl stop firewalld &amp;&amp; systemctl <span class="built_in">disable</span> firewalld</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/SELINUX=enforcing/SELINUX=disabled/g&#x27;</span> /etc/selinux/config</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">setenforce 0</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">timedate configration</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">timedatectl set-timezone Asia/Shanghai</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y chrony</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start chronyd &amp;&amp; sudo systemctl <span class="built_in">enable</span> chronyd</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y yum-utils</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y docker-ce-19.03.9 docker-ce-cli-19.03.9 --nogpgcheck</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> docker &amp;&amp; systemctl start docker</span>  </span><br></pre></td></tr></table></figure>
+<h3 id="2-安装Rancher-v2-6-5"><a href="#2-安装Rancher-v2-6-5" class="headerlink" title="2 安装Rancher v2.6.5"></a>2 安装<code>Rancher v2.6.5</code></h3><p><a target="_blank" rel="noopener" href="https://rancher.com/docs/rancher/v2.6/en/installation/other-installation-methods/single-node-docker/">使用<code>Docker</code>在单节点上安装<code>Rancher</code></a>  </p>
+<ul>
+<li><font color=red><code>Rancher v2.6.5</code>支持的<code>Kubernetes Versions</code>版本</font>  <blockquote>
+<ul>
+<li><font color=red>v1.23.6 (Default)</font>  </li>
+<li><font color=red>v1.22.9</font>  </li>
+<li><font color=red>v1.21.12</font>  </li>
+<li><font color=red>v1.20.15</font>  </li>
+<li><font color=red>v1.19.16</font>  </li>
+<li><font color=red>v1.18.20</font></li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker pull rancher/rancher:v2.6.5</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -d --restart=unless-stopped -p 888:80 -p 4443:443 --privileged rancher/rancher:v2.6.5</span></span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://rancher.com/docs/rancher/v2.6/en/installation/install-rancher-on-k8s/">在<code>Kubernetes</code>集群上安装&#x2F;升级<code>Rancher</code></a>  </p>
+<h4 id="2-1-在Kubernetes集群上安装-x2F-升级Rancher"><a href="#2-1-在Kubernetes集群上安装-x2F-升级Rancher" class="headerlink" title="2.1 在Kubernetes集群上安装&#x2F;升级Rancher"></a>2.1 <font color=red>在<code>Kubernetes</code>集群上安装&#x2F;升级<code>Rancher</code></font></h4><h5 id="2-1-1-安装Helm"><a href="#2-1-1-安装Helm" class="headerlink" title="2.1.1 安装Helm"></a>2.1.1 <a target="_blank" rel="noopener" href="https://helm.sh/docs/intro/install/">安装<code>Helm</code></a></h5><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_37481017/article/details/119002325">基于<code>K8S 1.21.2</code>集群安装<code>Rancher 2.5.9 HA</code></a></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用二进制安装Helm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://get.helm.sh/helm-v3.9.0-linux-amd64.tar.gz</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf helm-v3.9.0-linux-amd64.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> linux-amd64/helm /usr/local/bin/helm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">脚本安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> 700 get_helm.sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./get_helm.sh</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">源代码安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/helm/helm.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> helm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="2-2-1-安装Ingress-Nginx"><a href="#2-2-1-安装Ingress-Nginx" class="headerlink" title="2.2.1 安装Ingress-Nginx"></a>2.2.1 <font color=red>安装<code>Ingress-Nginx</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用Kubectl安装Ingress-Nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/1.21/deploy.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用Helm安装Ingress-Nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace ingress-system</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install blog-enix-rancher ingress-nginx/ingress-nginx \</span></span><br><span class="line"><span class="language-bash">	--namespace ingress-system \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.hostPort.enabled=<span class="literal">true</span> \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.kind=DaemonSet</span></span><br><span class="line"><span class="meta prompt_">	</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace ingress-system</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="2-3-1-安装cert-manager"><a href="#2-3-1-安装cert-manager" class="headerlink" title="2.3.1 安装cert-manager"></a>2.3.1 <font color=red>安装<code>cert-manager</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace cert-manager</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加Jetstack Helm存储库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add jetstack https://charts.jetstack.io</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更新本地 Helm 图表存储库缓存</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo update</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cert-manager自定义所需的自定义资源</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.crds.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.7.1 --<span class="built_in">set</span> installCRDs=<span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">验证cert-manager证书管理器是否安装成功</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace cert-manager</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="2-4-1-使用Helm安装稳定版Rancher"><a href="#2-4-1-使用Helm安装稳定版Rancher" class="headerlink" title="2.4.1 使用Helm安装稳定版Rancher"></a>2.4.1 <font color=red>使用<code>Helm</code>安装稳定版<code>Rancher</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">为Rancher创建命名空间</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace cattle-system</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加 Helm 添加 Rancher 库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add rancher-stable https://releases.rancher.com/server-charts/stable</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="2-4-2-使用helm安装Rancher注意选好版本，版本不对会报错"><a href="#2-4-2-使用helm安装Rancher注意选好版本，版本不对会报错" class="headerlink" title="2.4.2 使用helm安装Rancher注意选好版本，版本不对会报错"></a>2.4.2 <font color=red>使用<code>helm</code>安装<code>Rancher</code>注意选好版本，版本不对会报错</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install rancher rancher-stable/rancher --namespace cattle-system --<span class="built_in">set</span> hostname=my.rancher.org --<span class="built_in">set</span> bootstrapPassword=admin --<span class="built_in">set</span> replicas=3 --version 2.6.3</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> --<span class="built_in">set</span> ingress.tls.source=letsEncrypt \</span></span><br><span class="line"><span class="language-bash"><span class="comment">#  --set letsEncrypt.email=&lt;caviardé&gt;</span></span></span><br><span class="line"></span><br><span class="line">NAME: rancher</span><br><span class="line">LAST DEPLOYED: Wed May 25 18:01:51 2022</span><br><span class="line">NAMESPACE: cattle-system</span><br><span class="line">STATUS: deployed</span><br><span class="line">REVISION: 1</span><br><span class="line">TEST SUITE: None</span><br><span class="line">NOTES:</span><br><span class="line">Rancher Server has been installed.</span><br><span class="line"></span><br><span class="line">NOTE: Rancher may take several minutes to fully initialize. Please standby while Certificates are being issued, Containers are started and the Ingress rule comes up.</span><br><span class="line"></span><br><span class="line">Check out our docs at https://rancher.com/docs/</span><br><span class="line"></span><br><span class="line">If you provided your own bootstrap password during installation, browse to https://my.rancher.org to get started.</span><br><span class="line"></span><br><span class="line">If this is the first time you installed Rancher, get started by running this command and clicking the URL it generates:</span><br><span class="line"></span><br><span class="line">```</span><br><span class="line">echo https://my.rancher.org/dashboard/?setup=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template=&#x27;&#123;&#123;.data.bootstrapPassword|base64decode&#125;&#125;&#x27;)</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">To get just the bootstrap password on its own, run:</span><br><span class="line"></span><br><span class="line">```</span><br><span class="line">kubectl get secret --namespace cattle-system bootstrap-secret -o go-template=&#x27;&#123;&#123;.data.bootstrapPassword|base64decode&#125;&#125;&#123;&#123; &quot;\n&quot; &#125;&#125;&#x27;</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">Happy Containering!</span><br></pre></td></tr></table></figure>
+
+<h5 id="2-4-3-等待Rancher安装成功"><a href="#2-4-3-等待Rancher安装成功" class="headerlink" title="2.4.3 等待Rancher安装成功"></a>2.4.3 <font color=red>等待<code>Rancher</code>安装成功</font></h5><pre><code class="shell">$ kubectl -n cattle-system rollout status deploy/rancher
+
+$ kubectl get pods -o wide -n cattle-system
+
+$ kubectl get pods --show-labels -n cattle-system
+</code></pre>
+<h3 id="3-浏览器登录Rancher页面设置"><a href="#3-浏览器登录Rancher页面设置" class="headerlink" title="3. 浏览器登录Rancher页面设置"></a>3. 浏览器登录<code>Rancher</code>页面设置</h3><ul>
+<li><font color=red>默认用户名：admin</font>  </li>
+<li><font color=red>密码新设置或者随机生成</font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-29-03.png" alt="设置Rancher密码">  </p>
+<ul>
+<li><font color=red>设置<code>Rancher Server</code>地址<code>IP</code>或者域名</font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-31-17.png" alt="设定Rancher地址">  </p>
+<ul>
+<li><font color=red>设置<code>Rancher</code>中文页面</font></li>
+</ul>
+<p><img src="D:\git-library\imgs\Kubernetes_server\Rancher\set-Chinses.png" alt="set-chinses">  </p>
+<ul>
+<li>登录后可以看到目前<code>Rancher</code>所管理只有Rancher本身存在<code>K3S</code>  <blockquote>
+<p><code>Rancher Labs</code>推出<code>Kubernetes</code>开源<code>K3S</code>是一个轻量级，只有<code>40MB</code>大小，易于安装<code>Kubernetes</code>发布版本，转为资源有限和低互动系统设计，适用于边缘应用、物联网、持续整合以及<code>ARM</code>等</p>
+</blockquote>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-34-35.png" alt="初次登录页面">  </p>
+<h3 id="4-使用Rancher创建RKE-Kubernetes集群"><a href="#4-使用Rancher创建RKE-Kubernetes集群" class="headerlink" title="4.使用Rancher创建RKE Kubernetes集群"></a>4.使用<code>Rancher</code>创建<code>RKE Kubernetes</code>集群</h3><ul>
+<li><font color=red>等待被创建的集群都是基于数个实体服务器或虚拟机组成，其中这些机器硬件最低要求<code>1Cores</code>、<code>1GB</code>,并且需要提前安装好<code>Docker</code>服务，操作系统必须符合<code>RKE</code><a target="_blank" rel="noopener" href="https://docs.rancher.cn/docs/rke/os/_index/">安装要求</a></font>  </li>
+<li><font color=red>生产环境下不允许把<code>worker</code>角色添加具有<code>etcd</code>或<code>control plane</code>角色节点中</font></li>
+</ul>
+<h4 id="4-1-Web页面配置Kubernetes-Cluster集群"><a href="#4-1-Web页面配置Kubernetes-Cluster集群" class="headerlink" title="4.1 Web页面配置Kubernetes Cluster集群"></a>4.1 <code>Web</code>页面配置<code>Kubernetes Cluster</code>集群</h4><ul>
+<li><font color=red>在<code>Rancher</code>浏览器页面中添加<code>Kubernetes Cluster</code></font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Add-Cluster.png" alt="Add-K8s-Cluster">    </p>
+<ul>
+<li><font color=red>选择<code>Existing nodes(自定义集群)</code></font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Add-Nodes.png" alt="自定义集群">  </p>
+<ul>
+<li><font color=red>定义集群名称、然后下一步</font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_20-41-58.png" alt="填写集群名称">  </p>
+<ul>
+<li><font color=red>先选择<code>etcd</code>、<code>Control Plane</code>角色，把生成的命令复制到节点上执行，然后下一步</font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-14-45.png" alt="部署etcd Control Plane">    </p>
+<ul>
+<li><font color=red>选择<code>Worker</code>工作节点,把生成的命令复制到节点执行</font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-15-51.png" alt="选择`Worker`工作节点"></p>
+<ul>
+<li><font color=red>命令执行完成后，等待节点加入集群，成功后下方显示添加成功</font></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-20-56.png">   </p>
+<h4 id="4-2-如果错过复制添加命令选择命名空间点击Edit"><a href="#4-2-如果错过复制添加命令选择命名空间点击Edit" class="headerlink" title="4.2 如果错过复制添加命令选择命名空间点击Edit"></a>4.2 如果错过复制添加命令选择命名空间点击<code>Edit</code></h4><p><img src="D:\git-library\imgs\Kubernetes_server\Rancher\Snipaste_2022-05-20_15-42-56.png"><br><img src="D:\git-library\imgs\Kubernetes_server\Rancher\Snipaste_2022-05-20_15-44-52.png">  </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Log/install-log-es-head/">
 
 <div>
@@ -220,7 +446,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-05-18 14:12:01 / 修改时间：14:50:02" itemprop="dateCreated datePublished" datetime="2022-05-18T14:12:01+08:00">2022-05-18</time>
+              <time title="创建时间：2022-05-18 14:12:01 / 修改时间：14:50:04" itemprop="dateCreated datePublished" datetime="2022-05-18T14:12:01+08:00">2022-05-18</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -321,7 +547,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-30 15:29:09" itemprop="dateModified" datetime="2022-05-30T15:29:09+08:00">2022-05-30</time>
+                <time title="修改时间：2022-05-30 15:29:10" itemprop="dateModified" datetime="2022-05-30T15:29:10+08:00">2022-05-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -436,7 +662,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-30 16:12:19" itemprop="dateModified" datetime="2022-05-30T16:12:19+08:00">2022-05-30</time>
+                <time title="修改时间：2022-05-30 16:12:20" itemprop="dateModified" datetime="2022-05-30T16:12:20+08:00">2022-05-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1375,7 +1601,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-30 16:37:22" itemprop="dateModified" datetime="2022-05-30T16:37:22+08:00">2022-05-30</time>
+                <time title="修改时间：2022-05-30 16:37:24" itemprop="dateModified" datetime="2022-05-30T16:37:24+08:00">2022-05-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2215,7 +2441,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-30 20:55:27" itemprop="dateModified" datetime="2022-05-30T20:55:27+08:00">2022-05-30</time>
+                <time title="修改时间：2022-05-30 20:55:28" itemprop="dateModified" datetime="2022-05-30T20:55:28+08:00">2022-05-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2390,7 +2616,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-19 17:28:17" itemprop="dateModified" datetime="2022-05-19T17:28:17+08:00">2022-05-19</time>
+                <time title="修改时间：2022-05-19 17:28:18" itemprop="dateModified" datetime="2022-05-19T17:28:18+08:00">2022-05-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2506,7 +2732,7 @@ $ kubectl apply -f coredns.yaml
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-18 14:48:21" itemprop="dateModified" datetime="2022-05-18T14:48:21+08:00">2022-05-18</time>
+                <time title="修改时间：2022-05-18 14:48:22" itemprop="dateModified" datetime="2022-05-18T14:48:22+08:00">2022-05-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2607,7 +2833,7 @@ $ kubectl apply -f coredns.yaml
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-19 17:27:08" itemprop="dateModified" datetime="2022-05-19T17:27:08+08:00">2022-05-19</time>
+                <time title="修改时间：2022-05-19 17:27:10" itemprop="dateModified" datetime="2022-05-19T17:27:10+08:00">2022-05-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2722,7 +2948,7 @@ $ kubectl apply -f coredns.yaml
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-30 20:33:38" itemprop="dateModified" datetime="2022-05-30T20:33:38+08:00">2022-05-30</time>
+                <time title="修改时间：2022-05-30 22:32:58" itemprop="dateModified" datetime="2022-05-30T22:32:58+08:00">2022-05-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2894,7 +3120,7 @@ $ kubectl apply -f coredns.yaml
 <thead>
 <tr>
 <th>角色</th>
-<th>IP地址</th>
+<th><code>IP</code>地址</th>
 <th>配置</th>
 <th>操作系统</th>
 </tr>
@@ -2922,22 +3148,32 @@ $ kubectl apply -f coredns.yaml
 <li><font color=red>分别设置三台主机名</font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname master-35-128</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname node1-35-129</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname node2-35-130</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>分别在三台服务器做本地<code>hosts</code>解析</font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;&gt;/etc/hosts/&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">192.168.35.128 master</span><br><span class="line">192.168.35.129 node-01</span><br><span class="line">192.168.35.130 node-02</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>设置时间同步，修改时区两种方式</font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第一种</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">timedatectl set-timezone Asia/Shanghai</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第二种</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">ln</span> -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> chronyd.service &amp;&amp; systemctl start chronyd.service</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>关闭防火墙并禁止开机自启</font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">disable</span> firewalld &amp;&amp; systemctl stop firewalld</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>关闭<code>SElinux</code></font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">setenforce 0  	<span class="comment">#临时关闭Selinux</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/^SELINUX=.*/SELINUX=disabled/&#x27;</span> /etc/selinux/config  <span class="comment">#永久关闭Selinux</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font color=red>关闭<code>swap</code>交换分区</font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -ri <span class="string">&#x27;s/.*swap.*/#&amp;/&#x27;</span> /etc/fstab &amp;&amp; swapoff -a</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>允许 iptables 检查桥接流量</font></li>
 </ul>
@@ -2948,21 +3184,25 @@ $ kubectl apply -f coredns.yaml
 </ul>
 </blockquote>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &lt;&lt;<span class="string">EOF | sudo tee /etc/modules-load.d/k8s.conf</span></span></span><br><span class="line">br_netfilter</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">cat &lt;&lt;EOF</span> | sudo <span class="built_in">tee</span> /etc/sysctl.d/k8s.conf</span></span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">net.ipv4.ip_forward = 1</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sysctl --system</span></span><br></pre></td></tr></table></figure>
+
 <ul>
-<li><font color=red>开启ipvs</font></li>
-</ul>
-<blockquote>
+<li><font color=red>开启ipvs</font>  <blockquote>
 <ul>
 <li>在kubernetes中service有两种代理模型，一种是基于iptables，另一种是基于ipvs的。ipvs的性能要高于iptables的，但是如果要使用它，需要手动载入ipvs模块。  </li>
 <li><font color=red>在每个节点安装ipset和ipvsadm</font></li>
 </ul>
 </blockquote>
+</li>
+</ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install ipset ipvsadm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在所有节点执行如下脚本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt; /etc/sysconfig/modules/ipvs.modules &lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">!/bin/bash</span></span></span><br><span class="line">modprobe -- ip_vs</span><br><span class="line">modprobe -- ip_vs_rr</span><br><span class="line">modprobe -- ip_vs_wrr</span><br><span class="line">modprobe -- ip_vs_sh</span><br><span class="line">modprobe -- nf_conntrack_ipv4</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">授权、运行、检查是否加载</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">chmod 755 /etc/sysconfig/modules/ipvs.modules &amp;&amp; bash /etc/sysconfig/modules/ipvs.modules &amp;&amp; lsmod | grep -e ip_vs -e nf_conntrack_ipv4</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">检查是否加载</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">lsmod | grep -e ipvs -e nf_conntrack_ipv4</span></span></span><br></pre></td></tr></table></figure>
+
 <h4 id="1-3-所有节点都安装docker"><a href="#1-3-所有节点都安装docker" class="headerlink" title="1.3 所有节点都安装docker"></a>1.3 所有节点都安装docker</h4><ul>
 <li><font color=red>国内修改为阿里云yum源</font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> /etc/yum.repos.d/CentOS-Base.repo&#123;,.bak&#125;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> /etc/yum.repos.d/epel.repo&#123;,.bak&#125;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y yum-utils device-mapper-persistent-data lvm2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s+download.docker.com+mirrors.aliyun.com/docker-ce+&#x27;</span> /etc/yum.repos.d/docker-ce.repo</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum makecache fast</span></span><br></pre></td></tr></table></figure>
+
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/docker/daemon.json &lt;&lt;<span class="string">EOF</span></span></span><br><span class="line">&#123;</span><br><span class="line">    &quot;registry-mirrors&quot;: [&quot;https://bn4ll166.mirror.aliyuncs.com&quot;],</span><br><span class="line">    &quot;data-root&quot;: &quot;/data/docker-root&quot;,</span><br><span class="line">    &quot;dns&quot;: [&quot;223.5.5.5&quot;,&quot;119.29.29.29&quot;],</span><br><span class="line">    &quot;bip&quot;: &quot;172.31.255.254/16&quot;,</span><br><span class="line">    &quot;storage-driver&quot;: &quot;overlay2&quot;,</span><br><span class="line">    &quot;storage-opts&quot;: [&quot;overlay2.override_kernel_check=true&quot;],</span><br><span class="line">    &quot;userland-proxy&quot;: false,</span><br><span class="line">    &quot;log-driver&quot;: &quot;json-file&quot;,</span><br><span class="line">    &quot;log-opts&quot;: &#123;&quot;max-size&quot;: &quot;500m&quot;,&quot;max-file&quot;: &quot;1&quot;&#125;,</span><br><span class="line">    &quot;exec-opts&quot;: [&quot;native.cgroupdriver=systemd&quot;],	</span><br><span class="line">    &quot;live-restore&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>直接使用docker官方源安装 </font></li>
 </ul>
@@ -2971,13 +3211,16 @@ $ kubectl apply -f coredns.yaml
 <li><font color=red>国内修改为阿里云yum源 </font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/yum.repos.d/kubernetes.repo &lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">repo_gpgcheck=0</span><br><span class="line">gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>直接使用<code>kubernetes</code>官方yum源</font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &lt;&lt;<span class="string">EOF | sudo tee /etc/yum.repos.d/kubernetes.repo</span></span></span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">repo_gpgcheck=1</span><br><span class="line">gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg</span><br><span class="line">exclude=kubelet kubeadm kubectl</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
 <h4 id="1-5-重启所有节点服务器"><a href="#1-5-重启所有节点服务器" class="headerlink" title="1.5 重启所有节点服务器"></a>1.5 重启所有节点服务器</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reboot</span><br></pre></td></tr></table></figure>
 
 <h3 id="2-所有节点都安装kubeadm、kubelet、kubectl"><a href="#2-所有节点都安装kubeadm、kubelet、kubectl" class="headerlink" title="2. 所有节点都安装kubeadm、kubelet、kubectl"></a>2. 所有节点都安装<code>kubeadm、kubelet、kubectl</code></h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install  kubelet-1.19.0-0.x86_64  kubeadm-1.19.0-0.x86_64 kubectl-1.19.0-0.x86_64</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red><code>--cgroup-driver=systemd</code>：</font>为了实现<code>Docker</code>使用的<code>cgroup drvier</code>和<code>kubelet</code>使用的<code>cgroup</code>默认值为一致，<code>/etc/sysconfig/kubelet</code>文件中添加  </li>
 <li><font color=red><code>--fail-swap-on=false</code></font>忽略swap报错  </li>
@@ -2986,21 +3229,25 @@ $ kubectl apply -f coredns.yaml
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubelet -h | grep EphemeralContainers</span></span><br></pre></td></tr></table></figure>
 
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/sysconfig/kubelet &lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">KUBELET_EXTRA_ARGS=&quot;--cgroup-driver=systemd --fail-swap-on=false&quot;</span><br><span class="line">KUBE_PROXY_MODE=&quot;ipvs&quot;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>置为开机自启动即可，由于没有生成配置文件，集群初始化后自动启动</font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> kubelet &amp;&amp; systemctl start kubelet</span></span><br></pre></td></tr></table></figure>
+
 <ul>
-<li><font color=red>使用kubeadm部署master</font></li>
-</ul>
-<blockquote>
-<p>查看k8s所需镜像 <code>kubeadm config images list</code>  </p>
+<li><font color=red>使用kubeadm部署master</font>  <blockquote>
+<p>查看k8s所需镜像 <code>kubeadm config images list</code></p>
 </blockquote>
+</li>
+</ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm config images list</span></span><br><span class="line">k8s.gcr.io/kube-apiserver:v1.23.1</span><br><span class="line">k8s.gcr.io/kube-controller-manager:v1.23.1</span><br><span class="line">k8s.gcr.io/kube-scheduler:v1.23.1</span><br><span class="line">k8s.gcr.io/kube-proxy:v1.23.1</span><br><span class="line">k8s.gcr.io/pause:3.6</span><br><span class="line">k8s.gcr.io/etcd:3.5.1-0</span><br><span class="line">k8s.gcr.io/coredns/coredns:v1.8.6</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>下载 k8s 所需镜像 (如果过程中有提示失败迹象, 那么可能是网络原因, 多执行几次)</font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm config images list|xargs -n1 docker pull</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>部署k8s的Master节点</font></li>
 </ul>
@@ -3013,28 +3260,32 @@ $ kubectl apply -f coredns.yaml
 </ul>
 </blockquote>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm init --kubernetes-version=v1.23.1 \</span></span><br><span class="line"><span class="language-bash"> --apiserver-advertise-address=192.168.35.128 \</span></span><br><span class="line"><span class="language-bash"> --service-cidr=10.64.0.0/24 \</span></span><br><span class="line"><span class="language-bash"> --pod-network-cidr=10.244.0.0/16</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>查看node信息</font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get nodes</span></span><br><span class="line">NAME         STATUS   ROLES                  AGE   VERSION</span><br><span class="line">k8s-master   Ready    control-plane,master   23h   v1.21.12</span><br><span class="line">k8s-node1    Ready    &lt;none&gt;                 23h   v1.21.12</span><br><span class="line">k8s-node2    Ready    &lt;none&gt;                 23h   v1.21.12</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>根据提示消息，在Master节点上使用kubectl工具</font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -p <span class="variable">$HOME</span>/.kube</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cp</span> -i /etc/kubernetes/admin.conf <span class="variable">$&#123;HOME&#125;</span>/.kube/config</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> $(<span class="built_in">id</span> -u):$(<span class="built_in">id</span> -g) <span class="variable">$&#123;HOME&#125;</span>/.kube/config</span></span><br></pre></td></tr></table></figure>
 
-
 <h3 id="3-node节点加入集群"><a href="#3-node节点加入集群" class="headerlink" title="3. node节点加入集群"></a>3. <code>node</code>节点加入集群</h3><ul>
 <li><font color=red>当主节点启动完<code>k8s</code>之后会生成加入节点的命令，视自己服务器而定</font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm <span class="built_in">join</span> 192.168.35.128:6443 --token l37r7y.75gjs1ltufdp8kp2 \</span></span><br><span class="line"><span class="language-bash">	--discovery-token-ca-cert-hash sha256:9ebc670ec3f97b5f42d77908f378786ed806ef22e9ae2cf21fe5fb239483833c</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>默认token有效期为24小时，当过期之后，该token就不可用了。这时就需要重新创建token，操作如下：</font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm token create --print-join-command</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm token create --ttl 0 --print-join-command  <span class="comment">#生成一个永不过期的token</span></span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red><code>master</code>执行命令查看节点是否已加入</font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get componentstatuses  	<span class="comment"># 查看集群健康状况，缩写为：cs</span></span></span><br><span class="line">NAME                 STATUS    MESSAGE             ERROR</span><br><span class="line">scheduler            Healthy   ok                  </span><br><span class="line">controller-manager   Healthy   ok                  </span><br><span class="line">etcd-0               Healthy   &#123;&quot;health&quot;:&quot;true&quot;&#125;</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>查看部署好的命名空间</font>  <blockquote>
 <ul>
@@ -3077,10 +3328,12 @@ $ kubectl apply -f coredns.yaml
 </li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods -n kube-system</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>安装calico网络插件</font></li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://docs.projectcalico.org/v3.8/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">wget  https://docs.projectcalico.org/manifests/calico.yaml</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li><font color=red>kubernetes 中 kubectl 命令自动补全</font></li>
 </ul>
@@ -3278,216 +3531,10 @@ $ kubectl apply -f coredns.yaml
 <div>
     
  </div>
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Redis/configure-Redis/">
-
-<div>
-      
-</div>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/IMG_0081.JPG">
-      <meta itemprop="name" content="二哥">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="二哥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Redis/configure-Redis/" class="post-title-link" itemprop="url">configure-Redis</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-04-30 21:40:47" itemprop="dateCreated datePublished" datetime="2022-04-30T21:40:47+08:00">2022-04-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-24 18:37:42" itemprop="dateModified" datetime="2022-05-24T18:37:42+08:00">2022-05-24</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>11k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>10 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-编写启动文件"><a href="#1-编写启动文件" class="headerlink" title="1. 编写启动文件"></a>1. 编写启动文件</h3><ul>
-<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903661223542792">深入剖析Redis系列</a>   </li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/kismetv/p/9137897.html">深入学习Redis持久化</a>  </li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/hopeofthevillage/p/11535683.html">Redis集群增加节点和删除节点</a></li>
-</ul>
-<h4 id="1-1-Windows下桌面连接Redis工具"><a href="#1-1-Windows下桌面连接Redis工具" class="headerlink" title="1.1 Windows下桌面连接Redis工具"></a>1.1 <code>Windows</code>下桌面连接<code>Redis</code>工具</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/uglide/RedisDesktopManager/releases/tag/0.8.8     #下载客户端连接工具 Redis 0.8.8  </span><br><span class="line">https://github.com/uglide/RedisDesktopManager/releases/tag/0.9.3   	#下载客户端连接工具 Redis 0.9.3</span><br><span class="line">https://github.com/qishibo/AnotherRedisDesktopManager/releases       #windows系统远程连接工具</span><br><span class="line">https://github.com/quick123official/quick_redis_blog/releases </span><br></pre></td></tr></table></figure>
-<h3 id="2-部署Redis主从模式，但台服务器需要修改端口以及配置文件"><a href="#2-部署Redis主从模式，但台服务器需要修改端口以及配置文件" class="headerlink" title="2. 部署Redis主从模式，但台服务器需要修改端口以及配置文件"></a>2. 部署<code>Redis</code>主从模式，但台服务器需要修改端口以及配置文件</h3><h4 id="2-1-主节点-conf配置文件"><a href="#2-1-主节点-conf配置文件" class="headerlink" title="2.1 主节点.conf配置文件"></a>2.1 主节点.conf配置文件</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">daemonize yes					#redis后台运行</span><br><span class="line">pidfile /var/run/redis_6379.pid			#Redis的pid文件存放位置</span><br><span class="line">logfile /var/log/redis/redis_6379.log	#Redis的日志文件存放位置</span><br><span class="line">port 6379						#端口号</span><br><span class="line">bind 192.168.176.131			#最好是本机IP</span><br><span class="line">timeout 300						#超时时间300秒                                        </span><br><span class="line">databases 16						##缓存库的个数 </span><br><span class="line">dbfilename dump-16379.db			##将数据库转储到的文件名</span><br><span class="line">dir ./							# 数据存放目录</span><br><span class="line">masterauth 123456				#主库密码</span><br><span class="line">requirepass 123456				#连接密码</span><br></pre></td></tr></table></figure>
-<h4 id="2-2-从节点-conf配置文件，第二台从节点修改：bind为自己服务器本身ip"><a href="#2-2-从节点-conf配置文件，第二台从节点修改：bind为自己服务器本身ip" class="headerlink" title="2.2  从节点.conf配置文件，第二台从节点修改：bind为自己服务器本身ip"></a>2.2  从节点<code>.conf</code>配置文件，第二台从节点修改：<code>bind</code>为自己服务器本身ip</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">daemonize yes                       #redis后台运行</span><br><span class="line">pidfile /var/run/redis_6370.pid  #不同实例修改为对应pid文件</span><br><span class="line">logfile /var/log/redis/redis_6379.log</span><br><span class="line">port 6379</span><br><span class="line">bind 192.168.176.132</span><br><span class="line">timeout 300</span><br><span class="line">databases 16</span><br><span class="line">dbfilename dump-26379.db</span><br><span class="line">dir ./                      # 数据存放目录</span><br><span class="line">masterauth 123456			#填写主库密码</span><br><span class="line">requirepass 123456			#连接密码</span><br><span class="line">slaveof 192.168.176.131 6379    #连接的主库IP和端口号</span><br></pre></td></tr></table></figure>
-<h3 id="3-部署Redis-Cluster模式-即：集群模式-集群模式最少6个节点"><a href="#3-部署Redis-Cluster模式-即：集群模式-集群模式最少6个节点" class="headerlink" title="3. 部署Redis Cluster模式(即：集群模式)集群模式最少6个节点"></a>3. 部署<code>Redis Cluster</code>模式(即：集群模式)<mark>集群模式最少6个节点</mark></h3><h4 id="3-1-修改配置文件"><a href="#3-1-修改配置文件" class="headerlink" title="3.1 修改配置文件"></a>3.1 修改配置文件</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">dir /usr/local/redis-cluster/data/redis-6379  #修改为对应实例数据存放目录</span><br><span class="line">pidfile /var/run/redis-cluster/redis_6379.pid  #修改为对应实例：Pid</span><br><span class="line">logfile /usr/local/redis-cluster/log/redis_6379.log  #修改为对应实例 </span><br><span class="line">port 6379               # 端口号</span><br><span class="line">cluster-enabled yes     #开启集群模式，把注释#去掉</span><br><span class="line">cluster-config-file /usr/local/redis-cluster/conf/redis_16379.conf  #不同实例修改为对应</span><br><span class="line">cluster-node-timeout 10000  # 请求超时，设置10秒</span><br><span class="line">appendonly yes      # aof日志开启，有需要就开启，它会每次写操作都记录一条日志</span><br></pre></td></tr></table></figure>
-<h4 id="3-2-Redis5-0以上版本使用Redis-cli-客户端部署"><a href="#3-2-Redis5-0以上版本使用Redis-cli-客户端部署" class="headerlink" title="3.2 Redis5.0以上版本使用Redis-cli 客户端部署"></a>3.2 <code>Redis5.0</code>以上版本使用<code>Redis-cli</code> 客户端部署</h4><p><font color=Red>部署集群需要防火墙开放集群端口互通如端口是：<code>6379</code> 集群端口就是：<code>16379</code> </font>  </p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">/opt/apps/redis/bin/redis-cli -a password --cluster create --cluster-replicas 1 \</span></span><br><span class="line"><span class="language-bash"> 192.168.213.128:6379 192.168.213.128:6380 192.168.213.128:6381 \</span></span><br><span class="line"><span class="language-bash"> 192.168.213.129:6379 192.168.213.129:6380 192.168.213.129:6381</span></span><br></pre></td></tr></table></figure>
-<h4 id="3-3-docker部署Redis集群"><a href="#3-3-docker部署Redis集群" class="headerlink" title="3.3 docker部署Redis集群"></a>3.3 <code>docker</code>部署<code>Redis</code>集群</h4><ul>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/b7dea62bcd8b">Docker方式部署redis-cluster</a></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;docker-install-redis-cluster.sh&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">!/bin/bash</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">------------ bootstrap the cluster nodes --------------------</span></span></span><br><span class="line"></span><br><span class="line">start_cmd=&#x27;redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --masterauth Redis --requirepass Redis&#x27;</span><br><span class="line">redis_image=&#x27;redis:5.0-rc&#x27;</span><br><span class="line">network_name=&#x27;redis_cluster_net&#x27;</span><br><span class="line"></span><br><span class="line">docker network create $network_name</span><br><span class="line">echo $network_name &quot; created&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">---------- create the cluster ------------------------</span></span></span><br><span class="line"></span><br><span class="line">for port in `seq 6379 6384`; do \</span><br><span class="line"> docker run -d --name &quot;redis-&quot;$port -p $port:6379 --net $network_name $redis_image $start_cmd;</span><br><span class="line"> echo &quot;created redis cluster node redis-&quot;$port</span><br><span class="line">done</span><br><span class="line"></span><br><span class="line">cluster_hosts=&#x27;&#x27;</span><br><span class="line"></span><br><span class="line">for port in `seq 6379 6384`; do \</span><br><span class="line"> hostip=`docker inspect -f &#x27;&#123;&#123;(index .NetworkSettings.Networks &quot;redis_cluster_net&quot;).IPAddress&#125;&#125;&#x27; &quot;redis-&quot;$port`;</span><br><span class="line"> echo &quot;IP for cluster node redis-&quot;$port &quot;is&quot; $hostip</span><br><span class="line"> cluster_hosts=&quot;$cluster_hosts$hostip:6379 &quot;;</span><br><span class="line">done</span><br><span class="line"></span><br><span class="line">echo &quot;cluster hosts &quot;$cluster_hosts</span><br><span class="line">echo &quot;creating cluster....&quot;</span><br><span class="line">echo &#x27;yes&#x27; | docker run -i --rm --restart=always -v /etc/localtime:/etc/localtime --net $network_name $redis_image redis-cli  -a Redis --cluster create $cluster_hosts --cluster-replicas 1;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-<h4 id="3-4-Redis-5-0以下版本Ruby方式安装Redis集群"><a href="#3-4-Redis-5-0以下版本Ruby方式安装Redis集群" class="headerlink" title="3.4 Redis 5.0以下版本Ruby方式安装Redis集群"></a>3.4 <code>Redis 5.0</code>以下版本<code>Ruby</code>方式安装<code>Redis</code>集群</h4><ul>
-<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/e4847f3926d1">CentOS 7安装Ruby on Rails</a>  </li>
-<li><a target="_blank" rel="noopener" href="https://www.myfreax.com/how-to-install-ruby-on-centos-7/">如何在CentOS 7上安装Ruby</a>  </li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xuliangxing/p/7132656.html">Linux 安装Ruby详解(在线和离线安装)</a>  </li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/tommy-huang/p/7279796.html">CentOS 7通过RVM来安装指定版本的Ruby</a></li>
-</ul>
-<h5 id="3-4-1-安装Ruby"><a href="#3-4-1-安装Ruby" class="headerlink" title="3.4.1 安装Ruby"></a>3.4.1 安装<code>Ruby</code></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&#x27;#!/bin/bash</span></span></span><br><span class="line">yum install gcc-c++ patch readline readline-devel zlib zlib-devel libyaml-devel libffi-devel openssl-devel make bzip2 autoconf automake libtool bison iconv-devel -y   #安装依赖库</span><br><span class="line">gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3    #安装RVM</span><br><span class="line">curl -sSL https://rvm.io/mpapis.asc | gpg2 --import -</span><br><span class="line">curl -sSL https://rvm.io/pkuczynski.asc | gpg2 --import -</span><br><span class="line">curl -L get.rvm.io | bash -s stable</span><br><span class="line">sleep 2</span><br><span class="line"></span><br><span class="line">source /etc/profile.d/rvm.sh    #设定rvm环境</span><br><span class="line">sleep 3</span><br><span class="line">rvm -v          #查看是否安装正常</span><br><span class="line">rvm list known  #查询当前Ruby的版本列表</span><br><span class="line">rvm install 2.4.6   #安装指定版本的Ruby</span><br><span class="line">ruby -v             #测试是否成功</span><br><span class="line">rvm use 2.4.6  --default     #在安装多个版本ruby环境下指定默认版本：这里讲2.4.6 作为默认ruby版本</span><br><span class="line">rvm system --default    #使用会系统默认版本Ruby</span><br><span class="line">gem install redis       准备rubygem redis依赖</span><br><span class="line">&#x27; &gt;install-ruby.sh</span><br></pre></td></tr></table></figure>
-<h5 id="3-4-2-拷贝redis-trib-rb到集群根目录"><a href="#3-4-2-拷贝redis-trib-rb到集群根目录" class="headerlink" title="3.4.2 拷贝redis-trib.rb到集群根目录"></a>3.4.2 拷贝<code>redis-trib.rb</code>到集群根目录</h5><blockquote>
-<p><code>redis-trib.rb</code> 是<code>redis</code>官方推出的管理<code>redis</code>集群 的工具，集成在<code>redis</code>的源码<code>src</code>目录下，将基于 redis 提供的 集群命令 封装成 简单、便捷、实用 的 操作工具。  </p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cp</span> /opt/apps/redis/src/redis-trib.rb /opt/apps/redis/</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>查看 redis-trib.rb 命令环境是否正确，输出如下</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./redis-trib.rb</span> </span><br><span class="line">Usage: redis-trib &lt;command&gt; &lt;options&gt; &lt;arguments ...&gt;</span><br><span class="line"></span><br><span class="line">  create          host1:port1 ... hostN:portN</span><br><span class="line">                  --replicas &lt;arg&gt;</span><br><span class="line">  check           host:port</span><br><span class="line">  info            host:port</span><br><span class="line">  fix             host:port</span><br><span class="line">                  --timeout &lt;arg&gt;</span><br><span class="line">  reshard         host:port</span><br><span class="line">                  --from &lt;arg&gt;</span><br><span class="line">                  --to &lt;arg&gt;</span><br><span class="line">                  --slots &lt;arg&gt;</span><br><span class="line">                  --yes</span><br><span class="line">                  --timeout &lt;arg&gt;</span><br><span class="line">                  --pipeline &lt;arg&gt;</span><br><span class="line">  rebalance       host:port</span><br><span class="line">                  --weight &lt;arg&gt;</span><br><span class="line">                  --auto-weights</span><br><span class="line">                  --use-empty-masters</span><br><span class="line">                  --timeout &lt;arg&gt;</span><br><span class="line">                  --simulate</span><br><span class="line">                  --pipeline &lt;arg&gt;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>redis-trib.rb 是 redis 作者用 ruby 完成的。redis-trib.rb 命令行工具 的具体功能如下:  </p>
-</blockquote>
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>create</td>
-<td>创建集群</td>
-</tr>
-<tr>
-<td>check</td>
-<td>检查集群</td>
-</tr>
-<tr>
-<td>info</td>
-<td>查看集群信息</td>
-</tr>
-<tr>
-<td>fix</td>
-<td>修复集群</td>
-</tr>
-<tr>
-<td>reshard</td>
-<td>在线迁移slot</td>
-</tr>
-<tr>
-<td>rebalance</td>
-<td>平衡集群节点slot数量</td>
-</tr>
-<tr>
-<td>add-node</td>
-<td>将新节点加入集群</td>
-</tr>
-<tr>
-<td>del-node</td>
-<td>从集群中删除节点</td>
-</tr>
-<tr>
-<td>set-timeout</td>
-<td>设置集群节点间心跳连接的超时时间</td>
-</tr>
-<tr>
-<td>call</td>
-<td>在集群全部节点上执行命令</td>
-</tr>
-<tr>
-<td>import</td>
-<td>将外部redis数据导入集群</td>
-</tr>
-</tbody></table>
-<ul>
-<li>运行命令启动所有节点</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">/opt/apps/redis/bin/redis-server /opt/conf/redis-conf/re_17693.conf &amp;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">/opt/apps/redis/bin/redis-server /opt/conf/redis-conf/re_17694.conf &amp;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">/opt/apps/redis/bin/redis-server /opt/conf/redis-conf/re_17695.conf &amp;</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>在每个 redis 节点的 redis.conf 文件中，我们都配置了 <code>cluster-config-file</code> 的文件路径，集群启动时，conf 目录会新生成 集群 节点配置文件。查看文件列表如下：  </p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install tree</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tree -L 3 .</span></span><br><span class="line">.</span><br><span class="line">├── bin</span><br><span class="line">│   ├── redis-benchmark</span><br><span class="line">│   ├── redis-check-aof</span><br><span class="line">│   ├── redis-check-rdb</span><br><span class="line">│   ├── redis-cli</span><br><span class="line">│   ├── redis-sentinel -&gt; redis-server</span><br><span class="line">│   └── redis-server</span><br><span class="line">├── nodes-6379.conf</span><br><span class="line">├── redis.conf</span><br><span class="line">└── redis-trib.rb</span><br></pre></td></tr></table></figure>
-<ul>
-<li>配置密码</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /usr/local/rvm/gems/ruby-2.4.6/gems/redis-4.1.3/lib/redis/client.rb</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">frozen_string_literal: <span class="literal">true</span></span></span><br><span class="line"></span><br><span class="line">require_relative &quot;errors&quot;</span><br><span class="line">require &quot;socket&quot;</span><br><span class="line">require &quot;cgi&quot;</span><br><span class="line"></span><br><span class="line">class Redis</span><br><span class="line">  class Client</span><br><span class="line"></span><br><span class="line">    DEFAULTS = &#123;</span><br><span class="line">      :url =&gt; lambda &#123; ENV[&quot;REDIS_URL&quot;] &#125;,</span><br><span class="line">      :scheme =&gt; &quot;redis&quot;,</span><br><span class="line">      :host =&gt; &quot;127.0.0.1&quot;,</span><br><span class="line">      :port =&gt; 6379,</span><br><span class="line">      :path =&gt; nil,</span><br><span class="line">      :timeout =&gt; 5.0,</span><br><span class="line">      :password =&gt; Redis,   #配置密码</span><br><span class="line">      :db =&gt; 0,</span><br><span class="line">      :driver =&gt; nil,</span><br><span class="line">      :id =&gt; nil,</span><br><span class="line">      :tcp_keepalive =&gt; 0,</span><br><span class="line">      :reconnect_attempts =&gt; 1,</span><br><span class="line">      :reconnect_delay =&gt; 0,</span><br><span class="line">      :reconnect_delay_max =&gt; 0.5,</span><br><span class="line">      :inherit_socket =&gt; false</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>redis-trib关联集群节点</li>
-</ul>
-<blockquote>
-<p>按照 从主到从 的方式 从左到右 依次排列 6 个 redis 节点，如果不通两个问题：密码、防火墙。  </p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&#x27;yes&#x27;</span>|./redis-trib.rb create --replicas 1 192.168.176.142:6379 192.168.176.143:6379 192.168.176.144:6379 192.168.176.145:6379 192.168.176.142:6380 192.168.176.143:6380 192.168.176.144:6380 192.168.176.145:6380</span>  </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Creating cluster</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Performing <span class="built_in">hash</span> slots allocation on 8 nodes...</span></span><br><span class="line">Using 4 masters:</span><br><span class="line">192.168.176.142:6379</span><br><span class="line">192.168.176.143:6379</span><br><span class="line">192.168.176.144:6379</span><br><span class="line">192.168.176.145:6379</span><br><span class="line">Adding replica 192.168.176.143:6380 to 192.168.176.142:6379</span><br><span class="line">Adding replica 192.168.176.142:6380 to 192.168.176.143:6379</span><br><span class="line">Adding replica 192.168.176.145:6380 to 192.168.176.144:6379</span><br><span class="line">Adding replica 192.168.176.144:6380 to 192.168.176.145:6379</span><br><span class="line">M: 157bd250dd382b95a9289d8b44fd2cfd466fea98 192.168.176.142:6379</span><br><span class="line">   slots:0-4095 (4096 slots) master</span><br><span class="line">M: c6df79e7c60c03921b69e4d4342507e8d4d2afbd 192.168.176.143:6379</span><br><span class="line">   slots:4096-8191 (4096 slots) master</span><br><span class="line">M: a463232f96c66cd7f27395253b65d0be8909656e 192.168.176.144:6379</span><br><span class="line">   slots:8192-12287 (4096 slots) master</span><br><span class="line">M: 44b244a188185835b42d4489eac614e7f81b4cf8 192.168.176.145:6379</span><br><span class="line">   slots:12288-16383 (4096 slots) master</span><br><span class="line">S: 1cafdeeb6cb52bb96dd16ac84d2242f59973f83a 192.168.176.142:6380</span><br><span class="line">   replicates c6df79e7c60c03921b69e4d4342507e8d4d2afbd</span><br><span class="line">S: a6d87fb995f3f5e98e2a09f4b5a3078f7221a257 192.168.176.143:6380</span><br><span class="line">   replicates 157bd250dd382b95a9289d8b44fd2cfd466fea98</span><br><span class="line">S: 31a3f0b03244d30bbc7e47acc0ec06d327b62860 192.168.176.144:6380</span><br><span class="line">   replicates 44b244a188185835b42d4489eac614e7f81b4cf8</span><br><span class="line">S: fc22025eb5db7cc0d55fe7dc11a3c368daa468bb 192.168.176.145:6380</span><br><span class="line">   replicates a463232f96c66cd7f27395253b65d0be8909656e</span><br><span class="line">Can I set the above configuration? (type &#x27;yes&#x27; to accept): yes     #此处输入：yes、然后redis-trib.rb 开始执行 节点握手 和 槽分配 操作，输出如下：</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Nodes configuration updated</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Assign a different config epoch to each node</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Sending CLUSTER MEET messages to <span class="built_in">join</span> the cluster</span></span><br><span class="line">Waiting for the cluster to join....</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Performing Cluster Check (using node 192.168.176.142:6379)</span></span><br><span class="line">M: 157bd250dd382b95a9289d8b44fd2cfd466fea98 192.168.176.142:6379</span><br><span class="line">   slots:0-4095 (4096 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: 31a3f0b03244d30bbc7e47acc0ec06d327b62860 192.168.176.144:6380</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 44b244a188185835b42d4489eac614e7f81b4cf8</span><br><span class="line">M: a463232f96c66cd7f27395253b65d0be8909656e 192.168.176.144:6379</span><br><span class="line">   slots:8192-12287 (4096 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">M: 44b244a188185835b42d4489eac614e7f81b4cf8 192.168.176.145:6379</span><br><span class="line">   slots:12288-16383 (4096 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: fc22025eb5db7cc0d55fe7dc11a3c368daa468bb 192.168.176.145:6380</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates a463232f96c66cd7f27395253b65d0be8909656e</span><br><span class="line">M: c6df79e7c60c03921b69e4d4342507e8d4d2afbd 192.168.176.143:6379</span><br><span class="line">   slots:4096-8191 (4096 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: a6d87fb995f3f5e98e2a09f4b5a3078f7221a257 192.168.176.143:6380</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 157bd250dd382b95a9289d8b44fd2cfd466fea98</span><br><span class="line">S: 1cafdeeb6cb52bb96dd16ac84d2242f59973f83a 192.168.176.142:6380</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates c6df79e7c60c03921b69e4d4342507e8d4d2afbd</span><br><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Check <span class="keyword">for</span> open slots...</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Check slots coverage...</span></span><br><span class="line">[OK] All 16384 slots covered.</span><br></pre></td></tr></table></figure>
-<ul>
-<li>redis集群完整性检</li>
-</ul>
-<blockquote>
-<p>使用 redis-trib.rb check 命令检测之前创建的 两个集群 是否成功，check 命令只需要给出集群中 任意一个节点地址 就可以完成 整个集群 的 检查工作，命令如下：  </p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./redis-trib.rb check 192.168.176.145:6379</span> </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Performing Cluster Check (using node 192.168.176.142:6379)</span></span><br><span class="line">M: 157bd250dd382b95a9289d8b44fd2cfd466fea98 192.168.176.142:6379</span><br><span class="line">   slots:0-4095 (4096 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: 31a3f0b03244d30bbc7e47acc0ec06d327b62860 192.168.176.144:6380</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 44b244a188185835b42d4489eac614e7f81b4cf8</span><br><span class="line">M: a463232f96c66cd7f27395253b65d0be8909656e 192.168.176.144:6379</span><br><span class="line">   slots:8192-12287 (4096 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">M: 44b244a188185835b42d4489eac614e7f81b4cf8 192.168.176.145:6379</span><br><span class="line">   slots:12288-16383 (4096 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: fc22025eb5db7cc0d55fe7dc11a3c368daa468bb 192.168.176.145:6380</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates a463232f96c66cd7f27395253b65d0be8909656e</span><br><span class="line">M: c6df79e7c60c03921b69e4d4342507e8d4d2afbd 192.168.176.143:6379</span><br><span class="line">   slots:4096-8191 (4096 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: a6d87fb995f3f5e98e2a09f4b5a3078f7221a257 192.168.176.143:6380</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 157bd250dd382b95a9289d8b44fd2cfd466fea98</span><br><span class="line">S: 1cafdeeb6cb52bb96dd16ac84d2242f59973f83a 192.168.176.142:6380</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates c6df79e7c60c03921b69e4d4342507e8d4d2afbd</span><br><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Check <span class="keyword">for</span> open slots...</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Check slots coverage...</span></span><br><span class="line">[OK] All 16384 slots covered.</span><br></pre></td></tr></table></figure>
-<h3 id="4-Redis-Sentinel模式-即-哨兵模式"><a href="#4-Redis-Sentinel模式-即-哨兵模式" class="headerlink" title="4. Redis Sentinel模式(即:哨兵模式)"></a>4. Redis Sentinel模式(即:哨兵模式)</h3><h4 id="4-1-节点-1-sentinel-16380-conf"><a href="#4-1-节点-1-sentinel-16380-conf" class="headerlink" title="4.1 节点-1 sentinel_16380.conf"></a>4.1 节点-1 sentinel_16380.conf</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">protected-mode no</span><br><span class="line">bind 192.168.176.131				#本机IP</span><br><span class="line">port 16380</span><br><span class="line">daemonize yes</span><br><span class="line">sentinel monitor master 192.168.176.131 6379 2		#主IP与端口号</span><br><span class="line">sentinel down-after-milliseconds master 5000		#指定主节点应答哨兵sentinel的最大时间间隔，超过这个时间，哨兵主观上认为主节点下线，默认30秒</span><br><span class="line">sentinel failover-timeout master 180000				#故障转移的超时时间failover-timeout，默认三分钟，可以用在以下这些方面</span><br><span class="line">sentinel parallel-syncs master 1					#指定了在发生failover主备切换时，最多可以有多少个slave同时对新的master进行同步。这个数字越小，完成failover所需的时间就越长；反之，但是如果这个数字越大，就意味着越多的slave因为replication而不可用。可以通过将这个值设为1，来保证每次只有一个slave，处于不能处理命令请求的状态。</span><br><span class="line">sentinel auth-pass master 123456		#当在Redis实例中开启了requirepass &lt;foobared&gt;，所有连接Redis实例的客户端都要提供密码</span><br><span class="line">logfile /var/log/redis/sentinel_16380.log</span><br></pre></td></tr></table></figure>
-<h4 id="4-2-节点2-3-centinel-16380-conf"><a href="#4-2-节点2-3-centinel-16380-conf" class="headerlink" title="4.2 节点2~3 centinel_16380.conf"></a>4.2 节点2~3 centinel_16380.conf</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">protected-mode no</span><br><span class="line">bind 192.168.176.132    #此处修改为本机IP</span><br><span class="line">port 16380</span><br><span class="line">daemonize yes</span><br><span class="line">sentinel monitor master 192.168.176.131 6379 2	#主IP与端口号</span><br><span class="line">sentinel down-after-milliseconds master 5000</span><br><span class="line">sentinel failover-timeout master 180000</span><br><span class="line">sentinel parallel-syncs master 1</span><br><span class="line">sentinel auth-pass master 123456</span><br><span class="line">logfile /var/log/redis/sentinel_16380.log</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-<div>
-    
- </div>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -3555,7 +3602,7 @@ $ kubectl apply -f coredns.yaml
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -3612,12 +3659,12 @@ $ kubectl apply -f coredns.yaml
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">187k</span>
+    <span title="站点总字数">189k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:50</span>
+    <span title="站点阅读时长">2:52</span>
 </div>
 
 <!--

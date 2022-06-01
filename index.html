@@ -191,6 +191,186 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/Install-Kubernetes-Cluster/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Kubernetes/Install-Kubernetes-Cluster/" class="post-title-link" itemprop="url">Install-Kubernetes-Cluster</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-05-30 20:58:42 / 修改时间：22:33:02" itemprop="dateCreated datePublished" datetime="2022-05-30T20:58:42+08:00">2022-05-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-规划主机以及部署高可用集群"><a href="#1-规划主机以及部署高可用集群" class="headerlink" title="1. 规划主机以及部署高可用集群"></a>1. 规划主机以及部署高可用集群</h3><table>
+<thead>
+<tr>
+<th>角色</th>
+<th><code>IP</code>地址</th>
+<th>配置</th>
+<th>操作系统</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Master-1</td>
+<td>192.168.35.128</td>
+<td><code>2core、4G、80Gdisk</code></td>
+<td><code>CentOS Linux release 7.9.2</code></td>
+</tr>
+<tr>
+<td>Master-2</td>
+<td>192.168.35.129</td>
+<td><code>2core、4G、80Gdisk</code></td>
+<td><code>CentOS Linux release 7.9.2</code></td>
+</tr>
+<tr>
+<td>Master-3</td>
+<td>192.168.35.130</td>
+<td><code>2core、4G、80Gdisk</code></td>
+<td><code>CentOS Linux release 7.9.2</code></td>
+</tr>
+<tr>
+<td>node-1</td>
+<td>192.168.35.131</td>
+<td><code>2core、2G、60Gdisk</code></td>
+<td><code>CentOS Linux release 7.9.2</code></td>
+</tr>
+<tr>
+<td>node-2</td>
+<td>192.168.35.132</td>
+<td><code>2core、2G、60Gdisk</code></td>
+<td><code>CentOS Linux release 7.9.2</code></td>
+</tr>
+<tr>
+<td>node-3</td>
+<td>192.168.35.133</td>
+<td><code>2core、2G、60Gdisk</code></td>
+<td><code>CentOS Linux release 7.9.2</code></td>
+</tr>
+</tbody></table>
+<h4 id="1-1-系统初始化"><a href="#1-1-系统初始化" class="headerlink" title="1.1 系统初始化"></a>1.1 系统初始化</h4><ul>
+<li><font color=red>分别设置六台主机名</font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname master-1-35-128</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname master-2-35-129</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname master-3-35-130</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname node-1-35-131</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname node-2-35-132</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname node-3-35-133</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><font color=red>分别在六台服务器做本地<code>hosts</code>解析</font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;&gt;/etc/hosts/&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">192.168.35.128 master-01</span><br><span class="line">192.168.35.129 master-02</span><br><span class="line">192.168.35.130 master-03</span><br><span class="line">192.168.35.131 noder-01</span><br><span class="line">192.168.35.132 noder-02</span><br><span class="line">192.168.35.133 noder-03</span><br><span class="line">192.168.35.140 k8s-master-lb # VIP(虚拟IP)用于LoadBalance，如果不是高可用集群，该IP可以是k8s-master01的IP </span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<ul>
+<li><font color=red>设置时间同步，修改时区两种方式</font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第一种</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">timedatectl set-timezone Asia/Shanghai</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第二种</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">ln</span> -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> chronyd.service &amp;&amp; systemctl start chronyd.service</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><font color=red>关闭防火墙并禁止开机自启</font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">disable</span> firewalld &amp;&amp; systemctl stop firewalld</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><font color=red>关闭<code>SElinux</code></font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">setenforce 0  	<span class="comment">#临时关闭Selinux</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/^SELINUX=.*/SELINUX=disabled/&#x27;</span> /etc/selinux/config  <span class="comment">#永久关闭Selinux</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font color=red>关闭<code>swap</code>交换分区</font></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -ri <span class="string">&#x27;s/.*swap.*/#&amp;/&#x27;</span> /etc/fstab &amp;&amp; swapoff -a</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font color=red>允许 iptables 检查桥接流量</font></li>
+</ul>
+<blockquote>
+<ul>
+<li>确保<font color=red><code>br_netfilter</code></font>模块被加载。这一操作可以通过运行<font color=red><code>lsmod | grep br_netfilter</code></font>来完成。若要显式加载该模块，可执行<font color=red><code>modprobe br_netfilter</code>。</font></li>
+<li>为了让你的<code>Linux</code>节点上的<code>iptables</code>能够正确地查看桥接流量，你需要确保在你的<code>sysctl</code>配置中将 <font color=red><code>net.bridge.bridge-nf-call-iptables</code></font>设置为 1</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &lt;&lt;<span class="string">EOF | sudo tee /etc/modules-load.d/k8s.conf</span></span></span><br><span class="line">br_netfilter</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">cat &lt;&lt;EOF</span> | sudo <span class="built_in">tee</span> /etc/sysctl.d/k8s.conf</span></span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">net.ipv4.ip_forward = 1</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sysctl --system</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><font color=red>开启ipvs</font>  <blockquote>
+<ul>
+<li>在kubernetes中service有两种代理模型，一种是基于iptables，另一种是基于ipvs的。ipvs的性能要高于iptables的，但是如果要使用它，需要手动载入ipvs模块。  </li>
+<li><font color=red>在每个节点安装ipset和ipvsadm</font></li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install ipset ipvsadm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在所有节点执行如下脚本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt; /etc/sysconfig/modules/ipvs.modules &lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">!/bin/bash</span></span></span><br><span class="line">modprobe -- ip_vs</span><br><span class="line">modprobe -- ip_vs_rr</span><br><span class="line">modprobe -- ip_vs_wrr</span><br><span class="line">modprobe -- ip_vs_sh</span><br><span class="line">modprobe -- nf_conntrack_ipv4</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">授权、运行、检查是否加载</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">chmod 755 /etc/sysconfig/modules/ipvs.modules &amp;&amp; bash /etc/sysconfig/modules/ipvs.modules &amp;&amp; lsmod | grep -e ip_vs -e nf_conntrack_ipv4</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">检查是否加载</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">lsmod | grep -e ipvs -e nf_conntrack_ipv4</span></span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/Configure-K8s-Auth/">
 
 <div>
@@ -220,7 +400,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-05-30 17:38:39 / 修改时间：20:23:34" itemprop="dateCreated datePublished" datetime="2022-05-30T17:38:39+08:00">2022-05-30</time>
+              <time title="创建时间：2022-05-30 17:38:39 / 修改时间：20:23:36" itemprop="dateCreated datePublished" datetime="2022-05-30T17:38:39+08:00">2022-05-30</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -698,7 +878,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-30 15:18:09" itemprop="dateModified" datetime="2022-05-30T15:18:09+08:00">2022-05-30</time>
+                <time title="修改时间：2022-05-30 15:18:10" itemprop="dateModified" datetime="2022-05-30T15:18:10+08:00">2022-05-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1296,7 +1476,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-05-29 15:48:51 / 修改时间：21:26:36" itemprop="dateCreated datePublished" datetime="2022-05-29T15:48:51+08:00">2022-05-29</time>
+              <time title="创建时间：2022-05-29 15:48:51 / 修改时间：21:26:38" itemprop="dateCreated datePublished" datetime="2022-05-29T15:48:51+08:00">2022-05-29</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1777,7 +1957,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-30 17:31:54" itemprop="dateModified" datetime="2022-05-30T17:31:54+08:00">2022-05-30</time>
+                <time title="修改时间：2022-05-30 17:31:56" itemprop="dateModified" datetime="2022-05-30T17:31:56+08:00">2022-05-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2040,7 +2220,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-30 17:20:01" itemprop="dateModified" datetime="2022-05-30T17:20:01+08:00">2022-05-30</time>
+                <time title="修改时间：2022-05-30 17:20:02" itemprop="dateModified" datetime="2022-05-30T17:20:02+08:00">2022-05-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2347,7 +2527,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-05-24 20:16:14 / 修改时间：20:20:02" itemprop="dateCreated datePublished" datetime="2022-05-24T20:16:14+08:00">2022-05-24</time>
+              <time title="创建时间：2022-05-24 20:16:14 / 修改时间：20:20:04" itemprop="dateCreated datePublished" datetime="2022-05-24T20:16:14+08:00">2022-05-24</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2446,7 +2626,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-23 16:46:41" itemprop="dateModified" datetime="2022-05-23T16:46:41+08:00">2022-05-23</time>
+                <time title="修改时间：2022-05-23 16:46:42" itemprop="dateModified" datetime="2022-05-23T16:46:42+08:00">2022-05-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2540,7 +2720,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-23 18:30:49" itemprop="dateModified" datetime="2022-05-23T18:30:49+08:00">2022-05-23</time>
+                <time title="修改时间：2022-05-23 18:30:50" itemprop="dateModified" datetime="2022-05-23T18:30:50+08:00">2022-05-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2640,7 +2820,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-26 13:42:33" itemprop="dateModified" datetime="2022-05-26T13:42:33+08:00">2022-05-26</time>
+                <time title="修改时间：2022-05-26 13:42:34" itemprop="dateModified" datetime="2022-05-26T13:42:34+08:00">2022-05-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2776,236 +2956,10 @@
 <div>
     
  </div>
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-k8s-Rancher/">
-
-<div>
-      
-</div>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/IMG_0081.JPG">
-      <meta itemprop="name" content="二哥">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="二哥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Kubernetes/install-k8s-Rancher/" class="post-title-link" itemprop="url">install-Rancher</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-05-19 18:00:24" itemprop="dateCreated datePublished" datetime="2022-05-19T18:00:24+08:00">2022-05-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-26 13:55:40" itemprop="dateModified" datetime="2022-05-26T13:55:40+08:00">2022-05-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>5.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-安装Rancher图形化安装管理Kubernetes工具"><a href="#1-安装Rancher图形化安装管理Kubernetes工具" class="headerlink" title="1. 安装Rancher图形化安装管理Kubernetes工具"></a>1. 安装<code>Rancher</code>图形化安装管理<code>Kubernetes</code>工具</h3><ul>
-<li><code>Rancher</code>是供采用容器的团队使用的完整软件堆栈。它解决了管理多个  </li>
-<li><code>Kubernetes</code>集群的运营和安全挑战，并为<code>DevOps</code>团队提供用于运行容器化工作负载的集成工具  </li>
-<li><font color=red>必须存在<code>Docker</code>环境</font></li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>服务器</th>
-<th>IP</th>
-<th>内存</th>
-<th>CPU</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>master</td>
-<td>192.168.35.128</td>
-<td>8G</td>
-<td>8<code>core</code></td>
-</tr>
-<tr>
-<td>node-1</td>
-<td>192.168.35.129</td>
-<td>4G</td>
-<td>4<code>core</code></td>
-</tr>
-<tr>
-<td>node-2</td>
-<td>192.168.35.130</td>
-<td>4G</td>
-<td>4<code>core</code></td>
-</tr>
-</tbody></table>
-<h4 id="1-1-安装基础环境"><a href="#1-1-安装基础环境" class="headerlink" title="1.1 安装基础环境"></a>1.1 安装基础环境</h4><ul>
-<li><font color=red><code>Nano</code>：超轻量级开源云平台</font>  <blockquote>
-<ul>
-<li><code>Naco</code>：基于<code>KVM</code>技术，使用Go语言开发，简单易学的虚拟机管理软件，从<code>Web</code>管理门户、主机监控、镜像克隆到故障切换，功能完备，开箱即用，数分钟之内即可将您的服务器集群升级为云主机平台</li>
-</ul>
-</blockquote>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y nano</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><font color=red>在所有节点都安装<code>Docker</code></font></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ENV configuration</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;/swap / s/^\(.*\)$/#\1/g&#x27;</span> /etc/fstab</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">swapoff -a</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">modprobe br_netfilter</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;br_netfilter&quot;</span> &gt; /etc/modules-load.d/br_netfilter.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;net.bridge.bridge-nf-call-iptables = 1&quot;</span> &gt;&gt; /etc/sysctl.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;net.ipv4.ip_forward = 1&quot;</span> &gt;&gt; /etc/sysctl.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sysctl -p</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/#AllowTcpForwarding/AllowTcpForwarding/g&#x27;</span> /etc/ssh/sshd_config</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl reload sshd</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl stop firewalld &amp;&amp; systemctl <span class="built_in">disable</span> firewalld</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/SELINUX=enforcing/SELINUX=disabled/g&#x27;</span> /etc/selinux/config</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">setenforce 0</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">timedate configration</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">timedatectl set-timezone Asia/Shanghai</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y chrony</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start chronyd &amp;&amp; sudo systemctl <span class="built_in">enable</span> chronyd</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y yum-utils</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y docker-ce-19.03.9 docker-ce-cli-19.03.9 --nogpgcheck</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> docker &amp;&amp; systemctl start docker</span>  </span><br></pre></td></tr></table></figure>
-<h3 id="2-安装Rancher-v2-6-5"><a href="#2-安装Rancher-v2-6-5" class="headerlink" title="2 安装Rancher v2.6.5"></a>2 安装<code>Rancher v2.6.5</code></h3><p><a target="_blank" rel="noopener" href="https://rancher.com/docs/rancher/v2.6/en/installation/other-installation-methods/single-node-docker/">使用<code>Docker</code>在单节点上安装<code>Rancher</code></a>  </p>
-<ul>
-<li><font color=red><code>Rancher v2.6.5</code>支持的<code>Kubernetes Versions</code>版本</font>  <blockquote>
-<ul>
-<li><font color=red>v1.23.6 (Default)</font>  </li>
-<li><font color=red>v1.22.9</font>  </li>
-<li><font color=red>v1.21.12</font>  </li>
-<li><font color=red>v1.20.15</font>  </li>
-<li><font color=red>v1.19.16</font>  </li>
-<li><font color=red>v1.18.20</font></li>
-</ul>
-</blockquote>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker pull rancher/rancher:v2.6.5</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -d --restart=unless-stopped -p 888:80 -p 4443:443 --privileged rancher/rancher:v2.6.5</span></span><br></pre></td></tr></table></figure>
-
-<p><a target="_blank" rel="noopener" href="https://rancher.com/docs/rancher/v2.6/en/installation/install-rancher-on-k8s/">在<code>Kubernetes</code>集群上安装&#x2F;升级<code>Rancher</code></a>  </p>
-<h4 id="2-1-在Kubernetes集群上安装-x2F-升级Rancher"><a href="#2-1-在Kubernetes集群上安装-x2F-升级Rancher" class="headerlink" title="2.1 在Kubernetes集群上安装&#x2F;升级Rancher"></a>2.1 <font color=red>在<code>Kubernetes</code>集群上安装&#x2F;升级<code>Rancher</code></font></h4><h5 id="2-1-1-安装Helm"><a href="#2-1-1-安装Helm" class="headerlink" title="2.1.1 安装Helm"></a>2.1.1 <a target="_blank" rel="noopener" href="https://helm.sh/docs/intro/install/">安装<code>Helm</code></a></h5><ul>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_37481017/article/details/119002325">基于<code>K8S 1.21.2</code>集群安装<code>Rancher 2.5.9 HA</code></a></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用二进制安装Helm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://get.helm.sh/helm-v3.9.0-linux-amd64.tar.gz</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf helm-v3.9.0-linux-amd64.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> linux-amd64/helm /usr/local/bin/helm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">脚本安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> 700 get_helm.sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./get_helm.sh</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">源代码安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/helm/helm.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> helm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="2-2-1-安装Ingress-Nginx"><a href="#2-2-1-安装Ingress-Nginx" class="headerlink" title="2.2.1 安装Ingress-Nginx"></a>2.2.1 <font color=red>安装<code>Ingress-Nginx</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用Kubectl安装Ingress-Nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/1.21/deploy.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用Helm安装Ingress-Nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace ingress-system</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install blog-enix-rancher ingress-nginx/ingress-nginx \</span></span><br><span class="line"><span class="language-bash">	--namespace ingress-system \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.hostPort.enabled=<span class="literal">true</span> \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.kind=DaemonSet</span></span><br><span class="line"><span class="meta prompt_">	</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace ingress-system</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="2-3-1-安装cert-manager"><a href="#2-3-1-安装cert-manager" class="headerlink" title="2.3.1 安装cert-manager"></a>2.3.1 <font color=red>安装<code>cert-manager</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace cert-manager</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加Jetstack Helm存储库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add jetstack https://charts.jetstack.io</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更新本地 Helm 图表存储库缓存</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo update</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cert-manager自定义所需的自定义资源</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.crds.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.7.1 --<span class="built_in">set</span> installCRDs=<span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">验证cert-manager证书管理器是否安装成功</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace cert-manager</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="2-4-1-使用Helm安装稳定版Rancher"><a href="#2-4-1-使用Helm安装稳定版Rancher" class="headerlink" title="2.4.1 使用Helm安装稳定版Rancher"></a>2.4.1 <font color=red>使用<code>Helm</code>安装稳定版<code>Rancher</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">为Rancher创建命名空间</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace cattle-system</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加 Helm 添加 Rancher 库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add rancher-stable https://releases.rancher.com/server-charts/stable</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="2-4-2-使用helm安装Rancher注意选好版本，版本不对会报错"><a href="#2-4-2-使用helm安装Rancher注意选好版本，版本不对会报错" class="headerlink" title="2.4.2 使用helm安装Rancher注意选好版本，版本不对会报错"></a>2.4.2 <font color=red>使用<code>helm</code>安装<code>Rancher</code>注意选好版本，版本不对会报错</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install rancher rancher-stable/rancher --namespace cattle-system --<span class="built_in">set</span> hostname=my.rancher.org --<span class="built_in">set</span> bootstrapPassword=admin --<span class="built_in">set</span> replicas=3 --version 2.6.3</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> --<span class="built_in">set</span> ingress.tls.source=letsEncrypt \</span></span><br><span class="line"><span class="language-bash"><span class="comment">#  --set letsEncrypt.email=&lt;caviardé&gt;</span></span></span><br><span class="line"></span><br><span class="line">NAME: rancher</span><br><span class="line">LAST DEPLOYED: Wed May 25 18:01:51 2022</span><br><span class="line">NAMESPACE: cattle-system</span><br><span class="line">STATUS: deployed</span><br><span class="line">REVISION: 1</span><br><span class="line">TEST SUITE: None</span><br><span class="line">NOTES:</span><br><span class="line">Rancher Server has been installed.</span><br><span class="line"></span><br><span class="line">NOTE: Rancher may take several minutes to fully initialize. Please standby while Certificates are being issued, Containers are started and the Ingress rule comes up.</span><br><span class="line"></span><br><span class="line">Check out our docs at https://rancher.com/docs/</span><br><span class="line"></span><br><span class="line">If you provided your own bootstrap password during installation, browse to https://my.rancher.org to get started.</span><br><span class="line"></span><br><span class="line">If this is the first time you installed Rancher, get started by running this command and clicking the URL it generates:</span><br><span class="line"></span><br><span class="line">```</span><br><span class="line">echo https://my.rancher.org/dashboard/?setup=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template=&#x27;&#123;&#123;.data.bootstrapPassword|base64decode&#125;&#125;&#x27;)</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">To get just the bootstrap password on its own, run:</span><br><span class="line"></span><br><span class="line">```</span><br><span class="line">kubectl get secret --namespace cattle-system bootstrap-secret -o go-template=&#x27;&#123;&#123;.data.bootstrapPassword|base64decode&#125;&#125;&#123;&#123; &quot;\n&quot; &#125;&#125;&#x27;</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">Happy Containering!</span><br></pre></td></tr></table></figure>
-
-<h5 id="2-4-3-等待Rancher安装成功"><a href="#2-4-3-等待Rancher安装成功" class="headerlink" title="2.4.3 等待Rancher安装成功"></a>2.4.3 <font color=red>等待<code>Rancher</code>安装成功</font></h5><pre><code class="shell">$ kubectl -n cattle-system rollout status deploy/rancher
-
-$ kubectl get pods -o wide -n cattle-system
-
-$ kubectl get pods --show-labels -n cattle-system
-</code></pre>
-<h3 id="3-浏览器登录Rancher页面设置"><a href="#3-浏览器登录Rancher页面设置" class="headerlink" title="3. 浏览器登录Rancher页面设置"></a>3. 浏览器登录<code>Rancher</code>页面设置</h3><ul>
-<li><font color=red>默认用户名：admin</font>  </li>
-<li><font color=red>密码新设置或者随机生成</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-29-03.png" alt="设置Rancher密码">  </p>
-<ul>
-<li><font color=red>设置<code>Rancher Server</code>地址<code>IP</code>或者域名</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-31-17.png" alt="设定Rancher地址">  </p>
-<ul>
-<li><font color=red>设置<code>Rancher</code>中文页面</font></li>
-</ul>
-<p><img src="D:\git-library\imgs\Kubernetes_server\Rancher\set-Chinses.png" alt="set-chinses">  </p>
-<ul>
-<li>登录后可以看到目前<code>Rancher</code>所管理只有Rancher本身存在<code>K3S</code>  <blockquote>
-<p><code>Rancher Labs</code>推出<code>Kubernetes</code>开源<code>K3S</code>是一个轻量级，只有<code>40MB</code>大小，易于安装<code>Kubernetes</code>发布版本，转为资源有限和低互动系统设计，适用于边缘应用、物联网、持续整合以及<code>ARM</code>等</p>
-</blockquote>
-</li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-34-35.png" alt="初次登录页面">  </p>
-<h3 id="4-使用Rancher创建RKE-Kubernetes集群"><a href="#4-使用Rancher创建RKE-Kubernetes集群" class="headerlink" title="4.使用Rancher创建RKE Kubernetes集群"></a>4.使用<code>Rancher</code>创建<code>RKE Kubernetes</code>集群</h3><ul>
-<li><font color=red>等待被创建的集群都是基于数个实体服务器或虚拟机组成，其中这些机器硬件最低要求<code>1Cores</code>、<code>1GB</code>,并且需要提前安装好<code>Docker</code>服务，操作系统必须符合<code>RKE</code><a target="_blank" rel="noopener" href="https://docs.rancher.cn/docs/rke/os/_index/">安装要求</a></font>  </li>
-<li><font color=red>生产环境下不允许把<code>worker</code>角色添加具有<code>etcd</code>或<code>control plane</code>角色节点中</font></li>
-</ul>
-<h4 id="4-1-Web页面配置Kubernetes-Cluster集群"><a href="#4-1-Web页面配置Kubernetes-Cluster集群" class="headerlink" title="4.1 Web页面配置Kubernetes Cluster集群"></a>4.1 <code>Web</code>页面配置<code>Kubernetes Cluster</code>集群</h4><ul>
-<li><font color=red>在<code>Rancher</code>浏览器页面中添加<code>Kubernetes Cluster</code></font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Add-Cluster.png" alt="Add-K8s-Cluster">    </p>
-<ul>
-<li><font color=red>选择<code>Existing nodes(自定义集群)</code></font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Add-Nodes.png" alt="自定义集群">  </p>
-<ul>
-<li><font color=red>定义集群名称、然后下一步</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_20-41-58.png" alt="填写集群名称">  </p>
-<ul>
-<li><font color=red>先选择<code>etcd</code>、<code>Control Plane</code>角色，把生成的命令复制到节点上执行，然后下一步</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-14-45.png" alt="部署etcd Control Plane">    </p>
-<ul>
-<li><font color=red>选择<code>Worker</code>工作节点,把生成的命令复制到节点执行</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-15-51.png" alt="选择`Worker`工作节点"></p>
-<ul>
-<li><font color=red>命令执行完成后，等待节点加入集群，成功后下方显示添加成功</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-20-56.png">   </p>
-<h4 id="4-2-如果错过复制添加命令选择命名空间点击Edit"><a href="#4-2-如果错过复制添加命令选择命名空间点击Edit" class="headerlink" title="4.2 如果错过复制添加命令选择命名空间点击Edit"></a>4.2 如果错过复制添加命令选择命名空间点击<code>Edit</code></h4><p><img src="D:\git-library\imgs\Kubernetes_server\Rancher\Snipaste_2022-05-20_15-42-56.png"><br><img src="D:\git-library\imgs\Kubernetes_server\Rancher\Snipaste_2022-05-20_15-44-52.png">  </p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-<div>
-    
- </div>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -3073,7 +3027,7 @@ $ kubectl get pods --show-labels -n cattle-system
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -3130,12 +3084,12 @@ $ kubectl get pods --show-labels -n cattle-system
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">187k</span>
+    <span title="站点总字数">189k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:50</span>
+    <span title="站点阅读时长">2:52</span>
 </div>
 
 <!--
