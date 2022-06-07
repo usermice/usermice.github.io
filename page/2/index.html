@@ -837,7 +837,7 @@ $ kubectl get pods --show-labels -n cattle-system
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-30 16:12:20" itemprop="dateModified" datetime="2022-05-30T16:12:20+08:00">2022-05-30</time>
+                <time title="修改时间：2022-06-07 20:54:15" itemprop="dateModified" datetime="2022-06-07T20:54:15+08:00">2022-06-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -855,14 +855,14 @@ $ kubectl get pods --show-labels -n cattle-system
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>22k</span>
+              <span>23k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>20 分钟</span>
+              <span>21 分钟</span>
             </span>
 
         </div>
@@ -1719,7 +1719,59 @@ $ kubectl get pods --show-labels -n cattle-system
 <h4 id="5-3-编写适用Nginx的yaml"><a href="#5-3-编写适用Nginx的yaml" class="headerlink" title="5.3 编写适用Nginx的yaml"></a>5.3 <span id="编写适用Nginx的yaml"><font color=red>编写适用<code>Nginx</code>的<code>yaml</code></font></span></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span>&gt;nginx.yaml&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line"> name: nginx</span><br><span class="line"> namespace: default</span><br><span class="line"></span><br><span class="line">spec:</span><br><span class="line"> selector: 		#选择关联标签为app：ms的pod</span><br><span class="line">  app: ms</span><br><span class="line"> clusterIP: 10.10.100.100    	#指定service IP，也可以不指定，随机生成</span><br><span class="line"> type: NodePort  				#service类型，NodePort支持集群外部访问</span><br><span class="line"> ports:  #端口</span><br><span class="line"> - port: 80   				#集群端口</span><br><span class="line">   targetPort: 80    		#Pod端口</span><br><span class="line">   nodePort: 30080    		#节点端口</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
 <p><font color=red><em><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>我是分割线</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></em></font>  </p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim emptydir.yaml</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line"> name: my-pod</span><br><span class="line"></span><br><span class="line">spec:</span><br><span class="line"> containers:</span><br><span class="line"> - name: write</span><br><span class="line">   image: centos</span><br><span class="line">   command: [&quot;bash&quot;,&quot;-c&quot;,&quot;for i in &#123;1..100&#125;;do echo $i &gt;&gt;/opt/hello;sleep 1;done&quot;]</span><br><span class="line">   volumeMounts:</span><br><span class="line">    - name: data</span><br><span class="line">      mountPath: /opt</span><br><span class="line"></span><br><span class="line"> - name: read</span><br><span class="line">   image: centos</span><br><span class="line">   command: [&quot;bash&quot;,&quot;-c&quot;,&quot;tail -f /opt/hello&quot;]</span><br><span class="line">   volumeMounts:</span><br><span class="line">    - name: data</span><br><span class="line">      mountPath: /opt</span><br><span class="line"></span><br><span class="line"> volumes:</span><br><span class="line"> - name: data</span><br><span class="line">   emptyDir: &#123;&#125;</span><br><span class="line">   </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f emptydir.yaml    	<span class="comment">#创建</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> -it my-pod --container write -- /bin/bash  <span class="comment">#进入 写pod</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="5-4-编写适用Java的yaml"><a href="#5-4-编写适用Java的yaml" class="headerlink" title="5.4 编写适用Java的yaml"></a>5.4 <span id="编写适用Java的yaml"><font color=red><code>编写适用Java的yaml</code></font></span></h4><h4 id="5-5-编写适用PHP的yaml"><a href="#5-5-编写适用PHP的yaml" class="headerlink" title="5.5 编写适用PHP的yaml"></a>5.5 <span id="编写适用PHP的yaml"><font color=red><code>编写适用PHP的yaml</code></font></span></h4><h4 id="5-6-编写适用Redis的yaml"><a href="#5-6-编写适用Redis的yaml" class="headerlink" title="5.6 编写适用Redis的yaml"></a>5.6 <span id="编写适用Redis的yaml"><font color=red><code>编写适用Redis的yaml</code></font></span></h4>
+<h4 id="5-4-编写适用Java的yaml"><a href="#5-4-编写适用Java的yaml" class="headerlink" title="5.4 编写适用Java的yaml"></a>5.4 <span id="编写适用Java的yaml"><font color=red><code>编写适用Java的yaml</code></font></span></h4><ul>
+<li><ol>
+<li><font color=red>下载<code>Java demo</code>代码</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/frankinbj/tomcat-java-demo.git</span>   </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>把数据导入数据库，创建授权连接用户</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">mysql -uroot -p &lt; tomcat-java-demo/doc/db/tables_ly_tomcat.sql</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">grant all privileges on *.* to admin@<span class="string">&#x27;%&#x27;</span> identified by <span class="string">&#x27;admin&#x27;</span>;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>安装JDK、Maven配置环境变量</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;#######JDK環境變數########################</span></span></span><br><span class="line">export JAVA_HOME=/usr/local/jdk</span><br><span class="line">export JRE_HOME=$&#123;JAVA_HOME&#125;/jre</span><br><span class="line">export CLASSPATH=$&#123;JAVA_HOME&#125;/lib:$&#123;JAVA_HOME&#125;/lib/tools.jar</span><br><span class="line">export PATH=$&#123;PATH&#125;:$&#123;JAVA_HOME&#125;/bin:$&#123;JAVA_HOME&#125;/jre/bin</span><br><span class="line">export PATH=$&#123;PATH&#125;:/usr/local/maven/bin &quot;&gt;&gt;/etc/profile</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>修改代码连接数据库配置，打包<code>jar</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim tomcat-java-demo/src/main/resources/application.yml</span></span><br><span class="line">  datasource:</span><br><span class="line">    url: jdbc:mysql://192.168.80.215:3306/test?characterEncoding=utf-8</span><br><span class="line">    username: admin</span><br><span class="line">    password: admin</span><br><span class="line">    </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/tomcat-java-demo/</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">开始打包</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">mvn clean package -Dmaven.test.skip=<span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成war包</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ll /opt/tomcat-java-demo/target/ly-simple-tomcat-0.0.1-SNAPSHOT.war</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li><font color=red>打包<code>docker</code>镜像，并推送到私人仓库</font>  <blockquote>
+<ul>
+<li>5.1 <font color=red><code>-t,--tag list</code>：镜像名称</font>  </li>
+<li>5.2 <font color=red><code>-f，--file string</code>：如果文件名不是<code>Dockerfile``-f</code>可以指定其他文件</font>  </li>
+<li>5.3 <font color=red><code>192.168.80.210:8080</code>：私人仓库地址</font>  </li>
+<li>5.4 <font color=red><code>test</code>：私人仓库名</font>  </li>
+<li>5.5 <font  color=red><code>tomcat-demo:v1</code>：定义镜像名称以及版本</font>  </li>
+<li>5.6 <font color=red>如果打包报错：epository does not exist，更换<code>Dockerfile</code>的<code>FROM</code>源地址</font></li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/tomcat-java-demo/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker build -t 192.168.80.210:8080/test/tomcat-demo:v1 .  <span class="comment"># 打包镜像</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker push 192.168.80.210:8080/test/tomcat-demo:v1  <span class="comment"># 推送到私人仓库</span></span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="5-5-编写适用PHP的yaml"><a href="#5-5-编写适用PHP的yaml" class="headerlink" title="5.5 编写适用PHP的yaml"></a>5.5 <span id="编写适用PHP的yaml"><font color=red><code>编写适用PHP的yaml</code></font></span></h4><h4 id="5-6-编写适用Redis的yaml"><a href="#5-6-编写适用Redis的yaml" class="headerlink" title="5.6 编写适用Redis的yaml"></a>5.6 <span id="编写适用Redis的yaml"><font color=red><code>编写适用Redis的yaml</code></font></span></h4>
       
     </div>
 
@@ -3008,7 +3060,7 @@ $ kubectl apply -f coredns.yaml
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-19 17:27:10" itemprop="dateModified" datetime="2022-05-19T17:27:10+08:00">2022-05-19</time>
+                <time title="修改时间：2022-06-07 21:23:47" itemprop="dateModified" datetime="2022-06-07T21:23:47+08:00">2022-06-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -3026,14 +3078,14 @@ $ kubectl apply -f coredns.yaml
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.5k</span>
+              <span>2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -3050,14 +3102,30 @@ $ kubectl apply -f coredns.yaml
 <li>默认密码：Harbor12345</li>
 </ul>
 <h4 id="1-1-Harbor依赖docker-compose，先安装docker-compose"><a href="#1-1-Harbor依赖docker-compose，先安装docker-compose" class="headerlink" title="1.1 Harbor依赖docker-compose，先安装docker-compose"></a>1.1 Harbor依赖docker-compose，先安装docker-compose</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -L https://get.daocloud.io/docker/compose/releases/download/1.21.2/docker-compose-`<span class="built_in">uname</span> -s`-`<span class="built_in">uname</span> -m` &gt; /usr/local/bin/docker-compose</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">给予执行权限</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> +x /usr/local/bin/docker-compose</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装Compose命令补全工具</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose version --short)/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl daemon-reload &amp;&amp; systemctl restart docker</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-2-重启docker后安装Harbor"><a href="#1-2-重启docker后安装Harbor" class="headerlink" title="1.2 重启docker后安装Harbor"></a>1.2 重启docker后安装Harbor</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/goharbor/harbor/releases/download/v2.5.0/harbor-offline-installer-v2.5.0.tgz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf harbor-offline-installer-v2.5.0.tgz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim harbor/harbor.yml  <span class="comment">#修改默认端口</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./install.sh</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-2-重启docker后安装Harbor"><a href="#1-2-重启docker后安装Harbor" class="headerlink" title="1.2 重启docker后安装Harbor"></a>1.2 重启docker后安装Harbor</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/goharbor/harbor/releases/download/v2.5.0/harbor-offline-installer-v2.5.0.tgz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf harbor-offline-installer-v2.5.0.tgz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim harbor/harbor.yml</span></span><br><span class="line"></span><br><span class="line">hostname: reg.mydomain.com  	# 修改主机名： my.harbor.com</span><br><span class="line">port: 80  	# 修改http默认端口：8080</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">port: 443  	<span class="comment"># 注释https协议端口</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./install.sh</span></span><br></pre></td></tr></table></figure>
 <ul>
-<li><font color=red>docker登录Harbor</font>  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker login http://192.168.35.128:8080</span></span><br></pre></td></tr></table></figure></li>
-<li><font color=red>如果报错:Error response from daemon: Get  http: server gave HTTP response to HTTPS client</font>  </li>
-<li>修改配置文件(指定私有仓库，可忽略跳过)</li>
+<li><font color=red>docker登录Harbor</font>  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker login http://192.168.80.225:8080</span></span><br></pre></td></tr></table></figure></li>
+<li><ol>
+<li><font color=red>如果报错:<code>Error response from daemon: Get  http: server gave HTTP response to HTTPS client</code></font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>修改配置文件(指定私有仓库，可忽略跳过)</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">tee</span> /etc/docker/daemon.json &lt;&lt;-<span class="string">&#x27;EOF&#x27;</span></span></span><br><span class="line">&#123;</span><br><span class="line">  &quot;storage-driver&quot;: &quot;overlay2&quot;,</span><br><span class="line">  &quot;registry-mirrors&quot;:[&quot;https://r2hd8p9u.mirror.aliyuncs.com&quot;],</span><br><span class="line">  &quot;insecure-registries&quot;:[&quot;*.*.*.*:5000&quot;,&quot;192.168.4.126&quot;]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/docker/daemon.json</span></span><br><span class="line">&#123;</span><br><span class="line">	&quot;insecure-registries&quot;: [&quot;harbor服务器IP:端口&quot;]</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl daemon-reload &amp;&amp; systemctl restart docker</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>报错：request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers) (Client.Timeout exceeded while awaiting headers)</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/hosts  	<span class="comment"># 修改hosts解析</span></span></span><br><span class="line">本机服务IP my.harbodomain.com</span><br></pre></td></tr></table></figure>
+
+
 <h4 id="1-3-推送镜像到Harbor仓库"><a href="#1-3-推送镜像到Harbor仓库" class="headerlink" title="1.3. 推送镜像到Harbor仓库"></a>1.3. 推送镜像到Harbor仓库</h4><ul>
 <li><code>SOURCE_IMAGE[:TAG]：</code><font color=red>原镜像名字和tag</font>  </li>
 <li><code>test：</code><font>Harbor项目名称</font>  </li>
@@ -3067,6 +3135,27 @@ $ kubectl apply -f coredns.yaml
 </li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在项目中标记镜像</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker tag SOURCE_IMAGE[:TAG] 192.168.35.128:9527/test/IMAGE[:TAG]</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">推送镜像到当前项目</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker push 192.168.35.128:9527/test/IMAGE[:TAG]</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="1-4-其他服务器拉取Harbor仓库镜像"><a href="#1-4-其他服务器拉取Harbor仓库镜像" class="headerlink" title="1.4 其他服务器拉取Harbor仓库镜像"></a>1.4 <font color=red>其他服务器拉取<code>Harbor</code>仓库镜像</font></h4><ul>
+<li><ol>
+<li><font color=red><code>/etc/hosts</code>做好解析</font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>daemon.json</code>文件中添加私人仓库参数</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> /etc/docker/daemon.json</span></span><br><span class="line">&quot;insecure-registries&quot;:[&quot;192.168.80.210:8080&quot;],</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>拉取私人仓库镜像，前提仓库是公开类型，然后获取拉取命令</font></li>
+</ol>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Harbor/Snipaste_2022-06-07_21-19-25.png" alt="拉取私人仓库命令"></p>
+
       
     </div>
 
@@ -3212,12 +3301,12 @@ $ kubectl apply -f coredns.yaml
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">206k</span>
+    <span title="站点总字数">208k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:07</span>
+    <span title="站点阅读时长">3:09</span>
 </div>
 
 <!--
