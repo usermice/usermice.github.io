@@ -404,9 +404,9 @@
 <p><font color=red><em><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>我是分割线</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></em></font>  </p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim emptydir.yaml</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line"> name: my-pod</span><br><span class="line"></span><br><span class="line">spec:</span><br><span class="line"> containers:</span><br><span class="line"> - name: write</span><br><span class="line">   image: centos</span><br><span class="line">   command: [&quot;bash&quot;,&quot;-c&quot;,&quot;for i in &#123;1..100&#125;;do echo $i &gt;&gt;/opt/hello;sleep 1;done&quot;]</span><br><span class="line">   volumeMounts:</span><br><span class="line">    - name: data</span><br><span class="line">      mountPath: /opt</span><br><span class="line"></span><br><span class="line"> - name: read</span><br><span class="line">   image: centos</span><br><span class="line">   command: [&quot;bash&quot;,&quot;-c&quot;,&quot;tail -f /opt/hello&quot;]</span><br><span class="line">   volumeMounts:</span><br><span class="line">    - name: data</span><br><span class="line">      mountPath: /opt</span><br><span class="line"></span><br><span class="line"> volumes:</span><br><span class="line"> - name: data</span><br><span class="line">   emptyDir: &#123;&#125;</span><br><span class="line">   </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f emptydir.yaml    	<span class="comment">#创建</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> -it my-pod --container write -- /bin/bash  <span class="comment">#进入 写pod</span></span></span><br></pre></td></tr></table></figure>
 
-<h3 id="3-编写适用Java的yaml"><a href="#3-编写适用Java的yaml" class="headerlink" title="3. 编写适用Java的yaml"></a>3. <span id="编写适用Java的yaml"><font color=red><code>编写适用Java的yaml</code></font></span></h3><ul>
+<h3 id="3-编写适用Java的yaml"><a href="#3-编写适用Java的yaml" class="headerlink" title="3. 编写适用Java的yaml"></a>3. <span id="编写适用Java的yaml"><font color=red><code>编写适用Java的yaml</code></font></span></h3><h4 id="3-1-下载Java-demo代码，并修改连接数据库配置"><a href="#3-1-下载Java-demo代码，并修改连接数据库配置" class="headerlink" title="3.1 下载Java demo代码，并修改连接数据库配置"></a>3.1 <font color=red>下载<code>Java demo</code>代码，并修改连接数据库配置</font></h4><ul>
 <li><ol>
-<li><font color=red>下载<code>Java demo</code>代码</font></li>
+<li><font color=red>下载<code>java demo</code>代码</font></li>
 </ol>
 </li>
 </ul>
@@ -414,65 +414,136 @@
 
 <ul>
 <li><ol start="2">
-<li><font color=red>把数据导入数据库，创建授权连接用户</font></li>
+<li><font color=red>修改连接数据库配置文件</font></li>
 </ol>
 </li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">mysql -uroot -p &lt; tomcat-java-demo/doc/db/tables_ly_tomcat.sql</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">grant all privileges on *.* to admin@<span class="string">&#x27;%&#x27;</span> identified by <span class="string">&#x27;admin&#x27;</span>;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim tomcat-java-demo/src/main/resources/application.yml</span></span><br><span class="line">  datasource:</span><br><span class="line">    url: jdbc:mysql://192.168.80.215:3306/test?characterEncoding=utf-8</span><br><span class="line">    username: admin</span><br><span class="line">    password: admin</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><ol start="3">
-<li><font color=red>安装JDK、Maven配置环境变量</font></li>
+<li><font color=red>打包<code>java war</code>包</font></li>
 </ol>
 </li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;#######JDK環境變數########################</span></span></span><br><span class="line">export JAVA_HOME=/usr/local/jdk</span><br><span class="line">export JRE_HOME=$&#123;JAVA_HOME&#125;/jre</span><br><span class="line">export CLASSPATH=$&#123;JAVA_HOME&#125;/lib:$&#123;JAVA_HOME&#125;/lib/tools.jar</span><br><span class="line">export PATH=$&#123;PATH&#125;:$&#123;JAVA_HOME&#125;/bin:$&#123;JAVA_HOME&#125;/jre/bin</span><br><span class="line">export PATH=$&#123;PATH&#125;:/usr/local/maven/bin &quot;&gt;&gt;/etc/profile</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/tomcat-java-demo/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">mvn clean package -Dmaven.test.skip=<span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成war包</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ll /opt/tomcat-java-demo/target/ly-simple-tomcat-0.0.1-SNAPSHOT.war</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-把数据导入数据库，创建授权连接用户"><a href="#3-2-把数据导入数据库，创建授权连接用户" class="headerlink" title="3.2 把数据导入数据库，创建授权连接用户"></a>3.2 <font color=red>把数据导入数据库，创建授权连接用户</font></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">mysql -uroot -p &lt; tomcat-java-demo/doc/db/tables_ly_tomcat.sql</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">grant all privileges on *.* to admin@<span class="string">&#x27;%&#x27;</span> identified by <span class="string">&#x27;admin&#x27;</span>;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-3-安装JDK、Maven配置环境变量"><a href="#3-3-安装JDK、Maven配置环境变量" class="headerlink" title="3.3 安装JDK、Maven配置环境变量"></a>3.3 <font color=red>安装JDK、Maven配置环境变量</font></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;#######JDK環境變數########################</span></span></span><br><span class="line">export JAVA_HOME=/usr/local/jdk</span><br><span class="line">export JRE_HOME=$&#123;JAVA_HOME&#125;/jre</span><br><span class="line">export CLASSPATH=$&#123;JAVA_HOME&#125;/lib:$&#123;JAVA_HOME&#125;/lib/tools.jar</span><br><span class="line">export PATH=$&#123;PATH&#125;:$&#123;JAVA_HOME&#125;/bin:$&#123;JAVA_HOME&#125;/jre/bin</span><br><span class="line">export PATH=$&#123;PATH&#125;:/usr/local/maven/bin &quot;&gt;&gt;/etc/profile</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-4-修改Dockerfile配置文件，docker-build成镜像"><a href="#3-4-修改Dockerfile配置文件，docker-build成镜像" class="headerlink" title="3.4 修改Dockerfile配置文件，docker build成镜像"></a>3.4 <font color=red>修改<code>Dockerfile</code>配置文件，<code>docker build</code>成镜像</font></h4><ul>
+<li><ol>
+<li><font color=red><code>使用Tomcat</code>服务打包启动容器</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> /opt/tomcat-java-demo/Dockerfile</span></span><br><span class="line">FROM lizhenliang/tomcat</span><br><span class="line">RUN rm -rf /usr/local/tomcat/webapps/*</span><br><span class="line">ADD target/*.war /usr/local/tomcat/webapps/ROOT.war</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">声明时区</span></span><br><span class="line">RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; echo &#x27;Asia/Shanghai&#x27; &gt;/etc/timezone</span><br></pre></td></tr></table></figure>
 
 <ul>
+<li><ol start="2">
+<li><font color=red>使用<code>java -jar</code>打包镜像</font></li>
+</ol>
+</li>
+</ul>
+<p><a href="https://gitlab.com/usererge/imgs/-/raw/master/Kubernetes_server/live-server-1.0.0-SN/live-server-1.0.0-SNAPSHOT.jar">live-server-1.0.0-SNAPSHOT</a>  </p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> openjdk</span><br><span class="line"><span class="keyword">VOLUME</span><span class="language-bash"> /tmp</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./target/live-server-1.0.0-SNAPSHOT.jar live-server-1.0.0-SNAPSHOT.jar</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> bash -c <span class="string">&quot;touch /live-server-1.0.0-SNAPSHOT.jar&quot;</span></span></span><br><span class="line"><span class="comment"># 声明时区</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">ln</span> -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; <span class="built_in">echo</span> <span class="string">&#x27;Asia/Shanghai&#x27;</span> &gt;/etc/timezone</span></span><br><span class="line"><span class="comment">#声明运行时容器提供服务端口，这只是一个声明，在运行时并不会因为这个声明应用就会开启这个端口的服务</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">8080</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>,<span class="string">&quot;-jar&quot;</span>,<span class="string">&quot;/live-server-1.0.0-SNAPSHOT.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>生成<code>docker images：</code>镜像并推送到私人仓库</font>  <blockquote>
+<ul>
+<li><ol>
+<li><font color=red><code>-t,--tag list</code>：镜像名称</font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>-f，--file string</code>：如果文件名不是<code>Dockerfile``-f</code>可以指定其他文件</font></li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>192.168.80.210:8080</code>：私人仓库地址</font></li>
+</ol>
+</li>
 <li><ol start="4">
-<li><font color=red>修改<code>Dockerfile</code>文件，代码连接数据库配置，打包<code>jar</code></font></li>
+<li><font color=red><code>test</code>：私人仓库名</font></li>
 </ol>
 </li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> /opt/tomcat-java-demo/Dockerfile</span></span><br><span class="line">FROM lizhenliang/tomcat</span><br><span class="line">RUN rm -rf /usr/local/tomcat/webapps/*</span><br><span class="line">ADD target/*.war /usr/local/tomcat/webapps/ROOT.war</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">声明时区</span></span><br><span class="line">RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; echo &#x27;Asia/Shanghai&#x27; &gt;/etc/timezone</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">声明运行时容器提供服务端口，这只是一个声明，在运行时并不会因为这个声明应用就会开启这个端口的服务</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">EXPOSE 8080</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ENTRYPOINT [<span class="string">&quot;java&quot;</span>,<span class="string">&quot;-jar&quot;</span>,<span class="string">&quot;/springboot2-1.0.jar&quot;</span>]</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim tomcat-java-demo/src/main/resources/application.yml</span></span><br><span class="line">  datasource:</span><br><span class="line">    url: jdbc:mysql://192.168.80.215:3306/test?characterEncoding=utf-8</span><br><span class="line">    username: admin</span><br><span class="line">    password: admin</span><br><span class="line">    </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/tomcat-java-demo/</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">开始打包</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">mvn clean package -Dmaven.test.skip=<span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成war包</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ll /opt/tomcat-java-demo/target/ly-simple-tomcat-0.0.1-SNAPSHOT.war</span></span><br></pre></td></tr></table></figure>
-
-<ul>
 <li><ol start="5">
-<li><font color=red>打包<code>docker</code>镜像，并推送到私人仓库</font>  <blockquote>
-<ul>
-<li>5.1 <font color=red><code>-t,--tag list</code>：镜像名称</font>  </li>
-<li>5.2 <font color=red><code>-f，--file string</code>：如果文件名不是<code>Dockerfile``-f</code>可以指定其他文件</font>  </li>
-<li>5.3 <font color=red><code>192.168.80.210:8080</code>：私人仓库地址</font>  </li>
-<li>5.4 <font color=red><code>test</code>：私人仓库名</font>  </li>
-<li>5.5 <font  color=red><code>tomcat-demo:v1</code>：定义镜像名称以及版本</font>  </li>
-<li>5.6 <font color=red>如果打包报错：epository does not exist，更换<code>Dockerfile</code>的<code>FROM</code>源地址</font></li>
-</ul>
-</blockquote>
-</li>
+<li><font  color=red><code>tomcat-demo:v1</code>：定义镜像名称以及版本</font></li>
 </ol>
 </li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/tomcat-java-demo/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker build -t 192.168.80.210:8080/test/tomcat-demo:v1 .  <span class="comment"># 打包镜像</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker push 192.168.80.210:8080/test/tomcat-demo:v1  <span class="comment"># 推送到私人仓库</span></span></span><br></pre></td></tr></table></figure>
-
-<ul>
 <li><ol start="6">
-<li><font color=red>配置<code>Kubernetes</code>使用<code>Harbor</code>私有镜像仓库</font>  <blockquote>
-<ul>
-<li>6.1 <font color=red><code>docker-harbor</code>：<code>secret</code>名称自定义</font>  </li>
-<li>6.2 <font color=red><code>--docker-server</code>：<code>Harbor</code>仓库地址</font>  </li>
-<li>6.3 <font color=red><code>--docker-username</code>：<code>Harbor</code>登录用户名</font>  </li>
-<li>6.4 <font color=red><code>--docker-password</code>：<code>Harbor</code>仓库登录密码</font>  </li>
-<li>6.5 <font color=red><code>--docker-email</code>：接受邮件</font>  </li>
-<li>6.6 <font color=red><code>--namespace</code>：指定命名空间，不指定默认为：<code>default</code></font></li>
+<li><font color=red>如果打包报错：<code>epository does not exist,</code>更换<code>Dockerfile</code>的<code>FROM</code>源地址</font></li>
+</ol>
+</li>
 </ul>
 </blockquote>
 </li>
 </ol>
 </li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create secret docker-registry docker-harbor --docker-server=192.168.80.210:8080 --docker-username=admin --docker-password=Harbor12345 --docker-email=xxx@xxx.com --namespace=harbor</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/tomcat-java-demo/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker build -t 192.168.80.210:8080/test/tomcat-demo:v1 .  <span class="comment"># 打包镜像</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker push 192.168.80.210:8080/test/tomcat-demo:v1  <span class="comment"># 推送到私人仓库</span></span> </span><br></pre></td></tr></table></figure>
 
+<h4 id="3-5-配置Kubernetes使用Harbor私有镜像仓库"><a href="#3-5-配置Kubernetes使用Harbor私有镜像仓库" class="headerlink" title="3.5 配置Kubernetes使用Harbor私有镜像仓库"></a>3.5 <font color=red>配置<code>Kubernetes</code>使用<code>Harbor</code>私有镜像仓库</font></h4><ul>
+<li><ol>
+<li><font color=red><code>docker-harbor</code>：<code>secret</code>名称自定义</font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>--docker-server</code>：<code>Harbor</code>仓库地址</font></li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>--docker-username</code>：<code>Harbor</code>登录用户名</font></li>
+</ol>
+</li>
+<li><ol start="4">
+<li><font color=red><code>--docker-password</code>：<code>Harbor</code>仓库登录密码</font></li>
+</ol>
+</li>
+<li><ol start="5">
+<li><font color=red><code>--docker-email</code>：接受邮件</font></li>
+</ol>
+</li>
+<li><ol start="6">
+<li><font color=red><code>--namespace</code>：指定命名空间，不指定默认为：<code>default</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create secret docker-registry docker-harbor --docker-server=192.168.80.210:8080 --docker-username=admin --docker-password=Harbor12345 --docker-email=xxx@xxx.com --namespace=harbor</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将机密数据转换为可读格式</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get secret docker-harbor --output=<span class="string">&quot;jsonpath=&#123;.data.\.dockerconfigjson&#125;&quot;</span> | <span class="built_in">base64</span> --decode</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输入以下内容</span></span><br><span class="line">&#123;&quot;auths&quot;:&#123;&quot;192.168.80.210:8080&quot;:&#123;&quot;username&quot;:&quot;admin&quot;,&quot;password&quot;:&quot;Harbor12345&quot;,&quot;email&quot;:&quot;xxx@xxx.com&quot;,&quot;auth&quot;:&quot;YWRtaW46SGFyYm9yMTIzNDU=&quot;&#125;&#125;&#125;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将 <span class="built_in">base64</span> 编码的数据转换为可读格式</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;YWRtaW46SGFyYm9yMTIzNDU=&quot;</span> | <span class="built_in">base64</span> --decode</span></span><br><span class="line">admin:Harbor12345  	# 输出结果</span><br></pre></td></tr></table></figure>
 
+<h4 id="3-6-生成yaml文件，并在spec-containers字段中修改私人镜像参数"><a href="#3-6-生成yaml文件，并在spec-containers字段中修改私人镜像参数" class="headerlink" title="3.6 生成yaml文件，并在spec.containers字段中修改私人镜像参数"></a>3.6 <font color=red>生成<code>yaml</code>文件，并在<code>spec.containers</code>字段中修改私人镜像参数</font></h4><h5 id="3-6-1-生成Deployment的yaml文件并应用"><a href="#3-6-1-生成Deployment的yaml文件并应用" class="headerlink" title="3.6.1 生成Deployment的yaml文件并应用"></a>3.6.1 <font color=red>生成<code>Deployment</code>的yaml文件并应用</font></h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment java-demo --image=192.168.80.210:8080/test/tomcat-demo:v1 --dry-run=client -o yaml &gt;/tmp/deploy.yaml</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol>
+<li><font color=red><code>- image: 192.168.80.210:8080/test/tomcat-demo:v1</code>：</font>  <blockquote>
+<ul>
+<li>1.1. <font color=red><code>192.168.80.210:8080</code>：指定使用私人仓库地址，域名或者IP地址加端口号</font>  </li>
+<li>1.2. <font color=red><code>test</code>：私人仓库库房名称</font>  </li>
+<li>1.3. <font color=red><code>tomcat-demo</code>：使用私人仓库的镜像</font>  </li>
+<li>1.4. <font color=red><code>v1</code>：必须指定要使用私人仓库镜像的版本号</font></li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>name: tomcat-demo</code>：指定使用的镜像名字</font></li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>imagePullSecrets:</code>：指定使用其他镜像地址</font></li>
+</ol>
+</li>
+<li><ol start="4">
+<li><font color=red><code>- name: docker-harbor</code>：指定定义的私人仓库名字</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    app: java-demo</span><br><span class="line">  name: java-demo</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: java-demo</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: java-demo</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - image: 192.168.80.210:8080/test/tomcat-demo:v1  # 需修改处</span><br><span class="line">        name: tomcat-demo  	# 默认生成</span><br><span class="line">      imagePullSecrets:  	# 手动添加字段</span><br><span class="line">      - name: docker-harbor  	# 指定使用的secret库房名称</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-6-2-创建Service的yaml文件并启动"><a href="#3-6-2-创建Service的yaml文件并启动" class="headerlink" title="3.6.2 创建Service的yaml文件并启动"></a>3.6.2 <font color=red>创建<code>Service</code>的<code>yaml</code>文件并启动</font></h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim service.yaml</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    app: springboot2</span><br><span class="line">  name: svc</span><br><span class="line">spec:</span><br><span class="line">  ports:</span><br><span class="line">  - port: 8080</span><br><span class="line">    protocol: TCP</span><br><span class="line">    targetPort: 8080</span><br><span class="line">    nodePort: 30091</span><br><span class="line">  selector:</span><br><span class="line">    app: springboot2</span><br><span class="line">  type: NodePort</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create -f service.yaml</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get service</span></span><br></pre></td></tr></table></figure>
 
 
 <h3 id="4-编写适用PHP的yaml"><a href="#4-编写适用PHP的yaml" class="headerlink" title="4. 编写适用PHP的yaml"></a>4. <span id="编写适用PHP的yaml"><font color=red><code>编写适用PHP的yaml</code></font></span></h3><h3 id="5-编写适用Redis的yaml"><a href="#5-编写适用Redis的yaml" class="headerlink" title="5.  编写适用Redis的yaml"></a>5.  <span id="编写适用Redis的yaml"><font color=red><code>编写适用Redis的yaml</code></font></span></h3>]]></content>
@@ -481,17 +552,6 @@
       </categories>
       <tags>
         <tag>Kubernetes</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>configure-Nginx-Log</title>
-    <url>/Log/configure-Nginx-Log/</url>
-    <content><![CDATA[<h3 id="1-配置Nginx日志切割"><a href="#1-配置Nginx日志切割" class="headerlink" title="1. 配置Nginx日志切割"></a>1. 配置<code>Nginx</code>日志切割</h3><h4 id="1-1-man-logrotate查看logrodate使用详情"><a href="#1-1-man-logrotate查看logrodate使用详情" class="headerlink" title="1.1  man logrotate查看logrodate使用详情"></a>1.1  <font color=red><code>man logrotate</code>查看<code>logrodate</code>使用详情</font></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新增nginx <span class="built_in">log</span> 每日切割</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">grep <span class="string">&quot;nginx&quot;</span> /etc/logrotate.d/nginx  &amp;&gt; /dev/null</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/logrotate.d/nginx</span></span><br><span class="line">/opt/apps/nginx/logs/*.log&#123;</span><br><span class="line">force		# 强制</span><br><span class="line">copytruncate </span><br><span class="line">daily  		# 安日期轮转日志：daily(天),weekly(月),monthly</span><br><span class="line">rotate 7  	# 保留天数</span><br><span class="line">missingok  	# 如果日志文件丢失，不要显示错误</span><br><span class="line">compress  	# 压缩</span><br><span class="line">size 100k	# 在日志大小大于 logsize（例如 100K，4M）时轮换</span><br><span class="line">su root root</span><br><span class="line">&#125; </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新增刪除7天以前<span class="built_in">log</span>定時腳本</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;###nginx超過七天log刪除</span></span></span><br><span class="line">1 0 * * * /bin/bash /opt/scripts/DEL_NGINX.sh &gt;&gt; ~/del_tom.log 2&gt;&amp;1&quot; &gt;&gt; /var/spool/cron/admin</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>Log</category>
-      </categories>
-      <tags>
-        <tag>Log</tag>
       </tags>
   </entry>
   <entry>
@@ -865,6 +925,17 @@
       </categories>
       <tags>
         <tag>Kubernetes</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>configure-Nginx-Log</title>
+    <url>/Log/configure-Nginx-Log/</url>
+    <content><![CDATA[<h3 id="1-配置Nginx日志切割"><a href="#1-配置Nginx日志切割" class="headerlink" title="1. 配置Nginx日志切割"></a>1. 配置<code>Nginx</code>日志切割</h3><h4 id="1-1-man-logrotate查看logrodate使用详情"><a href="#1-1-man-logrotate查看logrodate使用详情" class="headerlink" title="1.1  man logrotate查看logrodate使用详情"></a>1.1  <font color=red><code>man logrotate</code>查看<code>logrodate</code>使用详情</font></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新增nginx <span class="built_in">log</span> 每日切割</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">grep <span class="string">&quot;nginx&quot;</span> /etc/logrotate.d/nginx  &amp;&gt; /dev/null</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/logrotate.d/nginx</span></span><br><span class="line">/opt/apps/nginx/logs/*.log&#123;</span><br><span class="line">force		# 强制</span><br><span class="line">copytruncate </span><br><span class="line">daily  		# 安日期轮转日志：daily(天),weekly(月),monthly</span><br><span class="line">rotate 7  	# 保留天数</span><br><span class="line">missingok  	# 如果日志文件丢失，不要显示错误</span><br><span class="line">compress  	# 压缩</span><br><span class="line">size 100k	# 在日志大小大于 logsize（例如 100K，4M）时轮换</span><br><span class="line">su root root</span><br><span class="line">&#125; </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新增刪除7天以前<span class="built_in">log</span>定時腳本</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;###nginx超過七天log刪除</span></span></span><br><span class="line">1 0 * * * /bin/bash /opt/scripts/DEL_NGINX.sh &gt;&gt; ~/del_tom.log 2&gt;&amp;1&quot; &gt;&gt; /var/spool/cron/admin</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Log</category>
+      </categories>
+      <tags>
+        <tag>Log</tag>
       </tags>
   </entry>
   <entry>
@@ -2524,86 +2595,6 @@
       </tags>
   </entry>
   <entry>
-    <title>git-command-usage</title>
-    <url>/gitlab/git-command-usage/</url>
-    <content><![CDATA[<h3 id="1-git命令作用"><a href="#1-git命令作用" class="headerlink" title="1. git命令作用"></a>1. git命令作用</h3><ul>
-<li><a href="https://mirrors.edge.kernel.org/pub/software/scm/git/">Git命令工具下载地址</a></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">初始配置获取仓库</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置环境提交所用账户以及邮箱</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.name <span class="string">&quot;name&quot;</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.emamil <span class="string">&quot;name@gmail.com&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">获取现有仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/zabbix/zabbix.git  <span class="comment">#克隆现有远程代码到本地开发</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">本地创建仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git init  <span class="comment">#初始化git本地仓库，初始化后在本地生成一个.git目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git add .  <span class="comment">#把修改或者添加文件到索引中：-A：参数代表所有</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git commit -m <span class="string">&quot;清除缓存&quot;</span>  <span class="comment">#声明本次修改或添加内容并且交到本地仓库</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">拉取推送仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git pull -u origin master <span class="comment">#拉取master分支到本地-f:强制拉取，</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git push -u origin master <span class="comment">#推送master分支到远程</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">提交时转换为LF，检出时不转换</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global core.autocrlf input</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">切换、查看、合并分支</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git fetch  	<span class="comment">#查看线上分支,--all:查看线上所有分支</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git branch -a <span class="comment">#-a：查看本地当前分支、dev：创建dev分支、-d：删除分支、-D：强制删除</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout dev <span class="comment">#切换分支，dev：切换到dev分支</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout .   <span class="comment">#放弃本地所有修改</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git merge -m <span class="string">&#x27;合并dev分支到master&#x27;</span> dev  <span class="comment">#先切换到master分支</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">回退版本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git reset --hard  	<span class="comment">#回退版本、可选择版本分支号回退</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">rm</span> -r --cached .  <span class="comment">#清楚本地缓存</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看git仓库状态以及日志</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git status  <span class="comment">#命令查看当前git仓库的状态</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> -5  <span class="comment">#查看最近五次日志,v2.5.. Makefile fs/:找出所有从&quot;v2.5“开始在fs目录下的所有Makefile的修改</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --<span class="built_in">stat</span>  <span class="comment">#显示在每个提交(commit)中哪些文件被修改, 这些文件分别添加或删除多少行内容</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --pretty=oneline  <span class="comment">#格式化日志输出。--pretty参数可以使用若干表现格式，如oneline，--pretty=short，也可用medium,full,fuller,email 或raw，也可以用--pretty=format参数定义格式，</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --graph --pretty=oneline  <span class="comment">#--graph 选项可以可视化你的提交图(commit graph)，会用ASCII字符来画出一个很漂亮的提交历史(commit history)线：</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git diff --cached <span class="comment">#diff比较选项再加上 --cached参数，看看缓存区中哪些文件被修改</span></span></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-处理-git文件过大"><a href="#2-处理-git文件过大" class="headerlink" title="2. 处理.git文件过大"></a>2. 处理.git文件过大</h3><p><a href="https://www.zhihu.com/question/29769130">解决.git提交次数过多导致文件过大</a>  </p>
-<h4 id="2-1-运行-gc-，生成-pack-文件（后面的-prune-now-表示对之前的所有提交做修剪，有的时候仅仅-gc-一下-git-文件就会小很多）"><a href="#2-1-运行-gc-，生成-pack-文件（后面的-prune-now-表示对之前的所有提交做修剪，有的时候仅仅-gc-一下-git-文件就会小很多）" class="headerlink" title="2.1 运行 gc ，生成 pack 文件（后面的 --prune=now 表示对之前的所有提交做修剪，有的时候仅仅 gc 一下.git 文件就会小很多）"></a>2.1 运行 <code>gc</code> ，生成 <code>pack</code> 文件（后面的 <code>--prune=now</code> 表示对之前的所有提交做修剪，有的时候仅仅 <code>gc</code> 一下<code>.git</code> 文件就会小很多）</h4><ul>
-<li>2.1.1 运行 <code>gc</code> ，生成 <code>pack</code> 文件</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git gc --prune=now</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.2 找出最大的三个文件</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git verify-pack -v .git/objects/pack/*.idx | <span class="built_in">sort</span> -k 3 -n | <span class="built_in">tail</span> -3</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">示例输出：</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">1debc758cf31a649c2fc5b0c59ea1b7f01416636 blob   4925660 3655422 14351</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">c43a8da9476f97e84b52e0b34034f8c2d93b4d90 blob   154188651 152549294 12546842</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">2272096493d061489349e0a312df00dcd0ec19a2 blob   155414465 153754005 165096136</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.3 查看那些大文件究竟是谁（<code>c43a8da</code> 是上面大文件的<code>hash</code>码）</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git rev-list --objects --all | grep c43a8da</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">c43a8da9476f97e84b52e0b34034f8c2d93b4d90 data/bigfile</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.4 移除对该文件的引用（也就是 <code>data/bigfile</code>）</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git filter-branch --force --index-filter <span class="string">&quot;git rm --cached --ignore-unmatch &#x27;data/bigfile&#x27;&quot;</span>  --prune-empty --tag-name-filter <span class="built_in">cat</span> -- --all</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.5 进行 <code>repack</code></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git for-each-ref --format=<span class="string">&#x27;delete %(refname)&#x27;</span> refs/original | git update-ref --stdin</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git reflog expire --expire=now --all</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git gc --prune=now</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>2.1.6 查看 <code>pack</code> 的空间使用情况</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git count-objects -v</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="2-2-LFS功能压缩大文件"><a href="#2-2-LFS功能压缩大文件" class="headerlink" title="2.2 LFS功能压缩大文件"></a>2.2 LFS功能压缩大文件</h4><ul>
-<li>开启LFS功能</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git lfs install</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>设置LFS要管理的文件类型，pth、mmdb、pack、idx</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git lfs track <span class="string">&quot;*.pth&quot;</span></span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>报LFS错，在执行上面的最后一步上传命令的时候可能会报两个错误</p>
-<ul>
-<li><code>WARNING: Authentication error: Authentication required: LFS only supported repository in paid enterprise.</code></li>
-</ul>
-<blockquote>
-<ul>
-<li>第一个错误可以执行以下命令, 命令中的{your_gitee}&#x2F;{your_repo}是你的远程仓库地址,根据自己情况替换</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git config lfs.https://gitee.com/&#123;</span><br><span class="line">    your_gitee&#125;/&#123;</span><br><span class="line">    your_repo&#125;.git/info/lfs.locksverify false</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>第二个错误可以尝试删除<code>./git/hooks/pre-push</code>文件,最后重新push一下即可</li>
-</ul>
-<p><code>batch response: LFS only supported repository in paid enterprise.</code></p>
-</li>
-</ul>
-<h3 id="3-git获取仓库指定目录或文件"><a href="#3-git获取仓库指定目录或文件" class="headerlink" title="3. git获取仓库指定目录或文件"></a>3. git获取仓库指定目录或文件</h3><ul>
-<li>此功能只在<code>1.7.0</code> 以上版本提供</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> <span class="built_in">test</span> &amp;&amp; <span class="built_in">cd</span> <span class="built_in">test</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git init</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git remote add origin https://xxxx.com/xxx.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config core.sparsecheckout <span class="literal">true</span>  <span class="comment">#使用Sparse checkout模式</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> <span class="built_in">echo</span> <span class="string">&quot;redis-conf/*&quot;</span> &gt;&gt; .git/info/sparse-checkout  <span class="comment">#将检出的目录或文件使用文件追加的形式写入到git的配置.git/info/sparse-checkout文件中，允许添加多行</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git pull origin master <span class="comment">#获取到需要的文件或目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout  <span class="comment">#在对配置文件.git/info/sparse-checkout的内容进行增、删、改操作之后，使用下面的命令重新修正目录和文件</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git push origin master</span></span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>gitlab</category>
-      </categories>
-      <tags>
-        <tag>gitlab</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>kubernetes-pod详解</title>
     <url>/Kubernetes/configure-k8s-yaml%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/</url>
     <content><![CDATA[<ul>
@@ -2946,7 +2937,7 @@
 <td>指定容器启动命令参数，因为是数组形式，所以可以指定多个参数。</td>
 </tr>
 </tbody></table>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表，一个Pod中可以定义多个容器</span><br><span class="line">  - name: string   	# 必选，容器名称</span><br><span class="line">    image: nginx:1.16.1-alpine   	# 定义使用镜像</span><br><span class="line">    imagePullPolicy: Always   	# 容器下载策略：Always|Never|IfNotPresent，不管本地存不存在，都从仓库拉取镜像</span><br><span class="line">    imagePullSecrets:</span><br><span class="line">    - name: registry-pull-secret</span><br><span class="line">    command: [string]   	# 容器的启动命令列表，如不指定，使用打包时使用的启动命令</span><br><span class="line">    args:   	# 容器的启动命令参数列表</span><br><span class="line">    - /bin/sh</span><br><span class="line">    - -c</span><br><span class="line">    - touch /tmp/healthy; sleep 30; rm -fr /tmp/healthy; sleep 600</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表，一个Pod中可以定义多个容器</span><br><span class="line">  - name: string   	# 必选，容器名称</span><br><span class="line">    image: nginx:1.16.1-alpine   	# 定义使用镜像</span><br><span class="line">    imagePullPolicy: Always   	# 容器下载策略：Always|Never|IfNotPresent，不管本地存不存在，都从仓库拉取镜像</span><br><span class="line">    imagePullSecrets:</span><br><span class="line">    - name: docker-harbor  	# 指定使用的secret库房名称</span><br><span class="line">    command: [string]   	# 容器的启动命令列表，如不指定，使用打包时使用的启动命令</span><br><span class="line">    args:   	# 容器的启动命令参数列表</span><br><span class="line">    - /bin/sh</span><br><span class="line">    - -c</span><br><span class="line">    - touch /tmp/healthy; sleep 30; rm -fr /tmp/healthy; sleep 600</span><br></pre></td></tr></table></figure>
 <blockquote>
 <ul>
 <li><font color=red>容器工作目录定义</font></li>
@@ -3429,7 +3420,7 @@
 </ul>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">定向调度参数查询</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.nodeName.containers</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.nodeName.affinity</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.nodeSelector.containers</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.nodeSelector.affinity</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">亲和调度查询</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.affinity</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.affinity.nodeAffinity</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.affinity.podAffinity</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.affinity.podAntiAffinity</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">容忍调度查询</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.tolerations</span></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  replicas: 2   	# 创建Pod个数</span><br><span class="line">  selector:   	# 标签选择器</span><br><span class="line">   matchLabels:   # 标签选择方式:直接给定标签键值,这里是取交集的,也就是Pod必须满足下面两个标签才能被调度</span><br><span class="line">    project: ms</span><br><span class="line">    app: product   	# 此行以上定义控制器本身</span><br><span class="line">    </span><br><span class="line">  template:   	# 定义Deployment更新回滚</span><br><span class="line">   metadata:</span><br><span class="line">    labels:</span><br><span class="line">    - name: string</span><br><span class="line">    annotations:</span><br><span class="line">    - name: nginx</span><br><span class="line">     </span><br><span class="line">spec:</span><br><span class="line">  hostAliases:  	# /etc/hosts/手动添加解析</span><br><span class="line">  - ip: &quot;192.168.4.110&quot;</span><br><span class="line">    hostnames:</span><br><span class="line">    - &quot;k8s.com&quot;</span><br><span class="line">   </span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">  restartPolicy: [Always、Never、OnFailure]  #默认K8S-Pod的重启策略,此容器退出后立即创建一个相同容器</span><br><span class="line">  nodeName: k8s-node1 # NodeName表示将该Pod调度到指定到名称的node节点上</span><br><span class="line">  nodeSelector: obeject # nodeSelector用于将Pod调度到添加了指定标签的Node节点上</span><br><span class="line">  imagePullSecrets: # Pull镜像时使用的secret名称，以key：secretkey格式指定</span><br><span class="line">  - name: string</span><br><span class="line">  hostNetwork: false   #是否使用主机网络模式，默认为false，如果设置为true，表示使用宿主机网络</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  replicas: 2   	# 创建Pod个数</span><br><span class="line">  selector:   	# 标签选择器</span><br><span class="line">   matchLabels:   # 标签选择方式:直接给定标签键值,这里是取交集的,也就是Pod必须满足下面两个标签才能被调度</span><br><span class="line">    project: ms</span><br><span class="line">    app: product   	# 此行以上定义控制器本身</span><br><span class="line">    </span><br><span class="line">  template:   	# 定义Deployment更新回滚</span><br><span class="line">   metadata:</span><br><span class="line">    labels:</span><br><span class="line">    - name: string</span><br><span class="line">    annotations:</span><br><span class="line">    - name: nginx</span><br><span class="line">     </span><br><span class="line">spec:</span><br><span class="line">  hostAliases:  	# /etc/hosts/手动添加解析</span><br><span class="line">  - ip: &quot;192.168.4.110&quot;</span><br><span class="line">    hostnames:</span><br><span class="line">    - &quot;k8s.com&quot;</span><br><span class="line">   </span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">  restartPolicy: [Always、Never、OnFailure]  #默认K8S-Pod的重启策略,此容器退出后立即创建一个相同容器</span><br><span class="line">  nodeName: k8s-node1 # NodeName表示将该Pod调度到指定到名称的node节点上</span><br><span class="line">  nodeSelector: obeject # nodeSelector用于将Pod调度到添加了指定标签的Node节点上</span><br><span class="line">  imagePullSecrets: # Pull镜像时使用的secret名称，以key：secretkey格式指定</span><br><span class="line">  - name: docker-harbor  	# 指定使用的secret库房名称</span><br><span class="line">  hostNetwork: false   #是否使用主机网络模式，默认为false，如果设置为true，表示使用宿主机网络</span><br></pre></td></tr></table></figure>
 <h3 id="5-yaml编写示例"><a href="#5-yaml编写示例" class="headerlink" title="5. yaml编写示例"></a><span id="yaml编写示例">5. <font color=red>yaml编写示例</font></span></h3><ul>
 <li>快速编写生成<code>yaml</code>文件</li>
 </ul>
@@ -3442,97 +3433,92 @@
 </ul>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">一些pod在ingress-nginx命名空间中启动</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace=ingress-nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第一种方式</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/deploy.yaml  	<span class="comment"># baremetal 表示裸机安装</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第二种方式</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/provider/baremetal/service-nodeport.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将等待入口控制器 pod 启动、运行并准备就绪</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">wait</span> --namespace ingress-nginx --<span class="keyword">for</span>=condition=ready pod --selector=app.kubernetes.io/component=controller --<span class="built_in">timeout</span>=120s</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建一个入口资源。以下示例使用映射到的主机localhost</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create ingress demo-localhost --class=nginx --rule=demo.localdev.me/*=demo:80</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将本地端口转发到入口控制器</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl port-forward --namespace=ingress-nginx service/ingress-nginx-controller 8080:80</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="5-2-Pod的资源清单"><a href="#5-2-Pod的资源清单" class="headerlink" title="5.2 Pod的资源清单"></a>5.2 <span id="Pod的资源清单"><font color=red><code>Pod</code>的资源清单</font></span></h4><pre><code class="shell">apiVersion: v1     #必选，版本号，例如v1
-kind: Pod       　 #必选，资源类型，例如 Pod
-metadata:       　 #必选，元数据
-  name: string     #必选，Pod名称
-  namespace: string  #Pod所属的命名空间,默认为&quot;default&quot;
-  labels:       　　  #自定义标签列表
-    - name: string      　          
-spec:  #必选，Pod中容器的详细定义
-  containers:  #必选，Pod中容器列表
-  - name: string   #必选，容器名称
-    image: string  #必选，容器的镜像名称
-    imagePullPolicy: [ Always|Never|IfNotPresent ]  #获取镜像的策略 
-    command: [string]   #容器的启动命令列表，如不指定，使用打包时使用的启动命令
-    args: [string]      #容器的启动命令参数列表
-    workingDir: string  #容器的工作目录
-    
-    volumeMounts:       #挂载到容器内部的存储卷配置
-    - name: string      #引用pod定义的共享存储卷的名称，需用volumes[]部分定义的的卷名
-      mountPath: string #存储卷在容器内mount的绝对路径，应少于512字符
-      readOnly: boolean #是否为只读模式
-      
-    ports: #需要暴露的端口库号列表
-    - name: string        #端口的名称
-      containerPort: int  #容器需要监听的端口号
-      hostPort: int       #容器所在主机需要监听的端口号，默认与Container相同
-      protocol: string    #端口协议，支持TCP和UDP，默认TCP
-      
-    env:   #容器运行前需设置的环境变量列表
-    - name: string  #环境变量名称
-      value: string #环境变量的值
-      
-    resources: #资源限制和请求的设置
-      limits:  #资源限制的设置
-        cpu: string     #Cpu的限制，单位为core数，将用于docker run --cpu-shares参数
-        memory: string  #内存限制，单位可以为Mib/Gib，将用于docker run --memory参数
-      requests: #资源请求的设置
-        cpu: string    #Cpu请求，容器启动的初始可用数量
-        memory: string #内存请求,容器启动的初始可用数量
-        
-    lifecycle: #生命周期钩子
-        postStart: #容器启动后立即执行此钩子,如果执行失败,会根据重启策略进行重启
-        preStop: #容器终止前执行此钩子,无论结果如何,容器都会终止
-        
-    livenessProbe:  #对Pod内各容器健康检查的设置，当探测无响应几次后将自动重启该容器
-      exec:       　 #对Pod容器内检查方式设置为exec方式
-        command: [string]  #exec方式需要制定的命令或脚本
-      httpGet:       #对Pod内个容器健康检查方法设置为HttpGet，需要制定Path、port
-        path: string
-        port: number
-        host: string
-        scheme: string
-        HttpHeaders:
-        - name: string
-          value: string
-      tcpSocket:     #对Pod内个容器健康检查方式设置为tcpSocket方式
-         port: number
-       initialDelaySeconds: 0       #容器启动完成后首次探测的时间，单位为秒
-       timeoutSeconds: 0    　　    #对容器健康检查探测等待响应的超时时间，单位秒，默认1秒
-       periodSeconds: 0     　　    #对容器监控检查的定期探测时间设置，单位秒，默认10秒一次
-       successThreshold: 0
-       failureThreshold: 0
-       securityContext:
-         privileged: false
-  restartPolicy: [Always | Never | OnFailure]  #Pod的重启策略
-  nodeName: &lt;string&gt; #设置NodeName表示将该Pod调度到指定到名称的node节点上
-  nodeSelector: obeject #设置NodeSelector表示将该Pod调度到包含这个label的node上
-  imagePullSecrets: #Pull镜像时使用的secret名称，以key：secretkey格式指定
-  - name: string
-  hostNetwork: false   #是否使用主机网络模式，默认为false，如果设置为true，表示使用宿主机网络
-  volumes:   #在该pod上定义共享存储卷列表
-  - name: string    #共享存储卷名称 （volumes类型有很多种）
-    emptyDir: &#123;&#125;       #类型为emtyDir的存储卷，与Pod同生命周期的一个临时目录。为空值
-    hostPath: string   #类型为hostPath的存储卷，表示挂载Pod所在宿主机的目录
-      path: string      　　        #Pod所在宿主机的目录，将被用于同期中mount的目录
-    secret:       　　　#类型为secret的存储卷，挂载集群与定义的secret对象到容器内部
-      scretname: string  
-      items:     
-      - key: string
-        path: string
-    configMap:         #类型为configMap的存储卷，挂载预定义的configMap对象到容器内部
-      name: string
-      items:
-      - key: string
-        path: string
-</code></pre>
-]]></content>
+<h4 id="5-2-Pod的资源清单"><a href="#5-2-Pod的资源清单" class="headerlink" title="5.2 Pod的资源清单"></a>5.2 <span id="Pod的资源清单"><font color=red><code>Pod</code>的资源清单</font></span></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apiVersion: v1     #必选，版本号，例如v1</span><br><span class="line">kind: Pod       　 #必选，资源类型，例如 Pod</span><br><span class="line">metadata:       　 #必选，元数据</span><br><span class="line">  name: string     #必选，Pod名称</span><br><span class="line">  namespace: string  #Pod所属的命名空间,默认为&quot;default&quot;</span><br><span class="line">  labels:       　　  #自定义标签列表</span><br><span class="line">    - name: string      　          </span><br><span class="line">spec:  #必选，Pod中容器的详细定义</span><br><span class="line">  containers:  #必选，Pod中容器列表</span><br><span class="line">  - name: string   #必选，容器名称</span><br><span class="line">    image: string  #必选，容器的镜像名称</span><br><span class="line">    imagePullPolicy: [ Always|Never|IfNotPresent ]  #获取镜像的策略 </span><br><span class="line">    command: [string]   #容器的启动命令列表，如不指定，使用打包时使用的启动命令</span><br><span class="line">    args: [string]      #容器的启动命令参数列表</span><br><span class="line">    workingDir: string  #容器的工作目录</span><br><span class="line">    </span><br><span class="line">    volumeMounts:       #挂载到容器内部的存储卷配置</span><br><span class="line">    - name: string      #引用pod定义的共享存储卷的名称，需用volumes[]部分定义的的卷名</span><br><span class="line">      mountPath: string #存储卷在容器内mount的绝对路径，应少于512字符</span><br><span class="line">      readOnly: boolean #是否为只读模式</span><br><span class="line">      </span><br><span class="line">    ports: #需要暴露的端口库号列表</span><br><span class="line">    - name: string        #端口的名称</span><br><span class="line">      containerPort: int  #容器需要监听的端口号</span><br><span class="line">      hostPort: int       #容器所在主机需要监听的端口号，默认与Container相同</span><br><span class="line">      protocol: string    #端口协议，支持TCP和UDP，默认TCP</span><br><span class="line">      </span><br><span class="line">    env:   #容器运行前需设置的环境变量列表</span><br><span class="line">    - name: string  #环境变量名称</span><br><span class="line">      value: string #环境变量的值</span><br><span class="line">      </span><br><span class="line">    resources: #资源限制和请求的设置</span><br><span class="line">      limits:  #资源限制的设置</span><br><span class="line">        cpu: string     #Cpu的限制，单位为core数，将用于docker run --cpu-shares参数</span><br><span class="line">        memory: string  #内存限制，单位可以为Mib/Gib，将用于docker run --memory参数</span><br><span class="line">      requests: #资源请求的设置</span><br><span class="line">        cpu: string    #Cpu请求，容器启动的初始可用数量</span><br><span class="line">        memory: string #内存请求,容器启动的初始可用数量</span><br><span class="line">        </span><br><span class="line">    lifecycle: #生命周期钩子</span><br><span class="line">		postStart: #容器启动后立即执行此钩子,如果执行失败,会根据重启策略进行重启</span><br><span class="line">		preStop: #容器终止前执行此钩子,无论结果如何,容器都会终止</span><br><span class="line">		</span><br><span class="line">    livenessProbe:  #对Pod内各容器健康检查的设置，当探测无响应几次后将自动重启该容器</span><br><span class="line">      exec:       　 #对Pod容器内检查方式设置为exec方式</span><br><span class="line">        command: [string]  #exec方式需要制定的命令或脚本</span><br><span class="line">      httpGet:       #对Pod内个容器健康检查方法设置为HttpGet，需要制定Path、port</span><br><span class="line">        path: string</span><br><span class="line">        port: number</span><br><span class="line">        host: string</span><br><span class="line">        scheme: string</span><br><span class="line">        HttpHeaders:</span><br><span class="line">        - name: string</span><br><span class="line">          value: string</span><br><span class="line">      tcpSocket:     #对Pod内个容器健康检查方式设置为tcpSocket方式</span><br><span class="line">         port: number</span><br><span class="line">       initialDelaySeconds: 0       #容器启动完成后首次探测的时间，单位为秒</span><br><span class="line">       timeoutSeconds: 0    　　    #对容器健康检查探测等待响应的超时时间，单位秒，默认1秒</span><br><span class="line">       periodSeconds: 0     　　    #对容器监控检查的定期探测时间设置，单位秒，默认10秒一次</span><br><span class="line">       successThreshold: 0</span><br><span class="line">       failureThreshold: 0</span><br><span class="line">       securityContext:</span><br><span class="line">         privileged: false</span><br><span class="line">  restartPolicy: [Always | Never | OnFailure]  #Pod的重启策略</span><br><span class="line">  nodeName: &lt;string&gt; #设置NodeName表示将该Pod调度到指定到名称的node节点上</span><br><span class="line">  nodeSelector: obeject #设置NodeSelector表示将该Pod调度到包含这个label的node上</span><br><span class="line">  imagePullSecrets: #Pull镜像时使用的secret名称，以key：secretkey格式指定</span><br><span class="line">  - name: docker-harbor  	# 指定使用的secret库房名称</span><br><span class="line">  hostNetwork: false   #是否使用主机网络模式，默认为false，如果设置为true，表示使用宿主机网络</span><br><span class="line">  volumes:   #在该pod上定义共享存储卷列表</span><br><span class="line">  - name: string    #共享存储卷名称 （volumes类型有很多种）</span><br><span class="line">    emptyDir: &#123;&#125;       #类型为emtyDir的存储卷，与Pod同生命周期的一个临时目录。为空值</span><br><span class="line">    hostPath: string   #类型为hostPath的存储卷，表示挂载Pod所在宿主机的目录</span><br><span class="line">      path: string      　　        #Pod所在宿主机的目录，将被用于同期中mount的目录</span><br><span class="line">    secret:       　　　#类型为secret的存储卷，挂载集群与定义的secret对象到容器内部</span><br><span class="line">      scretname: string  </span><br><span class="line">      items:     </span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br><span class="line">    configMap:         #类型为configMap的存储卷，挂载预定义的configMap对象到容器内部</span><br><span class="line">      name: string</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>Kubernetes</category>
       </categories>
       <tags>
         <tag>Kubernetes</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git-command-usage</title>
+    <url>/gitlab/git-command-usage/</url>
+    <content><![CDATA[<h3 id="1-git命令作用"><a href="#1-git命令作用" class="headerlink" title="1. git命令作用"></a>1. git命令作用</h3><ul>
+<li><a href="https://mirrors.edge.kernel.org/pub/software/scm/git/">Git命令工具下载地址</a></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">初始配置获取仓库</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置环境提交所用账户以及邮箱</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.name <span class="string">&quot;name&quot;</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global user.emamil <span class="string">&quot;name@gmail.com&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">获取现有仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/zabbix/zabbix.git  <span class="comment">#克隆现有远程代码到本地开发</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">本地创建仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git init  <span class="comment">#初始化git本地仓库，初始化后在本地生成一个.git目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git add .  <span class="comment">#把修改或者添加文件到索引中：-A：参数代表所有</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git commit -m <span class="string">&quot;清除缓存&quot;</span>  <span class="comment">#声明本次修改或添加内容并且交到本地仓库</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">拉取推送仓库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git pull -u origin master <span class="comment">#拉取master分支到本地-f:强制拉取，</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git push -u origin master <span class="comment">#推送master分支到远程</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">提交时转换为LF，检出时不转换</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config --global core.autocrlf input</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">切换、查看、合并分支</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git fetch  	<span class="comment">#查看线上分支,--all:查看线上所有分支</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git branch -a <span class="comment">#-a：查看本地当前分支、dev：创建dev分支、-d：删除分支、-D：强制删除</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout dev <span class="comment">#切换分支，dev：切换到dev分支</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout .   <span class="comment">#放弃本地所有修改</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git merge -m <span class="string">&#x27;合并dev分支到master&#x27;</span> dev  <span class="comment">#先切换到master分支</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">回退版本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git reset --hard  	<span class="comment">#回退版本、可选择版本分支号回退</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">rm</span> -r --cached .  <span class="comment">#清楚本地缓存</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看git仓库状态以及日志</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git status  <span class="comment">#命令查看当前git仓库的状态</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> -5  <span class="comment">#查看最近五次日志,v2.5.. Makefile fs/:找出所有从&quot;v2.5“开始在fs目录下的所有Makefile的修改</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --<span class="built_in">stat</span>  <span class="comment">#显示在每个提交(commit)中哪些文件被修改, 这些文件分别添加或删除多少行内容</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --pretty=oneline  <span class="comment">#格式化日志输出。--pretty参数可以使用若干表现格式，如oneline，--pretty=short，也可用medium,full,fuller,email 或raw，也可以用--pretty=format参数定义格式，</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> --graph --pretty=oneline  <span class="comment">#--graph 选项可以可视化你的提交图(commit graph)，会用ASCII字符来画出一个很漂亮的提交历史(commit history)线：</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git diff --cached <span class="comment">#diff比较选项再加上 --cached参数，看看缓存区中哪些文件被修改</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-处理-git文件过大"><a href="#2-处理-git文件过大" class="headerlink" title="2. 处理.git文件过大"></a>2. 处理.git文件过大</h3><p><a href="https://www.zhihu.com/question/29769130">解决.git提交次数过多导致文件过大</a>  </p>
+<h4 id="2-1-运行-gc-，生成-pack-文件（后面的-prune-now-表示对之前的所有提交做修剪，有的时候仅仅-gc-一下-git-文件就会小很多）"><a href="#2-1-运行-gc-，生成-pack-文件（后面的-prune-now-表示对之前的所有提交做修剪，有的时候仅仅-gc-一下-git-文件就会小很多）" class="headerlink" title="2.1 运行 gc ，生成 pack 文件（后面的 --prune=now 表示对之前的所有提交做修剪，有的时候仅仅 gc 一下.git 文件就会小很多）"></a>2.1 运行 <code>gc</code> ，生成 <code>pack</code> 文件（后面的 <code>--prune=now</code> 表示对之前的所有提交做修剪，有的时候仅仅 <code>gc</code> 一下<code>.git</code> 文件就会小很多）</h4><ul>
+<li>2.1.1 运行 <code>gc</code> ，生成 <code>pack</code> 文件</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git gc --prune=now</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>2.1.2 找出最大的三个文件</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git verify-pack -v .git/objects/pack/*.idx | <span class="built_in">sort</span> -k 3 -n | <span class="built_in">tail</span> -3</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">示例输出：</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">1debc758cf31a649c2fc5b0c59ea1b7f01416636 blob   4925660 3655422 14351</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">c43a8da9476f97e84b52e0b34034f8c2d93b4d90 blob   154188651 152549294 12546842</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">2272096493d061489349e0a312df00dcd0ec19a2 blob   155414465 153754005 165096136</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>2.1.3 查看那些大文件究竟是谁（<code>c43a8da</code> 是上面大文件的<code>hash</code>码）</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git rev-list --objects --all | grep c43a8da</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">c43a8da9476f97e84b52e0b34034f8c2d93b4d90 data/bigfile</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>2.1.4 移除对该文件的引用（也就是 <code>data/bigfile</code>）</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git filter-branch --force --index-filter <span class="string">&quot;git rm --cached --ignore-unmatch &#x27;data/bigfile&#x27;&quot;</span>  --prune-empty --tag-name-filter <span class="built_in">cat</span> -- --all</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>2.1.5 进行 <code>repack</code></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git for-each-ref --format=<span class="string">&#x27;delete %(refname)&#x27;</span> refs/original | git update-ref --stdin</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git reflog expire --expire=now --all</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git gc --prune=now</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>2.1.6 查看 <code>pack</code> 的空间使用情况</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git count-objects -v</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-LFS功能压缩大文件"><a href="#2-2-LFS功能压缩大文件" class="headerlink" title="2.2 LFS功能压缩大文件"></a>2.2 LFS功能压缩大文件</h4><ul>
+<li>开启LFS功能</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git lfs install</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>设置LFS要管理的文件类型，pth、mmdb、pack、idx</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git lfs track <span class="string">&quot;*.pth&quot;</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>报LFS错，在执行上面的最后一步上传命令的时候可能会报两个错误</p>
+<ul>
+<li><code>WARNING: Authentication error: Authentication required: LFS only supported repository in paid enterprise.</code></li>
+</ul>
+<blockquote>
+<ul>
+<li>第一个错误可以执行以下命令, 命令中的{your_gitee}&#x2F;{your_repo}是你的远程仓库地址,根据自己情况替换</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git config lfs.https://gitee.com/&#123;</span><br><span class="line">    your_gitee&#125;/&#123;</span><br><span class="line">    your_repo&#125;.git/info/lfs.locksverify false</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>第二个错误可以尝试删除<code>./git/hooks/pre-push</code>文件,最后重新push一下即可</li>
+</ul>
+<p><code>batch response: LFS only supported repository in paid enterprise.</code></p>
+</li>
+</ul>
+<h3 id="3-git获取仓库指定目录或文件"><a href="#3-git获取仓库指定目录或文件" class="headerlink" title="3. git获取仓库指定目录或文件"></a>3. git获取仓库指定目录或文件</h3><ul>
+<li>此功能只在<code>1.7.0</code> 以上版本提供</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> <span class="built_in">test</span> &amp;&amp; <span class="built_in">cd</span> <span class="built_in">test</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git init</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git remote add origin https://xxxx.com/xxx.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git config core.sparsecheckout <span class="literal">true</span>  <span class="comment">#使用Sparse checkout模式</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> <span class="built_in">echo</span> <span class="string">&quot;redis-conf/*&quot;</span> &gt;&gt; .git/info/sparse-checkout  <span class="comment">#将检出的目录或文件使用文件追加的形式写入到git的配置.git/info/sparse-checkout文件中，允许添加多行</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git pull origin master <span class="comment">#获取到需要的文件或目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git checkout  <span class="comment">#在对配置文件.git/info/sparse-checkout的内容进行增、删、改操作之后，使用下面的命令重新修正目录和文件</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git push origin master</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>gitlab</category>
+      </categories>
+      <tags>
+        <tag>gitlab</tag>
       </tags>
   </entry>
   <entry>
@@ -3555,6 +3541,30 @@ spec:  #必选，Pod中容器的详细定义
       </categories>
       <tags>
         <tag>blog-system</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>install-git-runner</title>
+    <url>/gitlab/install-gitlab-runner/</url>
+    <content><![CDATA[<ul>
+<li><p><a href="https://packages.gitlab.com/runner/gitlab-runner">git-runner库</a>  </p>
+</li>
+<li><p><a href="https://gitlab.com/gitlab-org/gitlab-runner">gitlab-runner</a>  </p>
+</li>
+<li><p><a href="https://docs.gitlab.com/runner/install/linux-manually.html">Gitlab 配置runner</a></p>
+</li>
+</ul>
+<h3 id="1-yum安装git-runner"><a href="#1-yum安装git-runner" class="headerlink" title="1. yum安装git-runner"></a>1. yum安装git-runner</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -s https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh | sudo bash</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-runner-14.9.1-1.x86_64</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-rpm安装git-runner"><a href="#2-rpm安装git-runner" class="headerlink" title="2. rpm安装git-runner"></a>2. rpm安装git-runner</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget --content-disposition https://packages.gitlab.com/runner/gitlab-runner/packages/el/7/gitlab-runner-14.9.1-1.x86_64.rpm/download.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">curl -O https://gitlab-runner-downloads.s3.amazonaws.com/latest/rpm/gitlab-runner_amd64.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">rpm -ivh gitlab-runner_amd64.rpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm -ivh gitlab-runner-14.9.1-1.x86_64.rpm</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-docker-安装git-runner"><a href="#3-docker-安装git-runner" class="headerlink" title="3. docker 安装git-runner"></a>3. docker 安装git-runner</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -d --name gitlab-runner --restart always \</span></span><br><span class="line"><span class="language-bash">     -v /srv/gitlab-runner/config:/etc/gitlab-runner \</span></span><br><span class="line"><span class="language-bash">     -v /var/run/docker.sock:/var/run/docker.sock \</span></span><br><span class="line"><span class="language-bash">     gitlab/gitlab-runner:latest</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>gitlab</category>
+      </categories>
+      <tags>
+        <tag>gitlab</tag>
       </tags>
   </entry>
   <entry>
@@ -4104,6 +4114,51 @@ spec:  #必选，Pod中容器的详细定义
       </tags>
   </entry>
   <entry>
+    <title>install-gitlab</title>
+    <url>/gitlab/install-gitlab/</url>
+    <content><![CDATA[<h3 id="1-gitlab-简介以及安装"><a href="#1-gitlab-简介以及安装" class="headerlink" title="1. gitlab 简介以及安装"></a>1. gitlab 简介以及安装</h3><p><a href="https://packages.gitlab.com/gitlab/gitlab-ce">gitlab安装包库</a></p>
+<h4 id="1-1-gitlab简介"><a href="#1-1-gitlab简介" class="headerlink" title="1.1 gitlab简介"></a>1.1 gitlab简介</h4><ul>
+<li>GitLab是管理Git存储库的平台。 GitLab提供免费的公共和私人存储库，问题跟踪和维基。 GitLab是Git之上的一个用户友好的Web界面层，它提高了使用Git的速度。 GitLab提供了自己的持续集成(CI)系统来管理项目，并提供用户界面以及GitLab的其他功能。</li>
+<li><code>cat /etc/gitlab/initial_root_password | grep Password</code> 获取初始密码</li>
+</ul>
+<h4 id="1-2-gitlab安装，gitlab安装分为三种种方式分别是yum和rpm以及docker"><a href="#1-2-gitlab安装，gitlab安装分为三种种方式分别是yum和rpm以及docker" class="headerlink" title="1.2 gitlab安装，gitlab安装分为三种种方式分别是yum和rpm以及docker"></a>1.2 gitlab安装，gitlab安装分为三种种方式分别是yum和rpm以及docker</h4><h5 id="1-2-1-yum方式安装gitlab"><a href="#1-2-1-yum方式安装gitlab" class="headerlink" title="1.2.1 yum方式安装gitlab"></a>1.2.1 yum方式安装gitlab</h5><ul>
+<li><a href="https://about.gitlab.com/install/#centos-7">yum安装Gitlab</a></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y  make telnet  inotify-tools tree rdate ntp gcc gcc-c++ psmisc net-tools screen expect sysstat hdparm traceroute zip unzip pcre pcre-devel zlib zlib-devel openssl openssl-devel tcping libaio dig epel-release wget git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install lsof zeromq-devel policycoreutils openssh-server openssh-clients  policycoreutils-python postfix perl patch cronie</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> postfix &amp;&amp; systemctl start postfix  <span class="comment">#gitlab需要postfix，启动postfix并设置开机自启</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --permanent --add-service=&#123;http,https&#125;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --reload</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash  <span class="comment">#安装gitlab yum仓库</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.9.3-ce.0.el7.x86_64 <span class="comment">#安装指定版本</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure  <span class="comment">#初始化gitlab</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart  	<span class="comment">#重启完成</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="1-2-2-rpm安装gitlab"><a href="#1-2-2-rpm安装gitlab" class="headerlink" title="1.2.2 rpm安装gitlab"></a>1.2.2 rpm安装gitlab</h5><ul>
+<li><a href="https://packages.gitlab.com/gitlab/gitlab-ce">rpm包安装gitlab</a></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y  make telnet  inotify-tools tree rdate ntp gcc gcc-c++ psmisc net-tools screen expect sysstat hdparm traceroute zip unzip pcre pcre-devel zlib zlib-devel openssl openssl-devel tcping libaio dig epel-release wget git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install lsof zeromq-devel policycoreutils openssh-server openssh-clients policycoreutils-python postfix perl patch</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> postfix &amp;&amp; systemctl start postfix  <span class="comment">#gitlab需要postfix，启动postfix</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --permanent --add-service=&#123;http,https&#125;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --reload</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget --content-disposition https://packages.gitlab.com/gitlab/gitlab-ce/packages/el/7/gitlab-ce-14.9.3-ce.0.el7.x86_64.rpm/download.rpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm gitlab-ce-14.9.3-ce.0.el7.x86_64.rpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure  <span class="comment">#初始化gitlab</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart  	<span class="comment">#重启完成</span></span></span><br></pre></td></tr></table></figure>
+
+<h5 id="1-2-3-docker安装gitlab"><a href="#1-2-3-docker安装gitlab" class="headerlink" title="1.2.3 docker安装gitlab"></a>1.2.3 docker安装gitlab</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run --detach \</span></span><br><span class="line"><span class="language-bash">--hostname gitlab.example.com \</span></span><br><span class="line"><span class="language-bash">--publish 443:443 --publish 80:80 --publish 22:22 \</span></span><br><span class="line"><span class="language-bash">--name gitlab-linode \</span></span><br><span class="line"><span class="language-bash">--restart always \</span></span><br><span class="line"><span class="language-bash">--volume /srv/gitlab/config:/etc/gitlab \</span></span><br><span class="line"><span class="language-bash">--volume /srv/gitlab/logs:/var/log/gitlab \</span></span><br><span class="line"><span class="language-bash">--volume /srv/gitlab/data:/var/opt/gitlab \</span></span><br><span class="line"><span class="language-bash">--<span class="built_in">env</span> GITLAB_OMNIBUS_CONFIG=<span class="string">&quot;external_url &#x27;https://gitlab.example.com/&#x27;;&quot;</span>  \</span></span><br><span class="line"><span class="language-bash">gitlab/gitlab-ce</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>gitlab</category>
+      </categories>
+      <tags>
+        <tag>gitlab</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>install-Argo CD</title>
+    <url>/Kubernetes/install-k8s-Argo-CD/</url>
+    <content><![CDATA[<h3 id="1-安装Argo-CD"><a href="#1-安装Argo-CD" class="headerlink" title="1. 安装Argo CD"></a>1. 安装Argo CD</h3><ul>
+<li>Argo CD 是一个为 Kubernetes 而生的，遵循声明式 GitOps 理念的持续部署（CD）工具。Argo CD 可在 Git 存储库更改时自动同步和部署应用程序</li>
+<li>应用定义、配置和环境信息是声明式的，并可以进行版本控制</li>
+<li>应用部署和生命周期管理是全自动化的、是可审计的，清晰易懂</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace argocd  <span class="comment">#创建ArgoCD命名空间</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml  <span class="comment">#下载并启动ArgoCD</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl patch service -n argocd argocd-server -p <span class="string">&#x27;&#123;&quot;spec&quot;: &#123;&quot;type&quot;: &quot;NodePort&quot;&#125;&#125;&#x27;</span>   <span class="comment">#使用NodePort方式暴露argocd ui</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=<span class="string">&quot;&#123;.data.password&#125;&quot;</span> | <span class="built_in">base64</span> -d  <span class="comment">#获取ArgoCD的admin登陆密码</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cli：CLI 是用于管理 Argo CD 的命令行工具</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.3/argocd-linux-amd64 &amp;&amp; <span class="built_in">chmod</span> +x /usr/local/bin/argocd</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看argocd-server暴露端口</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get svc -n argocd</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Kubernetes</category>
+      </categories>
+      <tags>
+        <tag>Kubernetes</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Install_hugo</title>
     <url>/blog-system/install-blog-hugo/</url>
     <content><![CDATA[<h4 id="Windows系统安装hugo博客系统"><a href="#Windows系统安装hugo博客系统" class="headerlink" title="Windows系统安装hugo博客系统"></a>Windows系统安装hugo博客系统</h4><blockquote>
@@ -4185,75 +4240,6 @@ spec:  #必选，Pod中容器的详细定义
       </categories>
       <tags>
         <tag>blog-system</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install-git-runner</title>
-    <url>/gitlab/install-gitlab-runner/</url>
-    <content><![CDATA[<ul>
-<li><p><a href="https://packages.gitlab.com/runner/gitlab-runner">git-runner库</a>  </p>
-</li>
-<li><p><a href="https://gitlab.com/gitlab-org/gitlab-runner">gitlab-runner</a>  </p>
-</li>
-<li><p><a href="https://docs.gitlab.com/runner/install/linux-manually.html">Gitlab 配置runner</a></p>
-</li>
-</ul>
-<h3 id="1-yum安装git-runner"><a href="#1-yum安装git-runner" class="headerlink" title="1. yum安装git-runner"></a>1. yum安装git-runner</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -s https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh | sudo bash</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-runner-14.9.1-1.x86_64</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-rpm安装git-runner"><a href="#2-rpm安装git-runner" class="headerlink" title="2. rpm安装git-runner"></a>2. rpm安装git-runner</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget --content-disposition https://packages.gitlab.com/runner/gitlab-runner/packages/el/7/gitlab-runner-14.9.1-1.x86_64.rpm/download.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">curl -O https://gitlab-runner-downloads.s3.amazonaws.com/latest/rpm/gitlab-runner_amd64.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">rpm -ivh gitlab-runner_amd64.rpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm -ivh gitlab-runner-14.9.1-1.x86_64.rpm</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="3-docker-安装git-runner"><a href="#3-docker-安装git-runner" class="headerlink" title="3. docker 安装git-runner"></a>3. docker 安装git-runner</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -d --name gitlab-runner --restart always \</span></span><br><span class="line"><span class="language-bash">     -v /srv/gitlab-runner/config:/etc/gitlab-runner \</span></span><br><span class="line"><span class="language-bash">     -v /var/run/docker.sock:/var/run/docker.sock \</span></span><br><span class="line"><span class="language-bash">     gitlab/gitlab-runner:latest</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>gitlab</category>
-      </categories>
-      <tags>
-        <tag>gitlab</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install-gitlab</title>
-    <url>/gitlab/install-gitlab/</url>
-    <content><![CDATA[<h3 id="1-gitlab-简介以及安装"><a href="#1-gitlab-简介以及安装" class="headerlink" title="1. gitlab 简介以及安装"></a>1. gitlab 简介以及安装</h3><p><a href="https://packages.gitlab.com/gitlab/gitlab-ce">gitlab安装包库</a></p>
-<h4 id="1-1-gitlab简介"><a href="#1-1-gitlab简介" class="headerlink" title="1.1 gitlab简介"></a>1.1 gitlab简介</h4><ul>
-<li>GitLab是管理Git存储库的平台。 GitLab提供免费的公共和私人存储库，问题跟踪和维基。 GitLab是Git之上的一个用户友好的Web界面层，它提高了使用Git的速度。 GitLab提供了自己的持续集成(CI)系统来管理项目，并提供用户界面以及GitLab的其他功能。</li>
-<li><code>cat /etc/gitlab/initial_root_password | grep Password</code> 获取初始密码</li>
-</ul>
-<h4 id="1-2-gitlab安装，gitlab安装分为三种种方式分别是yum和rpm以及docker"><a href="#1-2-gitlab安装，gitlab安装分为三种种方式分别是yum和rpm以及docker" class="headerlink" title="1.2 gitlab安装，gitlab安装分为三种种方式分别是yum和rpm以及docker"></a>1.2 gitlab安装，gitlab安装分为三种种方式分别是yum和rpm以及docker</h4><h5 id="1-2-1-yum方式安装gitlab"><a href="#1-2-1-yum方式安装gitlab" class="headerlink" title="1.2.1 yum方式安装gitlab"></a>1.2.1 yum方式安装gitlab</h5><ul>
-<li><a href="https://about.gitlab.com/install/#centos-7">yum安装Gitlab</a></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y  make telnet  inotify-tools tree rdate ntp gcc gcc-c++ psmisc net-tools screen expect sysstat hdparm traceroute zip unzip pcre pcre-devel zlib zlib-devel openssl openssl-devel tcping libaio dig epel-release wget git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install lsof zeromq-devel policycoreutils openssh-server openssh-clients  policycoreutils-python postfix perl patch cronie</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> postfix &amp;&amp; systemctl start postfix  <span class="comment">#gitlab需要postfix，启动postfix并设置开机自启</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --permanent --add-service=&#123;http,https&#125;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --reload</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash  <span class="comment">#安装gitlab yum仓库</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.9.3-ce.0.el7.x86_64 <span class="comment">#安装指定版本</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure  <span class="comment">#初始化gitlab</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart  	<span class="comment">#重启完成</span></span></span><br></pre></td></tr></table></figure>
-
-<h5 id="1-2-2-rpm安装gitlab"><a href="#1-2-2-rpm安装gitlab" class="headerlink" title="1.2.2 rpm安装gitlab"></a>1.2.2 rpm安装gitlab</h5><ul>
-<li><a href="https://packages.gitlab.com/gitlab/gitlab-ce">rpm包安装gitlab</a></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y  make telnet  inotify-tools tree rdate ntp gcc gcc-c++ psmisc net-tools screen expect sysstat hdparm traceroute zip unzip pcre pcre-devel zlib zlib-devel openssl openssl-devel tcping libaio dig epel-release wget git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install lsof zeromq-devel policycoreutils openssh-server openssh-clients policycoreutils-python postfix perl patch</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> postfix &amp;&amp; systemctl start postfix  <span class="comment">#gitlab需要postfix，启动postfix</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --permanent --add-service=&#123;http,https&#125;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --reload</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget --content-disposition https://packages.gitlab.com/gitlab/gitlab-ce/packages/el/7/gitlab-ce-14.9.3-ce.0.el7.x86_64.rpm/download.rpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm gitlab-ce-14.9.3-ce.0.el7.x86_64.rpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure  <span class="comment">#初始化gitlab</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart  	<span class="comment">#重启完成</span></span></span><br></pre></td></tr></table></figure>
-
-<h5 id="1-2-3-docker安装gitlab"><a href="#1-2-3-docker安装gitlab" class="headerlink" title="1.2.3 docker安装gitlab"></a>1.2.3 docker安装gitlab</h5><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run --detach \</span></span><br><span class="line"><span class="language-bash">--hostname gitlab.example.com \</span></span><br><span class="line"><span class="language-bash">--publish 443:443 --publish 80:80 --publish 22:22 \</span></span><br><span class="line"><span class="language-bash">--name gitlab-linode \</span></span><br><span class="line"><span class="language-bash">--restart always \</span></span><br><span class="line"><span class="language-bash">--volume /srv/gitlab/config:/etc/gitlab \</span></span><br><span class="line"><span class="language-bash">--volume /srv/gitlab/logs:/var/log/gitlab \</span></span><br><span class="line"><span class="language-bash">--volume /srv/gitlab/data:/var/opt/gitlab \</span></span><br><span class="line"><span class="language-bash">--<span class="built_in">env</span> GITLAB_OMNIBUS_CONFIG=<span class="string">&quot;external_url &#x27;https://gitlab.example.com/&#x27;;&quot;</span>  \</span></span><br><span class="line"><span class="language-bash">gitlab/gitlab-ce</span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>gitlab</category>
-      </categories>
-      <tags>
-        <tag>gitlab</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install-Argo CD</title>
-    <url>/Kubernetes/install-k8s-Argo-CD/</url>
-    <content><![CDATA[<h3 id="1-安装Argo-CD"><a href="#1-安装Argo-CD" class="headerlink" title="1. 安装Argo CD"></a>1. 安装Argo CD</h3><ul>
-<li>Argo CD 是一个为 Kubernetes 而生的，遵循声明式 GitOps 理念的持续部署（CD）工具。Argo CD 可在 Git 存储库更改时自动同步和部署应用程序</li>
-<li>应用定义、配置和环境信息是声明式的，并可以进行版本控制</li>
-<li>应用部署和生命周期管理是全自动化的、是可审计的，清晰易懂</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace argocd  <span class="comment">#创建ArgoCD命名空间</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml  <span class="comment">#下载并启动ArgoCD</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl patch service -n argocd argocd-server -p <span class="string">&#x27;&#123;&quot;spec&quot;: &#123;&quot;type&quot;: &quot;NodePort&quot;&#125;&#125;&#x27;</span>   <span class="comment">#使用NodePort方式暴露argocd ui</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=<span class="string">&quot;&#123;.data.password&#125;&quot;</span> | <span class="built_in">base64</span> -d  <span class="comment">#获取ArgoCD的admin登陆密码</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cli：CLI 是用于管理 Argo CD 的命令行工具</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.3/argocd-linux-amd64 &amp;&amp; <span class="built_in">chmod</span> +x /usr/local/bin/argocd</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看argocd-server暴露端口</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get svc -n argocd</span></span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>Kubernetes</category>
-      </categories>
-      <tags>
-        <tag>Kubernetes</tag>
       </tags>
   </entry>
   <entry>
@@ -4610,62 +4596,6 @@ $ kubectl get pods --show-labels -n cattle-system
       </tags>
   </entry>
   <entry>
-    <title>install_es-head</title>
-    <url>/Log/install-log-es-head/</url>
-    <content><![CDATA[<h3 id="1-安装elasticsearch-head"><a href="#1-安装elasticsearch-head" class="headerlink" title="1. 安装elasticsearch-head"></a>1. 安装<code>elasticsearch-head</code></h3><ul>
-<li><a href="https://github.com/mobz/elasticsearch-head">elasticsearch-head Github地址</a>  <h4 id="1-1-安装nodejs、npm国内安装cnpm"><a href="#1-1-安装nodejs、npm国内安装cnpm" class="headerlink" title="1.1 安装nodejs、npm国内安装cnpm"></a>1.1 安装<code>nodejs、npm</code>国内安装<code>cnpm</code></h4></li>
-<li>安装<code>nodejs</code>前先安装<code>epel-release</code>源<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install epel-release</span></span><br></pre></td></tr></table></figure></li>
-<li>安装<code>nodejs、npm</code><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install nodejs npm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更新npm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install -g npm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装 n 模块</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install -g n</span></span><br></pre></td></tr></table></figure></li>
-<li>更换国内阿里云源<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看npm 使用地址</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm config get registry</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更换源</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm config <span class="built_in">set</span> registry https://registry.npm.taobao.org</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用cnpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install -g cnpm --registry=https://registry.npm.taobao.org</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-2-安装elasticsearch-head"><a href="#1-2-安装elasticsearch-head" class="headerlink" title="1.2 安装elasticsearch-head"></a>1.2 安装<code>elasticsearch-head</code></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/mobz/elasticsearch-head/archive/refs/tags/v5.0.0.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar zxvf v5.0.0.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> elasticsearch-head</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm run start</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-]]></content>
-      <categories>
-        <category>Log</category>
-      </categories>
-      <tags>
-        <tag>Log</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install_nginx</title>
-    <url>/nginx/install-nginx/</url>
-    <content><![CDATA[<h3 id="1-root用户默认安装nginx"><a href="#1-root用户默认安装nginx" class="headerlink" title="1. root用户默认安装nginx"></a>1. <code>root</code>用户默认安装<code>nginx</code></h3><h4 id="1-1-安装依赖扩展包"><a href="#1-1-安装依赖扩展包" class="headerlink" title="1.1 安装依赖扩展包"></a>1.1 安装依赖扩展包</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install wget gcc gcc-c++ pcre-devel zlib-devel openssl openssl-devel</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-2-切换目录下载nginx安装包-并且解压"><a href="#1-2-切换目录下载nginx安装包-并且解压" class="headerlink" title="1.2 切换目录下载nginx安装包,并且解压"></a>1.2 切换目录下载<code>nginx</code>安装包,并且解压</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /usr/local/src</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget http://nginx.org/download/nginx-1.20.2.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf nginx-1.20.2.tar.gz</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-3-进入到解压后的目录进行编译安装"><a href="#1-3-进入到解压后的目录进行编译安装" class="headerlink" title="1.3 进入到解压后的目录进行编译安装"></a>1.3 进入到解压后的目录进行编译安装</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> nginx-1.20.2</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/usr/local/nginx --with-http_ssl_module \</span></span><br><span class="line"><span class="language-bash">--with-http_v2_module --with-http_stub_status_module \</span></span><br><span class="line"><span class="language-bash">--with-pcre --with-http_gzip_static_module --with-http_dav_module  \</span></span><br><span class="line"><span class="language-bash">--with-http_addition_module  --with-http_sub_module \</span></span><br><span class="line"><span class="language-bash">--with-http_flv_module  --with-http_mp4_module</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">编译、安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make &amp;&amp; make install</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-4-添加系统环境变量"><a href="#1-4-添加系统环境变量" class="headerlink" title="1.4 添加系统环境变量"></a>1.4 添加系统环境变量</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;N;56iexport PATH=/usr/local/nginx/sbin:$PATH&#x27;</span> /etc/profile</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">source</span> /etc/profile</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-5-编写启动文件"><a href="#1-5-编写启动文件" class="headerlink" title="1.5 编写启动文件"></a>1.5 编写启动文件</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&#x27;#!/bin/bash</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">chkconfig: - 99 2</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">description: Nginx Service Control Script</span></span></span><br><span class="line">PROG=&quot;/usr/local/nginx/sbin/nginx&quot;</span><br><span class="line">PIDF=&quot;/usr/local/nginx/logs/nginx.pid&quot;</span><br><span class="line">case &quot;$1&quot; in</span><br><span class="line">        start)</span><br><span class="line">        $PROG</span><br><span class="line">        ;;</span><br><span class="line">        stop)</span><br><span class="line">        kill -3 $(cat $PIDF)</span><br><span class="line">        ;;</span><br><span class="line">        restart)</span><br><span class="line">        $0 stop &amp;&gt; /dev/null</span><br><span class="line">        if [ $? -ne 0 ] ; then continue ; fi</span><br><span class="line">        $0 start</span><br><span class="line">        ;;</span><br><span class="line">        reload)</span><br><span class="line">        kill -1 $(cat $PIDF)</span><br><span class="line">        ;;</span><br><span class="line">        *)</span><br><span class="line">        echo &quot;Userage: $0 &#123; start | stop | restart | reload &#125;&quot;</span><br><span class="line">        exit 1</span><br><span class="line">esac</span><br><span class="line">exit 0</span><br><span class="line">&#x27; &gt; /etc/init.d/nginx</span><br></pre></td></tr></table></figure>
-<h4 id="1-6-赋予执行权限，并设置开机自启"><a href="#1-6-赋予执行权限，并设置开机自启" class="headerlink" title="1.6 赋予执行权限，并设置开机自启"></a>1.6 赋予执行权限，并设置开机自启</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> +x /etc/init.d/nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">chkconfig --add nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">chkconfig nginx on</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启动nginx服务</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">/usr/local/nginx/sbin/nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">netstat -nuplt | grep :80</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --zone=public --add-service=&#123;http,https&#125; --permanent</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --reload</span></span><br></pre></td></tr></table></figure>
-<h3 id="2-非常规安装Nginx"><a href="#2-非常规安装Nginx" class="headerlink" title="2. 非常规安装Nginx"></a>2. 非常规安装<code>Nginx</code></h3><h4 id="2-1-安装依赖扩展包"><a href="#2-1-安装依赖扩展包" class="headerlink" title="2.1 安装依赖扩展包"></a>2.1 安装依赖扩展包</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install wget gcc gcc-c++ pcre-devel zlib-devel openssl openssl-devel</span></span><br></pre></td></tr></table></figure>
-<h4 id="2-2-判断用户是否存在，不存在创建，赋予权限"><a href="#2-2-判断用户是否存在，不存在创建，赋予权限" class="headerlink" title="2.2 判断用户是否存在，不存在创建，赋予权限"></a>2.2 判断用户是否存在，不存在创建，赋予权限</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">判断是否存在</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">id</span> swadmin</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">不存在创建</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="keyword">if</span> [ $? -eq 0 ];<span class="keyword">then</span></span></span><br><span class="line">    groupadd group &amp;&amp; useradd -g swadmin swadmin</span><br><span class="line">    echo &quot;password&quot;|passwd --stdin swadmin &amp;&gt;/dev/null</span><br><span class="line">fi</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">赋予权限</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;#########Start/Stop Service###############</span></span></span><br><span class="line">Cmnd_Alias ADMIN_START_SERVICES = /opt/*, /usr/bin/kill, /etc/init.d/nginx, /opt/lucky/nginx/sbin/nginx</span><br><span class="line">admin ALL=(ALL)NOPASSWD:ADMIN_START_SERVICES&quot; &gt; /etc/sudoers.d/admin</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">chmod 660 /etc/sudoers.d/user</span></span>  </span><br></pre></td></tr></table></figure>
-<h4 id="2-3-创建目录-赋予权限"><a href="#2-3-创建目录-赋予权限" class="headerlink" title="2.3 创建目录,赋予权限"></a>2.3 创建目录,赋予权限</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -p /opt/&#123;apps,src,conf,scripts&#125;</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> -R admin:admin /opt/*</span></span><br></pre></td></tr></table></figure>
-<h4 id="2-4-进入解压目录，配置、编译、安装"><a href="#2-4-进入解压目录，配置、编译、安装" class="headerlink" title="2.4 进入解压目录，配置、编译、安装"></a>2.4 进入解压目录，配置、编译、安装</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">su admin -c <span class="string">&quot;</span></span></span><br><span class="line"> cd /opt/src/</span><br><span class="line"> wget http://nginx.org/download/nginx-1.20.2.tar.gz</span><br><span class="line"> tar -zxvf nginx-1.20.2.tar.gz</span><br><span class="line"> cd nginx-1.20.2</span><br><span class="line"> ./configure --prefix=/opt/lucky/nginx \</span><br><span class="line">   --with-http_stub_status_module --with-http_ssl_module \</span><br><span class="line">   --with-http_gzip_static_module --with-ipv6 --with-stream \</span><br><span class="line">   --with-stream_ssl_module --with-http_v2_module \</span><br><span class="line">   --with-pcre --with-http_gzip_static_module \</span><br><span class="line">   --with-http_dav_module --with-http_addition_module \</span><br><span class="line">   --with-http_sub_module --with-http_flv_module \</span><br><span class="line">   --with-http_mp4_module --with-stream --user=admin --group=admin·</span><br><span class="line"> sleep 3</span><br><span class="line"> make -j4 &amp;&amp; make install</span><br><span class="line"> sleep 5</span><br><span class="line"> sudo /opt/lucky/nginx/sbin/nginx</span><br><span class="line"> echo &quot;alias nginx=&#x27;sudo /etc/init.d/nginx&#x27;&quot; &gt;&gt;/home/admin/.bashrc</span><br><span class="line">&quot;</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">sed -i &quot;</span>N;56iexport PATH=/opt/lucky/nginx/sbin:<span class="variable">$PATH</span><span class="string">&quot; /etc/profile</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">ss -unplt|grep 80</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">firewall-cmd --zone=public --add-service=&#123;http,https&#125; --permanent</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">firewall-cmd --reload</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="2-4-编写启动文件"><a href="#2-4-编写启动文件" class="headerlink" title="2.4 编写启动文件"></a>2.4 编写启动文件</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat &gt;/etc/init.d/nginx&lt;&lt;-EOF</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment"># 目录</span></span></span><br><span class="line">NGINX_PATH=&quot;/opt/apps/nginx&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">#</span></span> </span><br><span class="line">start_nginx()&#123;</span><br><span class="line">        $&#123;NGINX_PATH&#125;/sbin/nginx</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stop_nginx()&#123;</span><br><span class="line"><span class="meta prompt_">	$</span><span class="language-bash">&#123;NGINX_PATH&#125;/sbin/nginx -s stop</span></span><br><span class="line">&#125;</span><br><span class="line">reload_nginx()&#123;</span><br><span class="line"><span class="meta prompt_">	$</span><span class="language-bash">&#123;NGINX_PATH&#125;/sbin/nginx -s reload</span></span><br><span class="line">&#125;</span><br><span class="line">check_nginx()&#123;</span><br><span class="line"><span class="meta prompt_">	$</span><span class="language-bash">&#123;NGINX_PATH&#125;/sbin/nginx -t</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## Finally the input handling.</span></span></span><br><span class="line"></span><br><span class="line">case &quot;$1&quot; in</span><br><span class="line">  start)</span><br><span class="line">        start_nginx</span><br><span class="line">        ;;</span><br><span class="line">  stop)</span><br><span class="line">        stop_nginx</span><br><span class="line">        ;;</span><br><span class="line">  reload)</span><br><span class="line">        reload_nginx</span><br><span class="line">        ;;</span><br><span class="line">  -t)</span><br><span class="line">        check_nginx</span><br><span class="line">        ;;</span><br><span class="line">  *)</span><br><span class="line">        echo &quot;Usage: service nginx &#123;start|stop|reload|-t&#125;&quot;</span><br><span class="line">        exit 1</span><br><span class="line">        ;;</span><br><span class="line">esac</span><br><span class="line"></span><br><span class="line">exit</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> +x /etc/init.d/nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">chkconfig --add nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">chkconfig nginx on</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>nginx</category>
-      </categories>
-      <tags>
-        <tag>nginx</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>install-nginx-third-party modules</title>
-    <url>/nginx/install-nginx-third-party-modules/</url>
-    <content><![CDATA[<h3 id="1-安装Nginx-GeoIP2IP定位模块"><a href="#1-安装Nginx-GeoIP2IP定位模块" class="headerlink" title="1. 安装Nginx GeoIP2IP定位模块"></a>1. 安装<code>Nginx GeoIP2</code>IP定位模块</h3><ul>
-<li><font color=red><code>GeoIP2</code>模块依赖<code>libmaxminddb</code>库</font></li>
-</ul>
-<h4 id="1-1-安装libmaxminddb库"><a href="#1-1-安装libmaxminddb库" class="headerlink" title="1.1 安装libmaxminddb库"></a>1.1 安装<code>libmaxminddb</code>库</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> wget -c https://github.com/maxmind/libmaxminddb/releases/download/1.3.2/libmaxminddb-1.3.2.tar.gz -P /opt/src/    <span class="comment">##下载到指定目录下:-c断点续传、-P下载指定目录，</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf /opt/src/libmaxminddb-1.3.2.tar.gz -C /opt/src/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/src/libmaxminddb-1.3.2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make -j2 &amp;&amp; make install</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-2-安装GeoIP2"><a href="#1-2-安装GeoIP2" class="headerlink" title="1.2 安装GeoIP2"></a>1.2 安装<code>GeoIP2</code></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/leev/ngx_http_geoip2_module.git /opt/apps/nginx/ngx_http_geoip2_module</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_http_geoip2_module</span></span><br></pre></td></tr></table></figure>
-<h3 id="2-安装ngx-brotli压缩算法"><a href="#2-安装ngx-brotli压缩算法" class="headerlink" title="2. 安装ngx_brotli压缩算法"></a>2. 安装<code>ngx_brotli</code>压缩算法</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/google/ngx_brotli /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git submodule update --init  <span class="comment">#更新ngx_brotli所需依赖库</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_brotli</span></span><br></pre></td></tr></table></figure>
-<h3 id="3-安装ngx-http-upstream-check-module后端服务端口检测模块"><a href="#3-安装ngx-http-upstream-check-module后端服务端口检测模块" class="headerlink" title="3. 安装ngx_http_upstream_check_module后端服务端口检测模块"></a>3. 安装<code>ngx_http_upstream_check_module</code>后端服务端口检测模块</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/yaoweibin/nginx_upstream_check_module.git /opt/apps/nginx/nginx_upstream_check_module <span class="comment">#下载检测包</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/nginx_upstream_check_module</span></span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>nginx</category>
-      </categories>
-      <tags>
-        <tag>nginx</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>install-redis</title>
     <url>/Redis/install-redis/</url>
     <content><![CDATA[<h3 id="1-Rdis安装"><a href="#1-Rdis安装" class="headerlink" title="1. Rdis安装"></a>1. Rdis安装</h3><ul>
@@ -4816,6 +4746,62 @@ $ chkconfig redis on
       </categories>
       <tags>
         <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>install_es-head</title>
+    <url>/Log/install-log-es-head/</url>
+    <content><![CDATA[<h3 id="1-安装elasticsearch-head"><a href="#1-安装elasticsearch-head" class="headerlink" title="1. 安装elasticsearch-head"></a>1. 安装<code>elasticsearch-head</code></h3><ul>
+<li><a href="https://github.com/mobz/elasticsearch-head">elasticsearch-head Github地址</a>  <h4 id="1-1-安装nodejs、npm国内安装cnpm"><a href="#1-1-安装nodejs、npm国内安装cnpm" class="headerlink" title="1.1 安装nodejs、npm国内安装cnpm"></a>1.1 安装<code>nodejs、npm</code>国内安装<code>cnpm</code></h4></li>
+<li>安装<code>nodejs</code>前先安装<code>epel-release</code>源<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install epel-release</span></span><br></pre></td></tr></table></figure></li>
+<li>安装<code>nodejs、npm</code><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install nodejs npm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更新npm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install -g npm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装 n 模块</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install -g n</span></span><br></pre></td></tr></table></figure></li>
+<li>更换国内阿里云源<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看npm 使用地址</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm config get registry</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更换源</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm config <span class="built_in">set</span> registry https://registry.npm.taobao.org</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用cnpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install -g cnpm --registry=https://registry.npm.taobao.org</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-2-安装elasticsearch-head"><a href="#1-2-安装elasticsearch-head" class="headerlink" title="1.2 安装elasticsearch-head"></a>1.2 安装<code>elasticsearch-head</code></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/mobz/elasticsearch-head/archive/refs/tags/v5.0.0.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar zxvf v5.0.0.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> elasticsearch-head</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm run start</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Log</category>
+      </categories>
+      <tags>
+        <tag>Log</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>install_nginx</title>
+    <url>/nginx/install-nginx/</url>
+    <content><![CDATA[<h3 id="1-root用户默认安装nginx"><a href="#1-root用户默认安装nginx" class="headerlink" title="1. root用户默认安装nginx"></a>1. <code>root</code>用户默认安装<code>nginx</code></h3><h4 id="1-1-安装依赖扩展包"><a href="#1-1-安装依赖扩展包" class="headerlink" title="1.1 安装依赖扩展包"></a>1.1 安装依赖扩展包</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install wget gcc gcc-c++ pcre-devel zlib-devel openssl openssl-devel</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-2-切换目录下载nginx安装包-并且解压"><a href="#1-2-切换目录下载nginx安装包-并且解压" class="headerlink" title="1.2 切换目录下载nginx安装包,并且解压"></a>1.2 切换目录下载<code>nginx</code>安装包,并且解压</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /usr/local/src</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget http://nginx.org/download/nginx-1.20.2.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf nginx-1.20.2.tar.gz</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-3-进入到解压后的目录进行编译安装"><a href="#1-3-进入到解压后的目录进行编译安装" class="headerlink" title="1.3 进入到解压后的目录进行编译安装"></a>1.3 进入到解压后的目录进行编译安装</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> nginx-1.20.2</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/usr/local/nginx --with-http_ssl_module \</span></span><br><span class="line"><span class="language-bash">--with-http_v2_module --with-http_stub_status_module \</span></span><br><span class="line"><span class="language-bash">--with-pcre --with-http_gzip_static_module --with-http_dav_module  \</span></span><br><span class="line"><span class="language-bash">--with-http_addition_module  --with-http_sub_module \</span></span><br><span class="line"><span class="language-bash">--with-http_flv_module  --with-http_mp4_module</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">编译、安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make &amp;&amp; make install</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-4-添加系统环境变量"><a href="#1-4-添加系统环境变量" class="headerlink" title="1.4 添加系统环境变量"></a>1.4 添加系统环境变量</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;N;56iexport PATH=/usr/local/nginx/sbin:$PATH&#x27;</span> /etc/profile</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">source</span> /etc/profile</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-5-编写启动文件"><a href="#1-5-编写启动文件" class="headerlink" title="1.5 编写启动文件"></a>1.5 编写启动文件</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&#x27;#!/bin/bash</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">chkconfig: - 99 2</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">description: Nginx Service Control Script</span></span></span><br><span class="line">PROG=&quot;/usr/local/nginx/sbin/nginx&quot;</span><br><span class="line">PIDF=&quot;/usr/local/nginx/logs/nginx.pid&quot;</span><br><span class="line">case &quot;$1&quot; in</span><br><span class="line">        start)</span><br><span class="line">        $PROG</span><br><span class="line">        ;;</span><br><span class="line">        stop)</span><br><span class="line">        kill -3 $(cat $PIDF)</span><br><span class="line">        ;;</span><br><span class="line">        restart)</span><br><span class="line">        $0 stop &amp;&gt; /dev/null</span><br><span class="line">        if [ $? -ne 0 ] ; then continue ; fi</span><br><span class="line">        $0 start</span><br><span class="line">        ;;</span><br><span class="line">        reload)</span><br><span class="line">        kill -1 $(cat $PIDF)</span><br><span class="line">        ;;</span><br><span class="line">        *)</span><br><span class="line">        echo &quot;Userage: $0 &#123; start | stop | restart | reload &#125;&quot;</span><br><span class="line">        exit 1</span><br><span class="line">esac</span><br><span class="line">exit 0</span><br><span class="line">&#x27; &gt; /etc/init.d/nginx</span><br></pre></td></tr></table></figure>
+<h4 id="1-6-赋予执行权限，并设置开机自启"><a href="#1-6-赋予执行权限，并设置开机自启" class="headerlink" title="1.6 赋予执行权限，并设置开机自启"></a>1.6 赋予执行权限，并设置开机自启</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> +x /etc/init.d/nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">chkconfig --add nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">chkconfig nginx on</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启动nginx服务</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">/usr/local/nginx/sbin/nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">netstat -nuplt | grep :80</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --zone=public --add-service=&#123;http,https&#125; --permanent</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --reload</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-非常规安装Nginx"><a href="#2-非常规安装Nginx" class="headerlink" title="2. 非常规安装Nginx"></a>2. 非常规安装<code>Nginx</code></h3><h4 id="2-1-安装依赖扩展包"><a href="#2-1-安装依赖扩展包" class="headerlink" title="2.1 安装依赖扩展包"></a>2.1 安装依赖扩展包</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install wget gcc gcc-c++ pcre-devel zlib-devel openssl openssl-devel</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-2-判断用户是否存在，不存在创建，赋予权限"><a href="#2-2-判断用户是否存在，不存在创建，赋予权限" class="headerlink" title="2.2 判断用户是否存在，不存在创建，赋予权限"></a>2.2 判断用户是否存在，不存在创建，赋予权限</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">判断是否存在</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">id</span> swadmin</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">不存在创建</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="keyword">if</span> [ $? -eq 0 ];<span class="keyword">then</span></span></span><br><span class="line">    groupadd group &amp;&amp; useradd -g swadmin swadmin</span><br><span class="line">    echo &quot;password&quot;|passwd --stdin swadmin &amp;&gt;/dev/null</span><br><span class="line">fi</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">赋予权限</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;#########Start/Stop Service###############</span></span></span><br><span class="line">Cmnd_Alias ADMIN_START_SERVICES = /opt/*, /usr/bin/kill, /etc/init.d/nginx, /opt/lucky/nginx/sbin/nginx</span><br><span class="line">admin ALL=(ALL)NOPASSWD:ADMIN_START_SERVICES&quot; &gt; /etc/sudoers.d/admin</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">chmod 660 /etc/sudoers.d/user</span></span>  </span><br></pre></td></tr></table></figure>
+<h4 id="2-3-创建目录-赋予权限"><a href="#2-3-创建目录-赋予权限" class="headerlink" title="2.3 创建目录,赋予权限"></a>2.3 创建目录,赋予权限</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -p /opt/&#123;apps,src,conf,scripts&#125;</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> -R admin:admin /opt/*</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-4-进入解压目录，配置、编译、安装"><a href="#2-4-进入解压目录，配置、编译、安装" class="headerlink" title="2.4 进入解压目录，配置、编译、安装"></a>2.4 进入解压目录，配置、编译、安装</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">su admin -c <span class="string">&quot;</span></span></span><br><span class="line"> cd /opt/src/</span><br><span class="line"> wget http://nginx.org/download/nginx-1.20.2.tar.gz</span><br><span class="line"> tar -zxvf nginx-1.20.2.tar.gz</span><br><span class="line"> cd nginx-1.20.2</span><br><span class="line"> ./configure --prefix=/opt/lucky/nginx \</span><br><span class="line">   --with-http_stub_status_module --with-http_ssl_module \</span><br><span class="line">   --with-http_gzip_static_module --with-ipv6 --with-stream \</span><br><span class="line">   --with-stream_ssl_module --with-http_v2_module \</span><br><span class="line">   --with-pcre --with-http_gzip_static_module \</span><br><span class="line">   --with-http_dav_module --with-http_addition_module \</span><br><span class="line">   --with-http_sub_module --with-http_flv_module \</span><br><span class="line">   --with-http_mp4_module --with-stream --user=admin --group=admin·</span><br><span class="line"> sleep 3</span><br><span class="line"> make -j4 &amp;&amp; make install</span><br><span class="line"> sleep 5</span><br><span class="line"> sudo /opt/lucky/nginx/sbin/nginx</span><br><span class="line"> echo &quot;alias nginx=&#x27;sudo /etc/init.d/nginx&#x27;&quot; &gt;&gt;/home/admin/.bashrc</span><br><span class="line">&quot;</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">sed -i &quot;</span>N;56iexport PATH=/opt/lucky/nginx/sbin:<span class="variable">$PATH</span><span class="string">&quot; /etc/profile</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">ss -unplt|grep 80</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">firewall-cmd --zone=public --add-service=&#123;http,https&#125; --permanent</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">firewall-cmd --reload</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="2-4-编写启动文件"><a href="#2-4-编写启动文件" class="headerlink" title="2.4 编写启动文件"></a>2.4 编写启动文件</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat &gt;/etc/init.d/nginx&lt;&lt;-EOF</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment"># 目录</span></span></span><br><span class="line">NGINX_PATH=&quot;/opt/apps/nginx&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">#</span></span> </span><br><span class="line">start_nginx()&#123;</span><br><span class="line">        $&#123;NGINX_PATH&#125;/sbin/nginx</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stop_nginx()&#123;</span><br><span class="line"><span class="meta prompt_">	$</span><span class="language-bash">&#123;NGINX_PATH&#125;/sbin/nginx -s stop</span></span><br><span class="line">&#125;</span><br><span class="line">reload_nginx()&#123;</span><br><span class="line"><span class="meta prompt_">	$</span><span class="language-bash">&#123;NGINX_PATH&#125;/sbin/nginx -s reload</span></span><br><span class="line">&#125;</span><br><span class="line">check_nginx()&#123;</span><br><span class="line"><span class="meta prompt_">	$</span><span class="language-bash">&#123;NGINX_PATH&#125;/sbin/nginx -t</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## Finally the input handling.</span></span></span><br><span class="line"></span><br><span class="line">case &quot;$1&quot; in</span><br><span class="line">  start)</span><br><span class="line">        start_nginx</span><br><span class="line">        ;;</span><br><span class="line">  stop)</span><br><span class="line">        stop_nginx</span><br><span class="line">        ;;</span><br><span class="line">  reload)</span><br><span class="line">        reload_nginx</span><br><span class="line">        ;;</span><br><span class="line">  -t)</span><br><span class="line">        check_nginx</span><br><span class="line">        ;;</span><br><span class="line">  *)</span><br><span class="line">        echo &quot;Usage: service nginx &#123;start|stop|reload|-t&#125;&quot;</span><br><span class="line">        exit 1</span><br><span class="line">        ;;</span><br><span class="line">esac</span><br><span class="line"></span><br><span class="line">exit</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> +x /etc/init.d/nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">chkconfig --add nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">chkconfig nginx on</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>nginx</category>
+      </categories>
+      <tags>
+        <tag>nginx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>install-nginx-third-party modules</title>
+    <url>/nginx/install-nginx-third-party-modules/</url>
+    <content><![CDATA[<h3 id="1-安装Nginx-GeoIP2IP定位模块"><a href="#1-安装Nginx-GeoIP2IP定位模块" class="headerlink" title="1. 安装Nginx GeoIP2IP定位模块"></a>1. 安装<code>Nginx GeoIP2</code>IP定位模块</h3><ul>
+<li><font color=red><code>GeoIP2</code>模块依赖<code>libmaxminddb</code>库</font></li>
+</ul>
+<h4 id="1-1-安装libmaxminddb库"><a href="#1-1-安装libmaxminddb库" class="headerlink" title="1.1 安装libmaxminddb库"></a>1.1 安装<code>libmaxminddb</code>库</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> wget -c https://github.com/maxmind/libmaxminddb/releases/download/1.3.2/libmaxminddb-1.3.2.tar.gz -P /opt/src/    <span class="comment">##下载到指定目录下:-c断点续传、-P下载指定目录，</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf /opt/src/libmaxminddb-1.3.2.tar.gz -C /opt/src/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/src/libmaxminddb-1.3.2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make -j2 &amp;&amp; make install</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-2-安装GeoIP2"><a href="#1-2-安装GeoIP2" class="headerlink" title="1.2 安装GeoIP2"></a>1.2 安装<code>GeoIP2</code></h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/leev/ngx_http_geoip2_module.git /opt/apps/nginx/ngx_http_geoip2_module</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_http_geoip2_module</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-安装ngx-brotli压缩算法"><a href="#2-安装ngx-brotli压缩算法" class="headerlink" title="2. 安装ngx_brotli压缩算法"></a>2. 安装<code>ngx_brotli</code>压缩算法</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/google/ngx_brotli /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git submodule update --init  <span class="comment">#更新ngx_brotli所需依赖库</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_brotli</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-安装ngx-http-upstream-check-module后端服务端口检测模块"><a href="#3-安装ngx-http-upstream-check-module后端服务端口检测模块" class="headerlink" title="3. 安装ngx_http_upstream_check_module后端服务端口检测模块"></a>3. 安装<code>ngx_http_upstream_check_module</code>后端服务端口检测模块</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/yaoweibin/nginx_upstream_check_module.git /opt/apps/nginx/nginx_upstream_check_module <span class="comment">#下载检测包</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/nginx_upstream_check_module</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>nginx</category>
+      </categories>
+      <tags>
+        <tag>nginx</tag>
       </tags>
   </entry>
   <entry>
@@ -5065,7 +5051,7 @@ $ chkconfig redis on
 </blockquote>
 </li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建一个namespace命名空间</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace dev</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment java-demo --image=lizhenliang/java-demo --dry-run -o yaml &gt;/tmp/deploy.yaml</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment nginx --image=nginx:1.17.1 --dry-run=client -n dev -o yaml &gt; /tmp/test.yam</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create service clusterip ngx-dep --tcp=80:80  <span class="comment"># 命令行创建service</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create -f  ns-dev.yaml    <span class="comment"># 根据yaml文件创建资源</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建一个namespace命名空间</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace dev</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment java-demo --image=192.168.80.210:8080/test/tomcat-demo:v1 --dry-run=client -o yaml &gt;/tmp/deploy.yaml</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create service clusterip ngx-dep --tcp=80:80  <span class="comment"># 命令行创建service</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create -f  ns-dev.yaml    <span class="comment"># 根据yaml文件创建资源</span></span></span><br></pre></td></tr></table></figure>
 
 <h5 id="3-2-2-kubectl-expose-help端口暴露"><a href="#3-2-2-kubectl-expose-help端口暴露" class="headerlink" title="3.2.2 kubectl expose --help端口暴露"></a>3.2.2 <font color=red><code>kubectl expose --help</code>端口暴露</font></h5><blockquote>
 <ul>
