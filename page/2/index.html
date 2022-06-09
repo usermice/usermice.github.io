@@ -191,6 +191,106 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/nginx/install-nginx-third-party-modules/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/nginx/install-nginx-third-party-modules/" class="post-title-link" itemprop="url">install-nginx-third-party modules</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-22 18:09:54" itemprop="dateCreated datePublished" datetime="2022-05-22T18:09:54+08:00">2022-05-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-23 18:30:50" itemprop="dateModified" datetime="2022-05-23T18:30:50+08:00">2022-05-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/nginx/" itemprop="url" rel="index"><span itemprop="name">nginx</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-安装Nginx-GeoIP2IP定位模块"><a href="#1-安装Nginx-GeoIP2IP定位模块" class="headerlink" title="1. 安装Nginx GeoIP2IP定位模块"></a>1. 安装<code>Nginx GeoIP2</code>IP定位模块</h3><ul>
+<li><font color=red><code>GeoIP2</code>模块依赖<code>libmaxminddb</code>库</font></li>
+</ul>
+<h4 id="1-1-安装libmaxminddb库"><a href="#1-1-安装libmaxminddb库" class="headerlink" title="1.1 安装libmaxminddb库"></a>1.1 安装<code>libmaxminddb</code>库</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> wget -c https://github.com/maxmind/libmaxminddb/releases/download/1.3.2/libmaxminddb-1.3.2.tar.gz -P /opt/src/    <span class="comment">##下载到指定目录下:-c断点续传、-P下载指定目录，</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf /opt/src/libmaxminddb-1.3.2.tar.gz -C /opt/src/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/src/libmaxminddb-1.3.2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make -j2 &amp;&amp; make install</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-2-安装GeoIP2"><a href="#1-2-安装GeoIP2" class="headerlink" title="1.2 安装GeoIP2"></a>1.2 安装<code>GeoIP2</code></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/leev/ngx_http_geoip2_module.git /opt/apps/nginx/ngx_http_geoip2_module</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_http_geoip2_module</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-安装ngx-brotli压缩算法"><a href="#2-安装ngx-brotli压缩算法" class="headerlink" title="2. 安装ngx_brotli压缩算法"></a>2. 安装<code>ngx_brotli</code>压缩算法</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/google/ngx_brotli /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git submodule update --init  <span class="comment">#更新ngx_brotli所需依赖库</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_brotli</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-安装ngx-http-upstream-check-module后端服务端口检测模块"><a href="#3-安装ngx-http-upstream-check-module后端服务端口检测模块" class="headerlink" title="3. 安装ngx_http_upstream_check_module后端服务端口检测模块"></a>3. 安装<code>ngx_http_upstream_check_module</code>后端服务端口检测模块</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/yaoweibin/nginx_upstream_check_module.git /opt/apps/nginx/nginx_upstream_check_module <span class="comment">#下载检测包</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/nginx_upstream_check_module</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/configure-k8s-Rancher/">
 
 <div>
@@ -226,7 +326,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-26 13:42:34" itemprop="dateModified" datetime="2022-05-26T13:42:34+08:00">2022-05-26</time>
+                <time title="修改时间：2022-06-09 15:21:07" itemprop="dateModified" datetime="2022-06-09T15:21:07+08:00">2022-06-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -244,14 +344,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>6.7k</span>
+              <span>10k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
+              <span>9 分钟</span>
             </span>
 
         </div>
@@ -264,81 +364,31 @@
 
       
           <h3 id="1-Rancher服务宕机情况下使用Kubernetes-Cluster"><a href="#1-Rancher服务宕机情况下使用Kubernetes-Cluster" class="headerlink" title="1. Rancher服务宕机情况下使用Kubernetes Cluster"></a>1. <code>Rancher</code>服务宕机情况下使用<code>Kubernetes Cluster</code></h3><ul>
-<li><code>Rancher Server</code>是上游中心管理角色，控制或创建旗下<code>N</code>个<code>Kubernetes Cluster</code>集群，不管是测试中的单个节点或者是<code>Kubernetes Cluster</code>集群失效都无法读取，运维仍需要对下游所有<code>Kubernetes Cluster</code>集群管控</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>服务器</th>
-<th>IP</th>
-<th>CPU</th>
-<th>内存</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>master</td>
-<td>192.168.35.128</td>
-<td>8<code>core</code></td>
-<td>8G</td>
-</tr>
-<tr>
-<td>node-1</td>
-<td>192.168.35.129</td>
-<td>4<code>core</code></td>
-<td>4G</td>
-</tr>
-<tr>
-<td>node-2</td>
-<td>192.168.35.130</td>
-<td>4<code>core</code></td>
-<td>4G</td>
-</tr>
-</tbody></table>
-<blockquote>
-<ul>
-<li>前提条件<br>所有机器都是<code>CentOS 7</code><br><code>Rancher Server</code>是以<code>Docker</code>方式单独建立<br><code>test-cluster Kubernetes Cluster</code>集群是以<code>Rancher Server</code>自定义方式创建</li>
-</ul>
-</blockquote>
-<ul>
-<li><font color=red>模拟<code>Racnher Server</code>服务失效对<code>Kubernetes Cluster</code>集群进行管控</font>  <blockquote>
-<ul>
-<li><font color=red>点击创建集群名称</font></li>
-</ul>
-</blockquote>
+<li><ol>
+<li><a target="_blank" rel="noopener" href="https://docs.rancher.cn/docs/rancher2/cluster-admin/cleaning-cluster-nodes/_index/"><code>Rancher</code>清理节点</a></li>
+</ol>
 </li>
 </ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_15-47-45.png">     </p>
-<blockquote>
-<ul>
-<li><font color=red>提前下载<code>Kubernetesfig</code>文件</font></li>
-</ul>
-</blockquote>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_15-49-19.png">    </p>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_16-16-23.png" alt="下k8s file">  </p>
-<h3 id="2-模拟Rancher服务宕机"><a href="#2-模拟Rancher服务宕机" class="headerlink" title="2. 模拟Rancher服务宕机"></a>2. 模拟<code>Rancher</code>服务宕机</h3><ul>
-<li><font color=red>停止<code>Rancher Server</code>服务<code>docker stop rancher</code></font>  <blockquote>
-<ul>
-<li><font color=red><code>查看Kubernetes</code>集群版本号</font></li>
-</ul>
-</blockquote>
-</li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-25_20-04-18.png" alt="查看`Rancher`安装`Kubernetes`集群版本">  </p>
-<h4 id="2-1-安装Kubectl"><a href="#2-1-安装Kubectl" class="headerlink" title="2.1 安装Kubectl"></a>2.1 安装<code>Kubectl</code></h4><ul>
-<li><font color=red>在能连接<code>test-kubernetes-cluster</code>集群中任意一个节点部署<code>Kubectl</code></font>  </li>
-<li><font color=red><code>Kubectl</code>版本需和<code>test-cluster-cluster</code>版本相同或者高于</font></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/yum.repos.d/kubernetes.repo&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">[kubernetes] </span><br><span class="line">name=Kubernetes </span><br><span class="line">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">repo_gpgcheck=0</span><br><span class="line">gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">yum -y install kubectl-1.23.6-0</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line">KUBE_SVC=&#x27;</span><br><span class="line">kubelet</span><br><span class="line">kube-scheduler</span><br><span class="line">kube-proxy</span><br><span class="line">kube-controller-manager</span><br><span class="line">kube-apiserver</span><br><span class="line">&#x27;</span><br><span class="line"></span><br><span class="line">for kube_svc in $&#123;KUBE_SVC&#125;;</span><br><span class="line">do</span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">停止服务</span></span><br><span class="line">  if [[ `systemctl is-active $&#123;kube_svc&#125;` == &#x27;active&#x27; ]]; then</span><br><span class="line">    systemctl stop $&#123;kube_svc&#125;</span><br><span class="line">  fi</span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">禁止服务开机启动</span></span><br><span class="line">  if [[ `systemctl is-enabled $&#123;kube_svc&#125;` == &#x27;enabled&#x27; ]]; then</span><br><span class="line">    systemctl disable $&#123;kube_svc&#125;</span><br><span class="line">  fi</span><br><span class="line">done</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">停止所有容器</span></span><br><span class="line">docker stop $(docker ps -aq)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除所有容器</span></span><br><span class="line">docker rm -f $(docker ps -qa)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除所有容器卷</span></span><br><span class="line">docker volume rm $(docker volume ls -q)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">卸载mount目录</span></span><br><span class="line">for mount in $(mount | grep tmpfs | grep &#x27;/var/lib/kubelet&#x27; | awk &#x27;&#123; print $3 &#125;&#x27;) /var/lib/kubelet /var/lib/rancher;</span><br><span class="line">do</span><br><span class="line">  umount $mount;</span><br><span class="line">done</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">备份目录</span></span><br><span class="line">mv /etc/kubernetes /etc/kubernetes-bak-$(date +&quot;%Y%m%d%H%M&quot;)</span><br><span class="line">mv /var/lib/etcd /var/lib/etcd-bak-$(date +&quot;%Y%m%d%H%M&quot;)</span><br><span class="line">mv /var/lib/rancher /var/lib/rancher-bak-$(date +&quot;%Y%m%d%H%M&quot;)</span><br><span class="line">mv /opt/rke /opt/rke-bak-$(date +&quot;%Y%m%d%H%M&quot;)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除残留路径</span></span><br><span class="line">rm -rf /etc/ceph \</span><br><span class="line">    /etc/cni \</span><br><span class="line">    /opt/cni \</span><br><span class="line">    /run/secrets/kubernetes.io \</span><br><span class="line">    /run/calico \</span><br><span class="line">    /run/flannel \</span><br><span class="line">    /var/lib/calico \</span><br><span class="line">    /var/lib/cni \</span><br><span class="line">    /var/lib/kubelet \</span><br><span class="line">    /var/log/containers \</span><br><span class="line">    /var/log/kube-audit \</span><br><span class="line">    /var/log/pods \</span><br><span class="line">    /var/run/calico \</span><br><span class="line">    /usr/libexec/kubernetes</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">清理网络接口</span></span><br><span class="line">no_del_net_inter=&#x27;</span><br><span class="line">lo</span><br><span class="line">docker0</span><br><span class="line">eth</span><br><span class="line">ens</span><br><span class="line">bond</span><br><span class="line">&#x27;</span><br><span class="line"></span><br><span class="line">network_interface=`ls /sys/class/net`</span><br><span class="line"></span><br><span class="line">for net_inter in $network_interface;</span><br><span class="line">do</span><br><span class="line">  if ! echo &quot;$&#123;no_del_net_inter&#125;&quot; | grep -qE $&#123;net_inter:0:3&#125;; then</span><br><span class="line">    ip link delete $net_inter</span><br><span class="line">  fi</span><br><span class="line">done</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">清理残留进程</span></span><br><span class="line">port_list=&#x27;</span><br><span class="line">80</span><br><span class="line">443</span><br><span class="line">6443</span><br><span class="line">2376</span><br><span class="line">2379</span><br><span class="line">2380</span><br><span class="line">8472</span><br><span class="line">9099</span><br><span class="line">10250</span><br><span class="line">10254</span><br><span class="line">&#x27;</span><br><span class="line"></span><br><span class="line">for port in $port_list;</span><br><span class="line">do</span><br><span class="line">  pid=`netstat -atlnup | grep $port | awk &#x27;&#123;print $7&#125;&#x27; | awk -F &#x27;/&#x27; &#x27;&#123;print $1&#125;&#x27; | grep -v - | sort -rnk2 | uniq`</span><br><span class="line">  if [[ -n $pid ]]; then</span><br><span class="line">    kill -9 $pid</span><br><span class="line">  fi</span><br><span class="line">done</span><br><span class="line"></span><br><span class="line">kube_pid=`ps -ef | grep -v grep | grep kube | awk &#x27;&#123;print $2&#125;&#x27;`</span><br><span class="line"></span><br><span class="line">if [[ -n $kube_pid ]]; then</span><br><span class="line">  kill -9 $kube_pid</span><br><span class="line">fi</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">清理Iptables表</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment"># 注意：如果节点Iptables有特殊配置，以下命令请谨慎操作</span></span></span><br><span class="line">sudo iptables --flush</span><br><span class="line">sudo iptables --flush --table nat</span><br><span class="line">sudo iptables --flush --table filter</span><br><span class="line">sudo iptables --table nat --delete-chain</span><br><span class="line">sudo iptables --table filter --delete-chain</span><br><span class="line">systemctl restart docker</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">* 2. &lt;font color=red&gt;`Rancher Server`是上游中心管理角色，控制或创建旗下`N`个`Kubernetes Cluster`集群，不管是测试中的单个节点或者是`Kubernetes Cluster`集群失效都无法读取，运维仍需要对下游所有`Kubernetes Cluster`集群管控&lt;/font&gt;  </span><br><span class="line"></span><br><span class="line">| 服务器 | IP | CPU | 内存 |</span><br><span class="line">|---|---|---|---|</span><br><span class="line">| master | 192.168.35.128 | 8`core` | 8G |</span><br><span class="line">| node-1 | 192.168.35.129 | 4`core` | 4G |</span><br><span class="line">| node-2 | 192.168.35.130 | 4`core` | 4G |</span><br><span class="line">* 3. 前提条件  </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">* 3.1 &lt;font color=red&gt;所有机器都是`CentOS 7`&lt;/font&gt;</span>  </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">* 3.2 &lt;font color=red&gt;`Rancher Server`是以`Docker`方式单独建立&lt;/font&gt;</span>  </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">* 3.3 &lt;font color=red&gt;`test-cluster Kubernetes Cluster`集群是以`Rancher Server`自定义方式创建&lt;/font&gt;</span>  </span><br><span class="line"></span><br><span class="line">* 4. &lt;font color=red&gt;模拟`Racnher Server`服务失效对`Kubernetes Cluster`集群进行管控&lt;/font&gt;  </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">* 4.1 &lt;font color=red&gt;点击创建集群名称&lt;/font&gt;</span>  </span><br><span class="line"></span><br><span class="line">![](https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_15-47-45.png)     </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">* 4.2 &lt;font color=red&gt;提前下载`Kubernetesfig`文件&lt;/font&gt;</span>  </span><br><span class="line"></span><br><span class="line">![](https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_15-49-19.png)    </span><br><span class="line"></span><br><span class="line">![下k8s file](https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_16-16-23.png)  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 2. 模拟`Rancher`服务宕机</span></span>  </span><br><span class="line">* 1. &lt;font color=red&gt;停止`Rancher Server`服务`docker stop rancher`&lt;/font&gt;  </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">* 1.1 &lt;font color=red&gt;`查看Kubernetes`集群版本号&lt;/font&gt;</span>  </span><br><span class="line"></span><br><span class="line">![查看`Rancher`安装`Kubernetes`集群版本](https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-25_20-04-18.png)  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">### 2.1 安装`Kubectl`</span></span>  </span><br><span class="line">* 1. &lt;font color=red&gt;在能连接`test-kubernetes-cluster`集群中任意一个节点部署`Kubectl`&lt;/font&gt;  </span><br><span class="line">* 2. &lt;font color=red&gt;`Kubectl`版本需和`test-cluster-cluster`版本相同或者高于&lt;/font&gt;  </span><br><span class="line"></span><br><span class="line">```shell</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/yum.repos.d/kubernetes.repo&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">[kubernetes] </span><br><span class="line">name=Kubernetes </span><br><span class="line">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">repo_gpgcheck=0</span><br><span class="line">gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">yum -y install kubectl-1.23.6-0</span></span></span><br></pre></td></tr></table></figure>
 <h4 id="2-2-创建-kube目录修改文件"><a href="#2-2-创建-kube目录修改文件" class="headerlink" title="2.2 创建.kube目录修改文件"></a>2.2 创建<code>.kube</code>目录修改文件</h4><ul>
+<li><ol>
 <li><font color=red>并且将下载的<code>Kubernetesfig</code>文件改名为<code>config</code>，然后放到<code>$&#123;HOME&#125;/.kube/</code>目录中</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> <span class="variable">$&#123;HOME&#125;</span>/.kube</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> <span class="variable">$&#123;HOME&#125;</span>/.kube/test-kubernetes-cluster.yaml <span class="variable">$&#123;HOME&#125;</span>/.kube/config</span></span><br></pre></td></tr></table></figure>
 <ul>
+<li><ol start="2">
 <li><font color=red><code>$&#123;HOME&#125;/.kube/config</code>文件没修改前</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> <span class="variable">$&#123;HOME&#125;</span>/.kube/config</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Config</span><br><span class="line">clusters:</span><br><span class="line">- name: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">  cluster:</span><br><span class="line">    server: &quot;https://192.168.80.210:4443/k8s/clusters/c-gwknl&quot;</span><br><span class="line">    certificate-authority-data: &quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJwekNDQ\</span><br><span class="line">      VUyZ0F3SUJBZ0lCQURBS0JnZ3Foa2pPUFFRREFqQTdNUnd3R2dZRFZRUUtFeE5rZVc1aGJXbGoKY\</span><br><span class="line">      kdsemRHVnVaWEl0YjNKbk1Sc3dHUVlEVlFRREV4SmtlVzVoYldsamJHbHpkR1Z1WlhJdFkyRXdIa\</span><br><span class="line">      GNOTWpJdwpOVEkxTVRFeE9UUXhXaGNOTXpJd05USXlNVEV4T1RReFdqQTdNUnd3R2dZRFZRUUtFe\</span><br><span class="line">      E5rZVc1aGJXbGpiR2x6CmRHVnVaWEl0YjNKbk1Sc3dHUVlEVlFRREV4SmtlVzVoYldsamJHbHpkR\</span><br><span class="line">      1Z1WlhJdFkyRXdXVEFUQmdjcWhrak8KUFFJQkJnZ3Foa2pPUFFNQkJ3TkNBQVJTb3NwRzE4OHJBQ\</span><br><span class="line">      mZabTAwQnRqcjAyL29udnZGVnppU09wZUdVd09SUApoSHpUbk1acTRmazVpRFhPV2lIUy9iQ0hvT\</span><br><span class="line">      WQra1VtYkx6QVRPNkd2azdtSm8wSXdRREFPQmdOVkhROEJBZjhFCkJBTUNBcVF3RHdZRFZSMFRBU\</span><br><span class="line">      UgvQkFVd0F3RUIvekFkQmdOVkhRNEVGZ1FVZ1YzR1g0Z2tXN3hPZVZWQURWem0KVEpxSW95b3dDZ\</span><br><span class="line">      1lJS29aSXpqMEVBd0lEU0FBd1JRSWdlTHh3WTVGcGkweDBGNXhBQUNZMnNPbVQ4aHBqNjVCWApUc\</span><br><span class="line">      1lsQk1sOGx0RUNJUURkNmlONTJmbG9hVzZybXpvWXRLQy9nOEJRRW00b2UrcGN0YldCaGY0UENRP\</span><br><span class="line">      T0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ==&quot;</span><br><span class="line">- name: &quot;test-kubernetes-cluster-node-1-80-211&quot;</span><br><span class="line">  cluster:</span><br><span class="line">    server: &quot;https://192.168.80.211:6443&quot;</span><br><span class="line">    certificate-authority-data: &quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM0VENDQ\</span><br><span class="line">      WNtZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFTTVJBd0RnWURWUVFERXdkcmRXSmwKT\</span><br><span class="line">      FdOaE1CNFhEVEl5TURVeU5URXhNek0xTUZvWERUTXlNRFV5TWpFeE16TTFNRm93RWpFUU1BNEdBM\</span><br><span class="line">      VVFQXhNSAphM1ZpWlMxallUQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ\</span><br><span class="line">      0VCQUtJSzVRVy84eHB3CkRHUzMrN0M2Q0lobS8zcWFUUENvVmdFeU91YkVtR1EzbnAvYk9qTUJKY\</span><br><span class="line">      3Ayck05cW5CV2M4ZmtUUWhCNHZsL24Kay8zSkUrMkdta1RBbVAwaGpLa3d6d1JiT2lrYzdYVEtnd\</span><br><span class="line">      ElTQ3I2cjRkOWhZTElERElzTTJtUzZYYnhNdGd1SApoamk3MTJYQmNoZ3lEamxjREl3S1k5WXRYc\</span><br><span class="line">      3lDY3hPejdFNXN4YmpLTk1nb2sxK3VZSTlHaHhYYUlGcGp0VWFUClJXUW00dE9JOFplWWlUWG9aT\</span><br><span class="line">      nJldTU1SVkyZ3pQVjZ1dURTWGQybFRHMEtmVng0Y1FYSDJIekdSODJ4NWZkK3kKS01HY0M1N21DN\</span><br><span class="line">      HpiM3pET1Z2NVNEdmxOZEhyQ0g3QmpVYzh0MlFpU2JyQUwrQ216NnhMVFF4dlp1YkVLejU2TApKe\</span><br><span class="line">      ElKUGFhNkdSY0NBd0VBQWFOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdLa01BOEdBMVVkRXdFQi93U\</span><br><span class="line">      UZNQU1CCkFmOHdIUVlEVlIwT0JCWUVGSkN3bmVCVXZUMUtoeWtCUjF6bmxWQ2I1T2RnTUEwR0NTc\</span><br><span class="line">      UdTSWIzRFFFQkN3VUEKQTRJQkFRQnRwa0doRDJ1RFdYTmZaSUhaa0NNclNpSkZXaGxIUGNPa2VPZ\</span><br><span class="line">      TJwcmp1UEZ0bzFWMVpyNlloWWVpcQp1cGxRdWlpenBwbEthZncxR1lpSnY4SCsrcHpjUFZoS3JTM\</span><br><span class="line">      2F5Ykp1T2hxdnFyYUVZbzJDbjVVbkFpVWxBb2g1CnRqY1lNcVFKdkVzODd5UlFtUVhMSVNEMkdYb\</span><br><span class="line">      3UwN24ySy9wTVZXQWpHYjRsUTk0VmpHcjI3dHppSlhIYkh2L04KbHNNZklJV2czbTFKSW9SMlBNa\</span><br><span class="line">      3gvY1FpcGl6a3JRVHRpalhMbW0xbUFGOEtMR2JZcnNaTk1sMFdITWZWWjdXcgplemRBVjhVNDdsb\</span><br><span class="line">      GowKzUzQ0FkZk0rYWpiSk5uMUtYMWF1Sm8rb1JXVTJjVno0SkYydUllMnBjcFcxUUplY1NPCmZ2U\</span><br><span class="line">      ysyOU9FK09GZW5tenRINTdZTStTWk1jRE8KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=&quot;</span><br><span class="line"></span><br><span class="line">users:</span><br><span class="line">- name: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">  user:</span><br><span class="line">    token: &quot;kubeconfig-user-j85xz8pbjt:ls679hfqpvf9c25nswd5gdfm2hf4qtxj2kvqmj6kzzrjkj48lwwlpd&quot;</span><br><span class="line"></span><br><span class="line">contexts:</span><br><span class="line">- name: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">  context:</span><br><span class="line">    user: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">    cluster: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">- name: &quot;test-kubernetes-cluster-node-1-80-211&quot;</span><br><span class="line">  context:</span><br><span class="line">    user: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">    cluster: &quot;test-kubernetes-cluster-node-1-80-211&quot;</span><br><span class="line"></span><br><span class="line">current-context: &quot;test-kubernetes-cluster&quot;</span><br></pre></td></tr></table></figure>
 <ul>
+<li><ol start="3">
 <li><font color=red><code>$&#123;HOME&#125;/.kube/config</code>文件修改后</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> <span class="variable">$&#123;HOME&#125;</span>/.kube/config</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Config</span><br><span class="line">clusters:</span><br><span class="line">- name: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">  cluster:</span><br><span class="line">    server: &quot;https://192.168.80.211:6443&quot;</span><br><span class="line">    certificate-authority-data: &quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM0VENDQ\</span><br><span class="line">      WNtZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFTTVJBd0RnWURWUVFERXdkcmRXSmwKT\</span><br><span class="line">      FdOaE1CNFhEVEl5TURVeU5URXhNek0xTUZvWERUTXlNRFV5TWpFeE16TTFNRm93RWpFUU1BNEdBM\</span><br><span class="line">      VVFQXhNSAphM1ZpWlMxallUQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ\</span><br><span class="line">      0VCQUtJSzVRVy84eHB3CkRHUzMrN0M2Q0lobS8zcWFUUENvVmdFeU91YkVtR1EzbnAvYk9qTUJKY\</span><br><span class="line">      3Ayck05cW5CV2M4ZmtUUWhCNHZsL24Kay8zSkUrMkdta1RBbVAwaGpLa3d6d1JiT2lrYzdYVEtnd\</span><br><span class="line">      ElTQ3I2cjRkOWhZTElERElzTTJtUzZYYnhNdGd1SApoamk3MTJYQmNoZ3lEamxjREl3S1k5WXRYc\</span><br><span class="line">      3lDY3hPejdFNXN4YmpLTk1nb2sxK3VZSTlHaHhYYUlGcGp0VWFUClJXUW00dE9JOFplWWlUWG9aT\</span><br><span class="line">      nJldTU1SVkyZ3pQVjZ1dURTWGQybFRHMEtmVng0Y1FYSDJIekdSODJ4NWZkK3kKS01HY0M1N21DN\</span><br><span class="line">      HpiM3pET1Z2NVNEdmxOZEhyQ0g3QmpVYzh0MlFpU2JyQUwrQ216NnhMVFF4dlp1YkVLejU2TApKe\</span><br><span class="line">      ElKUGFhNkdSY0NBd0VBQWFOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdLa01BOEdBMVVkRXdFQi93U\</span><br><span class="line">      UZNQU1CCkFmOHdIUVlEVlIwT0JCWUVGSkN3bmVCVXZUMUtoeWtCUjF6bmxWQ2I1T2RnTUEwR0NTc\</span><br><span class="line">      UdTSWIzRFFFQkN3VUEKQTRJQkFRQnRwa0doRDJ1RFdYTmZaSUhaa0NNclNpSkZXaGxIUGNPa2VPZ\</span><br><span class="line">      TJwcmp1UEZ0bzFWMVpyNlloWWVpcQp1cGxRdWlpenBwbEthZncxR1lpSnY4SCsrcHpjUFZoS3JTM\</span><br><span class="line">      2F5Ykp1T2hxdnFyYUVZbzJDbjVVbkFpVWxBb2g1CnRqY1lNcVFKdkVzODd5UlFtUVhMSVNEMkdYb\</span><br><span class="line">      3UwN24ySy9wTVZXQWpHYjRsUTk0VmpHcjI3dHppSlhIYkh2L04KbHNNZklJV2czbTFKSW9SMlBNa\</span><br><span class="line">      3gvY1FpcGl6a3JRVHRpalhMbW0xbUFGOEtMR2JZcnNaTk1sMFdITWZWWjdXcgplemRBVjhVNDdsb\</span><br><span class="line">      GowKzUzQ0FkZk0rYWpiSk5uMUtYMWF1Sm8rb1JXVTJjVno0SkYydUllMnBjcFcxUUplY1NPCmZ2U\</span><br><span class="line">      ysyOU9FK09GZW5tenRINTdZTStTWk1jRE8KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=&quot;</span><br><span class="line"></span><br><span class="line">users:</span><br><span class="line">- name: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">  user:</span><br><span class="line">    token: &quot;kubeconfig-user-j85xz8pbjt:ls679hfqpvf9c25nswd5gdfm2hf4qtxj2kvqmj6kzzrjkj48lwwlpd&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">contexts:</span><br><span class="line">- name: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">  context:</span><br><span class="line">    user: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">    cluster: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line"></span><br><span class="line">current-context: &quot;test-kubernetes-cluster-rke-master&quot;</span><br></pre></td></tr></table></figure>
 
@@ -401,7 +451,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-26 13:55:42" itemprop="dateModified" datetime="2022-05-26T13:55:42+08:00">2022-05-26</time>
+                <time title="修改时间：2022-06-09 20:17:48" itemprop="dateModified" datetime="2022-06-09T20:17:48+08:00">2022-06-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -419,14 +469,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>5.2k</span>
+              <span>4.7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
+              <span>4 分钟</span>
             </span>
 
         </div>
@@ -507,15 +557,13 @@
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用二进制安装Helm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://get.helm.sh/helm-v3.9.0-linux-amd64.tar.gz</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf helm-v3.9.0-linux-amd64.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> linux-amd64/helm /usr/local/bin/helm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">脚本安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> 700 get_helm.sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./get_helm.sh</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">源代码安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/helm/helm.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> helm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make</span></span><br></pre></td></tr></table></figure>
 
-<h5 id="2-2-1-安装Ingress-Nginx"><a href="#2-2-1-安装Ingress-Nginx" class="headerlink" title="2.2.1 安装Ingress-Nginx"></a>2.2.1 <font color=red>安装<code>Ingress-Nginx</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用Kubectl安装Ingress-Nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/1.21/deploy.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用Helm安装Ingress-Nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace ingress-system</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install blog-enix-rancher ingress-nginx/ingress-nginx \</span></span><br><span class="line"><span class="language-bash">	--namespace ingress-system \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.hostPort.enabled=<span class="literal">true</span> \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.kind=DaemonSet</span></span><br><span class="line"><span class="meta prompt_">	</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace ingress-system</span></span><br></pre></td></tr></table></figure>
+<h5 id="2-1-2-安装cert-manager"><a href="#2-1-2-安装cert-manager" class="headerlink" title="2.1.2 安装cert-manager"></a>2.1.2 <font color=red>安装<code>cert-manager</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace cert-manager</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加Jetstack Helm存储库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add jetstack https://charts.jetstack.io</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更新本地 Helm 图表存储库缓存</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo update</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cert-manager自定义所需的自定义资源</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.crds.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.7.1 --<span class="built_in">set</span> installCRDs=<span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">验证cert-manager证书管理器是否安装成功</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace cert-manager</span></span><br></pre></td></tr></table></figure>
 
-<h5 id="2-3-1-安装cert-manager"><a href="#2-3-1-安装cert-manager" class="headerlink" title="2.3.1 安装cert-manager"></a>2.3.1 <font color=red>安装<code>cert-manager</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace cert-manager</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加Jetstack Helm存储库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add jetstack https://charts.jetstack.io</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更新本地 Helm 图表存储库缓存</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo update</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cert-manager自定义所需的自定义资源</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.crds.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.7.1 --<span class="built_in">set</span> installCRDs=<span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">验证cert-manager证书管理器是否安装成功</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace cert-manager</span></span><br></pre></td></tr></table></figure>
+<h5 id="2-1-3-使用Helm安装稳定版Rancher"><a href="#2-1-3-使用Helm安装稳定版Rancher" class="headerlink" title="2.1.3 使用Helm安装稳定版Rancher"></a>2.1.3 <font color=red>使用<code>Helm</code>安装稳定版<code>Rancher</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">为Rancher创建命名空间</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace cattle-system</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加 Helm 添加 Rancher 库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add rancher-stable https://releases.rancher.com/server-charts/stable</span></span><br></pre></td></tr></table></figure>
 
-<h5 id="2-4-1-使用Helm安装稳定版Rancher"><a href="#2-4-1-使用Helm安装稳定版Rancher" class="headerlink" title="2.4.1 使用Helm安装稳定版Rancher"></a>2.4.1 <font color=red>使用<code>Helm</code>安装稳定版<code>Rancher</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">为Rancher创建命名空间</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace cattle-system</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加 Helm 添加 Rancher 库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add rancher-stable https://releases.rancher.com/server-charts/stable</span></span><br></pre></td></tr></table></figure>
+<h5 id="2-1-4-使用helm安装Rancher注意选好版本，版本不对会报错"><a href="#2-1-4-使用helm安装Rancher注意选好版本，版本不对会报错" class="headerlink" title="2.1.4 使用helm安装Rancher注意选好版本，版本不对会报错"></a>2.1.4 <font color=red>使用<code>helm</code>安装<code>Rancher</code>注意选好版本，版本不对会报错</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install rancher rancher-stable/rancher --namespace cattle-system --<span class="built_in">set</span> hostname=my.rancher.org --<span class="built_in">set</span> bootstrapPassword=admin --<span class="built_in">set</span> replicas=3 --version 2.6.3</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> --<span class="built_in">set</span> ingress.tls.source=letsEncrypt \</span></span><br><span class="line"><span class="language-bash"><span class="comment">#  --set letsEncrypt.email=&lt;caviardé&gt;</span></span></span><br><span class="line"></span><br><span class="line">NAME: rancher</span><br><span class="line">LAST DEPLOYED: Wed May 25 18:01:51 2022</span><br><span class="line">NAMESPACE: cattle-system</span><br><span class="line">STATUS: deployed</span><br><span class="line">REVISION: 1</span><br><span class="line">TEST SUITE: None</span><br><span class="line">NOTES:</span><br><span class="line">Rancher Server has been installed.</span><br><span class="line"></span><br><span class="line">NOTE: Rancher may take several minutes to fully initialize. Please standby while Certificates are being issued, Containers are started and the Ingress rule comes up.</span><br><span class="line"></span><br><span class="line">Check out our docs at https://rancher.com/docs/</span><br><span class="line"></span><br><span class="line">If you provided your own bootstrap password during installation, browse to https://my.rancher.org to get started.</span><br><span class="line"></span><br><span class="line">If this is the first time you installed Rancher, get started by running this command and clicking the URL it generates:</span><br><span class="line"></span><br><span class="line">```</span><br><span class="line">echo https://my.rancher.org/dashboard/?setup=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template=&#x27;&#123;&#123;.data.bootstrapPassword|base64decode&#125;&#125;&#x27;)</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">To get just the bootstrap password on its own, run:</span><br><span class="line"></span><br><span class="line">```</span><br><span class="line">kubectl get secret --namespace cattle-system bootstrap-secret -o go-template=&#x27;&#123;&#123;.data.bootstrapPassword|base64decode&#125;&#125;&#123;&#123; &quot;\n&quot; &#125;&#125;&#x27;</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">Happy Containering!</span><br></pre></td></tr></table></figure>
 
-<h5 id="2-4-2-使用helm安装Rancher注意选好版本，版本不对会报错"><a href="#2-4-2-使用helm安装Rancher注意选好版本，版本不对会报错" class="headerlink" title="2.4.2 使用helm安装Rancher注意选好版本，版本不对会报错"></a>2.4.2 <font color=red>使用<code>helm</code>安装<code>Rancher</code>注意选好版本，版本不对会报错</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install rancher rancher-stable/rancher --namespace cattle-system --<span class="built_in">set</span> hostname=my.rancher.org --<span class="built_in">set</span> bootstrapPassword=admin --<span class="built_in">set</span> replicas=3 --version 2.6.3</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> --<span class="built_in">set</span> ingress.tls.source=letsEncrypt \</span></span><br><span class="line"><span class="language-bash"><span class="comment">#  --set letsEncrypt.email=&lt;caviardé&gt;</span></span></span><br><span class="line"></span><br><span class="line">NAME: rancher</span><br><span class="line">LAST DEPLOYED: Wed May 25 18:01:51 2022</span><br><span class="line">NAMESPACE: cattle-system</span><br><span class="line">STATUS: deployed</span><br><span class="line">REVISION: 1</span><br><span class="line">TEST SUITE: None</span><br><span class="line">NOTES:</span><br><span class="line">Rancher Server has been installed.</span><br><span class="line"></span><br><span class="line">NOTE: Rancher may take several minutes to fully initialize. Please standby while Certificates are being issued, Containers are started and the Ingress rule comes up.</span><br><span class="line"></span><br><span class="line">Check out our docs at https://rancher.com/docs/</span><br><span class="line"></span><br><span class="line">If you provided your own bootstrap password during installation, browse to https://my.rancher.org to get started.</span><br><span class="line"></span><br><span class="line">If this is the first time you installed Rancher, get started by running this command and clicking the URL it generates:</span><br><span class="line"></span><br><span class="line">```</span><br><span class="line">echo https://my.rancher.org/dashboard/?setup=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template=&#x27;&#123;&#123;.data.bootstrapPassword|base64decode&#125;&#125;&#x27;)</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">To get just the bootstrap password on its own, run:</span><br><span class="line"></span><br><span class="line">```</span><br><span class="line">kubectl get secret --namespace cattle-system bootstrap-secret -o go-template=&#x27;&#123;&#123;.data.bootstrapPassword|base64decode&#125;&#125;&#123;&#123; &quot;\n&quot; &#125;&#125;&#x27;</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">Happy Containering!</span><br></pre></td></tr></table></figure>
-
-<h5 id="2-4-3-等待Rancher安装成功"><a href="#2-4-3-等待Rancher安装成功" class="headerlink" title="2.4.3 等待Rancher安装成功"></a>2.4.3 <font color=red>等待<code>Rancher</code>安装成功</font></h5><pre><code class="shell">$ kubectl -n cattle-system rollout status deploy/rancher
+<h5 id="2-1-5-等待Rancher安装成功"><a href="#2-1-5-等待Rancher安装成功" class="headerlink" title="2.1.5 等待Rancher安装成功"></a>2.1.5 <font color=red>等待<code>Rancher</code>安装成功</font></h5><pre><code class="shell">$ kubectl -n cattle-system rollout status deploy/rancher
 
 $ kubectl get pods -o wide -n cattle-system
 
@@ -837,7 +885,7 @@ $ kubectl get pods --show-labels -n cattle-system
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-08 20:38:02" itemprop="dateModified" datetime="2022-06-08T20:38:02+08:00">2022-06-08</time>
+                <time title="修改时间：2022-06-09 20:37:17" itemprop="dateModified" datetime="2022-06-09T20:37:17+08:00">2022-06-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -855,14 +903,14 @@ $ kubectl get pods --show-labels -n cattle-system
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>22k</span>
+              <span>21k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>20 分钟</span>
+              <span>19 分钟</span>
             </span>
 
         </div>
@@ -889,15 +937,14 @@ $ kubectl get pods --show-labels -n cattle-system
 </ul>
 </blockquote>
 </li>
-<li><p><a href="#yaml%E7%BC%96%E5%86%99%E7%A4%BA%E4%BE%8B">5.<code>yaml</code>编写示例</a>  </p>
-<blockquote>
-<ul>
-<li><a href="#%E5%AE%89%E8%A3%85Ingress-Nginx">5.1 安装<code>Ingress-Nginx</code></a> </li>
-<li><a href="#Pod%E7%9A%84%E8%B5%84%E6%BA%90%E6%B8%85%E5%8D%95">5.2 <code>Pod</code>的资源清单</a></li>
-</ul>
-</blockquote>
+<li><p><a href="#yaml%E7%BC%96%E5%86%99%E7%A4%BA%E4%BE%8B">5.<code>yaml</code>编写示例</a></p>
 </li>
 </ul>
+<blockquote>
+<ul>
+<li><a href="#Pod%E7%9A%84%E8%B5%84%E6%BA%90%E6%B8%85%E5%8D%95">5.1 <code>Pod</code>的资源清单</a></li>
+</ul>
+</blockquote>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">A[Deployment] ---&gt; D[ReplicaSet]</span><br><span class="line">B[CronJob] ---&gt; E[Job]</span><br><span class="line">C[DaemonSet] ---&gt; G&#123;&#123;容器&#125;&#125;</span><br><span class="line">D[ReplicaSet] ---&gt; G&#123;&#123;容器&#125;&#125;</span><br><span class="line">E[Job] ---&gt; G&#123;&#123;容器&#125;&#125;</span><br><span class="line">F[StatefulSet] ---&gt; G&#123;&#123;容器&#125;&#125;</span><br><span class="line"></span><br><span class="line">G&#123;&#123;容器&#125;&#125; ---&gt; J[/Volume\]</span><br><span class="line">G&#123;&#123;容器&#125;&#125; ---&gt; H[(Service服务)]</span><br><span class="line"></span><br><span class="line">J[/Volume\] ---&gt; K[/configMap\]</span><br><span class="line">J[/Volume\] ---&gt; L[/PVC\]</span><br><span class="line">J[/Volume\] ---&gt; M[/Secret\]</span><br><span class="line"></span><br><span class="line">    Z[Kubernetes控制流程]</span><br></pre></td></tr></table></figure>
 
 
@@ -1703,14 +1750,7 @@ $ kubectl get pods --show-labels -n cattle-system
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出到文件，编辑修改文件</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment nginx --image=nginx:1.17.1 --dry-run=client -n dev -o yaml &gt;/tmp/test.yam</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用kubectl get命令导出yaml文件</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pod coredns-558bd4d5db-9h55s  -n kube-system -o yaml &gt; /tmp/coredns-558bd4d5db-9h55s.yaml</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="5-1-Kubernetes-Cluster集群安装文档、常用裸机安装Ingress-Nginx"><a href="#5-1-Kubernetes-Cluster集群安装文档、常用裸机安装Ingress-Nginx" class="headerlink" title="5.1 Kubernetes Cluster集群安装文档、常用裸机安装Ingress-Nginx"></a><span id="安装Ingress-Nginx">5.1 <a target="_blank" rel="noopener" href="https://github.com/kubernetes/ingress-nginx/tree/main/deploy/static/provider/baremetal"><code>Kubernetes Cluster</code>集群安装文档、常用裸机安装<code>Ingress-Nginx</code></a></span></h4><ul>
-<li><a target="_blank" rel="noopener" href="https://github.com/kubernetes/ingress-nginx/tree/controller-v1.2.0/deploy/static/provider">找到对应的<code>Ingress-Nginx</code>安装版本</a>   </li>
-<li><font color=red>下载<code>ingress-nginx</code>的<code>yaml</code>文件后把<code>LoadBalancer</code>修改为<code>NodePort</code></font>  </li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_37481017/article/details/118999716">基于<code>K8S 1.21.2</code>集群安装<code>Ingress-Nginx 0.48.1</code></a></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">一些pod在ingress-nginx命名空间中启动</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace=ingress-nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第一种方式</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/deploy.yaml  	<span class="comment"># baremetal 表示裸机安装</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第二种方式</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/provider/baremetal/service-nodeport.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将等待入口控制器 pod 启动、运行并准备就绪</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">wait</span> --namespace ingress-nginx --<span class="keyword">for</span>=condition=ready pod --selector=app.kubernetes.io/component=controller --<span class="built_in">timeout</span>=120s</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建一个入口资源。以下示例使用映射到的主机localhost</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create ingress demo-localhost --class=nginx --rule=demo.localdev.me/*=demo:80</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将本地端口转发到入口控制器</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl port-forward --namespace=ingress-nginx service/ingress-nginx-controller 8080:80</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="5-2-Pod的资源清单"><a href="#5-2-Pod的资源清单" class="headerlink" title="5.2 Pod的资源清单"></a>5.2 <span id="Pod的资源清单"><font color=red><code>Pod</code>的资源清单</font></span></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1     # 版本号，例如v1</span><br><span class="line">kind: Pod       　 # 资源类型，例如 Pod</span><br><span class="line">metadata:       　 # 元数据</span><br><span class="line">  name: java-demo     # Pod名称</span><br><span class="line">  namespace: string  # Pod所属的命名空间,默认为&quot;default&quot;</span><br><span class="line">  labels:       　　  # 自定义标签列表</span><br><span class="line">    - name: java-demo      　          </span><br><span class="line">spec:  # Pod中容器的详细定义</span><br><span class="line">  replicas: 3</span><br><span class="line">  </span><br><span class="line">  selector:</span><br><span class="line">     matchLabels:</span><br><span class="line">        project: java-demo</span><br><span class="line">        app: java-demo</span><br><span class="line">        </span><br><span class="line">  containers:  # Pod中容器列表</span><br><span class="line">  - name: tomcat-demo   # 容器名称</span><br><span class="line">    image: 192.168.80.210:8080/test/tomcat-demo:v1  # 镜像仓库地址</span><br><span class="line">    imagePullPolicy: [ Always|Never|IfNotPresent ]  # 获取镜像的策略 </span><br><span class="line">    command: [string]   # 容器的启动命令列表，如不指定，使用打包时使用的启动命令</span><br><span class="line">    args:   	# 容器的启动命令参数列表</span><br><span class="line">    - /bin/sh</span><br><span class="line">    - -c</span><br><span class="line">    - touch /tmp/healthy; sleep 30; rm -fr /tmp/healthy; sleep 600</span><br><span class="line">    workingDir: string  # 容器的工作目录</span><br><span class="line">    </span><br><span class="line">    volumeMounts:       # 挂载到容器内部的存储卷配置</span><br><span class="line">    - name: data      # 引用pod定义的共享存储卷的名称，需用volumes[]部分定义的的卷名</span><br><span class="line">      mountPath: /opt/data # 存储卷在容器内mount的绝对路径，应少于512字符</span><br><span class="line">      readOnly: boolean # 是否为只读模式</span><br><span class="line">      </span><br><span class="line">    ports: # 需要暴露的端口库号列表</span><br><span class="line">    - name: http  	# 服务名称</span><br><span class="line">      containerPort: int  # 容器需要监听的端口号</span><br><span class="line">      hostPort: int       # 容器所在主机需要监听的端口号，默认与Container相同</span><br><span class="line">      protocol: TCP    # 端口协议，支持TCP和UDP，默认TCP</span><br><span class="line">      targetPort: 80   	# Pod端口</span><br><span class="line">      nodePort: 30001   	# 节点对外端口</span><br><span class="line">      </span><br><span class="line">    env:   # 容器运行前需设置的环境变量列表</span><br><span class="line">    - name: JAVA_OPTS  # 环境变量名称</span><br><span class="line">      value: &quot;-Xmx1g&quot; # 环境变量的值</span><br><span class="line">      </span><br><span class="line">    resources: # 资源限制和请求的设置</span><br><span class="line">      limits:  # 限定Pod最大使用硬件资源</span><br><span class="line">        cpu: &quot;1&quot;       # Cpu的限制，单位为core数，将用于docker run --cpu-shares参数</span><br><span class="line">        memory: &quot;1Gi&quot;   # 内存限制，单位可以为Mib/Gib，将用于docker run --memory参数</span><br><span class="line">      requests: # 资源请求的设置</span><br><span class="line">      cpu: &quot;0.5&quot;   	# 限定使用几个核心CPU、容器启动的初始可用数量</span><br><span class="line">      memory: &quot;256Mi&quot;   	# 设定使用内存、容器启动的初始可用数量</span><br><span class="line">        </span><br><span class="line">    lifecycle: # 生命周期钩子</span><br><span class="line">      postStart: #容器启动后立即执行此钩子,如果执行失败,会根据重启策略进行重启</span><br><span class="line">       exec:</span><br><span class="line">        command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;echo Hello from the postStart handler &gt;/usr/share/message&quot;]</span><br><span class="line">      preStop: #容器终止前执行此钩子,无论结果如何,容器都会终止</span><br><span class="line">       exec:</span><br><span class="line">        command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;nginx -s quit; while killall -0 nginx; do sleep 1; done&quot;]</span><br><span class="line"></span><br><span class="line">    startupProbe:</span><br><span class="line">     tcpSocket:   		# 使用TcpSocket、httpGet健康检查</span><br><span class="line">      port: 8010   	# 探测8010端口</span><br><span class="line">     failureThreshold: 5  	# 检测失败5次表示未就绪</span><br><span class="line">     initialDelaySeconds: 60   	# 指定容器启动60s之后开始执行Liveness探测，</span><br><span class="line">     periodSeconds: 10  	# 指定每10秒执行一次Liveness探测。</span><br><span class="line">     successThreshold: 1  	# 检查成功为2次表示就绪</span><br><span class="line">     timeoutSeconds: 5  	# 检测失败1次表示未就绪</span><br><span class="line">     </span><br><span class="line">    livenessProbe:  # 对Pod内各容器健康检查的设置，当探测无响应几次后将自动重启该容器</span><br><span class="line">      exec:       　 # 对Pod容器内检查方式设置为exec方式</span><br><span class="line">        command: [string]  #exec方式需要制定的命令或脚本</span><br><span class="line">        </span><br><span class="line">      httpGet:       # 对Pod内个容器健康检查方法设置为HttpGet，需要制定Path、port</span><br><span class="line">        path: / #URI地址</span><br><span class="line">        port: 8010</span><br><span class="line">        host: 192.168.109.100 #主机地址</span><br><span class="line">        scheme: HTTP #支持的协议，http或者https</span><br><span class="line">        HttpHeaders:</span><br><span class="line">        - name: string</span><br><span class="line">          value: string</span><br><span class="line">          </span><br><span class="line">      tcpSocket:     # 对Pod内个容器健康检查方式设置为tcpSocket方式</span><br><span class="line">         port: 8010</span><br><span class="line">       initialDelaySeconds: 60       # 容器启动完成后首次探测的时间，单位为秒</span><br><span class="line">       timeoutSeconds: 5    　　    # 对容器健康检查探测等待响应的超时时间，单位秒，默认1秒</span><br><span class="line">       periodSeconds: 10     　　    # 对容器监控检查的定期探测时间设置，单位秒，默认10秒一次</span><br><span class="line">       successThreshold: 1</span><br><span class="line">       failureThreshold: 5</span><br><span class="line">       securityContext:</span><br><span class="line">         privileged: false</span><br><span class="line">  restartPolicy: [Always | Never | OnFailure]  #Pod的重启策略</span><br><span class="line">  nodeName: k8s-node1 # 设置NodeName表示将该Pod调度到指定到名称的node节点上</span><br><span class="line">  nodeSelector: obeject # 设置NodeSelector表示将该Pod调度到包含这个label的node上</span><br><span class="line">  imagePullSecrets: # Pull镜像时使用的secret名称，以key：secretkey格式指定</span><br><span class="line">  - name: docker-harbor  	# 指定使用的secret库房名称</span><br><span class="line">  hostNetwork: false   # 是否使用主机网络模式，默认为false，如果设置为true，表示使用宿主机网络</span><br><span class="line">  </span><br><span class="line">  volumes:   # 在该pod上定义共享存储卷列表</span><br><span class="line">  - name: logs-volume    # 共享存储卷名称 （volumes类型有很多种）</span><br><span class="line">    emptyDir: &#123;&#125;       # 类型为emtyDir的存储卷，与Pod同生命周期的一个临时目录。为空值</span><br><span class="line">    </span><br><span class="line">    hostPath:    # 类型为hostPath的存储卷，表示挂载Pod所在宿主机的目录</span><br><span class="line">      path: /root/logs  	# Pod所在宿主机的目录，将被用于同期中mount的目录</span><br><span class="line">      type: DirectoryOrCreate # 目录存在就使用，不存在就先创建再使用</span><br><span class="line">      </span><br><span class="line">    secret:       　　　# 类型为secret的存储卷，挂载集群与定义的secret对象到容器内部</span><br><span class="line">      scretname: secret</span><br><span class="line">      items:     </span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br><span class="line">        </span><br><span class="line">    configMap:         # 类型为configMap的存储卷，挂载预定义的configMap对象到容器内部</span><br><span class="line">      name: configmap</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br></pre></td></tr></table></figure>
+<h4 id="5-1-Pod的资源清单"><a href="#5-1-Pod的资源清单" class="headerlink" title="5.1 Pod的资源清单"></a>5.1 <span id="Pod的资源清单"><font color=red><code>Pod</code>的资源清单</font></span></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1     # 版本号，例如v1</span><br><span class="line">kind: Pod       　 # 资源类型，例如 Pod</span><br><span class="line">metadata:       　 # 元数据</span><br><span class="line">  name: java-demo     # Pod名称</span><br><span class="line">  namespace: string  # Pod所属的命名空间,默认为&quot;default&quot;</span><br><span class="line">  labels:       　　  # 自定义标签列表</span><br><span class="line">    - name: java-demo      　          </span><br><span class="line">spec:  # Pod中容器的详细定义</span><br><span class="line">  replicas: 3</span><br><span class="line">  </span><br><span class="line">  selector:</span><br><span class="line">     matchLabels:</span><br><span class="line">        project: java-demo</span><br><span class="line">        app: java-demo</span><br><span class="line">        </span><br><span class="line">  containers:  # Pod中容器列表</span><br><span class="line">  - name: tomcat-demo   # 容器名称</span><br><span class="line">    image: 192.168.80.210:8080/test/tomcat-demo:v1  # 镜像仓库地址</span><br><span class="line">    imagePullPolicy: [ Always|Never|IfNotPresent ]  # 获取镜像的策略 </span><br><span class="line">    command: [string]   # 容器的启动命令列表，如不指定，使用打包时使用的启动命令</span><br><span class="line">    args:   	# 容器的启动命令参数列表</span><br><span class="line">    - /bin/sh</span><br><span class="line">    - -c</span><br><span class="line">    - touch /tmp/healthy; sleep 30; rm -fr /tmp/healthy; sleep 600</span><br><span class="line">    workingDir: string  # 容器的工作目录</span><br><span class="line">    </span><br><span class="line">    volumeMounts:       # 挂载到容器内部的存储卷配置</span><br><span class="line">    - name: data      # 引用pod定义的共享存储卷的名称，需用volumes[]部分定义的的卷名</span><br><span class="line">      mountPath: /opt/data # 存储卷在容器内mount的绝对路径，应少于512字符</span><br><span class="line">      readOnly: boolean # 是否为只读模式</span><br><span class="line">      </span><br><span class="line">    ports: # 需要暴露的端口库号列表</span><br><span class="line">    - name: http  	# 服务名称</span><br><span class="line">      containerPort: int  # 容器需要监听的端口号</span><br><span class="line">      hostPort: int       # 容器所在主机需要监听的端口号，默认与Container相同</span><br><span class="line">      protocol: TCP    # 端口协议，支持TCP和UDP，默认TCP</span><br><span class="line">      targetPort: 80   	# Pod端口</span><br><span class="line">      nodePort: 30001   	# 节点对外端口</span><br><span class="line">      </span><br><span class="line">    env:   # 容器运行前需设置的环境变量列表</span><br><span class="line">    - name: JAVA_OPTS  # 环境变量名称</span><br><span class="line">      value: &quot;-Xmx1g&quot; # 环境变量的值</span><br><span class="line">      </span><br><span class="line">    resources: # 资源限制和请求的设置</span><br><span class="line">      limits:  # 限定Pod最大使用硬件资源</span><br><span class="line">        cpu: &quot;1&quot;       # Cpu的限制，单位为core数，将用于docker run --cpu-shares参数</span><br><span class="line">        memory: &quot;1Gi&quot;   # 内存限制，单位可以为Mib/Gib，将用于docker run --memory参数</span><br><span class="line">      requests: # 资源请求的设置</span><br><span class="line">      cpu: &quot;0.5&quot;   	# 限定使用几个核心CPU、容器启动的初始可用数量</span><br><span class="line">      memory: &quot;256Mi&quot;   	# 设定使用内存、容器启动的初始可用数量</span><br><span class="line">        </span><br><span class="line">    lifecycle: # 生命周期钩子</span><br><span class="line">      postStart: #容器启动后立即执行此钩子,如果执行失败,会根据重启策略进行重启</span><br><span class="line">       exec:</span><br><span class="line">        command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;echo Hello from the postStart handler &gt;/usr/share/message&quot;]</span><br><span class="line">      preStop: #容器终止前执行此钩子,无论结果如何,容器都会终止</span><br><span class="line">       exec:</span><br><span class="line">        command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;nginx -s quit; while killall -0 nginx; do sleep 1; done&quot;]</span><br><span class="line"></span><br><span class="line">    startupProbe:</span><br><span class="line">     tcpSocket:   		# 使用TcpSocket、httpGet健康检查</span><br><span class="line">      port: 8010   	# 探测8010端口</span><br><span class="line">     failureThreshold: 5  	# 检测失败5次表示未就绪</span><br><span class="line">     initialDelaySeconds: 60   	# 指定容器启动60s之后开始执行Liveness探测，</span><br><span class="line">     periodSeconds: 10  	# 指定每10秒执行一次Liveness探测。</span><br><span class="line">     successThreshold: 1  	# 检查成功为2次表示就绪</span><br><span class="line">     timeoutSeconds: 5  	# 检测失败1次表示未就绪</span><br><span class="line">     </span><br><span class="line">    livenessProbe:  # 对Pod内各容器健康检查的设置，当探测无响应几次后将自动重启该容器</span><br><span class="line">      exec:       　 # 对Pod容器内检查方式设置为exec方式</span><br><span class="line">        command: [string]  #exec方式需要制定的命令或脚本</span><br><span class="line">        </span><br><span class="line">      httpGet:       # 对Pod内个容器健康检查方法设置为HttpGet，需要制定Path、port</span><br><span class="line">        path: / #URI地址</span><br><span class="line">        port: 8010</span><br><span class="line">        host: 192.168.109.100 #主机地址</span><br><span class="line">        scheme: HTTP #支持的协议，http或者https</span><br><span class="line">        HttpHeaders:</span><br><span class="line">        - name: string</span><br><span class="line">          value: string</span><br><span class="line">          </span><br><span class="line">      tcpSocket:     # 对Pod内个容器健康检查方式设置为tcpSocket方式</span><br><span class="line">         port: 8010</span><br><span class="line">       initialDelaySeconds: 60       # 容器启动完成后首次探测的时间，单位为秒</span><br><span class="line">       timeoutSeconds: 5    　　    # 对容器健康检查探测等待响应的超时时间，单位秒，默认1秒</span><br><span class="line">       periodSeconds: 10     　　    # 对容器监控检查的定期探测时间设置，单位秒，默认10秒一次</span><br><span class="line">       successThreshold: 1</span><br><span class="line">       failureThreshold: 5</span><br><span class="line">       securityContext:</span><br><span class="line">         privileged: false</span><br><span class="line">  restartPolicy: [Always | Never | OnFailure]  #Pod的重启策略</span><br><span class="line">  nodeName: k8s-node1 # 设置NodeName表示将该Pod调度到指定到名称的node节点上</span><br><span class="line">  nodeSelector: obeject # 设置NodeSelector表示将该Pod调度到包含这个label的node上</span><br><span class="line">  imagePullSecrets: # Pull镜像时使用的secret名称，以key：secretkey格式指定</span><br><span class="line">  - name: docker-harbor  	# 指定使用的secret库房名称</span><br><span class="line">  hostNetwork: false   # 是否使用主机网络模式，默认为false，如果设置为true，表示使用宿主机网络</span><br><span class="line">  </span><br><span class="line">  volumes:   # 在该pod上定义共享存储卷列表</span><br><span class="line">  - name: logs-volume    # 共享存储卷名称 （volumes类型有很多种）</span><br><span class="line">    emptyDir: &#123;&#125;       # 类型为emtyDir的存储卷，与Pod同生命周期的一个临时目录。为空值</span><br><span class="line">    </span><br><span class="line">    hostPath:    # 类型为hostPath的存储卷，表示挂载Pod所在宿主机的目录</span><br><span class="line">      path: /root/logs  	# Pod所在宿主机的目录，将被用于同期中mount的目录</span><br><span class="line">      type: DirectoryOrCreate # 目录存在就使用，不存在就先创建再使用</span><br><span class="line">      </span><br><span class="line">    secret:       　　　# 类型为secret的存储卷，挂载集群与定义的secret对象到容器内部</span><br><span class="line">      scretname: secret</span><br><span class="line">      items:     </span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br><span class="line">        </span><br><span class="line">    configMap:         # 类型为configMap的存储卷，挂载预定义的configMap对象到容器内部</span><br><span class="line">      name: configmap</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -2782,7 +2822,7 @@ $ kubectl get pods --show-labels -n cattle-system
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-19 17:28:18" itemprop="dateModified" datetime="2022-05-19T17:28:18+08:00">2022-05-19</time>
+                <time title="修改时间：2022-06-09 20:02:40" itemprop="dateModified" datetime="2022-06-09T20:02:40+08:00">2022-06-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2800,7 +2840,7 @@ $ kubectl get pods --show-labels -n cattle-system
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>677</span>
+              <span>687</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -2820,28 +2860,35 @@ $ kubectl get pods --show-labels -n cattle-system
 
       
           <h3 id="1-安装coredns"><a href="#1-安装coredns" class="headerlink" title="1. 安装coredns"></a>1. 安装coredns</h3><ul>
-<li>去官网下载<a target="_blank" rel="noopener" href="https://github.com/coredns/deployment/tree/master/kubernetes">CoreDNS</a>deploy.sh和coredns.yam.sed两个文件  </li>
+<li><ol>
+<li><font color=red>去官网下载<a target="_blank" rel="noopener" href="https://github.com/coredns/deployment/tree/master/kubernetes">CoreDNS</a><code>deploy.sh</code>和<code>coredns.yam.sed</code>两个文件</font></li>
+</ol>
+</li>
+<li><ol start="2">
 <li><a target="_blank" rel="noopener" href="https://kaerser.github.io/2019/03/11/coredns%E9%85%8D%E7%BD%AE/">CoreDNS配置</a></li>
+</ol>
+</li>
 </ul>
-<pre><code class="shell">$ wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/deploy.sh
-$ wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/coredns.yaml.sed
-# 查看帮助
-$ ./deploy.sh -h
-</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/deploy.sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/coredns/deployment/blob/08c2b11241ef67b5d22d2020c00001ce0baec566/kubernetes/coredns.yaml.sed</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看帮助</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./deploy.sh -h</span></span><br></pre></td></tr></table></figure>
 <ul>
-<li><code>REVERSE_CIDRS=&quot;10.254.0.0/16&quot;</code> # 配置 kubernetes svc 网段  </li>
-<li><code>CLUSTER_DNS_IP=&quot;10.254.0.2&quot;</code> # 配置 kubernetes DNS IP  </li>
-<li><code>CLUSTER_DOMAIN=&quot;cluster.local&quot;</code> # 配置 kubernetes 的域名  </li>
-<li><font color=red>-r</font>：kubernetes svc网段、<font color=red>-i</font>：kubernetes DNS IP、<font color=red>-d</font>：kubernetes 的域名</li>
+<li><ol start="3">
+<li><font color=red><code>REVERSE_CIDRS=&quot;10.254.0.0/16&quot;</code>：</font>配置<code>kubernetes svc</code>网段</li>
+</ol>
+</li>
+<li><ol start="4">
+<li><font color=red><code>CLUSTER_DNS_IP=&quot;10.254.0.2&quot;</code>：</font>配置 <code>kubernetes DNS IP</code></li>
+</ol>
+</li>
+<li><ol start="5">
+<li><font color=red><code>CLUSTER_DOMAIN=&quot;cluster.local&quot;</code>：</font>配置<code>kubernetes</code>的域名</li>
+</ol>
+</li>
+<li><ol start="6">
+<li><font color=red>-r</font>：<code>kubernetes svc</code>网段、<font color=red>-i</font>：<code>kubernetes DNS IP</code>、<font color=red>-d</font>：<code>kubernetes</code>的域名</li>
+</ol>
+</li>
 </ul>
-<pre><code class="shell">$  ./deploy.sh -s -r 10.254.0.0/16 -i 10.254.0.10 -d cluster.local &gt; coredns.yaml
-# 修改前后对比
-$ diff coredns.yaml coredns.yaml.sed
-
-# 启动Coredns
-$ kubectl apply -f coredns.yaml
-</code></pre>
-
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> ./deploy.sh -s -r 10.254.0.0/16 -i 10.254.0.10 -d cluster.local &gt; coredns.yaml</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改前后对比</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">diff coredns.yaml coredns.yaml.sed</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启动Coredns</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f coredns.yaml</span></span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -2898,7 +2945,7 @@ $ kubectl apply -f coredns.yaml
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-18 14:48:22" itemprop="dateModified" datetime="2022-05-18T14:48:22+08:00">2022-05-18</time>
+                <time title="修改时间：2022-06-09 20:09:58" itemprop="dateModified" datetime="2022-06-09T20:09:58+08:00">2022-06-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2916,7 +2963,7 @@ $ kubectl apply -f coredns.yaml
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>813</span>
+              <span>802</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -2935,165 +2982,63 @@ $ kubectl apply -f coredns.yaml
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="1-安装Argo-CD"><a href="#1-安装Argo-CD" class="headerlink" title="1. 安装Argo CD"></a>1. 安装Argo CD</h3><ul>
-<li>Argo CD 是一个为 Kubernetes 而生的，遵循声明式 GitOps 理念的持续部署（CD）工具。Argo CD 可在 Git 存储库更改时自动同步和部署应用程序</li>
+          <h3 id="1-Argo-CD介绍"><a href="#1-Argo-CD介绍" class="headerlink" title="1. Argo CD介绍"></a>1. <code>Argo CD</code>介绍</h3><ul>
+<li><ol>
+<li><code>Argo CD</code>是一个为<code>Kubernetes</code>而生的，遵循声明式<code>GitOps</code>理念的持续部署<code>CD</code>工具。<code>Argo CD</code>可在<code>Git</code>存储库更改时自动同步和部署应用程序</li>
+</ol>
+</li>
+<li><ol start="2">
 <li>应用定义、配置和环境信息是声明式的，并可以进行版本控制</li>
+</ol>
+</li>
+<li><ol start="3">
 <li>应用部署和生命周期管理是全自动化的、是可审计的，清晰易懂</li>
+</ol>
+</li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace argocd  <span class="comment">#创建ArgoCD命名空间</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml  <span class="comment">#下载并启动ArgoCD</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl patch service -n argocd argocd-server -p <span class="string">&#x27;&#123;&quot;spec&quot;: &#123;&quot;type&quot;: &quot;NodePort&quot;&#125;&#125;&#x27;</span>   <span class="comment">#使用NodePort方式暴露argocd ui</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=<span class="string">&quot;&#123;.data.password&#125;&quot;</span> | <span class="built_in">base64</span> -d  <span class="comment">#获取ArgoCD的admin登陆密码</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cli：CLI 是用于管理 Argo CD 的命令行工具</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.3/argocd-linux-amd64 &amp;&amp; <span class="built_in">chmod</span> +x /usr/local/bin/argocd</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看argocd-server暴露端口</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get svc -n argocd</span></span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-<div>
-    
- </div>
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-k8s-harbor/">
-
-<div>
-      
-</div>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/IMG_0081.JPG">
-      <meta itemprop="name" content="二哥">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="二哥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Kubernetes/install-k8s-harbor/" class="post-title-link" itemprop="url">install-harbor</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-05-10 22:04:01" itemprop="dateCreated datePublished" datetime="2022-05-10T22:04:01+08:00">2022-05-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-07 21:23:47" itemprop="dateModified" datetime="2022-06-07T21:23:47+08:00">2022-06-07</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-在安装好docker后安装Harbor私有镜像库"><a href="#1-在安装好docker后安装Harbor私有镜像库" class="headerlink" title="1. 在安装好docker后安装Harbor私有镜像库"></a>1. 在安装好docker后安装Harbor私有镜像库</h3><ul>
-<li>默认用户名：admin  </li>
-<li>默认密码：Harbor12345</li>
-</ul>
-<h4 id="1-1-Harbor依赖docker-compose，先安装docker-compose"><a href="#1-1-Harbor依赖docker-compose，先安装docker-compose" class="headerlink" title="1.1 Harbor依赖docker-compose，先安装docker-compose"></a>1.1 Harbor依赖docker-compose，先安装docker-compose</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -L https://get.daocloud.io/docker/compose/releases/download/1.21.2/docker-compose-`<span class="built_in">uname</span> -s`-`<span class="built_in">uname</span> -m` &gt; /usr/local/bin/docker-compose</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">给予执行权限</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> +x /usr/local/bin/docker-compose</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装Compose命令补全工具</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose version --short)/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl daemon-reload &amp;&amp; systemctl restart docker</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-2-重启docker后安装Harbor"><a href="#1-2-重启docker后安装Harbor" class="headerlink" title="1.2 重启docker后安装Harbor"></a>1.2 重启docker后安装Harbor</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/goharbor/harbor/releases/download/v2.5.0/harbor-offline-installer-v2.5.0.tgz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf harbor-offline-installer-v2.5.0.tgz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim harbor/harbor.yml</span></span><br><span class="line"></span><br><span class="line">hostname: reg.mydomain.com  	# 修改主机名： my.harbor.com</span><br><span class="line">port: 80  	# 修改http默认端口：8080</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">port: 443  	<span class="comment"># 注释https协议端口</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./install.sh</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><font color=red>docker登录Harbor</font>  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker login http://192.168.80.225:8080</span></span><br></pre></td></tr></table></figure></li>
+<h3 id="2-安装Argo-CD"><a href="#2-安装Argo-CD" class="headerlink" title="2. 安装Argo CD"></a>2. 安装<code>Argo CD</code></h3><ul>
 <li><ol>
-<li><font color=red>如果报错:<code>Error response from daemon: Get  http: server gave HTTP response to HTTPS client</code></font></li>
+<li><font color=red>创建<code>ArgoCD</code>命名空间</font>  <pre><code class="shell">$ kubectl create namespace argocd
+</code></pre>
+</li>
 </ol>
 </li>
 <li><ol start="2">
-<li><font color=red>修改配置文件(指定私有仓库，可忽略跳过)</font></li>
+<li><font color=red>下载并启动<code>ArgoCD</code></font></li>
 </ol>
 </li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">tee</span> /etc/docker/daemon.json &lt;&lt;-<span class="string">&#x27;EOF&#x27;</span></span></span><br><span class="line">&#123;</span><br><span class="line">  &quot;storage-driver&quot;: &quot;overlay2&quot;,</span><br><span class="line">  &quot;registry-mirrors&quot;:[&quot;https://r2hd8p9u.mirror.aliyuncs.com&quot;],</span><br><span class="line">  &quot;insecure-registries&quot;:[&quot;*.*.*.*:5000&quot;,&quot;192.168.4.126&quot;]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/docker/daemon.json</span></span><br><span class="line">&#123;</span><br><span class="line">	&quot;insecure-registries&quot;: [&quot;harbor服务器IP:端口&quot;]</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl daemon-reload &amp;&amp; systemctl restart docker</span></span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">$ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml  
+</code></pre>
 <ul>
 <li><ol start="3">
-<li><font color=red>报错：request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers) (Client.Timeout exceeded while awaiting headers)</font></li>
+<li><font color=red>使用<code>NodePort</code>方式暴露<code>argocd ui</code></font></li>
 </ol>
 </li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/hosts  	<span class="comment"># 修改hosts解析</span></span></span><br><span class="line">本机服务IP my.harbodomain.com</span><br></pre></td></tr></table></figure>
-
-
-<h4 id="1-3-推送镜像到Harbor仓库"><a href="#1-3-推送镜像到Harbor仓库" class="headerlink" title="1.3. 推送镜像到Harbor仓库"></a>1.3. 推送镜像到Harbor仓库</h4><ul>
-<li><code>SOURCE_IMAGE[:TAG]：</code><font color=red>原镜像名字和tag</font>  </li>
-<li><code>test：</code><font>Harbor项目名称</font>  </li>
-<li><code>IMAGE[:TAG]：</code><font color=red>自定义命名，以及版本标签</font>  <blockquote>
-<p>示例：</p>
-</blockquote>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在项目中标记镜像</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker tag SOURCE_IMAGE[:TAG] 192.168.35.128:9527/test/IMAGE[:TAG]</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">推送镜像到当前项目</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker push 192.168.35.128:9527/test/IMAGE[:TAG]</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="1-4-其他服务器拉取Harbor仓库镜像"><a href="#1-4-其他服务器拉取Harbor仓库镜像" class="headerlink" title="1.4 其他服务器拉取Harbor仓库镜像"></a>1.4 <font color=red>其他服务器拉取<code>Harbor</code>仓库镜像</font></h4><ul>
-<li><ol>
-<li><font color=red><code>/etc/hosts</code>做好解析</font></li>
-</ol>
-</li>
-<li><ol start="2">
-<li><font color=red><code>daemon.json</code>文件中添加私人仓库参数</font></li>
-</ol>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> /etc/docker/daemon.json</span></span><br><span class="line">&quot;insecure-registries&quot;:[&quot;192.168.80.210:8080&quot;],</span><br></pre></td></tr></table></figure>
-
+<pre><code class="shell">$ kubectl patch service -n argocd argocd-server -p &#39;&#123;&quot;spec&quot;: &#123;&quot;type&quot;: &quot;NodePort&quot;&#125;&#125;&#39;  
+</code></pre>
 <ul>
-<li><ol start="3">
-<li><font color=red>拉取私人仓库镜像，前提仓库是公开类型，然后获取拉取命令</font></li>
+<li><ol start="4">
+<li><font color=red>获取<code>ArgoCD</code>的<code>admin</code>登陆密码</font></li>
 </ol>
 </li>
 </ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Harbor/Snipaste_2022-06-07_21-19-25.png" alt="拉取私人仓库命令"></p>
+<pre><code class="shell">$ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=&quot;&#123;.data.password&#125;&quot; | base64 -d
+</code></pre>
+<ul>
+<li><ol start="5">
+<li><font color=red>安装<code>cli：CLI</code>是用于管理<code>Argo CD</code>的命令行工具</font></li>
+</ol>
+</li>
+</ul>
+<pre><code class="shell">$ curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.3/argocd-linux-amd64 &amp;&amp; chmod +x /usr/local/bin/argocd
+</code></pre>
+<ol start="6">
+<li><font color=red>查看<code>argocd-server</code>暴露端口</font></li>
+</ol>
+<pre><code class="shell">$ kubectl get svc -n argocd
+</code></pre>
 
       
     </div>
@@ -3183,7 +3128,7 @@ $ kubectl apply -f coredns.yaml
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -3240,12 +3185,12 @@ $ kubectl apply -f coredns.yaml
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">211k</span>
+    <span title="站点总字数">214k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:11</span>
+    <span title="站点阅读时长">3:14</span>
 </div>
 
 <!--

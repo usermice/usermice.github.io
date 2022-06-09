@@ -30,7 +30,7 @@
 <meta property="og:description" content="1. 规划主机以及部署高可用集群   角色 IP地址 配置 操作系统    Master-1 192.168.80.210 2core、4G、80Gdisk CentOS Linux release 7.9.2   Master-2 192.168.80.211 2core、4G、80Gdisk CentOS Linux release 7.9.2   node-1 192.168.80.212">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-30T12:58:42.000Z">
-<meta property="article:modified_time" content="2022-06-07T08:20:10.163Z">
+<meta property="article:modified_time" content="2022-06-09T11:05:19.569Z">
 <meta property="article:author" content="二哥">
 <meta property="article:tag" content="Kubernetes">
 <meta name="twitter:card" content="summary">
@@ -211,7 +211,7 @@
   <p><span>本文标题:</span><a href="/Kubernetes/Install-Kubernetes-Cluster/">Install-Kubernetes-Cluster</a></p>
   <p><span>文章作者:</span><a href="/" title="访问  的个人博客"></a></p>
   <p><span>发布时间:</span>2022年05月30日 - 20:58</p>
-  <p><span>最后更新:</span>2022年06月07日 - 16:20</p>
+  <p><span>最后更新:</span>2022年06月09日 - 19:05</p>
   <p><span>原始链接:</span><a href="/Kubernetes/Install-Kubernetes-Cluster/" title="Install-Kubernetes-Cluster">https://usermice.github.io/Kubernetes/Install-Kubernetes-Cluster/</a>
     <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://usermice.github.io/Kubernetes/Install-Kubernetes-Cluster/"  aria-label="复制成功！"></i></span>
   </p>
@@ -262,7 +262,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-07 16:20:10" itemprop="dateModified" datetime="2022-06-07T16:20:10+08:00">2022-06-07</time>
+                <time title="修改时间：2022-06-09 19:05:19" itemprop="dateModified" datetime="2022-06-09T19:05:19+08:00">2022-06-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -347,70 +347,117 @@
 </tr>
 </tbody></table>
 <h4 id="1-1-系统初始化"><a href="#1-1-系统初始化" class="headerlink" title="1.1 系统初始化"></a>1.1 系统初始化</h4><ul>
+<li><ol>
 <li><font color=red>分别设置五台主机名</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname master-1-80-210</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname master-2-80-211</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname node-1-80-212</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname node-2-80-213</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname node-3-80-215</span></span><br></pre></td></tr></table></figure>
 <ul>
+<li><ol start="2">
 <li><font color=red>分别在五台服务器做本地<code>hosts</code>解析</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;&gt;/etc/hosts&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">192.168.80.210 master-01</span><br><span class="line">192.168.80.211 master-02</span><br><span class="line">192.168.80.212 noder-01</span><br><span class="line">192.168.80.213 noder-02</span><br><span class="line">192.168.80.215 noder-03</span><br><span class="line">192.168.80.220 k8s-master-lb # VIP(虚拟IP)用于LoadBalance，如果不是高可用集群，该IP可以是k8s-master01的IP </span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
 <ul>
+<li><ol start="3">
 <li><font color=red>设置时间同步，修改时区两种方式</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第一种</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">timedatectl set-timezone Asia/Shanghai</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第二种</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">ln</span> -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> chronyd.service &amp;&amp; systemctl start chronyd.service</span></span><br></pre></td></tr></table></figure>
 <ul>
+<li><ol start="4">
 <li><font color=red>关闭防火墙并禁止开机自启</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">disable</span> firewalld &amp;&amp; systemctl stop firewalld</span></span><br></pre></td></tr></table></figure>
 <ul>
+<li><ol start="5">
 <li><font color=red>关闭<code>SElinux</code></font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">setenforce 0  	<span class="comment">#临时关闭Selinux</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/^SELINUX=.*/SELINUX=disabled/&#x27;</span> /etc/selinux/config  <span class="comment">#永久关闭Selinux</span></span></span><br></pre></td></tr></table></figure>
 
 <ul>
+<li><ol start="6">
 <li><font color=red>关闭<code>swap</code>交换分区</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -ri <span class="string">&#x27;s/.*swap.*/#&amp;/&#x27;</span> /etc/fstab &amp;&amp; swapoff -a</span></span><br></pre></td></tr></table></figure>
 
 <ul>
+<li><ol start="7">
 <li><font color=red>允许 iptables 检查桥接流量</font></li>
+</ol>
+</li>
 </ul>
 <blockquote>
 <ul>
-<li>确保<font color=red><code>br_netfilter</code></font>模块被加载。这一操作可以通过运行<font color=red><code>lsmod | grep br_netfilter</code></font>来完成。若要显式加载该模块，可执行<font color=red><code>modprobe br_netfilter</code>。</font></li>
-<li>为了让你的<code>Linux</code>节点上的<code>iptables</code>能够正确地查看桥接流量，你需要确保在你的<code>sysctl</code>配置中将 <font color=red><code>net.bridge.bridge-nf-call-iptables</code></font>设置为 1</li>
+<li>7.1 确保<font color=red><code>br_netfilter</code></font>模块被加载。这一操作可以通过运行<font color=red><code>lsmod | grep br_netfilter</code></font>来完成。若要显式加载该模块，可执行<font color=red><code>modprobe br_netfilter</code>。</font></li>
+<li>7.2 为了让你的<code>Linux</code>节点上的<code>iptables</code>能够正确地查看桥接流量，你需要确保在你的<code>sysctl</code>配置中将 <font color=red><code>net.bridge.bridge-nf-call-iptables</code></font>设置为 1</li>
 </ul>
 </blockquote>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &lt;&lt;<span class="string">EOF | sudo tee /etc/modules-load.d/k8s.conf</span></span></span><br><span class="line">br_netfilter</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">cat &lt;&lt;EOF</span> | sudo <span class="built_in">tee</span> /etc/sysctl.d/k8s.conf</span></span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">net.ipv4.ip_forward = 1</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sysctl --system</span></span><br></pre></td></tr></table></figure>
 
 <ul>
+<li><ol start="8">
 <li><font color=red>开启<code>ipvs</code></font>  <blockquote>
 <ul>
-<li>在<code>kubernetes</code>中<code>service</code>有两种代理模型，一种是基于<code>iptables</code>，另一种是基于<code>ipvs</code>的。<code>ipvs</code>的性能要高于<code>iptables</code>的，但是如果要使用它，需要手动载入<code>ipvs</code>模块。  </li>
-<li><font color=red>在每个节点安装<code>ipset</code>和<code>ipvsadm</code></font></li>
+<li>8.1 在<code>kubernetes</code>中<code>service</code>有两种代理模型，一种是基于<code>iptables</code>，另一种是基于<code>ipvs</code>的。<code>ipvs</code>的性能要高于<code>iptables</code>的，但是如果要使用它，需要手动载入<code>ipvs</code>模块。  </li>
+<li>8.2 <font color=red>在每个节点安装<code>ipset</code>和<code>ipvsadm</code></font></li>
 </ul>
 </blockquote>
+</li>
+</ol>
 </li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install ipset ipvsadm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在所有节点执行如下脚本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/sysconfig/modules/ipvs.modules&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">!/bin/bash</span></span></span><br><span class="line">modprobe -- ip_vs</span><br><span class="line">modprobe -- ip_vs_rr</span><br><span class="line">modprobe -- ip_vs_wrr</span><br><span class="line">modprobe -- ip_vs_sh</span><br><span class="line">modprobe -- nf_conntrack_ipv4</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">授权、运行、检查是否加载</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">chmod 755 /etc/sysconfig/modules/ipvs.modules &amp;&amp; bash /etc/sysconfig/modules/ipvs.modules &amp;&amp; lsmod | grep -e ip_vs -e nf_conntrack_ipv4</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">检查是否加载</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">lsmod | grep -e ipvs -e nf_conntrack_ipv4</span></span></span><br></pre></td></tr></table></figure>
 
 <ul>
+<li><ol start="9">
 <li><font color=red>所有节点配置Limit</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">ulimit</span> -SHn 65536  	<span class="comment"># 临时生效</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;</span></span></span><br><span class="line">* soft nproc 65535</span><br><span class="line">* hard nproc 65535</span><br><span class="line">* soft nofile 65535         #软限制</span><br><span class="line">* hard nofile 65535         #硬限制</span><br><span class="line">* soft memlock unlimited</span><br><span class="line">* soft memlock unlimited &quot; &gt;&gt;/etc/security/limits.conf  	# 永久生效</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><font color=red><code>k8s-master01</code>节点设置免密登录其他节点</font></li>
+<li><ol start="10">
+<li><font color=red><code>k8s-master01</code>节点设置免密登录其他节点</font>  <blockquote>
+<ul>
+<li>10.1 <font color=red><code>ssh-keygen</code>：</font>用于创建密钥的程序  </li>
+<li>10.2 <font color=red><code>-m PEM</code>：</font>将密钥的格式设为<code>PEM</code>  </li>
+<li>10.3 <font color=red><code>-t rsa</code>：</font>创建密钥类型为：<code>RSA</code>格式，系统默认提供名为 <code>id_rsa</code> 的密钥对，有些工具可能要求私钥文件名为 <code>id_rsa</code>   </li>
+<li>10.4 <font color=red><code>-b 4096</code>：</font>密钥的位数，本例中为<code>4096</code>  </li>
+<li>10.5 <font color=red><code>-C &quot;xxx@myserver&quot;</code>：</font>追加到公钥文件末尾以便于识别的注释。 通常以电子邮件地址用作注释，但也可以使用任何最适合你基础结构的事物  </li>
+<li>10.6 <font color=red><code>-f ~/.ssh/</code>：</font>私钥文件的文件名（如果选择不使用默认名称）。 追加了<code>.pub</code>的相应公钥文件在相同目录中生成。 该目录必须存在  </li>
+<li>10.7 <font color=red><code>-N mypassphrase</code>：</font>用于访问私钥文件的其他密码</li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh-keygen -t rsa</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="keyword">for</span> i <span class="keyword">in</span> master-01 master-02 noder-01 noder-02 noder-03;<span class="keyword">do</span> ssh-copy-id -i .ssh/id_rsa.pub <span class="variable">$i</span>;<span class="keyword">done</span></span></span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh-keygen \</span></span><br><span class="line"><span class="language-bash"> -m PEM \</span></span><br><span class="line"><span class="language-bash"> -t rsa \</span></span><br><span class="line"><span class="language-bash"> -b 4096 \</span></span><br><span class="line"><span class="language-bash"> -C <span class="string">&quot;xxx@163.com&quot;</span> \</span></span><br><span class="line"><span class="language-bash"> -f ~/.ssh/id_rsa_name \</span></span><br><span class="line"><span class="language-bash"> -N mypassphrase</span></span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="keyword">for</span> i <span class="keyword">in</span> master-01 master-02 noder-01 noder-02 noder-03;<span class="keyword">do</span> ssh-copy-id -i .ssh/id_rsa.pub <span class="variable">$i</span>;<span class="keyword">done</span></span></span><br></pre></td></tr></table></figure>
 
 <ul>
+<li><ol start="11">
 <li><font color=red>所有节点更新系统并且重启</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y --exclude=kernel* update  &amp;&amp; reboot</span></span><br></pre></td></tr></table></figure>
 
 <ul>
+<li><ol start="12">
 <li><font color=red>升级系统<code>Kernel</code>内核到<code>4.18+</code>以上</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">令列出可用的内核相关包</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum --disablerepo=<span class="string">&quot;*&quot;</span> --enablerepo=<span class="string">&quot;elrepo-kernel&quot;</span> list available</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装最新主线稳定内核</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y --enablerepo=elrepo-kernel install kernel-ml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置 GRUB 默认的内核版本：</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/default/grub</span></span><br><span class="line">GRUB_DEFAULT=0  	# 修改部分， GRUB 初始化页面的第一个内核将作为默认内核</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">重新创建内核配置</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">grub2-mkconfig -o /boot/grub2/grub.cfg</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">reboot</span></span><br></pre></td></tr></table></figure>
 
@@ -771,7 +818,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -828,12 +875,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">211k</span>
+    <span title="站点总字数">214k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:11</span>
+    <span title="站点阅读时长">3:14</span>
 </div>
 
 <!--

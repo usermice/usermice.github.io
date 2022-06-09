@@ -191,6 +191,228 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/Configure-K8s-Ingress-Nginx/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Kubernetes/Configure-K8s-Ingress-Nginx/" class="post-title-link" itemprop="url">Configure-K8s-Ingress-Nginx</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-06-09 20:12:38 / 修改时间：21:55:37" itemprop="dateCreated datePublished" datetime="2022-06-09T20:12:38+08:00">2022-06-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-Ingress-Nginx使用详解"><a href="#1-Ingress-Nginx使用详解" class="headerlink" title="1. Ingress-Nginx使用详解"></a>1. <code>Ingress-Nginx</code>使用详解</h3><h4 id="1-1-Ingress介绍"><a href="#1-1-Ingress介绍" class="headerlink" title="1.1 Ingress介绍"></a>1.1 <font color=red><code>Ingress</code>介绍</font></h4><ul>
+<li><ol>
+<li>我们已经知道，<code>Service对集群</code>之外暴露服务的主要方式有两种：<code>NodePort</code>和<code>LoadBalancer</code>，但是这两种方式，都有一定的缺点：</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>1.1 <font color=red><code>NodePort</code></font>方式的缺点是会占用很多集群机器的端口，那么当集群服务变多的时候，这个缺点就愈发明显  </li>
+<li>1.2 <font color=red><code>LoadBalancer</code></font>的缺点是每个<code>Service</code>都需要一个<code>LB</code>，浪费，麻烦，并且需要<code>kubernetes</code>之外的设备的支持</li>
+</ul>
+</blockquote>
+<ul>
+<li><ol start="2">
+<li>基于这种现状，<font color=red><code>kubernetes</code></font>提供了<font color=red><code>Ingress</code></font>资源对象，<font color=red><code>Ingress</code></font>只需要一个<font color=red><code>NodePort</code></font>或者一个<code>LB</code>就可以满足暴露多个<code>Service</code>的需求</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>实际上，<code>Ingress</code>相当于一个七层的负载均衡器，是<code>kubernetes</code>对反向代理的一个抽象，它的工作原理类似于<code>Nginx</code>，可以理解为<code>Ingress</code>里面建立了诸多映射规则，<code>Ingress Controller</code>通过监听这些配置规则并转化为<code>Nginx</code>的反向代理配置，然后对外提供服务</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>3.1 <font color=red><code>Ingress</code>：</font><code>kubernetes</code>中的一个对象，作用是定义请求如何转发到Service的规则  </li>
+<li>3.2   <font color=red><code>Ingress Controller</code>：</font>具体实现反向代理及负载均衡的程序，对<code>Ingress</code>定义的规则进行解析，根据配置的规则来实现请求转发，实现的方式有很多，比如<font color=red><code>Nginx</code>，<code>Contour</code>，<code>Haproxy</code></font>等。</li>
+</ul>
+</blockquote>
+<h4 id="1-2-Ingress-以Nginx-的工作原理如下："><a href="#1-2-Ingress-以Nginx-的工作原理如下：" class="headerlink" title="1.2 Ingress(以Nginx)的工作原理如下："></a>1.2 <font color=red><code>Ingress</code>(以<code>Nginx</code>)的工作原理如下：</font></h4><ul>
+<li><ol>
+<li><font color=red>用户编写<code>Ingress</code>规则</font>：说明那个域名对应<code>kubernetes</code>集群中的那个<code>Service</code>。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>Ingress</code></font>控制器动态感知<code>Ingress</code>服务规则的变化，然后生成一段对应的<code>Nginx</code>的反向代理配置</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>Ingress</code></font>控制器会将生成的<code>Nginx</code>配置写入到一个运行着的<code>Nginx</code>服务中，并动态更新，到此为止，其实真正在工作的就是一个<code>Nginx</code>了，内部配置了用户定义的请求规则</li>
+</ol>
+</li>
+</ul>
+<h3 id="2-Ingress-Nginx安装使用"><a href="#2-Ingress-Nginx安装使用" class="headerlink" title="2. Ingress-Nginx安装使用"></a>2. <code>Ingress-Nginx</code>安装使用</h3><ul>
+<li><ol>
+<li><a target="_blank" rel="noopener" href="https://kubernetes.github.io/ingress-nginx/deploy/"><code>Nginx入口控制器文档</code></a></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><a target="_blank" rel="noopener" href="https://github.com/kubernetes/ingress-nginx/blob/main/docs/deploy/index.md#bare-metal-clusters"><code>Github Ingress-Ngin</code>入口控制器安装文档</a></li>
+</ol>
+</li>
+<li><ol start="3">
+<li><a target="_blank" rel="noopener" href="https://github.com/kubernetes/ingress-nginx/tree/controller-v1.2.0/deploy/static/provider"><code>Ingress-Nginx</code>选择对应服务器或云厂商</a></li>
+</ol>
+</li>
+<li><ol start="4">
+<li><a target="_blank" rel="noopener" href="https://github.com/kubernetes/ingress-nginx/tree/main/deploy/static/provider/baremetal">裸机服务器下载<code>yaml</code>可以选择版本，可以直接选择<code>deploy.yaml</code>文件</a></li>
+</ol>
+</li>
+<li><ol start="5">
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_37481017/article/details/118999716">基于<code>K8S 1.21.2</code>集群安装<code>Ingress-Nginx 0.48.1</code></a></li>
+</ol>
+</li>
+<li><ol start="6">
+<li><font color=red>下载<code>ingress-nginx</code>的<code>yaml</code>文件后把<code>LoadBalancer</code>修改为<code>NodePort</code></font></li>
+</ol>
+</li>
+</ul>
+<h4 id="2-1-使用kubectl-apply-f安装Ingress-Nginx"><a href="#2-1-使用kubectl-apply-f安装Ingress-Nginx" class="headerlink" title="2.1 使用kubectl apply -f安装Ingress-Nginx"></a>2.1 <font color=red>使用<code>kubectl apply -f</code>安装<code>Ingress-Nginx</code></font></h4><ul>
+<li><ol>
+<li><font color=red>使用<code>kubectl apply -f</code>安装<code>Ingress-Nginx</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml  	<span class="comment"># ingress-controller 控制器、负责负载均衡</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/provider/baremetal/service-nodeport.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/deploy.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f ./</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>查看是否有<code>Pod</code>启动</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">$ kubectl get pods --namespace=ingress-nginx</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>等待入口控制器<code>pod</code>启动、运行并准备就绪</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">wait</span> --namespace ingress-nginx \</span></span><br><span class="line"><span class="language-bash">  --<span class="keyword">for</span>=condition=ready pod \</span></span><br><span class="line"><span class="language-bash">  --selector=app.kubernetes.io/component=controller \</span></span><br><span class="line"><span class="language-bash">  --<span class="built_in">timeout</span>=120s</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="2-2-使用Helm安装Ingress-Nginx"><a href="#2-2-使用Helm安装Ingress-Nginx" class="headerlink" title="2.2 使用Helm安装Ingress-Nginx"></a>2.2 <font color=red>使用<code>Helm</code>安装<code>Ingress-Nginx</code></font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace ingress-nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install blog-enix-rancher ingress-nginx/ingress-nginx \</span></span><br><span class="line"><span class="language-bash">	--namespace ingress-nginx \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.hostPort.enabled=<span class="literal">true</span> \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.kind=DaemonSet</span></span><br><span class="line"><span class="meta prompt_">	</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace ingress-nginx</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-Ingress-Nginx配置清单"><a href="#3-Ingress-Nginx配置清单" class="headerlink" title="3. Ingress-Nginx配置清单"></a>3. <code>Ingress-Nginx</code>配置清单</h3><ul>
+<li><ol>
+<li><font color=red>准备<code>Service</code>和<code>Pod</code>：一个<code>Nginx</code>一个<code>Tomcat</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-deployment</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:  # 标签选择器，用于确定当前Service代理那些Pod</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: nginx-pod</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx-pod</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: nginx</span><br><span class="line">        image: nginx:1.17.1</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: tomcat-deployment</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: tomcat-pod</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: tomcat-pod</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: tomcat</span><br><span class="line">        image: tomcat:8.5-jre10-slim</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 8080</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-service</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    app: nginx-pod</span><br><span class="line">  clusterIP: None</span><br><span class="line">  type: ClusterIP</span><br><span class="line">  ports:</span><br><span class="line">  - port: 80</span><br><span class="line">    targetPort: 80</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: tomcat-service</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    app: tomcat-pod</span><br><span class="line">  clusterIP: None</span><br><span class="line">  type: ClusterIP</span><br><span class="line">  ports:</span><br><span class="line">  - port: 8080  # Service端口</span><br><span class="line">    targetPort: 8080</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red><code>Ingress-Nginx</code>的<code>Http</code>和<code>Https</code>配置的<code>yaml</code></font>  <blockquote>
+<ul>
+<li>2.1 <font color=red><code>http</code></font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Ingress</span><br><span class="line">metadata:</span><br><span class="line">  name: ingress-http</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  rules:</span><br><span class="line">  - host: nginx.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: nginx-service</span><br><span class="line">          servicePort: 80</span><br><span class="line">  - host: tomcat.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: tomcat-service</span><br><span class="line">          servicePort: 8080</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>2.2 <font color=red><code>https</code></font>   <blockquote>
+<ul>
+<li>2.2.1 <font color=red><code>req</code>：</font>产生证书签发申请命令  </li>
+<li>2.2.2 <font color=red><code>-newkey</code>：</font>生成新私钥  </li>
+<li>2.2.3 <font color=red><code>rsa:4096</code>：</font>生成秘钥位数  </li>
+<li>2.2.4 <font color=red><code>-nodes</code>：</font>表示私钥不加密  </li>
+<li>2.2.5 <font color=red><code>-sha256</code>：</font>使用<code>SHA-2</code>哈希算法  </li>
+<li>2.2.6 <font color=red><code>-keyout</code>：</font>将新创建的私钥写入的文件名  </li>
+<li>2.2.7 <font color=red><code>-x509</code>：</font>签发<code>X.509格</code>式证书命令。<code>X.509</code>是最通用的一种签名证书格式。  </li>
+<li>2.2.8 <font color=red><code>-out</code>：</font>指定要写入的输出文件名  </li>
+<li>2.2.9 <font color=red><code>-subj</code>：</font>指定证书地区，web服务，域名信息  </li>
+<li>2.2.10 <font color=red><code>-days</code>：</font>有效期</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成密钥</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout /opt/k8s/tls.key -out -x509 /opt/k8s/tls.crt -subj <span class="string">&quot;/C=CN/ST=BJ/L=BJ/O=nginx/CN=erge.com&quot;</span> -days 3650</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成密钥</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create secret tls tls-erge.com --key =/opt/k8s/https/tls.key --cert /opt/k8s/https/tls.crt</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Ingress</span><br><span class="line">metadata:</span><br><span class="line">  name: ingress-https</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  tls:</span><br><span class="line">    - hosts:</span><br><span class="line">      - nginx.rege.com</span><br><span class="line">      - tomcat.erge.com</span><br><span class="line">      secretName: tls-erge.com # 指定秘钥</span><br><span class="line">  rules:</span><br><span class="line">  - host: nginx.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: nginx-service</span><br><span class="line">          servicePort: 80</span><br><span class="line">  - host: tomcat.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: tomcat-service</span><br><span class="line">          servicePort: 8080</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/Configure-K8s-Project/">
 
 <div>
@@ -490,7 +712,7 @@ $ http://192.168.80.210:30001/  	# 浏览器访问地址
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-07 16:20:10" itemprop="dateModified" datetime="2022-06-07T16:20:10+08:00">2022-06-07</time>
+                <time title="修改时间：2022-06-09 19:05:19" itemprop="dateModified" datetime="2022-06-09T19:05:19+08:00">2022-06-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -568,70 +790,117 @@ $ http://192.168.80.210:30001/  	# 浏览器访问地址
 </tr>
 </tbody></table>
 <h4 id="1-1-系统初始化"><a href="#1-1-系统初始化" class="headerlink" title="1.1 系统初始化"></a>1.1 系统初始化</h4><ul>
+<li><ol>
 <li><font color=red>分别设置五台主机名</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname master-1-80-210</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname master-2-80-211</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname node-1-80-212</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname node-2-80-213</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname node-3-80-215</span></span><br></pre></td></tr></table></figure>
 <ul>
+<li><ol start="2">
 <li><font color=red>分别在五台服务器做本地<code>hosts</code>解析</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;&gt;/etc/hosts&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">192.168.80.210 master-01</span><br><span class="line">192.168.80.211 master-02</span><br><span class="line">192.168.80.212 noder-01</span><br><span class="line">192.168.80.213 noder-02</span><br><span class="line">192.168.80.215 noder-03</span><br><span class="line">192.168.80.220 k8s-master-lb # VIP(虚拟IP)用于LoadBalance，如果不是高可用集群，该IP可以是k8s-master01的IP </span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
 <ul>
+<li><ol start="3">
 <li><font color=red>设置时间同步，修改时区两种方式</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第一种</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">timedatectl set-timezone Asia/Shanghai</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第二种</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">ln</span> -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> chronyd.service &amp;&amp; systemctl start chronyd.service</span></span><br></pre></td></tr></table></figure>
 <ul>
+<li><ol start="4">
 <li><font color=red>关闭防火墙并禁止开机自启</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">disable</span> firewalld &amp;&amp; systemctl stop firewalld</span></span><br></pre></td></tr></table></figure>
 <ul>
+<li><ol start="5">
 <li><font color=red>关闭<code>SElinux</code></font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">setenforce 0  	<span class="comment">#临时关闭Selinux</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/^SELINUX=.*/SELINUX=disabled/&#x27;</span> /etc/selinux/config  <span class="comment">#永久关闭Selinux</span></span></span><br></pre></td></tr></table></figure>
 
 <ul>
+<li><ol start="6">
 <li><font color=red>关闭<code>swap</code>交换分区</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -ri <span class="string">&#x27;s/.*swap.*/#&amp;/&#x27;</span> /etc/fstab &amp;&amp; swapoff -a</span></span><br></pre></td></tr></table></figure>
 
 <ul>
+<li><ol start="7">
 <li><font color=red>允许 iptables 检查桥接流量</font></li>
+</ol>
+</li>
 </ul>
 <blockquote>
 <ul>
-<li>确保<font color=red><code>br_netfilter</code></font>模块被加载。这一操作可以通过运行<font color=red><code>lsmod | grep br_netfilter</code></font>来完成。若要显式加载该模块，可执行<font color=red><code>modprobe br_netfilter</code>。</font></li>
-<li>为了让你的<code>Linux</code>节点上的<code>iptables</code>能够正确地查看桥接流量，你需要确保在你的<code>sysctl</code>配置中将 <font color=red><code>net.bridge.bridge-nf-call-iptables</code></font>设置为 1</li>
+<li>7.1 确保<font color=red><code>br_netfilter</code></font>模块被加载。这一操作可以通过运行<font color=red><code>lsmod | grep br_netfilter</code></font>来完成。若要显式加载该模块，可执行<font color=red><code>modprobe br_netfilter</code>。</font></li>
+<li>7.2 为了让你的<code>Linux</code>节点上的<code>iptables</code>能够正确地查看桥接流量，你需要确保在你的<code>sysctl</code>配置中将 <font color=red><code>net.bridge.bridge-nf-call-iptables</code></font>设置为 1</li>
 </ul>
 </blockquote>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &lt;&lt;<span class="string">EOF | sudo tee /etc/modules-load.d/k8s.conf</span></span></span><br><span class="line">br_netfilter</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">cat &lt;&lt;EOF</span> | sudo <span class="built_in">tee</span> /etc/sysctl.d/k8s.conf</span></span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">net.ipv4.ip_forward = 1</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sysctl --system</span></span><br></pre></td></tr></table></figure>
 
 <ul>
+<li><ol start="8">
 <li><font color=red>开启<code>ipvs</code></font>  <blockquote>
 <ul>
-<li>在<code>kubernetes</code>中<code>service</code>有两种代理模型，一种是基于<code>iptables</code>，另一种是基于<code>ipvs</code>的。<code>ipvs</code>的性能要高于<code>iptables</code>的，但是如果要使用它，需要手动载入<code>ipvs</code>模块。  </li>
-<li><font color=red>在每个节点安装<code>ipset</code>和<code>ipvsadm</code></font></li>
+<li>8.1 在<code>kubernetes</code>中<code>service</code>有两种代理模型，一种是基于<code>iptables</code>，另一种是基于<code>ipvs</code>的。<code>ipvs</code>的性能要高于<code>iptables</code>的，但是如果要使用它，需要手动载入<code>ipvs</code>模块。  </li>
+<li>8.2 <font color=red>在每个节点安装<code>ipset</code>和<code>ipvsadm</code></font></li>
 </ul>
 </blockquote>
+</li>
+</ol>
 </li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install ipset ipvsadm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在所有节点执行如下脚本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/sysconfig/modules/ipvs.modules&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">!/bin/bash</span></span></span><br><span class="line">modprobe -- ip_vs</span><br><span class="line">modprobe -- ip_vs_rr</span><br><span class="line">modprobe -- ip_vs_wrr</span><br><span class="line">modprobe -- ip_vs_sh</span><br><span class="line">modprobe -- nf_conntrack_ipv4</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">授权、运行、检查是否加载</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">chmod 755 /etc/sysconfig/modules/ipvs.modules &amp;&amp; bash /etc/sysconfig/modules/ipvs.modules &amp;&amp; lsmod | grep -e ip_vs -e nf_conntrack_ipv4</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">检查是否加载</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">lsmod | grep -e ipvs -e nf_conntrack_ipv4</span></span></span><br></pre></td></tr></table></figure>
 
 <ul>
+<li><ol start="9">
 <li><font color=red>所有节点配置Limit</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">ulimit</span> -SHn 65536  	<span class="comment"># 临时生效</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;</span></span></span><br><span class="line">* soft nproc 65535</span><br><span class="line">* hard nproc 65535</span><br><span class="line">* soft nofile 65535         #软限制</span><br><span class="line">* hard nofile 65535         #硬限制</span><br><span class="line">* soft memlock unlimited</span><br><span class="line">* soft memlock unlimited &quot; &gt;&gt;/etc/security/limits.conf  	# 永久生效</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><font color=red><code>k8s-master01</code>节点设置免密登录其他节点</font></li>
+<li><ol start="10">
+<li><font color=red><code>k8s-master01</code>节点设置免密登录其他节点</font>  <blockquote>
+<ul>
+<li>10.1 <font color=red><code>ssh-keygen</code>：</font>用于创建密钥的程序  </li>
+<li>10.2 <font color=red><code>-m PEM</code>：</font>将密钥的格式设为<code>PEM</code>  </li>
+<li>10.3 <font color=red><code>-t rsa</code>：</font>创建密钥类型为：<code>RSA</code>格式，系统默认提供名为 <code>id_rsa</code> 的密钥对，有些工具可能要求私钥文件名为 <code>id_rsa</code>   </li>
+<li>10.4 <font color=red><code>-b 4096</code>：</font>密钥的位数，本例中为<code>4096</code>  </li>
+<li>10.5 <font color=red><code>-C &quot;xxx@myserver&quot;</code>：</font>追加到公钥文件末尾以便于识别的注释。 通常以电子邮件地址用作注释，但也可以使用任何最适合你基础结构的事物  </li>
+<li>10.6 <font color=red><code>-f ~/.ssh/</code>：</font>私钥文件的文件名（如果选择不使用默认名称）。 追加了<code>.pub</code>的相应公钥文件在相同目录中生成。 该目录必须存在  </li>
+<li>10.7 <font color=red><code>-N mypassphrase</code>：</font>用于访问私钥文件的其他密码</li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh-keygen -t rsa</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="keyword">for</span> i <span class="keyword">in</span> master-01 master-02 noder-01 noder-02 noder-03;<span class="keyword">do</span> ssh-copy-id -i .ssh/id_rsa.pub <span class="variable">$i</span>;<span class="keyword">done</span></span></span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh-keygen \</span></span><br><span class="line"><span class="language-bash"> -m PEM \</span></span><br><span class="line"><span class="language-bash"> -t rsa \</span></span><br><span class="line"><span class="language-bash"> -b 4096 \</span></span><br><span class="line"><span class="language-bash"> -C <span class="string">&quot;xxx@163.com&quot;</span> \</span></span><br><span class="line"><span class="language-bash"> -f ~/.ssh/id_rsa_name \</span></span><br><span class="line"><span class="language-bash"> -N mypassphrase</span></span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="keyword">for</span> i <span class="keyword">in</span> master-01 master-02 noder-01 noder-02 noder-03;<span class="keyword">do</span> ssh-copy-id -i .ssh/id_rsa.pub <span class="variable">$i</span>;<span class="keyword">done</span></span></span><br></pre></td></tr></table></figure>
 
 <ul>
+<li><ol start="11">
 <li><font color=red>所有节点更新系统并且重启</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y --exclude=kernel* update  &amp;&amp; reboot</span></span><br></pre></td></tr></table></figure>
 
 <ul>
+<li><ol start="12">
 <li><font color=red>升级系统<code>Kernel</code>内核到<code>4.18+</code>以上</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">令列出可用的内核相关包</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum --disablerepo=<span class="string">&quot;*&quot;</span> --enablerepo=<span class="string">&quot;elrepo-kernel&quot;</span> list available</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装最新主线稳定内核</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y --enablerepo=elrepo-kernel install kernel-ml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置 GRUB 默认的内核版本：</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/default/grub</span></span><br><span class="line">GRUB_DEFAULT=0  	# 修改部分， GRUB 初始化页面的第一个内核将作为默认内核</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">重新创建内核配置</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">grub2-mkconfig -o /boot/grub2/grub.cfg</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">reboot</span></span><br></pre></td></tr></table></figure>
 
@@ -2475,7 +2744,7 @@ $ http://192.168.80.210:30001/  	# 浏览器访问地址
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-30 17:31:56" itemprop="dateModified" datetime="2022-05-30T17:31:56+08:00">2022-05-30</time>
+                <time title="修改时间：2022-06-09 20:23:27" itemprop="dateModified" datetime="2022-06-09T20:23:27+08:00">2022-06-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2493,14 +2762,14 @@ $ http://192.168.80.210:30001/  	# 浏览器访问地址
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>6.6k</span>
+              <span>3.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -2516,64 +2785,90 @@ $ http://192.168.80.210:30001/  	# 浏览器访问地址
 
 
 <h3 id="1-Service服务详解"><a href="#1-Service服务详解" class="headerlink" title="1. Service服务详解"></a>1. <font color=red><code>Service</code>服务详解</font></h3><ul>
-<li>在<font color=red><code>kubernetes</code></font>中，<font color=red><code>Pod</code></font>是应用程序的载体，我们可以通过<font color=red><code>Pod</code>的<code>IP</code></font>来访问应用程序，但是<font color=red><code>Pod</code>的<code>IP</code></font>地址不是固定的，这就意味着不方便直接采用<font color=red><code>Pod</code>的<code>IP</code></font>对服务进行访问  </li>
-<li>为了解决这个问题，<font color=red><code>kubernetes</code>提供了<code>Service</code>资源</font>，<font color=red><code>Service</code></font>会对提供同一个服务的多个<code>Pod</code>进行聚合，并且提供一个统一的入口地址，通过访问<font color=red><code>Service</code>的入口地址就能访问到后面的<code>Pod</code>服务</font>  </li>
-<li><font color=red>Service在很多情况下只是一个概念</font>：真正起作用的其实是<code>kube-proxy</code>服务进程，每个<code>Node</code>节点上都运行了一个<code>kube-proxy</code>的服务进程。当创建<code>Service</code>的时候会通过<code>API Server</code>向<code>etcd</code>写入创建的Service的信息，而<code>kube-proxy</code>会基于监听的机制发现这种<code>Service</code>的变化，然后它会将最新的<code>Service</code>信息转换为对应的访问规则  </li>
+<li><ol>
+<li>在<font color=red><code>kubernetes</code></font>中，<font color=red><code>Pod</code></font>是应用程序的载体，我们可以通过<font color=red><code>Pod</code>的<code>IP</code></font>来访问应用程序，但是<font color=red><code>Pod</code>的<code>IP</code></font>地址不是固定的，这就意味着不方便直接采用<font color=red><code>Pod</code>的<code>IP</code></font>对服务进行访问</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>为了解决这个问题，<font color=red><code>kubernetes</code>提供了<code>Service</code>资源</font>，<font color=red><code>Service</code></font>会对提供同一个服务的多个<code>Pod</code>进行聚合，并且提供一个统一的入口地址，通过访问<font color=red><code>Service</code>的入口地址就能访问到后面的<code>Pod</code>服务</font></li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red>Service在很多情况下只是一个概念</font>：真正起作用的其实是<code>kube-proxy</code>服务进程，每个<code>Node</code>节点上都运行了一个<code>kube-proxy</code>的服务进程。当创建<code>Service</code>的时候会通过<code>API Server</code>向<code>etcd</code>写入创建的Service的信息，而<code>kube-proxy</code>会基于监听的机制发现这种<code>Service</code>的变化，然后它会将最新的<code>Service</code>信息转换为对应的访问规则</li>
+</ol>
+</li>
+<li><ol start="4">
 <li><font color=red>假如：10.97.97.97:80 是service提供的访问入口</font>：当访问这个入口的时候，可以发现后面有三个pod的服务在等待调用，kube-proxy会基于rr（轮询）的策略，将请求分发到其中一个pod上去，这个规则会同时在集群内的所有节点上都生成，所以在任何一个节点上访问都可以。</li>
+</ol>
+</li>
 </ul>
 <h3 id="2-kube-proxy目前支持的三种工作模式"><a href="#2-kube-proxy目前支持的三种工作模式" class="headerlink" title="2. kube-proxy目前支持的三种工作模式"></a>2. <font color=red><code>kube-proxy</code>目前支持的三种工作模式</font></h3><ul>
-<li><p><font color=red><code>userspace</code>模式</font>  </p>
-<blockquote>
+<li><ol>
+<li><font color=red><code>userspace</code>模式</font>  <blockquote>
 <ul>
-<li><pre><code>`userspace`模式下，`kube-proxy`会为每一个`Service`创建一个监听端口，发向`Cluster IP`的请求被`iptables`规则重定向到`kube-proxy`监听的端口上，`kube-proxy`根据`LB`算法（负载均衡算法）选择一个提供服务的`Pod`并和其建立连接，以便将请求转发到`Pod`上。
+<li><pre><code>1.1 `userspace`模式下，`kube-proxy`会为每一个`Service`创建一个监听端口，发向`Cluster IP`的请求被`iptables`规则重定向到`kube-proxy`监听的端口上，`kube-proxy`根据`LB`算法（负载均衡算法）选择一个提供服务的`Pod`并和其建立连接，以便将请求转发到`Pod`上。
 </code></pre>
 </li>
-<li>userspace<code>模式下，</code>kube-proxy<code>充当了一个四层负载均衡器的角色。由于</code>kube-proxy<code>运行在</code>userspace&#96;中，在进行转发处理的时候会增加内核和用户空间之间的数据拷贝，虽然比较稳定，但是效率非常低下。</li>
+<li>1.2 <code>userspace</code>模式下，<code>kube-proxy</code>充当了一个四层负载均衡器的角色。由于<code>kube-proxy</code>运行在<code>userspace</code>中，在进行转发处理的时候会增加内核和用户空间之间的数据拷贝，虽然比较稳定，但是效率非常低下。</li>
 </ul>
 </blockquote>
 </li>
-<li><p><font color=red><code>iptables</code>模式</font>  </p>
-<blockquote>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>iptables</code>模式</font>  <blockquote>
 <ul>
-<li><code>iptables</code>模式下，<code>kube-proxy</code>为<code>Service</code>后端的每个<code>Pod</code>创建对应的<code>iptables</code>规则，直接将发向<code>Cluster IP</code>的请求重定向到一个<code>Pod</code>的<code>IP</code>上</li>
-<li><code>iptables</code>模式下<code>kube-proxy</code>不承担四层负载均衡器的角色，只负责创建<code>iptables</code>规则。该模式的优点在于较<code>userspace</code>模式效率更高，但是不能提供灵活的<code>LB</code>策略，当后端<code>Pod</code>不可用的时候无法进行重试</li>
+<li>2.1 <code>iptables</code>模式下，<code>kube-proxy</code>为<code>Service</code>后端的每个<code>Pod</code>创建对应的<code>iptables</code>规则，直接将发向<code>Cluster IP</code>的请求重定向到一个<code>Pod</code>的<code>IP</code>上</li>
+<li>2.2 <code>iptables</code>模式下<code>kube-proxy</code>不承担四层负载均衡器的角色，只负责创建<code>iptables</code>规则。该模式的优点在于较<code>userspace</code>模式效率更高，但是不能提供灵活的<code>LB</code>策略，当后端<code>Pod</code>不可用的时候无法进行重试</li>
 </ul>
 </blockquote>
 </li>
-<li><p><font color=red>ipvs模式</font>  </p>
-<blockquote>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red>ipvs模式</font>  <blockquote>
 <ul>
-<li><code>ipvs</code>模式和<code>iptables</code>类似，<code>kube-proxy</code>监控<code>Pod</code>的变化并创建相应的<code>ipvs</code>规则。<code>ipvs</code>相对<code>iptables</code>转发效率更高，除此之外，<code>ipvs</code>支持更多的<code>LB</code>算法。  </li>
-<li><font color=red><code>ipvs</code>的映射规则，<code>rr</code>表示轮询</font></li>
+<li>3.1 <code>ipvs</code>模式和<code>iptables</code>类似，<code>kube-proxy</code>监控<code>Pod</code>的变化并创建相应的<code>ipvs</code>规则。<code>ipvs</code>相对<code>iptables</code>转发效率更高，除此之外，<code>ipvs</code>支持更多的<code>LB</code>算法。  </li>
+<li>3.2 <font color=red><code>ipvs</code>的映射规则，<code>rr</code>表示轮询</font></li>
 </ul>
 </blockquote>
+</li>
+</ol>
 </li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ipvsadm -Ln  	<span class="comment"># 查看kube-proxy工作模式</span></span></span><br></pre></td></tr></table></figure>
 
 <h3 id="3-Service的资源清单，spec-type的说明"><a href="#3-Service的资源清单，spec-type的说明" class="headerlink" title="3. Service的资源清单，spec.type的说明"></a>3. <font color=red><code>Service</code>的资源清单，<code>spec.type</code>的说明</font></h3><ul>
-<li><p><font color=red><code>ClusterIP</code>默认值</font>：它是<code>kubernetes</code>系统自动分配的虚拟<code>IP</code>，只能在集群内部访问  </p>
+<li><ol>
+<li><font color=red><code>ClusterIP</code>默认值</font>：它是<code>kubernetes</code>系统自动分配的虚拟<font color=red><code>IP</code>(<code>VIP</code>)</font>，只能在集群内部<font color=red>(所有<code>Node</code>节点)</font>访问</li>
+</ol>
 </li>
-<li><p><font color=red><code>NodePort</code></font>：将<code>Service</code>通过指定的<code>Node</code>上的端口暴露给外部，通过此方法，就可以在集群外部访问服务  </p>
-<blockquote>
+<li><ol start="2">
+<li><font color=red><code>NodePort</code></font>：将<code>Service</code>通过指定的<code>Node</code>上的端口暴露给外部，通过此方法，就可以在集群外部访问<font color=red>(使用浏览器域名或<code>IP</code>端口访问)</font>服务  <blockquote>
 <ul>
-<li>创建的<code>Service</code>的<code>IP</code>地址只能在集群内部才可以访问，如果希望<code>Service</code>暴露给集群外部使用，那么就需要使用到另外一种类型的<code>Service</code>，称为<font color=red><code>NodePort</code></font>类型的<code>Service</code>。<font color=red><code>NodePort</code></font>的工作原理就是将<font color=red><code>Service</code></font>的端口映射到<font color=red><code>Node</code></font>的一个端口上，然后就可以通过<font color=red><code>NodeIP:NodePort</code></font>来访问<code>Service</code>了</li>
+<li>2.1 创建的<code>Service</code>的<code>IP</code>地址只能在集群内部才可以访问，如果希望<code>Service</code>暴露给集群外部使用，那么就需要使用到另外一种类型的<code>Service</code>，称为<font color=red><code>NodePort</code></font>类型的<code>Service</code>。<font color=red><code>NodePort</code></font>的工作原理就是将<font color=red><code>Service</code></font>的端口映射到<font color=red><code>Node</code></font>的一个端口上，然后就可以通过<font color=red><code>NodeIP:NodePort</code></font>来访问<code>Service</code>了</li>
 </ul>
 </blockquote>
 </li>
-<li><p><font color=red><code>LoadBalancer</code></font>：使用外接负载均衡器完成到服务的负载分发，注意此模式需要外部云环境的支持  </p>
-<blockquote>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>LoadBalancer</code></font>：使用外接负载均衡器完成到服务的负载分发，注意此模式需要外部云环境的支持  <blockquote>
 <ul>
-<li><font color=red><code> LoadBalancer</code>和<code>NodePort</code>很相似</font>，目的都是向外部暴露一个端口，区别在于<font color=red><code>LoadBalancer</code></font>会在集群的外部再来做一个负载均衡设备，而这个设备需要外部环境的支持，外部服务发送到这个设备上的请求，会被设备负载之后转发到集群中</li>
+<li>3.1 <font color=red><code> LoadBalancer</code>和<code>NodePort</code>很相似</font>，目的都是向外部暴露一个端口，区别在于<font color=red><code>LoadBalancer</code></font>会在集群的外部再来做一个负载均衡设备，而这个设备需要外部环境的支持，外部服务发送到这个设备上的请求，会被设备负载之后转发到集群中</li>
 </ul>
 </blockquote>
 </li>
-<li><p><font color=red><code>ExternalName</code></font>：把集群外部的服务引入集群内部，直接使用  </p>
-<blockquote>
+</ol>
+</li>
+<li><ol start="4">
+<li><font color=red><code>ExternalName</code></font>：把集群外部的服务引入集群内部，直接使用  <blockquote>
 <ul>
-<li><font color=red><code>ExternalName</code></font>类型的Service用于引入集群外部的服务，它通过<font color=red><code>externalName</code></font>属性指定一个服务的地址，然后在集群内部访问此Service就可以访问到外部的服务了</li>
+<li>4.1 <font color=red><code>ExternalName</code></font>类型的Service用于引入集群外部的服务，它通过<font color=red><code>externalName</code></font>属性指定一个服务的地址，然后在集群内部访问此Service就可以访问到外部的服务了</li>
 </ul>
 </blockquote>
+</li>
+</ol>
 </li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain service.spec.type <span class="comment">#</span></span> </span><br></pre></td></tr></table></figure>
@@ -2602,86 +2897,10 @@ $ http://192.168.80.210:30001/  	# 浏览器访问地址
 <li><font color=red><code>Endpoint</code></font>：是<code>kubernete</code>中的一个资源对象，存储在<code>etcd</code>中，用来记录一个service对应的所有Pod的访问地址，它是根据service配置文件中的selector描述产生的  </li>
 <li>一个<code>service</code>由一组<code>Pod</code>组成，这些<code>Pod</code>通过<font color=red><code>Endpoints</code></font>暴露出来，<font color=red><code>Endpoints</code></font>是实现实际服务的端点集合。换言之<code>servic</code>和<code>Pod</code>之间的联系是通过<font color=red><code>Endpoints</code></font>实现的</li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl describe svc nginx-service -n app</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get endpoints -n dev -o wide</span></span><br></pre></td></tr></table></figure>
+<pre><code class="shell">$ kubectl describe svc nginx-service -n app
+$ kubectl get endpoints -n dev -o wide
+</code></pre>
 
-<h3 id="6-Ingress介绍"><a href="#6-Ingress介绍" class="headerlink" title="6. Ingress介绍"></a>6. <font color=red><code>Ingress</code>介绍</font></h3><ul>
-<li><ol>
-<li>我们已经知道，<code>Service对集群</code>之外暴露服务的主要方式有两种：<code>NodePort</code>和<code>LoadBalancer</code>，但是这两种方式，都有一定的缺点：  <blockquote>
-<ul>
-<li><ol>
-<li><font color=red><code>NodePort</code></font>方式的缺点是会占用很多集群机器的端口，那么当集群服务变多的时候，这个缺点就愈发明显</li>
-</ol>
-</li>
-<li><ol start="2">
-<li><font color=red><code>LoadBalancer</code></font>的缺点是每个<code>Service</code>都需要一个<code>LB</code>，浪费，麻烦，并且需要<code>kubernetes</code>之外的设备的支持</li>
-</ol>
-</li>
-</ul>
-</blockquote>
-</li>
-</ol>
-</li>
-<li><ol start="2">
-<li>基于这种现状，<font color=red><code>kubernetes</code></font>提供了<font color=red><code>Ingress</code></font>资源对象，<font color=red><code>Ingress</code></font>只需要一个<font color=red><code>NodePort</code></font>或者一个<code>LB</code>就可以满足暴露多个<code>Service</code>的需求</li>
-</ol>
-</li>
-<li><ol start="3">
-<li>实际上，<code>Ingress</code>相当于一个七层的负载均衡器，是<code>kubernetes</code>对反向代理的一个抽象，它的工作原理类似于<code>Nginx</code>，可以理解为<code>Ingress</code>里面建立了诸多映射规则，<code>Ingress Controller</code>通过监听这些配置规则并转化为<code>Nginx</code>的反向代理配置，然后对外提供服务  <blockquote>
-<ul>
-<li><ol>
-<li><font color=red><code>Ingress</code>：</font><code>kubernetes</code>中的一个对象，作用是定义请求如何转发到Service的规则</li>
-</ol>
-</li>
-<li><ol start="2">
-<li><font color=red><code>Ingress Controller</code>：</font>具体实现反向代理及负载均衡的程序，对<code>Ingress</code>定义的规则进行解析，根据配置的规则来实现请求转发，实现的方式有很多，比如<font color=red><code>Nginx</code>，<code>Contour</code>，<code>Haproxy</code></font>等。</li>
-</ol>
-</li>
-</ul>
-</blockquote>
-</li>
-</ol>
-</li>
-</ul>
-<h4 id="6-1-Ingress-以Nginx-的工作原理如下："><a href="#6-1-Ingress-以Nginx-的工作原理如下：" class="headerlink" title="6.1 Ingress(以Nginx)的工作原理如下："></a>6.1 <font color=red><code>Ingress</code>(以<code>Nginx</code>)的工作原理如下：</font></h4><ul>
-<li><font color=red>用户编写<code>Ingress</code>规则</font>：说明那个域名对应<code>kubernetes</code>集群中的那个<code>Service</code>。  </li>
-<li><font color=red><code>Ingress</code></font>控制器动态感知Ingress服务规则的变化，然后生成一段对应的<code>Nginx</code>的反向代理配置  </li>
-<li><font color=red><code>Ingress</code></font>控制器会将生成的<code>Nginx</code>配置写入到一个运行着的<code>Nginx</code>服务中，并动态更新，到此为止，其实真正在工作的就是一个<code>Nginx</code>了，内部配置了用户定义的请求规则</li>
-</ul>
-<h5 id="6-1-1-Ingress-Nginx使用"><a href="#6-1-1-Ingress-Nginx使用" class="headerlink" title="6.1.1 Ingress-Nginx使用"></a>6.1.1 <code>Ingress-Nginx</code>使用</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> ingress-controller &amp;&amp; <span class="built_in">cd</span> ingress-controller</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/provider/baremetal/service-nodeport.yaml</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f ./</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>准备<code>Service</code>和<code>Pod</code>：一个<code>Nginx</code>一个<code>Tomcat</code></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-deployment</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:  # 标签选择器，用于确定当前Service代理那些Pod</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: nginx-pod</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx-pod</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: nginx</span><br><span class="line">        image: nginx:1.17.1</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: tomcat-deployment</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: tomcat-pod</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: tomcat-pod</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: tomcat</span><br><span class="line">        image: tomcat:8.5-jre10-slim</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 8080</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-service</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    app: nginx-pod</span><br><span class="line">  clusterIP: None</span><br><span class="line">  type: ClusterIP</span><br><span class="line">  ports:</span><br><span class="line">  - port: 80</span><br><span class="line">    targetPort: 80</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: tomcat-service</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    app: tomcat-pod</span><br><span class="line">  clusterIP: None</span><br><span class="line">  type: ClusterIP</span><br><span class="line">  ports:</span><br><span class="line">  - port: 8080  # Service端口</span><br><span class="line">    targetPort: 8080</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>Ingress-Nginx</code>的<code>Http</code>和<code>Https</code>配置的<code>yaml</code>  <blockquote>
-<ul>
-<li><code>http</code></li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Ingress</span><br><span class="line">metadata:</span><br><span class="line">  name: ingress-http</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  rules:</span><br><span class="line">  - host: nginx.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: nginx-service</span><br><span class="line">          servicePort: 80</span><br><span class="line">  - host: tomcat.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: tomcat-service</span><br><span class="line">          servicePort: 8080</span><br></pre></td></tr></table></figure></li>
-</ul>
-<blockquote>
-<ul>
-<li><code>https</code>   <blockquote>
-<ul>
-<li><font color=red><code>req</code>：</font>产生证书签发申请命令  </li>
-<li><font color=red><code>-newkey</code>：</font>生成新私钥  </li>
-<li><font color=red><code>rsa:4096</code>：</font>生成秘钥位数  </li>
-<li><font color=red><code>-nodes</code>：</font>表示私钥不加密  </li>
-<li><font color=red><code>-sha256</code>：</font>使用<code>SHA-2</code>哈希算法  </li>
-<li><font color=red><code>-keyout</code>：</font>将新创建的私钥写入的文件名  </li>
-<li><font color=red><code>-x509</code>：</font>签发<code>X.509格</code>式证书命令。<code>X.509</code>是最通用的一种签名证书格式。  </li>
-<li><font color=red><code>-out</code>：</font>指定要写入的输出文件名  </li>
-<li><font color=red><code>-subj</code>：</font>指定用户信息  </li>
-<li><font color=red><code>-days</code>：</font>有效期</li>
-</ul>
-</blockquote>
-</li>
-</ul>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成密钥</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout /opt/k8s/tls.key -out -x509 /opt/k8s/tls.crt -subj <span class="string">&quot;/C=CN/ST=BJ/L=BJ/O=nginx/CN=erge.com&quot;</span> -days 3650</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成密钥</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create secret tls tls-erge.com --key =/opt/k8s/https/tls.key --cert /opt/k8s/https/tls.crt</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Ingress</span><br><span class="line">metadata:</span><br><span class="line">  name: ingress-https</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  tls:</span><br><span class="line">    - hosts:</span><br><span class="line">      - nginx.rege.com</span><br><span class="line">      - tomcat.erge.com</span><br><span class="line">      secretName: tls-erge.com # 指定秘钥</span><br><span class="line">  rules:</span><br><span class="line">  - host: nginx.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: nginx-service</span><br><span class="line">          servicePort: 80</span><br><span class="line">  - host: tomcat.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: tomcat-service</span><br><span class="line">          servicePort: 8080</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -2738,7 +2957,7 @@ $ http://192.168.80.210:30001/  	# 浏览器访问地址
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-30 17:20:02" itemprop="dateModified" datetime="2022-05-30T17:20:02+08:00">2022-05-30</time>
+                <time title="修改时间：2022-06-09 19:15:47" itemprop="dateModified" datetime="2022-06-09T19:15:47+08:00">2022-06-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2802,7 +3021,7 @@ $ http://192.168.80.210:30001/  	# 浏览器访问地址
 <td>—</td>
 <td>daemonsets</td>
 <td>ds</td>
-<td>在集群中的指定Node上都运行一个副本，一般用于守护进程类的任务。</td>
+<td>在集群中的指定<code>Node</code>上都运行一个副本，一般用于日志采集、监控、守护进程类的任务。</td>
 </tr>
 <tr>
 <td>—</td>
@@ -2873,13 +3092,13 @@ $ http://192.168.80.210:30001/  	# 浏览器访问地址
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: autoscaling/v1 # 版本号</span><br><span class="line">kind: HorizontalPodAutoscaler # 类型</span><br><span class="line">metadata: # 元数据</span><br><span class="line">  name: pc-hpa # deployment的名称</span><br><span class="line">  namespace: dev # 命名类型</span><br><span class="line">spec:</span><br><span class="line">  minReplicas: 1 # 最小Pod数量</span><br><span class="line">  maxReplicas: 10 # 最大Pod数量</span><br><span class="line">  targetCPUUtilizationPercentage: 3 # CPU使用率指标</span><br><span class="line">  scaleTargetRef:  # 指定要控制的Nginx的信息</span><br><span class="line">    apiVersion: apps/v1</span><br><span class="line">    kind: Deployment</span><br><span class="line">    name: nginx</span><br></pre></td></tr></table></figure>
 
 <h4 id="1-4-DaemonSet（DS）控制器"><a href="#1-4-DaemonSet（DS）控制器" class="headerlink" title="1.4 DaemonSet（DS）控制器"></a>1.4 <code>DaemonSet（DS）</code>控制器</h4><ul>
-<li><p><font color=red><code>DaemonSet</code></font>：控制器可以保证集群中的每一台（或指定）节点上都运行一个副本，一般适用于日志收集、节点监控等场景。也就是说，如果一个Pod提供的功能是节点级别的（每个节点都需要且只需要一个），那么这类Pod就适合使用DaemonSet类型的控制器创建。  </p>
+<li><p><font color=red><code>DaemonSet</code></font>：控制器可以保证集群中的每一台（或指定）节点上都运行一个副本，一般适用于日志收集、节点监控等场景。也就是说，如果一个<code>Pod</code>提供的功能是节点级别的（每个节点都需要且只需要一个），那么这类<code>Pod</code>就适合使用<code>DaemonSet</code>类型的控制器创建。  </p>
 </li>
 <li><p><font color=red><code>DaemonSet</code>控制器的特点</font>  </p>
 <blockquote>
 <ul>
-<li><font color=red>  每向集群中添加一个节点的时候，指定的Pod副本也将添加到该节点上。</font>  </li>
-<li><font color=red>当节点从集群中移除的时候，Pod也会被垃圾回收</font></li>
+<li><font color=red>  每向集群中添加一个节点的时候，指定的<code>Pod</code>副本也将添加到该节点上。</font>  </li>
+<li><font color=red>当节点从集群中移除的时候，<code>Pod</code>也会被垃圾回收</font></li>
 </ul>
 </blockquote>
 </li>
@@ -2894,15 +3113,15 @@ $ http://192.168.80.210:30001/  	# 浏览器访问地址
 <li><p><font color=red><code>Job</code>特点</font>  </p>
 <blockquote>
 <ul>
-<li>当Job创建的Pod执行成功结束时，Job将记录成功结束的Pod数量。  </li>
-<li>当成功结束的Pod达到指定的数量时，Job将完成执行。</li>
+<li>当<code>Job</code>创建的<code>Pod</code>执行成功结束时，<code>Job</code>将记录成功结束的Pod数量。  </li>
+<li>当成功结束的<code>Pod</code>达到指定的数量时，<code>Job</code>将完成执行。</li>
 </ul>
 </blockquote>
 </li>
 <li><p><font color=red><code>Job</code>模板使用重启策略定义</font>  </p>
 <blockquote>
 <ul>
-<li><font color=red>设置为<code>OnFailure</code></font>： <font color=red><code> Job</code></font>会在<code>Pod</code>出现故障的时候重启容器，而不是创建Pod，failed次数不变  </li>
+<li><font color=red>设置为<code>OnFailure</code></font>： <font color=red><code> Job</code></font>会在<code>Pod</code>出现故障的时候重启容器，而不是创建<code>Pod</code>，<code>failed</code>次数不变  </li>
 <li><font color=red>设置为<code>Never</code></font>：<font color=red><code>Job</code></font>会在<code>Pod</code>出现故障的时候创建新的<code>Pod</code>，并且故障<code>Pod</code>不会消失也不会重启，<code>failed</code>次数+1  </li>
 <li><font color=red>设置为<code>Always</code></font>：意味<font color=red><code>Job</code></font>一直重启，意味<code>Pod</code>任务会重复执行，这和<font color=red><code>Job</code></font>的定义冲突，所以不能设置为<code>Always</code>。</li>
 </ul>
@@ -2988,7 +3207,7 @@ $ http://192.168.80.210:30001/  	# 浏览器访问地址
 <li><font color=red><code>StatefulSet</code>唯一标识生成规则</font>：  根据主机名+一定规则生成的：<font color=red>主机名.无头<code>Service</code>名称.命名空间<code>.svc.cluster.local</code></font>  </li>
 <li><font color=red><code>StatefulSet</code>控制器支持两种更新策略</font>  <blockquote>
 <ul>
-<li><font color=red><code>OnDelete</code></font>： OnDelete表示删除之后才更新  </li>
+<li><font color=red><code>OnDelete</code></font>： <code>OnDelete</code>表示删除之后才更新  </li>
 <li><font color=red>(默认)RollingUpdate</font>：<code>RollingUpdate</code>表示滚动更新</li>
 </ul>
 </blockquote>
@@ -3199,106 +3418,6 @@ $ http://192.168.80.210:30001/  	# 浏览器访问地址
 <div>
     
  </div>
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/nginx/install-nginx-third-party-modules/">
-
-<div>
-      
-</div>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/IMG_0081.JPG">
-      <meta itemprop="name" content="二哥">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="二哥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/nginx/install-nginx-third-party-modules/" class="post-title-link" itemprop="url">install-nginx-third-party modules</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-05-22 18:09:54" itemprop="dateCreated datePublished" datetime="2022-05-22T18:09:54+08:00">2022-05-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-23 18:30:50" itemprop="dateModified" datetime="2022-05-23T18:30:50+08:00">2022-05-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/nginx/" itemprop="url" rel="index"><span itemprop="name">nginx</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-安装Nginx-GeoIP2IP定位模块"><a href="#1-安装Nginx-GeoIP2IP定位模块" class="headerlink" title="1. 安装Nginx GeoIP2IP定位模块"></a>1. 安装<code>Nginx GeoIP2</code>IP定位模块</h3><ul>
-<li><font color=red><code>GeoIP2</code>模块依赖<code>libmaxminddb</code>库</font></li>
-</ul>
-<h4 id="1-1-安装libmaxminddb库"><a href="#1-1-安装libmaxminddb库" class="headerlink" title="1.1 安装libmaxminddb库"></a>1.1 安装<code>libmaxminddb</code>库</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"> wget -c https://github.com/maxmind/libmaxminddb/releases/download/1.3.2/libmaxminddb-1.3.2.tar.gz -P /opt/src/    <span class="comment">##下载到指定目录下:-c断点续传、-P下载指定目录，</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf /opt/src/libmaxminddb-1.3.2.tar.gz -C /opt/src/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/src/libmaxminddb-1.3.2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make -j2 &amp;&amp; make install</span></span><br></pre></td></tr></table></figure>
-<h4 id="1-2-安装GeoIP2"><a href="#1-2-安装GeoIP2" class="headerlink" title="1.2 安装GeoIP2"></a>1.2 安装<code>GeoIP2</code></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/leev/ngx_http_geoip2_module.git /opt/apps/nginx/ngx_http_geoip2_module</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_http_geoip2_module</span></span><br></pre></td></tr></table></figure>
-<h3 id="2-安装ngx-brotli压缩算法"><a href="#2-安装ngx-brotli压缩算法" class="headerlink" title="2. 安装ngx_brotli压缩算法"></a>2. 安装<code>ngx_brotli</code>压缩算法</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/google/ngx_brotli /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/apps/nginx/ngx_brotli</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git submodule update --init  <span class="comment">#更新ngx_brotli所需依赖库</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/ngx_brotli</span></span><br></pre></td></tr></table></figure>
-<h3 id="3-安装ngx-http-upstream-check-module后端服务端口检测模块"><a href="#3-安装ngx-http-upstream-check-module后端服务端口检测模块" class="headerlink" title="3. 安装ngx_http_upstream_check_module后端服务端口检测模块"></a>3. 安装<code>ngx_http_upstream_check_module</code>后端服务端口检测模块</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/yaoweibin/nginx_upstream_check_module.git /opt/apps/nginx/nginx_upstream_check_module <span class="comment">#下载检测包</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/opt/apps/nginx --add-module=/opt/apps/nginx/nginx_upstream_check_module</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-<div>
-    
- </div>
 
   
   <nav class="pagination">
@@ -3370,7 +3489,7 @@ $ http://192.168.80.210:30001/  	# 浏览器访问地址
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -3427,12 +3546,12 @@ $ http://192.168.80.210:30001/  	# 浏览器访问地址
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">211k</span>
+    <span title="站点总字数">214k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:11</span>
+    <span title="站点阅读时长">3:14</span>
 </div>
 
 <!--

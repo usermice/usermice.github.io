@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"usermice.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. Ingress-Nginx使用详解1.1 Ingress介绍  我们已经知道，Service对集群之外暴露服务的主要方式有两种：NodePort和LoadBalancer，但是这两种方式，都有一定的缺点：      1.1 NodePort方式的缺点是会占用很多集群机器的端口，那么当集群服务变多的时候，这个缺点就愈发明显   1.2 LoadBalancer的缺点是每个Service都需要一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Configure-K8s-Ingress-Nginx">
+<meta property="og:url" content="https://usermice.github.io/Kubernetes/Configure-K8s-Ingress-Nginx/index.html">
+<meta property="og:site_name" content="二哥">
+<meta property="og:description" content="1. Ingress-Nginx使用详解1.1 Ingress介绍  我们已经知道，Service对集群之外暴露服务的主要方式有两种：NodePort和LoadBalancer，但是这两种方式，都有一定的缺点：      1.1 NodePort方式的缺点是会占用很多集群机器的端口，那么当集群服务变多的时候，这个缺点就愈发明显   1.2 LoadBalancer的缺点是每个Service都需要一">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-06-09T12:12:38.000Z">
+<meta property="article:modified_time" content="2022-06-09T13:55:37.012Z">
+<meta property="article:author" content="二哥">
+<meta property="article:tag" content="Kubernetes">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://usermice.github.io/Kubernetes/Configure-K8s-Ingress-Nginx/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Configure-K8s-Ingress-Nginx | 二哥</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="二哥" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">二哥</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tools">
+
+    <a href="/categories/%E5%B7%A5%E5%85%B7%E8%B5%84%E6%BA%90/" rel="section"><i class="fa fa-briefcase fa-fw"></i>tools</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/Configure-K8s-Ingress-Nginx/">
+
+<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/Kubernetes/Configure-K8s-Ingress-Nginx/">Configure-K8s-Ingress-Nginx</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问  的个人博客"></a></p>
+  <p><span>发布时间:</span>2022年06月09日 - 20:12</p>
+  <p><span>最后更新:</span>2022年06月09日 - 21:55</p>
+  <p><span>原始链接:</span><a href="/Kubernetes/Configure-K8s-Ingress-Nginx/" title="Configure-K8s-Ingress-Nginx">https://usermice.github.io/Kubernetes/Configure-K8s-Ingress-Nginx/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://usermice.github.io/Kubernetes/Configure-K8s-Ingress-Nginx/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+	});
+    });  
+</script>
+
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Configure-K8s-Ingress-Nginx
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-06-09 20:12:38 / 修改时间：21:55:37" itemprop="dateCreated datePublished" datetime="2022-06-09T20:12:38+08:00">2022-06-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1-Ingress-Nginx使用详解"><a href="#1-Ingress-Nginx使用详解" class="headerlink" title="1. Ingress-Nginx使用详解"></a>1. <code>Ingress-Nginx</code>使用详解</h3><h4 id="1-1-Ingress介绍"><a href="#1-1-Ingress介绍" class="headerlink" title="1.1 Ingress介绍"></a>1.1 <font color=red><code>Ingress</code>介绍</font></h4><ul>
+<li><ol>
+<li>我们已经知道，<code>Service对集群</code>之外暴露服务的主要方式有两种：<code>NodePort</code>和<code>LoadBalancer</code>，但是这两种方式，都有一定的缺点：</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>1.1 <font color=red><code>NodePort</code></font>方式的缺点是会占用很多集群机器的端口，那么当集群服务变多的时候，这个缺点就愈发明显  </li>
+<li>1.2 <font color=red><code>LoadBalancer</code></font>的缺点是每个<code>Service</code>都需要一个<code>LB</code>，浪费，麻烦，并且需要<code>kubernetes</code>之外的设备的支持</li>
+</ul>
+</blockquote>
+<ul>
+<li><ol start="2">
+<li>基于这种现状，<font color=red><code>kubernetes</code></font>提供了<font color=red><code>Ingress</code></font>资源对象，<font color=red><code>Ingress</code></font>只需要一个<font color=red><code>NodePort</code></font>或者一个<code>LB</code>就可以满足暴露多个<code>Service</code>的需求</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>实际上，<code>Ingress</code>相当于一个七层的负载均衡器，是<code>kubernetes</code>对反向代理的一个抽象，它的工作原理类似于<code>Nginx</code>，可以理解为<code>Ingress</code>里面建立了诸多映射规则，<code>Ingress Controller</code>通过监听这些配置规则并转化为<code>Nginx</code>的反向代理配置，然后对外提供服务</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>3.1 <font color=red><code>Ingress</code>：</font><code>kubernetes</code>中的一个对象，作用是定义请求如何转发到Service的规则  </li>
+<li>3.2   <font color=red><code>Ingress Controller</code>：</font>具体实现反向代理及负载均衡的程序，对<code>Ingress</code>定义的规则进行解析，根据配置的规则来实现请求转发，实现的方式有很多，比如<font color=red><code>Nginx</code>，<code>Contour</code>，<code>Haproxy</code></font>等。</li>
+</ul>
+</blockquote>
+<h4 id="1-2-Ingress-以Nginx-的工作原理如下："><a href="#1-2-Ingress-以Nginx-的工作原理如下：" class="headerlink" title="1.2 Ingress(以Nginx)的工作原理如下："></a>1.2 <font color=red><code>Ingress</code>(以<code>Nginx</code>)的工作原理如下：</font></h4><ul>
+<li><ol>
+<li><font color=red>用户编写<code>Ingress</code>规则</font>：说明那个域名对应<code>kubernetes</code>集群中的那个<code>Service</code>。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>Ingress</code></font>控制器动态感知<code>Ingress</code>服务规则的变化，然后生成一段对应的<code>Nginx</code>的反向代理配置</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>Ingress</code></font>控制器会将生成的<code>Nginx</code>配置写入到一个运行着的<code>Nginx</code>服务中，并动态更新，到此为止，其实真正在工作的就是一个<code>Nginx</code>了，内部配置了用户定义的请求规则</li>
+</ol>
+</li>
+</ul>
+<h3 id="2-Ingress-Nginx安装使用"><a href="#2-Ingress-Nginx安装使用" class="headerlink" title="2. Ingress-Nginx安装使用"></a>2. <code>Ingress-Nginx</code>安装使用</h3><ul>
+<li><ol>
+<li><a target="_blank" rel="noopener" href="https://kubernetes.github.io/ingress-nginx/deploy/"><code>Nginx入口控制器文档</code></a></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><a target="_blank" rel="noopener" href="https://github.com/kubernetes/ingress-nginx/blob/main/docs/deploy/index.md#bare-metal-clusters"><code>Github Ingress-Ngin</code>入口控制器安装文档</a></li>
+</ol>
+</li>
+<li><ol start="3">
+<li><a target="_blank" rel="noopener" href="https://github.com/kubernetes/ingress-nginx/tree/controller-v1.2.0/deploy/static/provider"><code>Ingress-Nginx</code>选择对应服务器或云厂商</a></li>
+</ol>
+</li>
+<li><ol start="4">
+<li><a target="_blank" rel="noopener" href="https://github.com/kubernetes/ingress-nginx/tree/main/deploy/static/provider/baremetal">裸机服务器下载<code>yaml</code>可以选择版本，可以直接选择<code>deploy.yaml</code>文件</a></li>
+</ol>
+</li>
+<li><ol start="5">
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_37481017/article/details/118999716">基于<code>K8S 1.21.2</code>集群安装<code>Ingress-Nginx 0.48.1</code></a></li>
+</ol>
+</li>
+<li><ol start="6">
+<li><font color=red>下载<code>ingress-nginx</code>的<code>yaml</code>文件后把<code>LoadBalancer</code>修改为<code>NodePort</code></font></li>
+</ol>
+</li>
+</ul>
+<h4 id="2-1-使用kubectl-apply-f安装Ingress-Nginx"><a href="#2-1-使用kubectl-apply-f安装Ingress-Nginx" class="headerlink" title="2.1 使用kubectl apply -f安装Ingress-Nginx"></a>2.1 <font color=red>使用<code>kubectl apply -f</code>安装<code>Ingress-Nginx</code></font></h4><ul>
+<li><ol>
+<li><font color=red>使用<code>kubectl apply -f</code>安装<code>Ingress-Nginx</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml  	<span class="comment"># ingress-controller 控制器、负责负载均衡</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/provider/baremetal/service-nodeport.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/deploy.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f ./</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>查看是否有<code>Pod</code>启动</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">$ kubectl get pods --namespace=ingress-nginx</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>等待入口控制器<code>pod</code>启动、运行并准备就绪</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">wait</span> --namespace ingress-nginx \</span></span><br><span class="line"><span class="language-bash">  --<span class="keyword">for</span>=condition=ready pod \</span></span><br><span class="line"><span class="language-bash">  --selector=app.kubernetes.io/component=controller \</span></span><br><span class="line"><span class="language-bash">  --<span class="built_in">timeout</span>=120s</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="2-2-使用Helm安装Ingress-Nginx"><a href="#2-2-使用Helm安装Ingress-Nginx" class="headerlink" title="2.2 使用Helm安装Ingress-Nginx"></a>2.2 <font color=red>使用<code>Helm</code>安装<code>Ingress-Nginx</code></font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace ingress-nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install blog-enix-rancher ingress-nginx/ingress-nginx \</span></span><br><span class="line"><span class="language-bash">	--namespace ingress-nginx \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.hostPort.enabled=<span class="literal">true</span> \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.kind=DaemonSet</span></span><br><span class="line"><span class="meta prompt_">	</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace ingress-nginx</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-Ingress-Nginx配置清单"><a href="#3-Ingress-Nginx配置清单" class="headerlink" title="3. Ingress-Nginx配置清单"></a>3. <code>Ingress-Nginx</code>配置清单</h3><ul>
+<li><ol>
+<li><font color=red>准备<code>Service</code>和<code>Pod</code>：一个<code>Nginx</code>一个<code>Tomcat</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-deployment</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:  # 标签选择器，用于确定当前Service代理那些Pod</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: nginx-pod</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx-pod</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: nginx</span><br><span class="line">        image: nginx:1.17.1</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: tomcat-deployment</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: tomcat-pod</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: tomcat-pod</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: tomcat</span><br><span class="line">        image: tomcat:8.5-jre10-slim</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 8080</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-service</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    app: nginx-pod</span><br><span class="line">  clusterIP: None</span><br><span class="line">  type: ClusterIP</span><br><span class="line">  ports:</span><br><span class="line">  - port: 80</span><br><span class="line">    targetPort: 80</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: tomcat-service</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    app: tomcat-pod</span><br><span class="line">  clusterIP: None</span><br><span class="line">  type: ClusterIP</span><br><span class="line">  ports:</span><br><span class="line">  - port: 8080  # Service端口</span><br><span class="line">    targetPort: 8080</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red><code>Ingress-Nginx</code>的<code>Http</code>和<code>Https</code>配置的<code>yaml</code></font>  <blockquote>
+<ul>
+<li>2.1 <font color=red><code>http</code></font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Ingress</span><br><span class="line">metadata:</span><br><span class="line">  name: ingress-http</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  rules:</span><br><span class="line">  - host: nginx.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: nginx-service</span><br><span class="line">          servicePort: 80</span><br><span class="line">  - host: tomcat.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: tomcat-service</span><br><span class="line">          servicePort: 8080</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>2.2 <font color=red><code>https</code></font>   <blockquote>
+<ul>
+<li>2.2.1 <font color=red><code>req</code>：</font>产生证书签发申请命令  </li>
+<li>2.2.2 <font color=red><code>-newkey</code>：</font>生成新私钥  </li>
+<li>2.2.3 <font color=red><code>rsa:4096</code>：</font>生成秘钥位数  </li>
+<li>2.2.4 <font color=red><code>-nodes</code>：</font>表示私钥不加密  </li>
+<li>2.2.5 <font color=red><code>-sha256</code>：</font>使用<code>SHA-2</code>哈希算法  </li>
+<li>2.2.6 <font color=red><code>-keyout</code>：</font>将新创建的私钥写入的文件名  </li>
+<li>2.2.7 <font color=red><code>-x509</code>：</font>签发<code>X.509格</code>式证书命令。<code>X.509</code>是最通用的一种签名证书格式。  </li>
+<li>2.2.8 <font color=red><code>-out</code>：</font>指定要写入的输出文件名  </li>
+<li>2.2.9 <font color=red><code>-subj</code>：</font>指定证书地区，web服务，域名信息  </li>
+<li>2.2.10 <font color=red><code>-days</code>：</font>有效期</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成密钥</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout /opt/k8s/tls.key -out -x509 /opt/k8s/tls.crt -subj <span class="string">&quot;/C=CN/ST=BJ/L=BJ/O=nginx/CN=erge.com&quot;</span> -days 3650</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成密钥</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create secret tls tls-erge.com --key =/opt/k8s/https/tls.key --cert /opt/k8s/https/tls.crt</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Ingress</span><br><span class="line">metadata:</span><br><span class="line">  name: ingress-https</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  tls:</span><br><span class="line">    - hosts:</span><br><span class="line">      - nginx.rege.com</span><br><span class="line">      - tomcat.erge.com</span><br><span class="line">      secretName: tls-erge.com # 指定秘钥</span><br><span class="line">  rules:</span><br><span class="line">  - host: nginx.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: nginx-service</span><br><span class="line">          servicePort: 80</span><br><span class="line">  - host: tomcat.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: tomcat-service</span><br><span class="line">          servicePort: 8080</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>二哥
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://usermice.github.io/Kubernetes/Configure-K8s-Ingress-Nginx/" title="Configure-K8s-Ingress-Nginx">https://usermice.github.io/Kubernetes/Configure-K8s-Ingress-Nginx/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kubernetes/" rel="tag"># <i class="fa fa-tag"></i> Kubernetes</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Kubernetes/Configure-K8s-Project/" rel="prev" title="Configure-K8s-Project">
+      <i class="fa fa-chevron-left"></i> Configure-K8s-Project
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+    
+ </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Ingress-Nginx%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">1. Ingress-Nginx使用详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-Ingress%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 Ingress介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-Ingress-%E4%BB%A5Nginx-%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%A6%82%E4%B8%8B%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 Ingress(以Nginx)的工作原理如下：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Ingress-Nginx%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">2. Ingress-Nginx安装使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E4%BD%BF%E7%94%A8kubectl-apply-f%E5%AE%89%E8%A3%85Ingress-Nginx"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 使用kubectl apply -f安装Ingress-Nginx</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E4%BD%BF%E7%94%A8Helm%E5%AE%89%E8%A3%85Ingress-Nginx"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 使用Helm安装Ingress-Nginx</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Ingress-Nginx%E9%85%8D%E7%BD%AE%E6%B8%85%E5%8D%95"><span class="nav-number">3.</span> <span class="nav-text">3. Ingress-Nginx配置清单</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="二哥"
+      src="/images/IMG_0081.JPG">
+  <p class="site-author-name" itemprop="name">二哥</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="/usererge#gmail.com" title="E-Mail → usererge#gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/yourname" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="二哥"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">二哥</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">214k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:14</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://usermice.github.io/" class="theme-link">二哥</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+-->
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

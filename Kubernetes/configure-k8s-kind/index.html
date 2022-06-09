@@ -30,7 +30,7 @@
 <meta property="og:description" content="12345graph TDA3[(PVC)] --&gt;A1((Pod)) &amp; A2((Pod)) &lt;--&gt;A[Namespace-dev]B3[(PVC)] --&gt;B1((Pod)) &amp; B2((Pod)) &lt;--&gt;B[Namespace-test]Z[&lt;b&gt;Namespace是kubernetes系统中一种非常重要的资源&lt;br&amp;">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-27T09:02:12.000Z">
-<meta property="article:modified_time" content="2022-05-30T09:20:02.000Z">
+<meta property="article:modified_time" content="2022-06-09T11:15:47.281Z">
 <meta property="article:author" content="二哥">
 <meta property="article:tag" content="Kubernetes">
 <meta name="twitter:card" content="summary">
@@ -211,7 +211,7 @@
   <p><span>本文标题:</span><a href="/Kubernetes/configure-k8s-kind/">configure-k8s-kind</a></p>
   <p><span>文章作者:</span><a href="/" title="访问  的个人博客"></a></p>
   <p><span>发布时间:</span>2022年05月27日 - 17:02</p>
-  <p><span>最后更新:</span>2022年05月30日 - 17:20</p>
+  <p><span>最后更新:</span>2022年06月09日 - 19:15</p>
   <p><span>原始链接:</span><a href="/Kubernetes/configure-k8s-kind/" title="configure-k8s-kind">https://usermice.github.io/Kubernetes/configure-k8s-kind/</a>
     <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://usermice.github.io/Kubernetes/configure-k8s-kind/"  aria-label="复制成功！"></i></span>
   </p>
@@ -262,7 +262,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-30 17:20:02" itemprop="dateModified" datetime="2022-05-30T17:20:02+08:00">2022-05-30</time>
+                <time title="修改时间：2022-06-09 19:15:47" itemprop="dateModified" datetime="2022-06-09T19:15:47+08:00">2022-06-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -333,7 +333,7 @@
 <td>—</td>
 <td>daemonsets</td>
 <td>ds</td>
-<td>在集群中的指定Node上都运行一个副本，一般用于守护进程类的任务。</td>
+<td>在集群中的指定<code>Node</code>上都运行一个副本，一般用于日志采集、监控、守护进程类的任务。</td>
 </tr>
 <tr>
 <td>—</td>
@@ -404,13 +404,13 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: autoscaling/v1 # 版本号</span><br><span class="line">kind: HorizontalPodAutoscaler # 类型</span><br><span class="line">metadata: # 元数据</span><br><span class="line">  name: pc-hpa # deployment的名称</span><br><span class="line">  namespace: dev # 命名类型</span><br><span class="line">spec:</span><br><span class="line">  minReplicas: 1 # 最小Pod数量</span><br><span class="line">  maxReplicas: 10 # 最大Pod数量</span><br><span class="line">  targetCPUUtilizationPercentage: 3 # CPU使用率指标</span><br><span class="line">  scaleTargetRef:  # 指定要控制的Nginx的信息</span><br><span class="line">    apiVersion: apps/v1</span><br><span class="line">    kind: Deployment</span><br><span class="line">    name: nginx</span><br></pre></td></tr></table></figure>
 
 <h4 id="1-4-DaemonSet（DS）控制器"><a href="#1-4-DaemonSet（DS）控制器" class="headerlink" title="1.4 DaemonSet（DS）控制器"></a>1.4 <code>DaemonSet（DS）</code>控制器</h4><ul>
-<li><p><font color=red><code>DaemonSet</code></font>：控制器可以保证集群中的每一台（或指定）节点上都运行一个副本，一般适用于日志收集、节点监控等场景。也就是说，如果一个Pod提供的功能是节点级别的（每个节点都需要且只需要一个），那么这类Pod就适合使用DaemonSet类型的控制器创建。  </p>
+<li><p><font color=red><code>DaemonSet</code></font>：控制器可以保证集群中的每一台（或指定）节点上都运行一个副本，一般适用于日志收集、节点监控等场景。也就是说，如果一个<code>Pod</code>提供的功能是节点级别的（每个节点都需要且只需要一个），那么这类<code>Pod</code>就适合使用<code>DaemonSet</code>类型的控制器创建。  </p>
 </li>
 <li><p><font color=red><code>DaemonSet</code>控制器的特点</font>  </p>
 <blockquote>
 <ul>
-<li><font color=red>  每向集群中添加一个节点的时候，指定的Pod副本也将添加到该节点上。</font>  </li>
-<li><font color=red>当节点从集群中移除的时候，Pod也会被垃圾回收</font></li>
+<li><font color=red>  每向集群中添加一个节点的时候，指定的<code>Pod</code>副本也将添加到该节点上。</font>  </li>
+<li><font color=red>当节点从集群中移除的时候，<code>Pod</code>也会被垃圾回收</font></li>
 </ul>
 </blockquote>
 </li>
@@ -425,15 +425,15 @@
 <li><p><font color=red><code>Job</code>特点</font>  </p>
 <blockquote>
 <ul>
-<li>当Job创建的Pod执行成功结束时，Job将记录成功结束的Pod数量。  </li>
-<li>当成功结束的Pod达到指定的数量时，Job将完成执行。</li>
+<li>当<code>Job</code>创建的<code>Pod</code>执行成功结束时，<code>Job</code>将记录成功结束的Pod数量。  </li>
+<li>当成功结束的<code>Pod</code>达到指定的数量时，<code>Job</code>将完成执行。</li>
 </ul>
 </blockquote>
 </li>
 <li><p><font color=red><code>Job</code>模板使用重启策略定义</font>  </p>
 <blockquote>
 <ul>
-<li><font color=red>设置为<code>OnFailure</code></font>： <font color=red><code> Job</code></font>会在<code>Pod</code>出现故障的时候重启容器，而不是创建Pod，failed次数不变  </li>
+<li><font color=red>设置为<code>OnFailure</code></font>： <font color=red><code> Job</code></font>会在<code>Pod</code>出现故障的时候重启容器，而不是创建<code>Pod</code>，<code>failed</code>次数不变  </li>
 <li><font color=red>设置为<code>Never</code></font>：<font color=red><code>Job</code></font>会在<code>Pod</code>出现故障的时候创建新的<code>Pod</code>，并且故障<code>Pod</code>不会消失也不会重启，<code>failed</code>次数+1  </li>
 <li><font color=red>设置为<code>Always</code></font>：意味<font color=red><code>Job</code></font>一直重启，意味<code>Pod</code>任务会重复执行，这和<font color=red><code>Job</code></font>的定义冲突，所以不能设置为<code>Always</code>。</li>
 </ul>
@@ -519,7 +519,7 @@
 <li><font color=red><code>StatefulSet</code>唯一标识生成规则</font>：  根据主机名+一定规则生成的：<font color=red>主机名.无头<code>Service</code>名称.命名空间<code>.svc.cluster.local</code></font>  </li>
 <li><font color=red><code>StatefulSet</code>控制器支持两种更新策略</font>  <blockquote>
 <ul>
-<li><font color=red><code>OnDelete</code></font>： OnDelete表示删除之后才更新  </li>
+<li><font color=red><code>OnDelete</code></font>： <code>OnDelete</code>表示删除之后才更新  </li>
 <li><font color=red>(默认)RollingUpdate</font>：<code>RollingUpdate</code>表示滚动更新</li>
 </ul>
 </blockquote>
@@ -650,7 +650,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -707,12 +707,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">211k</span>
+    <span title="站点总字数">214k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:11</span>
+    <span title="站点阅读时长">3:14</span>
 </div>
 
 <!--

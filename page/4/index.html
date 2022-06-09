@@ -191,6 +191,110 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/nginx/install-nginx/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/nginx/install-nginx/" class="post-title-link" itemprop="url">install_nginx</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-07 20:27:45" itemprop="dateCreated datePublished" datetime="2022-04-07T20:27:45+08:00">2022-04-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-23 18:30:36" itemprop="dateModified" datetime="2022-05-23T18:30:36+08:00">2022-05-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/nginx/" itemprop="url" rel="index"><span itemprop="name">nginx</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-root用户默认安装nginx"><a href="#1-root用户默认安装nginx" class="headerlink" title="1. root用户默认安装nginx"></a>1. <code>root</code>用户默认安装<code>nginx</code></h3><h4 id="1-1-安装依赖扩展包"><a href="#1-1-安装依赖扩展包" class="headerlink" title="1.1 安装依赖扩展包"></a>1.1 安装依赖扩展包</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install wget gcc gcc-c++ pcre-devel zlib-devel openssl openssl-devel</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-2-切换目录下载nginx安装包-并且解压"><a href="#1-2-切换目录下载nginx安装包-并且解压" class="headerlink" title="1.2 切换目录下载nginx安装包,并且解压"></a>1.2 切换目录下载<code>nginx</code>安装包,并且解压</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /usr/local/src</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget http://nginx.org/download/nginx-1.20.2.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf nginx-1.20.2.tar.gz</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-3-进入到解压后的目录进行编译安装"><a href="#1-3-进入到解压后的目录进行编译安装" class="headerlink" title="1.3 进入到解压后的目录进行编译安装"></a>1.3 进入到解压后的目录进行编译安装</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> nginx-1.20.2</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./configure --prefix=/usr/local/nginx --with-http_ssl_module \</span></span><br><span class="line"><span class="language-bash">--with-http_v2_module --with-http_stub_status_module \</span></span><br><span class="line"><span class="language-bash">--with-pcre --with-http_gzip_static_module --with-http_dav_module  \</span></span><br><span class="line"><span class="language-bash">--with-http_addition_module  --with-http_sub_module \</span></span><br><span class="line"><span class="language-bash">--with-http_flv_module  --with-http_mp4_module</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">编译、安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make &amp;&amp; make install</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-4-添加系统环境变量"><a href="#1-4-添加系统环境变量" class="headerlink" title="1.4 添加系统环境变量"></a>1.4 添加系统环境变量</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;N;56iexport PATH=/usr/local/nginx/sbin:$PATH&#x27;</span> /etc/profile</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">source</span> /etc/profile</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-5-编写启动文件"><a href="#1-5-编写启动文件" class="headerlink" title="1.5 编写启动文件"></a>1.5 编写启动文件</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&#x27;#!/bin/bash</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">chkconfig: - 99 2</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">description: Nginx Service Control Script</span></span></span><br><span class="line">PROG=&quot;/usr/local/nginx/sbin/nginx&quot;</span><br><span class="line">PIDF=&quot;/usr/local/nginx/logs/nginx.pid&quot;</span><br><span class="line">case &quot;$1&quot; in</span><br><span class="line">        start)</span><br><span class="line">        $PROG</span><br><span class="line">        ;;</span><br><span class="line">        stop)</span><br><span class="line">        kill -3 $(cat $PIDF)</span><br><span class="line">        ;;</span><br><span class="line">        restart)</span><br><span class="line">        $0 stop &amp;&gt; /dev/null</span><br><span class="line">        if [ $? -ne 0 ] ; then continue ; fi</span><br><span class="line">        $0 start</span><br><span class="line">        ;;</span><br><span class="line">        reload)</span><br><span class="line">        kill -1 $(cat $PIDF)</span><br><span class="line">        ;;</span><br><span class="line">        *)</span><br><span class="line">        echo &quot;Userage: $0 &#123; start | stop | restart | reload &#125;&quot;</span><br><span class="line">        exit 1</span><br><span class="line">esac</span><br><span class="line">exit 0</span><br><span class="line">&#x27; &gt; /etc/init.d/nginx</span><br></pre></td></tr></table></figure>
+<h4 id="1-6-赋予执行权限，并设置开机自启"><a href="#1-6-赋予执行权限，并设置开机自启" class="headerlink" title="1.6 赋予执行权限，并设置开机自启"></a>1.6 赋予执行权限，并设置开机自启</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> +x /etc/init.d/nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">chkconfig --add nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">chkconfig nginx on</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启动nginx服务</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">/usr/local/nginx/sbin/nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">netstat -nuplt | grep :80</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --zone=public --add-service=&#123;http,https&#125; --permanent</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --reload</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-非常规安装Nginx"><a href="#2-非常规安装Nginx" class="headerlink" title="2. 非常规安装Nginx"></a>2. 非常规安装<code>Nginx</code></h3><h4 id="2-1-安装依赖扩展包"><a href="#2-1-安装依赖扩展包" class="headerlink" title="2.1 安装依赖扩展包"></a>2.1 安装依赖扩展包</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install wget gcc gcc-c++ pcre-devel zlib-devel openssl openssl-devel</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-2-判断用户是否存在，不存在创建，赋予权限"><a href="#2-2-判断用户是否存在，不存在创建，赋予权限" class="headerlink" title="2.2 判断用户是否存在，不存在创建，赋予权限"></a>2.2 判断用户是否存在，不存在创建，赋予权限</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">判断是否存在</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">id</span> swadmin</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">不存在创建</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="keyword">if</span> [ $? -eq 0 ];<span class="keyword">then</span></span></span><br><span class="line">    groupadd group &amp;&amp; useradd -g swadmin swadmin</span><br><span class="line">    echo &quot;password&quot;|passwd --stdin swadmin &amp;&gt;/dev/null</span><br><span class="line">fi</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">赋予权限</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;#########Start/Stop Service###############</span></span></span><br><span class="line">Cmnd_Alias ADMIN_START_SERVICES = /opt/*, /usr/bin/kill, /etc/init.d/nginx, /opt/lucky/nginx/sbin/nginx</span><br><span class="line">admin ALL=(ALL)NOPASSWD:ADMIN_START_SERVICES&quot; &gt; /etc/sudoers.d/admin</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">chmod 660 /etc/sudoers.d/user</span></span>  </span><br></pre></td></tr></table></figure>
+<h4 id="2-3-创建目录-赋予权限"><a href="#2-3-创建目录-赋予权限" class="headerlink" title="2.3 创建目录,赋予权限"></a>2.3 创建目录,赋予权限</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -p /opt/&#123;apps,src,conf,scripts&#125;</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> -R admin:admin /opt/*</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-4-进入解压目录，配置、编译、安装"><a href="#2-4-进入解压目录，配置、编译、安装" class="headerlink" title="2.4 进入解压目录，配置、编译、安装"></a>2.4 进入解压目录，配置、编译、安装</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">su admin -c <span class="string">&quot;</span></span></span><br><span class="line"> cd /opt/src/</span><br><span class="line"> wget http://nginx.org/download/nginx-1.20.2.tar.gz</span><br><span class="line"> tar -zxvf nginx-1.20.2.tar.gz</span><br><span class="line"> cd nginx-1.20.2</span><br><span class="line"> ./configure --prefix=/opt/lucky/nginx \</span><br><span class="line">   --with-http_stub_status_module --with-http_ssl_module \</span><br><span class="line">   --with-http_gzip_static_module --with-ipv6 --with-stream \</span><br><span class="line">   --with-stream_ssl_module --with-http_v2_module \</span><br><span class="line">   --with-pcre --with-http_gzip_static_module \</span><br><span class="line">   --with-http_dav_module --with-http_addition_module \</span><br><span class="line">   --with-http_sub_module --with-http_flv_module \</span><br><span class="line">   --with-http_mp4_module --with-stream --user=admin --group=admin·</span><br><span class="line"> sleep 3</span><br><span class="line"> make -j4 &amp;&amp; make install</span><br><span class="line"> sleep 5</span><br><span class="line"> sudo /opt/lucky/nginx/sbin/nginx</span><br><span class="line"> echo &quot;alias nginx=&#x27;sudo /etc/init.d/nginx&#x27;&quot; &gt;&gt;/home/admin/.bashrc</span><br><span class="line">&quot;</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">sed -i &quot;</span>N;56iexport PATH=/opt/lucky/nginx/sbin:<span class="variable">$PATH</span><span class="string">&quot; /etc/profile</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">ss -unplt|grep 80</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">firewall-cmd --zone=public --add-service=&#123;http,https&#125; --permanent</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">firewall-cmd --reload</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="2-4-编写启动文件"><a href="#2-4-编写启动文件" class="headerlink" title="2.4 编写启动文件"></a>2.4 编写启动文件</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">cat &gt;/etc/init.d/nginx&lt;&lt;-EOF</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment"># 目录</span></span></span><br><span class="line">NGINX_PATH=&quot;/opt/apps/nginx&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">#</span></span> </span><br><span class="line">start_nginx()&#123;</span><br><span class="line">        $&#123;NGINX_PATH&#125;/sbin/nginx</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stop_nginx()&#123;</span><br><span class="line"><span class="meta prompt_">	$</span><span class="language-bash">&#123;NGINX_PATH&#125;/sbin/nginx -s stop</span></span><br><span class="line">&#125;</span><br><span class="line">reload_nginx()&#123;</span><br><span class="line"><span class="meta prompt_">	$</span><span class="language-bash">&#123;NGINX_PATH&#125;/sbin/nginx -s reload</span></span><br><span class="line">&#125;</span><br><span class="line">check_nginx()&#123;</span><br><span class="line"><span class="meta prompt_">	$</span><span class="language-bash">&#123;NGINX_PATH&#125;/sbin/nginx -t</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## Finally the input handling.</span></span></span><br><span class="line"></span><br><span class="line">case &quot;$1&quot; in</span><br><span class="line">  start)</span><br><span class="line">        start_nginx</span><br><span class="line">        ;;</span><br><span class="line">  stop)</span><br><span class="line">        stop_nginx</span><br><span class="line">        ;;</span><br><span class="line">  reload)</span><br><span class="line">        reload_nginx</span><br><span class="line">        ;;</span><br><span class="line">  -t)</span><br><span class="line">        check_nginx</span><br><span class="line">        ;;</span><br><span class="line">  *)</span><br><span class="line">        echo &quot;Usage: service nginx &#123;start|stop|reload|-t&#125;&quot;</span><br><span class="line">        exit 1</span><br><span class="line">        ;;</span><br><span class="line">esac</span><br><span class="line"></span><br><span class="line">exit</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> +x /etc/init.d/nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">chkconfig --add nginx</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">chkconfig nginx on</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://usermice.github.io/blog-system/install-blog-hexo/">
 
 <div>
@@ -527,7 +631,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -584,12 +688,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">211k</span>
+    <span title="站点总字数">214k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:11</span>
+    <span title="站点阅读时长">3:14</span>
 </div>
 
 <!--
