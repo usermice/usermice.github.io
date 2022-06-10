@@ -29,11 +29,13 @@
 <meta property="og:site_name" content="二哥">
 <meta property="og:description" content="1. Ingress-Nginx使用详解1.1 Ingress介绍  我们已经知道，Service对集群之外暴露服务的主要方式有两种：NodePort和LoadBalancer，但是这两种方式，都有一定的缺点：      1.1 NodePort方式的缺点是会占用很多集群机器的端口，那么当集群服务变多的时候，这个缺点就愈发明显   1.2 LoadBalancer的缺点是每个Service都需要一">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Ingress-Nginx/Snipaste_2022-06-10_21-13-37.png">
 <meta property="article:published_time" content="2022-06-09T12:12:38.000Z">
-<meta property="article:modified_time" content="2022-06-09T13:55:37.012Z">
+<meta property="article:modified_time" content="2022-06-10T13:20:32.024Z">
 <meta property="article:author" content="二哥">
 <meta property="article:tag" content="Kubernetes">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Ingress-Nginx/Snipaste_2022-06-10_21-13-37.png">
 
 <link rel="canonical" href="https://usermice.github.io/Kubernetes/Configure-K8s-Ingress-Nginx/">
 
@@ -211,7 +213,7 @@
   <p><span>本文标题:</span><a href="/Kubernetes/Configure-K8s-Ingress-Nginx/">Configure-K8s-Ingress-Nginx</a></p>
   <p><span>文章作者:</span><a href="/" title="访问  的个人博客"></a></p>
   <p><span>发布时间:</span>2022年06月09日 - 20:12</p>
-  <p><span>最后更新:</span>2022年06月09日 - 21:55</p>
+  <p><span>最后更新:</span>2022年06月10日 - 21:20</p>
   <p><span>原始链接:</span><a href="/Kubernetes/Configure-K8s-Ingress-Nginx/" title="Configure-K8s-Ingress-Nginx">https://usermice.github.io/Kubernetes/Configure-K8s-Ingress-Nginx/</a>
     <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://usermice.github.io/Kubernetes/Configure-K8s-Ingress-Nginx/"  aria-label="复制成功！"></i></span>
   </p>
@@ -254,10 +256,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-06-09 20:12:38 / 修改时间：21:55:37" itemprop="dateCreated datePublished" datetime="2022-06-09T20:12:38+08:00">2022-06-09</time>
+              <time title="创建时间：2022-06-09 20:12:38" itemprop="dateCreated datePublished" datetime="2022-06-09T20:12:38+08:00">2022-06-09</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-10 21:20:32" itemprop="dateModified" datetime="2022-06-10T21:20:32+08:00">2022-06-10</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -281,14 +289,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4.3k</span>
+              <span>5.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
+              <span>5 分钟</span>
             </span>
 
         </div>
@@ -325,7 +333,7 @@
 <blockquote>
 <ul>
 <li>3.1 <font color=red><code>Ingress</code>：</font><code>kubernetes</code>中的一个对象，作用是定义请求如何转发到Service的规则  </li>
-<li>3.2   <font color=red><code>Ingress Controller</code>：</font>具体实现反向代理及负载均衡的程序，对<code>Ingress</code>定义的规则进行解析，根据配置的规则来实现请求转发，实现的方式有很多，比如<font color=red><code>Nginx</code>，<code>Contour</code>，<code>Haproxy</code></font>等。</li>
+<li>3.2   <font color=red><code>Ingress Controller</code>：</font>具体实现反向代理及负载均衡的程序，对<code>Ingress</code>定义的规则进行解析，根据配置的规则来实现请求转发，实现的方式有很多，比如<font color=red><code>Nginx</code>，<code>Contour</code>，<code>Haproxy</code>，<code>Traefik</code></font>等。</li>
 </ul>
 </blockquote>
 <h4 id="1-2-Ingress-以Nginx-的工作原理如下："><a href="#1-2-Ingress-以Nginx-的工作原理如下：" class="headerlink" title="1.2 Ingress(以Nginx)的工作原理如下："></a>1.2 <font color=red><code>Ingress</code>(以<code>Nginx</code>)的工作原理如下：</font></h4><ul>
@@ -370,70 +378,142 @@
 </ul>
 <h4 id="2-1-使用kubectl-apply-f安装Ingress-Nginx"><a href="#2-1-使用kubectl-apply-f安装Ingress-Nginx" class="headerlink" title="2.1 使用kubectl apply -f安装Ingress-Nginx"></a>2.1 <font color=red>使用<code>kubectl apply -f</code>安装<code>Ingress-Nginx</code></font></h4><ul>
 <li><ol>
-<li><font color=red>使用<code>kubectl apply -f</code>安装<code>Ingress-Nginx</code></font></li>
+<li><font color=red>下载<code>Ingress-Nginx</code>控制器</font>  <blockquote>
+<ul>
+<li>1.1 裸机安装一定要在<font color=red><code>DaemonSet</code>控制器的<code>spec</code></font>字段中添加<font color=red><code>hostNetwork: true</code></font>使其使用宿主机网络</li>
+</ul>
+</blockquote>
+</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml  	<span class="comment"># ingress-controller 控制器、负责负载均衡</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/provider/baremetal/service-nodeport.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/deploy.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f ./</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Ingress-Nginx/Snipaste_2022-06-10_21-13-37.png" alt="hostNetwork">  </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml  	<span class="comment"># ingress-controller 控制器、负责负载均衡</span></span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><ol start="2">
+<li><font color=red>下载<code>Ingress-Nginx</code>的<code>Service</code></font>  <blockquote>
+<ul>
+<li>2.1 <font color=red>可以注释<code>type: NodePort</code>字段</font></li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/provider/baremetal/service-nodeport.yaml</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>把下载的<code>Ingress-Nginx</code>控制器和<code>Ingress-Nginx的Service</code>放到同一个目录中应用</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f ./</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>开始安装</font>  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/deploy.yaml</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><ol start="5">
 <li><font color=red>查看是否有<code>Pod</code>启动</font></li>
 </ol>
 </li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">$ kubectl get pods --namespace=ingress-nginx</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace=ingress-nginx</span></span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><ol start="3">
+<li><ol start="6">
 <li><font color=red>等待入口控制器<code>pod</code>启动、运行并准备就绪</font></li>
 </ol>
 </li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">wait</span> --namespace ingress-nginx \</span></span><br><span class="line"><span class="language-bash">  --<span class="keyword">for</span>=condition=ready pod \</span></span><br><span class="line"><span class="language-bash">  --selector=app.kubernetes.io/component=controller \</span></span><br><span class="line"><span class="language-bash">  --<span class="built_in">timeout</span>=120s</span></span><br></pre></td></tr></table></figure>
 
-
 <h4 id="2-2-使用Helm安装Ingress-Nginx"><a href="#2-2-使用Helm安装Ingress-Nginx" class="headerlink" title="2.2 使用Helm安装Ingress-Nginx"></a>2.2 <font color=red>使用<code>Helm</code>安装<code>Ingress-Nginx</code></font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace ingress-nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install blog-enix-rancher ingress-nginx/ingress-nginx \</span></span><br><span class="line"><span class="language-bash">	--namespace ingress-nginx \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.hostPort.enabled=<span class="literal">true</span> \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.kind=DaemonSet</span></span><br><span class="line"><span class="meta prompt_">	</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace ingress-nginx</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="3-Ingress-Nginx配置清单"><a href="#3-Ingress-Nginx配置清单" class="headerlink" title="3. Ingress-Nginx配置清单"></a>3. <code>Ingress-Nginx</code>配置清单</h3><ul>
 <li><ol>
-<li><font color=red>准备<code>Service</code>和<code>Pod</code>：一个<code>Nginx</code>一个<code>Tomcat</code></font></li>
+<li><font color=red>准备<code>Deployment Pod</code>：一个<code>Nginx</code>一个<code>Tomcat</code></font>    <blockquote>
+<ul>
+<li>1.1 <font color=red><code>Nginx</code>的<code>Deployment Pod</code></font></li>
+</ul>
+</blockquote>
+</li>
 </ol>
 </li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-deployment</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:  # 标签选择器，用于确定当前Service代理那些Pod</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: nginx-pod</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx-pod</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: nginx</span><br><span class="line">        image: nginx:1.17.1</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: tomcat-deployment</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: tomcat-pod</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: tomcat-pod</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: tomcat</span><br><span class="line">        image: tomcat:8.5-jre10-slim</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 8080</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-service</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    app: nginx-pod</span><br><span class="line">  clusterIP: None</span><br><span class="line">  type: ClusterIP</span><br><span class="line">  ports:</span><br><span class="line">  - port: 80</span><br><span class="line">    targetPort: 80</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: tomcat-service</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    app: tomcat-pod</span><br><span class="line">  clusterIP: None</span><br><span class="line">  type: ClusterIP</span><br><span class="line">  ports:</span><br><span class="line">  - port: 8080  # Service端口</span><br><span class="line">    targetPort: 8080</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-deployment</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:  # 标签选择器，用于确定当前Service代理那些Pod</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: nginx-pod</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx-pod</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: nginx</span><br><span class="line">        image: nginx:1.17.1</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 80</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>1.2 <font color=red><code>Tomcat</code>的<code>Deployment Pod</code></font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: tomcat-deployment</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: tomcat-pod</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: tomcat-pod</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: tomcat</span><br><span class="line">        image: tomcat:8.5-jre10-slim</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 8080</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><ol start="2">
-<li><font color=red><code>Ingress-Nginx</code>的<code>Http</code>和<code>Https</code>配置的<code>yaml</code></font>  <blockquote>
+<li><font color=red>准备<code>Service Pod</code>：一个<code>Nginx</code>一个<code>Tomcat</code></font>  <blockquote>
 <ul>
-<li>2.1 <font color=red><code>http</code></font></li>
+<li>2.1 <font color=red><code>Nginx</code>的<code>Service Pod</code>用于和<code>Ingress-Nginx</code>的<code>Pode</code>关联，不用暴漏<code>NodePort</code>使用<code>ClusterIP</code>集群内部端口就可以</font></li>
 </ul>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Ingress</span><br><span class="line">metadata:</span><br><span class="line">  name: ingress-http</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  rules:</span><br><span class="line">  - host: nginx.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: nginx-service</span><br><span class="line">          servicePort: 80</span><br><span class="line">  - host: tomcat.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: tomcat-service</span><br><span class="line">          servicePort: 8080</span><br></pre></td></tr></table></figure></li>
+</li>
 </ol>
 </li>
 </ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-service</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    app: nginx-pod</span><br><span class="line">  clusterIP: None</span><br><span class="line">  type: ClusterIP</span><br><span class="line">  ports:</span><br><span class="line">  - port: 80</span><br><span class="line">    targetPort: 80</span><br></pre></td></tr></table></figure>
+
 <blockquote>
 <ul>
-<li>2.2 <font color=red><code>https</code></font>   <blockquote>
+<li>2.2 <font color=red><code>Tomcat</code>的<code>Service Pod</code>用于和<code>Ingress-Nginx</code>的<code>Pode</code>关联，不用暴漏<code>NodePort</code>使用<code>ClusterIP</code>集群内部端口就可以</font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: tomcat-service</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    app: tomcat-pod</span><br><span class="line">  clusterIP: None</span><br><span class="line">  type: ClusterIP</span><br><span class="line">  ports:</span><br><span class="line">  - port: 8080  # Service端口</span><br><span class="line">    targetPort: 8080</span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>2.2.1 <font color=red><code>req</code>：</font>产生证书签发申请命令  </li>
-<li>2.2.2 <font color=red><code>-newkey</code>：</font>生成新私钥  </li>
-<li>2.2.3 <font color=red><code>rsa:4096</code>：</font>生成秘钥位数  </li>
-<li>2.2.4 <font color=red><code>-nodes</code>：</font>表示私钥不加密  </li>
-<li>2.2.5 <font color=red><code>-sha256</code>：</font>使用<code>SHA-2</code>哈希算法  </li>
-<li>2.2.6 <font color=red><code>-keyout</code>：</font>将新创建的私钥写入的文件名  </li>
-<li>2.2.7 <font color=red><code>-x509</code>：</font>签发<code>X.509格</code>式证书命令。<code>X.509</code>是最通用的一种签名证书格式。  </li>
-<li>2.2.8 <font color=red><code>-out</code>：</font>指定要写入的输出文件名  </li>
-<li>2.2.9 <font color=red><code>-subj</code>：</font>指定证书地区，web服务，域名信息  </li>
-<li>2.2.10 <font color=red><code>-days</code>：</font>有效期</li>
+<li><ol start="3">
+<li><font color=red><code>Ingress-Nginx</code>的<code>Http</code>和<code>Https</code>配置的<code>yaml</code></font>  <blockquote>
+<ul>
+<li>3.1 <font color=red><code>http</code></font>  </li>
+<li>3.2 <font color=red><code>pathType:</code></font>路径匹配方式，分别有：<font color=red><code>ImplementationSpectfic</code>,<code>Exact</code>,<code>Prefix</code></font>方式  <blockquote>
+<ul>
+<li>3.2.1 <font color=red><code>Exact</code>：精确匹配</font>比如配置的<code>path</code>为<code>/opt</code>，那么<code>/opt/</code>将不能被路由  </li>
+<li>3.2.1 <font color=red><code>Prefix</code>：前缀匹配</font>基于以<code>/</code>分割的<code>URL</code>路径，比如<code>path</code>为<code>/opt</code>，可以匹配到<code>/opt/data/</code>等，比较常用配置  </li>
+<li>3.2.1 <font color=red><code>ImplementationSpectfic</code>：路由匹配</font>根据<code>Ingress Controller</code>控制器来实现</li>
 </ul>
 </blockquote>
 </li>
 </ul>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成密钥</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout /opt/k8s/tls.key -out -x509 /opt/k8s/tls.crt -subj <span class="string">&quot;/C=CN/ST=BJ/L=BJ/O=nginx/CN=erge.com&quot;</span> -days 3650</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成密钥</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create secret tls tls-erge.com --key =/opt/k8s/https/tls.key --cert /opt/k8s/https/tls.crt</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Ingress</span><br><span class="line">metadata:</span><br><span class="line">  name: ingress-https</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  tls:</span><br><span class="line">    - hosts:</span><br><span class="line">      - nginx.rege.com</span><br><span class="line">      - tomcat.erge.com</span><br><span class="line">      secretName: tls-erge.com # 指定秘钥</span><br><span class="line">  rules:</span><br><span class="line">  - host: nginx.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: nginx-service</span><br><span class="line">          servicePort: 80</span><br><span class="line">  - host: tomcat.erge.com</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        backend:</span><br><span class="line">          serviceName: tomcat-service</span><br><span class="line">          servicePort: 8080</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: networking.k8s.io/v1</span><br><span class="line">kind: Ingress</span><br><span class="line">metadata:</span><br><span class="line">  name: ingress-http</span><br><span class="line">  namespace: dev</span><br><span class="line">  annotations:</span><br><span class="line">    kubernetes.io/ingress.class: &quot;tomcat-nginx&quot;</span><br><span class="line">spec:</span><br><span class="line">  ingressClassName: nginx  	# Ingree类型：Nginx、Contour、Haproxy、Traefik</span><br><span class="line">  rules:</span><br><span class="line">  - host: nginx.erge.com  	# 定义域名使外网可以使用浏览器访问</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        pathType: Prefix</span><br><span class="line">        backend:</span><br><span class="line">          service:</span><br><span class="line">            name: nginx-service  	# 定义Service Pod名称，和Service进行关联</span><br><span class="line">            port:</span><br><span class="line">              number: 80  	# 定义Server Pod端口为：ports: - port: 8080，和Service进行关</span><br><span class="line">          </span><br><span class="line">  - host: tomcat.erge.com  	# 定义域名使外网可以使用浏览器访问</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        pathType: Prefix</span><br><span class="line">        backend:</span><br><span class="line">          service:</span><br><span class="line">            name: tomcat-service  # 定义Service Pod名称，和Service进行关联</span><br><span class="line">            port:</span><br><span class="line">              number: 8080  	# 定义Server Pod端口为：ports: - port: 8080，和Service进行关联</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get ingress</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>3.2 <font color=red><code>https</code></font>   <blockquote>
+<ul>
+<li>3.2.1 <font color=red><code>req</code>：</font>产生证书签发申请命令  </li>
+<li>3.2.2 <font color=red><code>-newkey</code>：</font>生成新私钥  </li>
+<li>3.2.3 <font color=red><code>rsa:4096</code>：</font>生成秘钥位数  </li>
+<li>3.2.4 <font color=red><code>-nodes</code>：</font>表示私钥不加密  </li>
+<li>3.2.5 <font color=red><code>-sha256</code>：</font>使用<code>SHA-2</code>哈希算法  </li>
+<li>3.2.6 <font color=red><code>-keyout</code>：</font>将新创建的私钥写入的文件名  </li>
+<li>3.2.7 <font color=red><code>-x509</code>：</font>签发<code>X.509格</code>式证书命令。<code>X.509</code>是最通用的一种签名证书格式。  </li>
+<li>3.2.8 <font color=red><code>-out</code>：</font>指定要写入的输出文件名  </li>
+<li>3.2.9 <font color=red><code>-subj</code>：</font>指定证书地区，web服务，域名信息  </li>
+<li>3.2.10 <font color=red><code>-days</code>：</font>有效期</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成密钥</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout /opt/k8s/tls.key -out -x509 /opt/k8s/tls.crt -subj <span class="string">&quot;/C=CN/ST=BJ/L=BJ/O=nginx/CN=erge.com&quot;</span> -days 3650</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成证书</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create secret tls tls-erge.com --key =/opt/k8s/https/tls.key --cert /opt/k8s/https/tls.crt</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">apiVersion: networking.k8s.io/v1</span><br><span class="line">kind: Ingress</span><br><span class="line">metadata:</span><br><span class="line">  name: ingress-https</span><br><span class="line">  namespace: dev</span><br><span class="line">spec:</span><br><span class="line">  ingressClassName: nginx  	# Ingree类型：Nginx、Contour、Haproxy、Traefik</span><br><span class="line">  tls:</span><br><span class="line">    - hosts:</span><br><span class="line">      - nginx.rege.com</span><br><span class="line">      - tomcat.erge.com</span><br><span class="line">      secretName: tls-erge.com # 指定秘钥</span><br><span class="line">  rules:</span><br><span class="line">  - host: nginx.erge.com  	# 定义域名使外网可以使用浏览器访问</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        pathType: Prefix</span><br><span class="line">        backend:</span><br><span class="line">          service:</span><br><span class="line">            name: nginx-service  	# 定义Service Pod名称，和Service进行关联</span><br><span class="line">            port:</span><br><span class="line">              number: 80  	# 定义Server Pod端口为：ports: - port: 8080，和Service进行关</span><br><span class="line">          </span><br><span class="line">  - host: tomcat.erge.com  	# 定义域名使外网可以使用浏览器访问</span><br><span class="line">    http:</span><br><span class="line">      paths:</span><br><span class="line">      - path: /</span><br><span class="line">        pathType: Prefix</span><br><span class="line">        backend:</span><br><span class="line">          service:</span><br><span class="line">            name: tomcat-service  # 定义Service Pod名称，和Service进行关联</span><br><span class="line">            port:</span><br><span class="line">              number: 8080  	# 定义Server Pod端口为：ports: - port: 8080，和Service进行关联</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -613,12 +693,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">214k</span>
+    <span title="站点总字数">215k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:14</span>
+    <span title="站点阅读时长">3:16</span>
 </div>
 
 <!--
