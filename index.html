@@ -226,7 +226,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-12 13:36:34" itemprop="dateModified" datetime="2022-06-12T13:36:34+08:00">2022-06-12</time>
+                <time title="修改时间：2022-06-12 13:42:58" itemprop="dateModified" datetime="2022-06-12T13:42:58+08:00">2022-06-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -244,7 +244,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>5.8k</span>
+              <span>5.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -342,7 +342,7 @@
 </ol>
 </li>
 </ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Ingress-Nginx/Snipaste_2022-06-10_21-13-37.png" alt="hostNetwork"></p>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Ingress-Nginx/Snipaste_2022-06-10_21-13-37.png" alt="hostNetwork">  </p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml  	<span class="comment"># ingress-controller 控制器、负责负载均衡</span></span></span><br></pre></td></tr></table></figure>
 
 <ul>
@@ -356,7 +356,41 @@
 <li>2.1 <font color=red>可以注释<code>type: NodePort</code>字段</font></li>
 </ul>
 </blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/provider/baremetal/service-nodeport.yaml</span></span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">* 3. &lt;font color=red&gt;把下载的`Ingress-Nginx`控制器和`Ingress-Nginx的Service`放到同一个目录中应用&lt;/font&gt;  </span><br><span class="line"></span><br><span class="line">```shell</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f ./</span></span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">* 4. &lt;font color=red&gt;开始安装&lt;/font&gt;  </span><br><span class="line"></span><br><span class="line">```shell</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/deploy.yaml</span></span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">* 5. &lt;font color=red&gt;查看是否有`Pod`启动&lt;/font&gt;  </span><br><span class="line"></span><br><span class="line">```shell</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace=ingress-nginx</span></span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">* 6. &lt;font color=red&gt;等待入口控制器`pod`启动、运行并准备就绪&lt;/font&gt;  </span><br><span class="line"></span><br><span class="line">```shell</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">wait</span> --namespace ingress-nginx \</span></span><br><span class="line"><span class="language-bash">  --<span class="keyword">for</span>=condition=ready pod \</span></span><br><span class="line"><span class="language-bash">  --selector=app.kubernetes.io/component=controller \</span></span><br><span class="line"><span class="language-bash">  --<span class="built_in">timeout</span>=120s</span></span><br><span class="line">```  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">### 2.2 &lt;font color=red&gt;使用`Helm`安装`Ingress-Nginx`&lt;/font&gt;</span></span>  </span><br><span class="line"></span><br><span class="line">```shell</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace ingress-nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install blog-enix-rancher ingress-nginx/ingress-nginx \</span></span><br><span class="line"><span class="language-bash">	--namespace ingress-nginx \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.hostPort.enabled=<span class="literal">true</span> \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.kind=DaemonSet</span></span><br><span class="line"><span class="meta prompt_">	</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace ingress-nginx</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/provider/baremetal/service-nodeport.yaml</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>把下载的<code>Ingress-Nginx</code>控制器和<code>Ingress-Nginx的Service</code>放到同一个目录中应用</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f ./</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>开始安装</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/baremetal/deploy.yaml</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li><font color=red>查看是否有<code>Pod</code>启动</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace=ingress-nginx</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="6">
+<li><font color=red>等待入口控制器<code>pod</code>启动、运行并准备就绪</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">wait</span> --namespace ingress-nginx \</span></span><br><span class="line"><span class="language-bash">  --<span class="keyword">for</span>=condition=ready pod \</span></span><br><span class="line"><span class="language-bash">  --selector=app.kubernetes.io/component=controller \</span></span><br><span class="line"><span class="language-bash">  --<span class="built_in">timeout</span>=120s</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-使用Helm安装Ingress-Nginx"><a href="#2-2-使用Helm安装Ingress-Nginx" class="headerlink" title="2.2 使用Helm安装Ingress-Nginx"></a>2.2 <font color=red>使用<code>Helm</code>安装<code>Ingress-Nginx</code></font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace ingress-nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install blog-enix-rancher ingress-nginx/ingress-nginx \</span></span><br><span class="line"><span class="language-bash">	--namespace ingress-nginx \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.hostPort.enabled=<span class="literal">true</span> \</span></span><br><span class="line"><span class="language-bash">	--<span class="built_in">set</span> controller.kind=DaemonSet</span></span><br><span class="line"><span class="meta prompt_">	</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace ingress-nginx</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="3-Ingress-Nginx配置清单"><a href="#3-Ingress-Nginx配置清单" class="headerlink" title="3. Ingress-Nginx配置清单"></a>3. <code>Ingress-Nginx</code>配置清单</h3><ul>
 <li><ol>
