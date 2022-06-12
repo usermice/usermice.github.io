@@ -191,6 +191,157 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-k8s-Argo-CD/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Kubernetes/install-k8s-Argo-CD/" class="post-title-link" itemprop="url">install-Argo CD</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-11 13:33:28" itemprop="dateCreated datePublished" datetime="2022-05-11T13:33:28+08:00">2022-05-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-09 20:09:58" itemprop="dateModified" datetime="2022-06-09T20:09:58+08:00">2022-06-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>802</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-Argo-CD介绍"><a href="#1-Argo-CD介绍" class="headerlink" title="1. Argo CD介绍"></a>1. <code>Argo CD</code>介绍</h3><ul>
+<li><ol>
+<li><code>Argo CD</code>是一个为<code>Kubernetes</code>而生的，遵循声明式<code>GitOps</code>理念的持续部署<code>CD</code>工具。<code>Argo CD</code>可在<code>Git</code>存储库更改时自动同步和部署应用程序</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>应用定义、配置和环境信息是声明式的，并可以进行版本控制</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>应用部署和生命周期管理是全自动化的、是可审计的，清晰易懂</li>
+</ol>
+</li>
+</ul>
+<h3 id="2-安装Argo-CD"><a href="#2-安装Argo-CD" class="headerlink" title="2. 安装Argo CD"></a>2. 安装<code>Argo CD</code></h3><ul>
+<li><ol>
+<li><font color=red>创建<code>ArgoCD</code>命名空间</font>  <pre><code class="shell">$ kubectl create namespace argocd
+</code></pre>
+</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>下载并启动<code>ArgoCD</code></font></li>
+</ol>
+</li>
+</ul>
+<pre><code class="shell">$ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml  
+</code></pre>
+<ul>
+<li><ol start="3">
+<li><font color=red>使用<code>NodePort</code>方式暴露<code>argocd ui</code></font></li>
+</ol>
+</li>
+</ul>
+<pre><code class="shell">$ kubectl patch service -n argocd argocd-server -p &#39;&#123;&quot;spec&quot;: &#123;&quot;type&quot;: &quot;NodePort&quot;&#125;&#125;&#39;  
+</code></pre>
+<ul>
+<li><ol start="4">
+<li><font color=red>获取<code>ArgoCD</code>的<code>admin</code>登陆密码</font></li>
+</ol>
+</li>
+</ul>
+<pre><code class="shell">$ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=&quot;&#123;.data.password&#125;&quot; | base64 -d
+</code></pre>
+<ul>
+<li><ol start="5">
+<li><font color=red>安装<code>cli：CLI</code>是用于管理<code>Argo CD</code>的命令行工具</font></li>
+</ol>
+</li>
+</ul>
+<pre><code class="shell">$ curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.3/argocd-linux-amd64 &amp;&amp; chmod +x /usr/local/bin/argocd
+</code></pre>
+<ol start="6">
+<li><font color=red>查看<code>argocd-server</code>暴露端口</font></li>
+</ol>
+<pre><code class="shell">$ kubectl get svc -n argocd
+</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-k8s-harbor/">
 
 <div>
@@ -2083,108 +2234,6 @@ $ chkconfig redis on
 <div>
     
  </div>
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Certificate/apply-cert/">
-
-<div>
-      
-</div>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/IMG_0081.JPG">
-      <meta itemprop="name" content="二哥">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="二哥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Certificate/apply-cert/" class="post-title-link" itemprop="url">apply-cert</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-04-19 13:06:49" itemprop="dateCreated datePublished" datetime="2022-04-19T13:06:49+08:00">2022-04-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-19 16:50:40" itemprop="dateModified" datetime="2022-05-19T16:50:40+08:00">2022-05-19</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Certificate/" itemprop="url" rel="index"><span itemprop="name">Certificate</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          有东西被加密了, 请输入密码查看.
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/Certificate/apply-cert/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-<div>
-    
- </div>
 
   
   <nav class="pagination">
@@ -2256,7 +2305,7 @@ $ chkconfig redis on
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2313,7 +2362,7 @@ $ chkconfig redis on
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">215k</span>
+    <span title="站点总字数">216k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
