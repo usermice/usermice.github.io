@@ -1055,7 +1055,7 @@ $ kubectl get pods --show-labels -n cattle-system
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/Kubernetes/configure-k8s-yaml%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/" class="post-title-link" itemprop="url">kubernetes-pod详解</a>
+            <a href="/Kubernetes/configure-k8s-yaml%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3%E5%8F%8A%E7%A4%BA%E4%BE%8B%E6%A8%A1%E6%9D%BF/" class="post-title-link" itemprop="url">kubernetes-pod使用详解以及示例模板</a>
         </h2>
 
         <div class="post-meta">
@@ -1072,7 +1072,7 @@ $ kubectl get pods --show-labels -n cattle-system
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-09 20:37:17" itemprop="dateModified" datetime="2022-06-09T20:37:17+08:00">2022-06-09</time>
+                <time title="修改时间：2022-06-26 22:19:29" itemprop="dateModified" datetime="2022-06-26T22:19:29+08:00">2022-06-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1110,11 +1110,10 @@ $ kubectl get pods --show-labels -n cattle-system
 
       
           <ul>
-<li><p><font color=red><code>markdown</code>实现目录跳转</font><br><a href="#Pod%E8%AF%A6%E8%A7%A3">1. <code>Pod</code>详解</a><br><a href="#%E8%8E%B7%E5%8F%96yaml%E5%91%BD%E4%BB%A4%E6%A0%BC%E5%BC%8F">2.获取<code>yaml</code>命令格式</a><br><a href="#apiVersion">3.<code>apiVersion</code></a>  </p>
-</li>
-<li><p><font color=red><code>html</code>标签实现目录跳转</font>  </p>
-</li>
-<li><p><a href="#yaml%E5%BF%85%E9%80%89%E5%8F%82%E6%95%B0">4.<code>yaml</code>必选参数</a>  </p>
+<li><font color=red><code>markdown</code>实现目录跳转</font><br><a href="#Pod%E8%AF%A6%E8%A7%A3">1. <code>Pod</code>详解</a><br><a href="#%E8%8E%B7%E5%8F%96yaml%E5%91%BD%E4%BB%A4%E6%A0%BC%E5%BC%8F">2.获取<code>yaml</code>命令格式</a><br><a href="#apiVersion">3.<code>apiVersion</code></a>  </li>
+<li><font color=red><code>html</code>标签实现目录跳转</font>  </li>
+<li><a href="#yaml%E5%BF%85%E9%80%89%E5%8F%82%E6%95%B0">4.<code>yaml</code>必选参数</a></li>
+</ul>
 <blockquote>
 <ul>
 <li><a href="#Pod%E5%9F%BA%E7%A1%80%E5%BF%85%E9%80%89%E5%8F%82%E6%95%B0,%E6%AF%8F%E4%B8%AAYAML%E6%96%87%E4%BB%B6%E9%83%BD%E5%8C%85%E5%90%AB%E5%AE%83%E4%BB%AC">4.1<code>Pod</code>基础必选参数,每个<code>YAML</code>文件都包含它们</a>  </li>
@@ -1123,9 +1122,8 @@ $ kubectl get pods --show-labels -n cattle-system
 <li><a href="#%E9%A2%9D%E5%A4%96%E7%9A%84%E5%8F%82%E6%95%B0%E5%AF%B9%E8%B1%A1">4.4额外的参数对象</a></li>
 </ul>
 </blockquote>
-</li>
-<li><p><a href="#yaml%E7%BC%96%E5%86%99%E7%A4%BA%E4%BE%8B">5.<code>yaml</code>编写示例</a></p>
-</li>
+<ul>
+<li><a href="#yaml%E7%BC%96%E5%86%99%E7%A4%BA%E4%BE%8B">5.<code>yaml</code>编写示例</a></li>
 </ul>
 <blockquote>
 <ul>
@@ -1134,44 +1132,67 @@ $ kubectl get pods --show-labels -n cattle-system
 </blockquote>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">A[Deployment] ---&gt; D[ReplicaSet]</span><br><span class="line">B[CronJob] ---&gt; E[Job]</span><br><span class="line">C[DaemonSet] ---&gt; G&#123;&#123;容器&#125;&#125;</span><br><span class="line">D[ReplicaSet] ---&gt; G&#123;&#123;容器&#125;&#125;</span><br><span class="line">E[Job] ---&gt; G&#123;&#123;容器&#125;&#125;</span><br><span class="line">F[StatefulSet] ---&gt; G&#123;&#123;容器&#125;&#125;</span><br><span class="line"></span><br><span class="line">G&#123;&#123;容器&#125;&#125; ---&gt; J[/Volume\]</span><br><span class="line">G&#123;&#123;容器&#125;&#125; ---&gt; H[(Service服务)]</span><br><span class="line"></span><br><span class="line">J[/Volume\] ---&gt; K[/configMap\]</span><br><span class="line">J[/Volume\] ---&gt; L[/PVC\]</span><br><span class="line">J[/Volume\] ---&gt; M[/Secret\]</span><br><span class="line"></span><br><span class="line">    Z[Kubernetes控制流程]</span><br></pre></td></tr></table></figure>
 
+<h3 id="Pod详解">1. `Pod`详解</h3>  
 
-<h3 id="Pod详解">1. Pod详解</h3>  
+<h4 id="1-1-pod数据存储、一个yaml文件创建多个pod"><a href="#1-1-pod数据存储、一个yaml文件创建多个pod" class="headerlink" title="1.1 pod数据存储、一个yaml文件创建多个pod"></a>1.1 <code>pod</code>数据存储、一个<code>yaml</code>文件创建多个<code>pod</code></h4><ul>
+<li><ol>
+<li><font color=red><code>infrastructure Container: </code>基础容器</font>  <blockquote>
+<ul>
+<li>1.1 维护整个<code>Pod</code>网络空间</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>initContainers: </code>初始化容器</font>  <blockquote>
+<ul>
+<li>2.1 先于业务容器开始允许</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>Containers：</code>业务容器</font>  <blockquote>
+<ul>
+<li>3.1 并行启动</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+<li><ol start="4">
+<li><font color=red><code>Pod</code>内所有容器公用一个<code>ip</code></font></li>
+</ol>
+</li>
+</ul>
+<h3 id="获取yaml命令格式">2. 获取`yaml`命令格式</h3>  
 
-<h4 id="1-1-pod数据存储、一个yaml文件创建多个pod"><a href="#1-1-pod数据存储、一个yaml文件创建多个pod" class="headerlink" title="1.1 pod数据存储、一个yaml文件创建多个pod"></a>1.1 pod数据存储、一个yaml文件创建多个pod</h4><ul>
-<li><p><font color=red>infrastructure Container: 基础容器</font>  </p>
-<blockquote>
 <ul>
-<li>维护整个Pod网络空间</li>
-</ul>
-</blockquote>
-</li>
-<li><p><font color=red>initContainers: 初始化容器</font>  </p>
-<blockquote>
-<ul>
-<li>先于业务容器开始允许</li>
-</ul>
-</blockquote>
-</li>
-<li><p><font color=red>Containers：业务容器</font>  </p>
-<blockquote>
-<ul>
-<li>并行启动</li>
-</ul>
-</blockquote>
-</li>
-<li><p><font color=red>Pod 内所有容器公用一个ip</font>  </p>
-<h3 id="获取yaml命令格式">2. 获取`yaml`命令格式</h3>  </li>
-<li><p><font color=red><code>kubectl explain deployment.spec.selector</code>：获取yaml基础格式命令</font></p>
+<li><ol>
+<li><font color=red><code>kubectl explain deployment.spec.selector</code>：获取yaml基础格式命令</font></li>
+</ol>
 </li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain deployment.spec.selector</span></span><br></pre></td></tr></table></figure>
+
 <ul>
+<li><ol start="2">
 <li><font color=red><code>kubectl explain deployment.spec.affinity</code>：获取<code>yaml</code>高级格式命令</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain deployment.spec.affinity</span> </span><br></pre></td></tr></table></figure>
-<h3 id="apiVersion">3. `apiVersion`定义</h3>  
-* <font color=red>`$ kubectl api-resources -o wide`：获取参数定义命令</font>  
 
+<h3 id="apiVersion">3. `apiVersion`定义</h3>  
+
+<ul>
+<li><ol>
+<li><font color=red><code>$ kubectl api-resources -o wide</code>：获取参数定义命令</font></li>
+</ol>
+</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -1323,12 +1344,12 @@ $ kubectl get pods --show-labels -n cattle-system
 <tbody><tr>
 <td>version</td>
 <td>String</td>
-<td>Kubernetes API 的版本，可以用 kubectl api-versions 命令查询</td>
+<td><code>Kubernetes API </code>的版本，可以用<code>kubectl api-versions</code>命令查询</td>
 </tr>
 <tr>
 <td>kind</td>
 <td>String</td>
-<td>标明 YAML 定义的资源类型和角色，如 Pod、Deployment 等</td>
+<td>标明<code>YAML</code>定义的资源类型和角色，如<code>Pod</code>、<code>Deployment</code>等</td>
 </tr>
 <tr>
 <td>metadata</td>
@@ -1363,7 +1384,10 @@ $ kubectl get pods --show-labels -n cattle-system
 </tbody></table>
 <h4 id="4-1-Pod基础必选参数-每个YAML文件都包含它们"><a href="#4-1-Pod基础必选参数-每个YAML文件都包含它们" class="headerlink" title="4.1 Pod基础必选参数,每个YAML文件都包含它们"></a><span id="Pod基础必选参数,每个YAML文件都包含它们">4.1 <font color=red>Pod基础必选参数,每个<code>YAML</code>文件都包含它们</font></span></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cat &gt;product.yaml&lt;&lt;-EOF</span><br><span class="line">apiVersion: apps/v1   	# API版本号,不同对象可能会使用不同API，kubectl api-version查看api版本</span><br><span class="line">kind: Deployment     	# 指定资源类型有：Deployment、Service、Pod查询资源类型：kubectl api-resources</span><br><span class="line">metadata:     			# 资源元数据</span><br><span class="line"> name: java-demo       	# Pod名称：自定义名称</span><br><span class="line"> namespace: ms       	# 指定命名空间：自定义名称、默认为&quot;default&quot;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
 <ul>
+<li><ol>
 <li><font color=red><code>Pod</code>编写可选参数</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.metadata</span></span><br></pre></td></tr></table></figure>
 
@@ -1378,22 +1402,22 @@ $ kubectl get pods --show-labels -n cattle-system
 <tbody><tr>
 <td>metadata.name</td>
 <td></td>
-<td>Pod 名称</td>
+<td><code>Pod</code>名称</td>
 </tr>
 <tr>
 <td>metadata.namespace</td>
 <td></td>
-<td>Pod 名字空间</td>
+<td><code>Pod</code>名字空间</td>
 </tr>
 <tr>
 <td>metadata.uid</td>
 <td></td>
-<td>Pod 的 UID</td>
+<td><code>Pod</code>的<code>UID</code></td>
 </tr>
 <tr>
 <td>metadata.labels[‘<KEY>‘]</td>
 <td></td>
-<td>Pod 标签 <code>&lt;KEY&gt;</code> 的值 (例如<code>metadata.labels[&#39;mylabel&#39;]</code>）</td>
+<td><code>Pod</code>标签 <code>&lt;KEY&gt;</code> 的值 (例如<code>metadata.labels[&#39;mylabel&#39;]</code>）</td>
 </tr>
 <tr>
 <td>metadata.annotations[‘<KEY>‘]</td>
@@ -1404,7 +1428,10 @@ $ kubectl get pods --show-labels -n cattle-system
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">放在metadata中参数</span></span><br><span class="line">metadata:</span><br><span class="line"> labels:       　　  # 自定义标签名称和值</span><br><span class="line">    - name: string  # 名称值为：key: value键值对方式</span><br><span class="line"> annotations:  		# 自定义注释名称和值</span><br><span class="line">    - name: nginx 	# 名称值为：key: value键值对方式</span><br></pre></td></tr></table></figure>
 <h4 id="4-2-spec-containers编写定义"><a href="#4-2-spec-containers编写定义" class="headerlink" title="4.2  spec.containers编写定义"></a><span id="spec.containers编写定义">4.2  <font color=red><code>spec.containers</code>编写定义</font></span></h4><blockquote>
 <ul>
+<li><ol>
 <li><font color=red>容器定义</font></li>
+</ol>
+</li>
 </ul>
 </blockquote>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.containers</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.affinity</span></span><br></pre></td></tr></table></figure>
@@ -1451,7 +1478,10 @@ $ kubectl get pods --show-labels -n cattle-system
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表，一个Pod中可以定义多个容器</span><br><span class="line">  - name: tomcat-demo   	# 容器名称</span><br><span class="line">    image: 192.168.80.210:8080/test/tomcat-demo:v1  # 镜像仓库地址</span><br><span class="line">    imagePullPolicy: Always   	# 容器下载策略：Always|Never|IfNotPresent，不管本地存不存在，都从仓库拉取镜像</span><br><span class="line">    imagePullSecrets:</span><br><span class="line">    - name: docker-harbor  	# 指定使用的secret库房名称</span><br><span class="line">    command: [string]   	# 容器的启动命令列表，如不指定，使用打包时使用的启动命令</span><br><span class="line">    args:   	# 容器的启动命令参数列表</span><br><span class="line">    - /bin/sh</span><br><span class="line">    - -c</span><br><span class="line">    - touch /tmp/healthy; sleep 30; rm -fr /tmp/healthy; sleep 600</span><br></pre></td></tr></table></figure>
 <blockquote>
 <ul>
+<li><ol start="2">
 <li><font color=red>容器工作目录定义</font></li>
+</ol>
+</li>
 </ul>
 </blockquote>
 <table>
@@ -1491,7 +1521,10 @@ $ kubectl get pods --show-labels -n cattle-system
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">    workingDir: string   	# 容器的工作目录</span><br><span class="line">    volumeMounts:   	# 挂载到容器内部的存储卷配置</span><br><span class="line">    - name: data   	# 引用pod定义的共享存储卷的名称，需用volumes[]部分定义的的卷名</span><br><span class="line">      mountPath: /opt/data   	# 存储卷在容器内mount的绝对路径，应少于512字符</span><br><span class="line">      readOnly: boolean   	# 是否为只读模式</span><br></pre></td></tr></table></figure>
 <blockquote>
 <ul>
+<li><ol start="3">
 <li><font color=red>容器端口定义</font></li>
+</ol>
+</li>
 </ul>
 </blockquote>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.containers.ports</span></span><br></pre></td></tr></table></figure>
@@ -1533,7 +1566,10 @@ $ kubectl get pods --show-labels -n cattle-system
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">    ports:   						# 容器暴露的端口</span><br><span class="line">    - name: http    				# 服务名称</span><br><span class="line">      containerPort: 80   			# 容器需要监听的端口号</span><br><span class="line">      hostPort: int       # 容器所在主机需要监听的端口号，默认与Container相同</span><br><span class="line">    - protocol: TCP        		# 端口协议，支持TCP和UDP，默认TCP</span><br><span class="line">    - port: 80   	# 集群端口</span><br><span class="line">      targetPort: 80   	# Pod端口</span><br><span class="line">      nodePort: 30080   	# 节点对外端口</span><br></pre></td></tr></table></figure>
 <blockquote>
 <ul>
+<li><ol start="4">
 <li><font color=red>容器变量定义</font></li>
+</ol>
+</li>
 </ul>
 </blockquote>
 <table>
@@ -1563,7 +1599,10 @@ $ kubectl get pods --show-labels -n cattle-system
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">    env:   	# 容器运行前需设置的环境变量列表</span><br><span class="line">    - name: JAVA_OPTS   	# 环境变量名称</span><br><span class="line">      value: &quot;-Xmx1g&quot;   	# 定义使用内存、环境变量的值</span><br></pre></td></tr></table></figure>
 <blockquote>
 <ul>
+<li><ol start="5">
 <li><font color=red>容器资源限制和资源</font></li>
+</ol>
+</li>
 </ul>
 </blockquote>
 <table>
@@ -1613,30 +1652,41 @@ $ kubectl get pods --show-labels -n cattle-system
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# Pod中容器的详细定义</span><br><span class="line">  containers:   	# ，Pod中容器列表</span><br><span class="line">    resources:   	# 资源限制和请求的设置</span><br><span class="line">     limits:   	# 限定Pod最大使用硬件资源</span><br><span class="line">      cpu: &quot;1&quot;   	# Cpu的限制，单位为core数</span><br><span class="line">      memory: &quot;1Gi&quot;   	# 内存限制，单位可以为Mib/Gib</span><br><span class="line">      </span><br><span class="line">     requests:   	# 资源请求的设置</span><br><span class="line">      cpu: &quot;0.5&quot;   	# 限定使用几个核心CPU、容器启动的初始可用数量</span><br><span class="line">      memory: &quot;256Mi&quot;   	# 设定使用内存、容器启动的初始可用数量</span><br></pre></td></tr></table></figure>
 <blockquote>
 <ul>
-<li><p><font color=red>Pod 内容器健康检查的设置</font>  </p>
+<li><ol start="6">
+<li><font color=red>Pod 内容器健康检查的设置</font></li>
+</ol>
 </li>
-<li><p><font color=red><code>startupProbe</code> ： 启动探测</font>  </p>
-<blockquote>
+<li><ol start="7">
+<li><font color=red><code>startupProbe</code> ： 启动探测</font>  <blockquote>
 <ul>
-<li><code>k8s1.16</code>版本后新加<code>startupProbe</code>探测方式，用于判断容器内应用程序是否已经启动，如果配置了<code>startuprobe</code>，就会先禁用其他的探测，直到它成功为止</li>
+<li>7.1 <code>k8s1.16</code>版本后新加<code>startupProbe</code>探测方式，用于判断容器内应用程序是否已经启动，如果配置了<code>startuprobe</code>，就会先禁用其他的探测，直到它成功为止</li>
 </ul>
 </blockquote>
 </li>
-<li><p><font color=red>Kubelet 使用 liveness probe（存活探针）</font>  </p>
-<blockquote>
-<p><code>Kubelet</code> 使用<code>liveness probe</code>（存活探针）来确定何时重启容器。例如，当应用程序处于运行状态但无法做进一步操作，<code>liveness</code>探针将捕获到<code>deadlock</code>重启处于该状态下的容器，使应用程序在存在<code>bug</code>的情况下依然能够继续运行下去（谁的程序还没几个<code>bug</code>呢）。   </p>
+</ol>
+</li>
+<li><ol start="8">
+<li><font color=red>Kubelet 使用 liveness probe（存活探针）</font>  <blockquote>
+<p>8.1 <code>Kubelet</code> 使用<code>liveness probe</code>（存活探针）来确定何时重启容器。例如，当应用程序处于运行状态但无法做进一步操作，<code>liveness</code>探针将捕获到<code>deadlock</code>重启处于该状态下的容器，使应用程序在存在<code>bug</code>的情况下依然能够继续运行下去（谁的程序还没几个<code>bug</code>呢）。</p>
 </blockquote>
 </li>
-<li><p><font color=red><code>Kubelet</code> 使用<code>readiness probe</code>（就绪探针）</font>  </p>
-<blockquote>
+</ol>
+</li>
+<li><ol start="9">
+<li><font color=red><code>Kubelet</code> 使用<code>readiness probe</code>（就绪探针）</font>  <blockquote>
 <p><code>Kubelet</code>使用<code>readiness probe</code>（就绪探针）来确定容器是否已经就绪可以接受流量。只有当<code>Pod</code>中的容器都处于就绪状态时<code>kubelet</code>才会认定该<code>Pod</code>处于就绪状态。该信号的作用是控制哪些<code>Pod</code>应该作为<code>service</code>的后端。如果<code>Pod</code>处于非就绪状态，那么它们将会被从<code>service</code>的<code>load balancer</code>中移除。</p>
 </blockquote>
 </li>
+</ol>
+</li>
 </ul>
 </blockquote>
 <blockquote>
 <ul>
+<li><ol start="10">
 <li><font color=red> exec命令：在容器内执行一次命令，如果命令执行的退出码为0，则认为程序正常，否则不正常</font></li>
+</ol>
+</li>
 </ul>
 </blockquote>
 <table>
@@ -1699,15 +1749,18 @@ $ kubectl get pods --show-labels -n cattle-system
 </tr>
 </tbody></table>
 <ul>
+<li><ol start="11">
 <li><font color=red><code>Pod</code>五种状态</font>  <blockquote>
 <ul>
-<li><font color=red><code>Pending</code>(挂起)</font>：<code>API Server</code>已经创建了<code>Pod</code>资源对象，但它尚未被调度完成或者仍处于下载镜像的过程中  </li>
-<li><font color=red><code>Running</code>(运行中)</font>：<code>Pod</code>已经被调度到某节点，并且所有容器都已经被<code>kubelet</code>创建完成  </li>
-<li><font color=red><code>Succeeded</code>(成功)</font>：<code>Pod</code>中的所有容器都已经成功终止并且不会被重启。  </li>
-<li><font color=red><code>Failed</code>(失败)</font>：所有容器都已经终止，但至少有一个容器终止失败，即容器返回了非0值的退出状态。  </li>
-<li><font color=red><code>Unknown</code>(未知)</font>：<code>API Server</code>无法正常获取到<code>Pod</code>对象的状态信息，通常由于网络通信失败所导致</li>
+<li>11.1 <font color=red><code>Pending</code>(挂起)</font>：<code>API Server</code>已经创建了<code>Pod</code>资源对象，但它尚未被调度完成或者仍处于下载镜像的过程中  </li>
+<li>11.2 <font color=red><code>Running</code>(运行中)</font>：<code>Pod</code>已经被调度到某节点，并且所有容器都已经被<code>kubelet</code>创建完成  </li>
+<li>11.3 <font color=red><code>Succeeded</code>(成功)</font>：<code>Pod</code>中的所有容器都已经成功终止并且不会被重启。  </li>
+<li>11.4 <font color=red><code>Failed</code>(失败)</font>：所有容器都已经终止，但至少有一个容器终止失败，即容器返回了非0值的退出状态。  </li>
+<li>11.5 <font color=red><code>Unknown</code>(未知)</font>：<code>API Server</code>无法正常获取到<code>Pod</code>对象的状态信息，通常由于网络通信失败所导致</li>
 </ul>
 </blockquote>
+</li>
+</ol>
 </li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">    lifecycle:   	# 生命周期钩子</span><br><span class="line">      postStart: #容器启动后立即执行此钩子,如果执行失败,会根据重启策略进行重启</span><br><span class="line">       exec:</span><br><span class="line">        command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;echo Hello from the postStart handler&gt; /usr/share/message&quot;]</span><br><span class="line">      preStop: #容器终止前执行此钩子,无论结果如何,容器都会终止</span><br><span class="line">       exec:</span><br><span class="line">        command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;nginx -s quit; while killall -0 nginx; do sleep 1; done&quot;]</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">############################  启动探针  ###########################################</span></span></span><br><span class="line">    startupProbe:</span><br><span class="line">     tcpSocket:   		# 使用TcpSocket、httpGet健康检查</span><br><span class="line">      port: 8010   	# 探测8010端口</span><br><span class="line">     failureThreshold: 5  	# 检测失败5次表示未就绪</span><br><span class="line">     initialDelaySeconds: 60   	# 指定容器启动60s之后开始执行Liveness探测，</span><br><span class="line">     periodSeconds: 10  	# 指定每10秒执行一次Liveness探测。</span><br><span class="line">     successThreshold: 1  	# 检查成功为2次表示就绪</span><br><span class="line">     timeoutSeconds: 5  	# 检测失败1次表示未就绪</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">#############################  存活探针编写方式  ###################################</span></span></span><br><span class="line">    livenessprobe:  	#存活探针检查,不通过不转发流量</span><br><span class="line">     tcpSocket:</span><br><span class="line">      port: 8010</span><br><span class="line">     failureThreshold: 5</span><br><span class="line">     initialDelaySeconds: 60</span><br><span class="line">     periodSeconds: 10</span><br><span class="line">     successThreshold: 1</span><br><span class="line">     timeoutSeconds: 5</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">##############################  就绪探针编写方式  ###################################</span></span></span><br><span class="line">    readinessProbe:   	# 就绪探针检查、不通过重建pod</span><br><span class="line">     tcpSocket:</span><br><span class="line">      port: 8010</span><br><span class="line">     failureThreshold: 5</span><br><span class="line">     initialDelaySeconds: 60</span><br><span class="line">     periodSeconds: 10</span><br><span class="line">     successThreshold: 1</span><br><span class="line">     timeoutSeconds: 5</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">#############################   httpGet编写   ###########################################</span></span></span><br><span class="line">     httpGet:</span><br><span class="line">       path: / #URI地址</span><br><span class="line">       port: 80 #端口号</span><br><span class="line">       host: 192.168.109.100 #主机地址  </span><br><span class="line">       scheme: HTTP #支持的协议，http或者https</span><br><span class="line">     failureThreshold: 5</span><br><span class="line">     initialDelaySeconds: 60</span><br><span class="line">     periodSeconds: 10</span><br><span class="line">     successThreshold: 1</span><br><span class="line">     timeoutSeconds: 5</span><br></pre></td></tr></table></figure>
@@ -1927,13 +1980,19 @@ $ kubectl get pods --show-labels -n cattle-system
 </tr>
 </tbody></table>
 <ul>
+<li><ol>
 <li><font color=red><code>Pod</code>调度配置</font></li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">定向调度参数查询</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.nodeName.containers</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.nodeName.affinity</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.nodeSelector.containers</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.nodeSelector.affinity</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">亲和调度查询</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.affinity</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.affinity.nodeAffinity</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.affinity.podAffinity</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.affinity.podAntiAffinity</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">容忍调度查询</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl explain pod.spec.tolerations</span></span><br></pre></td></tr></table></figure>
 
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">spec:   	# 必选，Pod中容器的详细定义</span><br><span class="line">  replicas: 2   	# 创建Pod个数</span><br><span class="line">  selector:   	# 标签选择器</span><br><span class="line">   matchLabels:   # 标签选择方式:直接给定标签键值,这里是取交集的,也就是Pod必须满足下面两个标签才能被调度</span><br><span class="line">    project: ms</span><br><span class="line">    app: product   	# 此行以上定义控制器本身</span><br><span class="line">    </span><br><span class="line">  template:   	# 定义Deployment更新回滚</span><br><span class="line">   metadata:</span><br><span class="line">    labels:</span><br><span class="line">    - name: string</span><br><span class="line">    annotations:</span><br><span class="line">    - name: nginx</span><br><span class="line">     </span><br><span class="line">spec:</span><br><span class="line">  hostAliases:  	# /etc/hosts/手动添加解析</span><br><span class="line">  - ip: &quot;192.168.4.110&quot;</span><br><span class="line">    hostnames:</span><br><span class="line">    - &quot;k8s.com&quot;</span><br><span class="line">   </span><br><span class="line">  containers:   	# 必选，Pod中容器列表</span><br><span class="line">  restartPolicy: [Always、Never、OnFailure]  #默认K8S-Pod的重启策略,此容器退出后立即创建一个相同容器</span><br><span class="line">  nodeName: k8s-node1 # NodeName表示将该Pod调度到指定到名称的node节点上</span><br><span class="line">  nodeSelector: obeject # nodeSelector用于将Pod调度到添加了指定标签的Node节点上</span><br><span class="line">  imagePullSecrets: # Pull镜像时使用的secret名称，以key：secretkey格式指定</span><br><span class="line">  - name: docker-harbor  	# 指定使用的secret库房名称</span><br><span class="line">  hostNetwork: false   #是否使用主机网络模式，默认为false，如果设置为true，表示使用宿主机网络</span><br></pre></td></tr></table></figure>
 <h3 id="5-yaml编写示例"><a href="#5-yaml编写示例" class="headerlink" title="5. yaml编写示例"></a><span id="yaml编写示例">5. <font color=red>yaml编写示例</font></span></h3><ul>
+<li><ol>
 <li>快速编写生成<code>yaml</code>文件</li>
+</ol>
+</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出到文件，编辑修改文件</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment nginx --image=nginx:1.17.1 --dry-run=client -n dev -o yaml &gt;/tmp/test.yam</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用kubectl get命令导出yaml文件</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pod coredns-558bd4d5db-9h55s  -n kube-system -o yaml &gt; /tmp/coredns-558bd4d5db-9h55s.yaml</span></span><br></pre></td></tr></table></figure>
 
