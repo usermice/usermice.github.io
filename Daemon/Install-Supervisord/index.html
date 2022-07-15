@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"usermice.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. 安装Supervisord进程守护服务1.1 安装supervisord Supervisord安装与使用    supervisord初体验    使用Supervisord守护php-fpm进程   Supervisord管理redis进程    使用Supervisord管理Redis进程     安装扩展，下载安装包    1234567$ yum install python-se">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Install-Supervisord">
+<meta property="og:url" content="https://usermice.github.io/Daemon/Install-Supervisord/index.html">
+<meta property="og:site_name" content="二哥">
+<meta property="og:description" content="1. 安装Supervisord进程守护服务1.1 安装supervisord Supervisord安装与使用    supervisord初体验    使用Supervisord守护php-fpm进程   Supervisord管理redis进程    使用Supervisord管理Redis进程     安装扩展，下载安装包    1234567$ yum install python-se">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-14T06:10:45.000Z">
+<meta property="article:modified_time" content="2022-07-14T06:55:57.346Z">
+<meta property="article:author" content="二哥">
+<meta property="article:tag" content="Daemon">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://usermice.github.io/Daemon/Install-Supervisord/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Install-Supervisord | 二哥</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="二哥" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">二哥</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tools">
+
+    <a href="/categories/%E5%B7%A5%E5%85%B7%E8%B5%84%E6%BA%90/" rel="section"><i class="fa fa-briefcase fa-fw"></i>tools</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Daemon/Install-Supervisord/">
+
+<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/Daemon/Install-Supervisord/">Install-Supervisord</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问  的个人博客"></a></p>
+  <p><span>发布时间:</span>2022年07月14日 - 14:10</p>
+  <p><span>最后更新:</span>2022年07月14日 - 14:55</p>
+  <p><span>原始链接:</span><a href="/Daemon/Install-Supervisord/" title="Install-Supervisord">https://usermice.github.io/Daemon/Install-Supervisord/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://usermice.github.io/Daemon/Install-Supervisord/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+	});
+    });  
+</script>
+
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Install-Supervisord
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-14 14:10:45 / 修改时间：14:55:57" itemprop="dateCreated datePublished" datetime="2022-07-14T14:10:45+08:00">2022-07-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Daemon/" itemprop="url" rel="index"><span itemprop="name">Daemon</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1-安装Supervisord进程守护服务"><a href="#1-安装Supervisord进程守护服务" class="headerlink" title="1. 安装Supervisord进程守护服务"></a>1. 安装<a target="_blank" rel="noopener" href="http://supervisord.org/"><code>Supervisord</code></a>进程守护服务</h3><h4 id="1-1-安装supervisord"><a href="#1-1-安装supervisord" class="headerlink" title="1.1 安装supervisord"></a>1.1 <font color=red>安装<code>supervisord</code></font></h4><ul>
+<li><p><a target="_blank" rel="noopener" href="https://www.artacode.com/posts/supervisor/"><code>Supervisord</code>安装与使用</a>  </p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/9abffc905645"><code>supervisord</code>初体验</a>  </p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://blog.wangmao.me/supervisor-with-php-fpm.html">使用<code>Supervisord</code>守护<code>php-fpm</code>进程</a> </p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://baiyongjie.com/?p=385"><code>Supervisord</code>管理<code>redis</code>进程</a>  </p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://my.oschina.net/xinxingegeya/blog/659095">使用<code>Supervisord</code>管理<code>Redis</code>进程</a>  </p>
+</li>
+<li><ol>
+<li><font color=red>安装扩展，下载安装包</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install python-setuptools -y  	<span class="comment"># 安装python程序开发过程库</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /usr/local/src/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://pypi.python.org/packages/7b/17/88adf8cb25f80e2bc0d18e094fcd7ab300632ea00b601cbbbb84c2419eae/supervisor-3.3.2.tar.gz  	<span class="comment"># 下载安装包</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">https://files.pythonhosted.org/packages/0a/ba/52611dc8278828eb9ec339e6914a0f865f9e2af967214905927835dfac0a/setuptools-63.2.0.tar.gz  	<span class="comment"># 新的下载地址</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf supervisor-3.3.2.tar.gz   <span class="comment">#解压安装包</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> supervisor-3.3.2 <span class="comment">#进入程序目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">python setup.py install  	<span class="comment"># 执行安装脚本</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>修改配置文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">echo_supervisord_conf &gt;/etc/supervisord.conf  	<span class="comment"># 执行命令生成配置文件</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> /etc/supervisor  	<span class="comment"># 创建需要守护的进程目录</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/supervisord.conf</span></span><br><span class="line">	;[include]</span><br><span class="line">	;files = relative/directory/*.ini</span><br><span class="line">	修改为:</span><br><span class="line">	[include]</span><br><span class="line">	files=/etc/supervisor/*.conf (注意去掉分号,第一次安装的时候就因为没去掉分号出现了问题!);</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">supervisord -c /etc/supervisord.conf  	<span class="comment"># 启动服务</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">supervisorctl reload  	<span class="comment"># 重新载入</span></span></span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-编写服务进程守护配置文件"><a href="#1-2-编写服务进程守护配置文件" class="headerlink" title="1.2 编写服务进程守护配置文件"></a>1.2 <font color=red>编写服务进程守护配置文件</font></h4><ul>
+<li><ol>
+<li><font color=red><code>Redis</code>进程守护配置文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[program:redisd]</span><br><span class="line">command=bash -c &quot;sleep 1 &amp;&amp; /usr/local/redis/bin/redis-server  /usr/local/redis/redis.conf&quot;    #启动supervisor会自动运行这个command  </span><br><span class="line">directory = /Users/xinxingegeya/IDE/redis/redis_7000 #程序的启动目录</span><br><span class="line">process_name=%(program_name)s   #调用流程名称</span><br><span class="line">autostart=true      #当程序跑出exit的时候，这个program会自动重启</span><br><span class="line">autorestart=true    #程序重启时候停留在runing状态的秒数</span><br><span class="line">startretries=5  #启动 5 秒后没有异常退出，就当作已经正常启动了</span><br><span class="line">startretries = 3     #启动失败自动重试次数，默认是 3</span><br><span class="line">user = xinxingegeya          #用哪个用户启动</span><br><span class="line">exitcodes=0,2,70    #退出码</span><br><span class="line">stopsignal=QUIT     #停止信号:QUIT(放弃)</span><br><span class="line">stopwaitsecs=2      #停止等待秒数</span><br><span class="line">stdout_logfile=/var/log/supervisor/redis.log</span><br><span class="line">stdout_logfile_maxbytes=1MB</span><br><span class="line">stdout_logfile_backups=10</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red><code>php-fpm</code>进程守护配置文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[program:php-fpm]</span><br><span class="line">command=bash -c &quot;sleep 1 &amp;&amp; /usr/local/php/sbin/php-fpm --fpm-config /usr/local/php/etc/php-fpm.conf --pid /usr/local/php/var/run/php-fpm.pid&quot;</span><br><span class="line">process_name=%(program_name)s</span><br><span class="line">autostart=true</span><br><span class="line">autorestart=true</span><br><span class="line">startretries=5</span><br><span class="line">exitcodes=0,2,70</span><br><span class="line">stopsignal=QUIT </span><br><span class="line">stopwaitsecs=2</span><br><span class="line">stdout_logfile=/var/log/supervisord/php-fpm.log</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>其他配置项</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">redirect_stderr=true ; (max main logfile bytes b4 rotation;default 50MB)</span><br><span class="line">logfile=/web/crontab_agent/Logs/swcAgent.log ;</span><br><span class="line">logfile_maxbytes=500MB ; (num of main logfile rotation backups;default 10)</span><br><span class="line">logfile_backups=10 ;</span><br><span class="line">loglevel=info ;</span><br><span class="line">stdout_logfile=/web/crontab_agent/Logs/swcAgent.log ; stdout log path, NONE for none; default AUTO</span><br><span class="line">stdout_logfile_maxbytes=500MB   ; max # logfile bytes b4 rotation (default 50MB)</span><br><span class="line">stdout_logfile_backups=2     ; # of stdout logfile backups (default 10)</span><br><span class="line">stderr_logfile=/web/crontab_agent/Logs/swcAgent.log ; stderr log path, NONE for none; default AUTO</span><br><span class="line">stderr_logfile_maxbytes=500MB   ; max # logfile bytes b4 rotation (default 50MB)</span><br><span class="line">stderr_logfile_backups=2     ; # of stderr logfile backups (default 10)</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>二哥
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://usermice.github.io/Daemon/Install-Supervisord/" title="Install-Supervisord">https://usermice.github.io/Daemon/Install-Supervisord/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Daemon/" rel="tag"># <i class="fa fa-tag"></i> Daemon</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/TimeRsync/Install-TimeSync/" rel="prev" title="Install-TimeSync">
+      <i class="fa fa-chevron-left"></i> Install-TimeSync
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/HAProxy/Install-HAProxy/" rel="next" title="Install-HAProxy">
+      Install-HAProxy <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+    
+ </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85Supervisord%E8%BF%9B%E7%A8%8B%E5%AE%88%E6%8A%A4%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.</span> <span class="nav-text">1. 安装Supervisord进程守护服务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E5%AE%89%E8%A3%85supervisord"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 安装supervisord</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E7%BC%96%E5%86%99%E6%9C%8D%E5%8A%A1%E8%BF%9B%E7%A8%8B%E5%AE%88%E6%8A%A4%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 编写服务进程守护配置文件</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="二哥"
+      src="/images/IMG_0081.JPG">
+  <p class="site-author-name" itemprop="name">二哥</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="/usererge#gmail.com" title="E-Mail → usererge#gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/yourname" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="二哥"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">二哥</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">250k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:47</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://usermice.github.io/" class="theme-link">二哥</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+-->
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

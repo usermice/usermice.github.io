@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"usermice.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1.Keepalived介绍 标签： 高可用vrrp  1.1 Keepalived简介Keepalived啥软件起初是准尉LVS负载软件设计的，用来管理并监控LVS集群系统中各个服务节点的装阿提，后来加入了高可用的VRRP功能。 VRRP是Virtual Router Redundancy Protocol(虚拟路由器冗余协议)的缩写，为解决静态路由器单点故障问题，确保个别节点宕机时，真哥哥网络">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Install-Keepalived">
+<meta property="og:url" content="https://usermice.github.io/Keepalived/Install-Keepalived/index.html">
+<meta property="og:site_name" content="二哥">
+<meta property="og:description" content="1.Keepalived介绍 标签： 高可用vrrp  1.1 Keepalived简介Keepalived啥软件起初是准尉LVS负载软件设计的，用来管理并监控LVS集群系统中各个服务节点的装阿提，后来加入了高可用的VRRP功能。 VRRP是Virtual Router Redundancy Protocol(虚拟路由器冗余协议)的缩写，为解决静态路由器单点故障问题，确保个别节点宕机时，真哥哥网络">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-14T09:29:53.000Z">
+<meta property="article:modified_time" content="2022-07-15T06:18:19.725Z">
+<meta property="article:author" content="二哥">
+<meta property="article:tag" content="Keepalived">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://usermice.github.io/Keepalived/Install-Keepalived/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Install-Keepalived | 二哥</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="二哥" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">二哥</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tools">
+
+    <a href="/categories/%E5%B7%A5%E5%85%B7%E8%B5%84%E6%BA%90/" rel="section"><i class="fa fa-briefcase fa-fw"></i>tools</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Keepalived/Install-Keepalived/">
+
+<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/Keepalived/Install-Keepalived/">Install-Keepalived</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问  的个人博客"></a></p>
+  <p><span>发布时间:</span>2022年07月14日 - 17:29</p>
+  <p><span>最后更新:</span>2022年07月15日 - 14:18</p>
+  <p><span>原始链接:</span><a href="/Keepalived/Install-Keepalived/" title="Install-Keepalived">https://usermice.github.io/Keepalived/Install-Keepalived/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://usermice.github.io/Keepalived/Install-Keepalived/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+	});
+    });  
+</script>
+
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Install-Keepalived
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-07-14 17:29:53" itemprop="dateCreated datePublished" datetime="2022-07-14T17:29:53+08:00">2022-07-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-15 14:18:19" itemprop="dateModified" datetime="2022-07-15T14:18:19+08:00">2022-07-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Keepalived/" itemprop="url" rel="index"><span itemprop="name">Keepalived</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>18k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>16 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1-Keepalived介绍"><a href="#1-Keepalived介绍" class="headerlink" title="1.Keepalived介绍"></a>1.<code>Keepalived</code>介绍</h3><ul>
+<li><font color=red>标签： 高可用<code>vrrp</code></font></li>
+</ul>
+<h4 id="1-1-Keepalived简介"><a href="#1-1-Keepalived简介" class="headerlink" title="1.1 Keepalived简介"></a>1.1 <font color=red><code>Keepalived</code>简介</font></h4><p><code>Keepalived</code>啥软件起初是准尉<code>LVS</code>负载软件设计的，用来管理并监控<code>LVS</code>集群系统中各个服务节点的装阿提，后来加入了高可用的<code>VRRP</code>功能。 <code>VRRP</code>是<code>Virtual Router Redundancy Protocol(虚拟路由器冗余协议)</code>的缩写，为解决静态路由器单点故障问题，确保个别节点宕机时，真哥哥网络可以不间断地运行。 <code>Keepalived</code>另一方面具有配置配置管理<code>LVS</code>的功能，同时还具有对<code>LVS</code>下面节进行健康检查的功能。</p>
+<h4 id="1-2-Keepalived服务的三个重要功能"><a href="#1-2-Keepalived服务的三个重要功能" class="headerlink" title="1.2 Keepalived服务的三个重要功能"></a>1.2 <font color=red><code>Keepalived</code>服务的三个重要功能</font></h4><ul>
+<li><ol>
+<li><font color=red>管理<code>LVS</code>负载均衡软件</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>1.1 <code>Keepalived</code>软件起初是为了解决<code>LVS</code>的问题而诞生的。因此，<code>Keepalived</code>和<code>LVS</code>的感情很深，向夫妻一样可以紧密结合，愉快地工作。 <code>Keepalived</code>通过读取配置文件，实现通过更底层的接口直接管理<code>LVS</code>及控制服务器的启动、停止等功能，使得<code>LVS</code>应用更加简单方便。</li>
+</ul>
+</blockquote>
+<ul>
+<li><ol start="2">
+<li><font color=red>实现对<code>LVS</code>集群健康检查的功能</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>2.1 <code>Keepalived</code>可以通过在自身的<code>keepalived.conf</code>文件里配置<code>LVS</code>的节点<code>IP</code>和相关参数实现对<code>LVS</code>的直接管理；当故障的节点服务器被修复以后，<code>Keepalived</code>服务又会自动地把它们加入到正常转发队列中，对客户提供服务。</li>
+</ul>
+</blockquote>
+<ul>
+<li><ol start="3">
+<li><font color=red>作为系统网络服务的高可用</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>3.1 <code>Keepalived</code>可以实现任意两台主机之间，例如<code>Master</code>和<code>Backup</code>主机之间的故障转移和自动切换，这个主机可以是普通的不能停机的业务服务器，也可以是<code>LVS</code>负载均衡、<code>Nginx</code>反向代理这样的服务器。</li>
+</ul>
+</blockquote>
+<h4 id="1-3-VRRP原理介绍"><a href="#1-3-VRRP原理介绍" class="headerlink" title="1.3 VRRP原理介绍"></a>1.3 <font color=red><code>VRRP</code>原理介绍</font></h4><ul>
+<li><ol>
+<li><code>VRRP</code>，全称<code>Virtual Router Redundancy Protocol</code>中文名为虚拟路由冗余协议，<code>VRRP</code>的出现是为了解决静态路由的单</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><code>VRRP</code>是通过一种竞选协议机制来将路由任务交给某台<code>VRRP</code>路由器的。</li>
+</ol>
+</li>
+<li><ol start="3">
+<li><code>VRRP</code>用<code>IP</code>多播的方式（默认多播地址（224.0.0.18））实现高可用对之间通信。</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>工作时主节点发包，备节点接包，当备节点接收不到主节点发的数据包的时候，就启动接管程序接管主节点的资源。备节点可以有多个，通过优先级竞选，但一般<code>Keepalived</code>系统运维工作中都是一对。</li>
+</ol>
+</li>
+<li><ol start="5">
+<li><code>VRRP</code>使用了加密协议加密数据，但<code>Keepalived</code>官方目前还是推荐用明文的方式配置认证类型和密码。</li>
+</ol>
+</li>
+</ul>
+<h4 id="1-4-Keepalived服务的工作原理"><a href="#1-4-Keepalived服务的工作原理" class="headerlink" title="1.4 Keepalived服务的工作原理"></a>1.4 <font color=red><code>Keepalived</code>服务的工作原理</font></h4><ul>
+<li><ol>
+<li><code>keepalived</code>通过<code>vrrp</code>通信，通过竞选确定主备，主优先级高于备。因此，工作时主会获得所有资源，备节点处于等待状态，当主节点宕机，那么备节点启用接管程序接管主节点资源，顶替主节点提供服务。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>在<code>Keepalived</code>服务对之间，只有作为主的服务器会一直发送<code>VRRP</code>广播包，告诉备它还活着，此时备不会抢占主，当主不可用时，即监听不到主发送的广播包时，就会启动相关服务接管资源，保证业务的连续性。接管速度最快可以小于1秒。</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>2.1 <code>VRRP</code>报文封装在<code>IP</code>报文中</li>
+<li>2.2 只有一种报文，<code>VRRP</code>通告报文， 只有处于<code>master</code>状态下的路由器会发送，组播地址224.0.0.18</li>
+<li>2.3 <code>VRID</code>虚拟路由器表示，拥有相同<code>VRID</code>的一组路由器构成一个虚拟路由器</li>
+<li>2.4 一个虚拟路由器可以拥有一个或多个虚拟<code>IP</code>地址</li>
+<li>2.5 虚拟<code>MAC</code>地址<code>00-00-5E-00-01（VRID）</code></li>
+<li>2.6 分为抢占和不抢占</li>
+<li>2.7 优先级高的成为<code>master</code>路由器，范围是0-255，0表示路由器放弃<code>master</code>状态，255表示虚拟<code>IP</code>地址实际拥有者。默认为100</li>
+<li>2.8 <code>backup</code>路由器切换到<code>master</code>路由器的时间为<code>skew time=256-backup</code>路由器优先级&#x2F;256</li>
+<li>2.9 <code>master</code>失效，<code>backup</code>转换成<code>master</code>需要的时间为<code>3*V</code>隔<code>RRP</code>报文间<code>Skew tim</code></li>
+</ul>
+</blockquote>
+<h3 id="2-Keepalived-VIP漂移实战"><a href="#2-Keepalived-VIP漂移实战" class="headerlink" title="2. Keepalived VIP漂移实战"></a>2. <code>Keepalived VIP</code>漂移实战</h3><h4 id="2-1-服务器规划"><a href="#2-1-服务器规划" class="headerlink" title="2.1 服务器规划"></a>2.1 <font color=red>服务器规划</font></h4><table>
+<thead>
+<tr>
+<th align="left">服务器</th>
+<th align="left">ip</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>keepalived-01</code></td>
+<td align="left">10.0.0.7</td>
+<td align="left"><code>keepalived</code>主服务器</td>
+</tr>
+<tr>
+<td align="left"><code>keepalived-02</code></td>
+<td align="left">10.0.0.8</td>
+<td align="left"><code>keepalived</code>备服务器</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">10.0.0.3</td>
+<td align="left">VIP</td>
+</tr>
+</tbody></table>
+<h4 id="2-2-安装、配置Keepalived"><a href="#2-2-安装、配置Keepalived" class="headerlink" title="2.2 安装、配置Keepalived"></a>2.2 <font color=red>安装、配置<code>Keepalived</code></font></h4><ul>
+<li><ol>
+<li><font color=red>两台服务器都安装<code>Keepalived</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install keepalived -y</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>修改主服务器<code>Keepalived</code>配置文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/keepalived/keepalived.conf&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">! Configuration File for keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">设置的邮件报警，这部分一般由nagios、zabbix监控软件来负责，这里的内容很鸡肋。</span></span></span><br><span class="line">   notification_email &#123;</span><br><span class="line">   31333741@qq.com</span><br><span class="line">   &#125; </span><br><span class="line">   notification_email_from  31333741@qq.com</span><br><span class="line">   smtp_server 192.168.200.1</span><br><span class="line">   smtp_connect_timeout 30</span><br><span class="line">   router_id LVS_lb01  	# 主节点id 不能和备节点重名</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;  	# VRRP实例</span><br><span class="line">    state MASTER  	# 设置主服务器 </span><br><span class="line">    interface eth0  	# 设置的通信网卡 备节点设置一样</span><br><span class="line">    virtual_router_id 51  	# 同组路由器属性</span><br><span class="line">    priority 150  	# 优先级 这里必须比备节点高</span><br><span class="line">    advert_int 1  	# 每隔一秒发一次心跳</span><br><span class="line">    authentication &#123;  	# 授权密码  </span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123; </span><br><span class="line">     10.0.0.3/24 dev eth0 label eth0:1  	# 虚拟VIP的地址 与网卡标签</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>修改备用服务器<code>Keepalived</code>配置文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/keepalived/keepalived.conf&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">! Configuration File for keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">设置的邮件报警，这部分一般由nagios、zabbix监控软件来负责，这里的内容很鸡肋。</span></span></span><br><span class="line">   notification_email &#123;</span><br><span class="line">   31333741@qq.com</span><br><span class="line">   &#125; </span><br><span class="line">   notification_email_from  31333741@qq.com</span><br><span class="line">   smtp_server 192.168.200.1</span><br><span class="line">   smtp_connect_timeout 30</span><br><span class="line">   router_id LVS_lb02  	# 备节点id 不能和备节点重名</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;  	# VRRP实例</span><br><span class="line">    state MASTER  	# 设置主服务器 </span><br><span class="line">    interface eth0  	# 设置通信网卡  备节点设置一样</span><br><span class="line">    virtual_router_id 51  	# 同组路由器属性</span><br><span class="line">    priority 100  	# 优先级 这里必须比备节点高</span><br><span class="line">    advert_int 1  	# 每隔一秒发一次心跳</span><br><span class="line">    authentication &#123;  	# 授权密码  </span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123; </span><br><span class="line">     10.0.0.3/24 dev eth0 label eth0:1  	# 虚拟VIP的地址 与网卡标签</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>启动主节点<code>keepalived</code>服务并检查</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# /etc/init.d/keepalived start</span><br><span class="line">正在启动 keepalived：            [确定]</span><br><span class="line">[root@kepalived-01 ~]# ps -ef|grep keep|grep -v grep</span><br><span class="line">root       7428      1  0 10:54 ?        00:00:00 /usr/sbin/keepalived -D</span><br><span class="line">root       7430   7428  0 10:54 ?        00:00:00 /usr/sbin/keepalived -D</span><br><span class="line">root       7431   7428  0 10:54 ?        00:00:00 /usr/sbin/keepalived -D</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li><font color=red>检查配置后的虚拟<code>IP</code></font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>5.1 <font color=red>出现带有<code>vip：10.0.0.3</code>行的结果表示<code>kepalived-01</code>的<code>keepalived</code>服务单实例配置成功</font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# ip add|grep 10.0.0.3</span><br><span class="line">    inet 10.0.0.3/24 scope global secondary eth0:1</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="6">
+<li><font color=red>启动备节点<code>keepalived</code>服务</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>6.1 <font color=red>查看备用服务器是否有<code>IP</code>没有返回任何结果就对</font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-02 ~]# /etc/init.d/keepalived start</span><br><span class="line">正在启动 keepalived：  </span><br><span class="line"></span><br><span class="line">[root@keepalived-02 ~]# ip add|grep 10.0.0.3</span><br><span class="line">[root@keepalived-02 ~]# </span><br></pre></td></tr></table></figure>
+
+<h4 id="2-3-Keepalived服务器主备切换、以及脑裂排查"><a href="#2-3-Keepalived服务器主备切换、以及脑裂排查" class="headerlink" title="2.3 Keepalived服务器主备切换、以及脑裂排查"></a>2.3 <font color=red><code>Keepalived</code>服务器主备切换、以及脑裂排查</font></h4><h5 id="2-3-1-脑裂排查解决"><a href="#2-3-1-脑裂排查解决" class="headerlink" title="2.3.1 脑裂排查解决"></a>2.3.1 <font color=red>脑裂排查解决</font></h5><ul>
+<li><ol>
+<li>出现上述无任何结果的现象，表示<code>keepalived-02</code>的<code>keepalived</code>服务单实例配置成功。如果<code>keepalived-02</code>配置过滤后出现<code>10.0.0.3</code>的<code>ip</code>。则表示<code>keepalived</code>工作不正常，同一个<code>IP</code>地址同一时刻应该只能出现一台服务器。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>如果查看<code>backup</code>备节点<code>vip</code>有如下信息，说明高可用脑裂了，裂脑是两台服务器争抢同一资源导致的，例如:两边都配置了同一个<code>ip</code>，一般要先考虑排查两个地方</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>2.1 <font color=red>主备两台服务器之间是否通信正常，如果不正常是否有<code>iptables</code>防火墙阻挡</font>  </li>
+<li>2.2 <font color=red>主备两台服务器对应的<code>keepalived.conf</code>配置文件是否有错误？例如：是否同一实例的<code>virtual_router_id</code>配置不一致</font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-02 ~]# ip add|grep 10.0.0.3</span><br><span class="line">    inet 10.0.0.3/24 scope global secondary eth0:1</span><br></pre></td></tr></table></figure>
+
+<h5 id="2-3-2-进行高可用主备服务器切换实验"><a href="#2-3-2-进行高可用主备服务器切换实验" class="headerlink" title="2.3.2 进行高可用主备服务器切换实验"></a>2.3.2 <font color=red>进行高可用主备服务器切换实验</font></h5><ul>
+<li><ol>
+<li><font color=red>停掉主服务上的<code>keepalived</code>服务或关闭主服务器，操作及检查步骤</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# ip add|grep 10.0.0.3</span><br><span class="line">    inet 10.0.0.3/24 scope global secondary eth0:1</span><br><span class="line">[root@keepalived-01 ~]# /etc/init.d/keepalived stop</span><br><span class="line">停止 keepalived：                                          [确定]</span><br><span class="line">[root@keepalived-01 ~]# ip add|grep 10.0.0.3  	# 查看vip消失</span><br><span class="line">[root@keepalived-01 ~]#</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>可以看到<code>vip10.00.3</code>消失了，此时查看<code>backup</code>备份服务器，看是否会有<code>vip10.0.0.3</code>出现</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>2.1 可以看到备节点<code>keepalived-02</code>已经接管绑定了<code>10.0.0.3</code>这个<code>vip</code>，这期间备节点还会发送<code>ARP</code>广播，让所有的客户端更新本地的<code>ARP</code>表，以便客户端访问新接管<code>vip</code>服务节点。</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-02 ~]# ip add|grep 10.0.0.3        </span><br><span class="line">    inet 10.0.0.3/24 scope global secondary eth0:1</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>此时如果在启动主服务器的<code>keepalived</code>服务，主服务器就会接管回<code>vip 10.0.0.3</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# ip add|grep 10.0.0.3       </span><br><span class="line">[root@keepalived-01 ~]# /etc/init.d/keepalived start</span><br><span class="line">正在启动 keepalived：                                      [确定]</span><br><span class="line">[root@keepalived-01 ~]# ip add|grep 10.0.0.3        </span><br><span class="line">    inet 10.0.0.3/24 scope global secondary eth0:1</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>此时备节点上的<code>vip 10.0.0.3</code>则被释放了，如下</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-02 ~]# ip add|grep 10.0.0.3     </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li><font color=red>这样就实现了单实例<code>keepalived</code>服务<code>IP</code>自动漂移接管了，<code>vip</code>漂移到了新机器新服务上，用户的访问请求自然就会找到新机器新服务了</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>5.1 <font color=red>注意：这里仅实现了<code>VIP</code>自动漂移切换，因此仅适合两台服务器提供的服务均保持开启的应用场景，这也是工作中常用的高可用解决方案</font></li>
+</ul>
+</blockquote>
+<h3 id="3-单实例主备模式keepalived配置文件对比"><a href="#3-单实例主备模式keepalived配置文件对比" class="headerlink" title="3. 单实例主备模式keepalived配置文件对比"></a>3. 单实例主备模式<code>keepalived</code>配置文件对比</h3><ul>
+<li><ol>
+<li>主备单实例<code>keepalived.conf</code>配置差别项</li>
+</ol>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left"><code>Keepalived</code>配置参数</th>
+<th align="left"><code>Master</code>节点特殊参数</th>
+<th align="left"><code>Backup</code>节点特殊参数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>Router_id</code> (唯一标识)</td>
+<td align="left"><code>router_id lb01</code></td>
+<td align="left"><code>router_id lb02</code></td>
+</tr>
+<tr>
+<td align="left"><code>State</code>（角色状态）</td>
+<td align="left"><code>Stat master</code></td>
+<td align="left"><code>Stat backup</code></td>
+</tr>
+<tr>
+<td align="left"><code>Priority</code> （竞选优先级）</td>
+<td align="left"><code>Priority 150</code></td>
+<td align="left"><code>Priority 100</code></td>
+</tr>
+</tbody></table>
+<h4 id="3-1-keepalived高可用服务器的””裂脑问题”"><a href="#3-1-keepalived高可用服务器的””裂脑问题”" class="headerlink" title="3.1 keepalived高可用服务器的””裂脑问题”"></a>3.1 <font color=red><code>keepalived</code>高可用服务器的””裂脑问题”</font></h4><ul>
+<li><ol>
+<li><font color=red>什么是裂脑</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>1.1 由于某些原因，导致两台高可用服务器对在指定时间内无法检测到对方的心跳消息。各自取得资源及服务的所有权，而此时的两台高可用服务器对都还活着并在正常运行着，这样就会导致同一个<code>ip</code>或服务在两端同时存在而发生冲突，最严重的是两台主机占用一个VIP地址，当用户写入数据时可能会分别写入到两端，这可能会导致服务器两端数据不一致或造成数据丢失，这种情况称为脑裂</li>
+</ul>
+</blockquote>
+<ul>
+<li><ol start="2">
+<li><font color=red>导致脑裂发生的原因</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>2.1 一般来说，脑裂的发生，有以下几种原因： 高可用服务器之间心跳线路发生故障，导致无法正常通信</li>
+</ul>
+<blockquote>
+<ul>
+<li>2.1.1 <font color=red>心跳线坏了(包括断了，老化)</font>  </li>
+<li>2.1.2 <font color=red>网卡及相关驱动坏了，<code>IP</code>配置及冲突</font>  </li>
+<li>2.1.3 <font color=red>心跳线连接的设备故障（网卡及交换机）</font>  </li>
+<li>2.1.4 <font color=red>仲裁的机器出问题</font></li>
+</ul>
+</blockquote>
+<ul>
+<li>2.2 高可用服务器上开启了<code>iptableable</code>防火墙阻挡了心跳消息传输</li>
+<li>2.3 高可用服务器上心跳网卡地址等信息配置不正确，导致发送心跳失败</li>
+<li>2.4 其他服务器配置不当等原因，心跳广播冲突。软件<code>BUG</code>等</li>
+</ul>
+</blockquote>
+<ul>
+<li><ol start="3">
+<li><font color=red>提示：<code>keepalived</code>配置里同一<code>VRRP</code>实例如果<code>virtual_router_id</code>两端参数配置不一致，也会导致脑裂问题发生</font></li>
+</ol>
+</li>
+</ul>
+<h4 id="3-2-解决脑裂的常见方案"><a href="#3-2-解决脑裂的常见方案" class="headerlink" title="3.2 解决脑裂的常见方案"></a>3.2 <font color=red>解决脑裂的常见方案</font></h4><ul>
+<li><ol>
+<li><font color=red>同时使用串行电缆和以太网电缆连接，同时用两条心跳线路，这样一条线路坏了，另一条线路还是好的，依然能够传送心跳信息</font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>当检测到脑裂时强行关闭一个心跳节点（这个功能需要特殊设备支持，如<code>Stonith、fence）</code>。相当于节点信息接收不到心跳信息，通过单独的线路发送机关命令关闭主节点电源</font></li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red>做好裂脑的监控警报</font></li>
+</ol>
+</li>
+</ul>
+<h3 id="4-keepalived双实例双主模式配置"><a href="#4-keepalived双实例双主模式配置" class="headerlink" title="4. keepalived双实例双主模式配置"></a>4. <code>keepalived</code>双实例双主模式配置</h3><ul>
+<li><ol>
+<li><font color=red><code>keepalived</code>双实例双主模式配置实战</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>1.1 <code>Keepalived</code>还支持多实例多业务双向主备模式，即<code>A</code>业务在<code>keepalived-01</code>上主模式是主模式，在<code>keepalived-02</code>上是备模式，而<code>B</code>业务在<code>keepalived-02</code>上是备模式，在<code>keepalived-02</code>上是主模式</li>
+</ul>
+</blockquote>
+<ul>
+<li><ol start="2">
+<li><font color=red><code>Keepalived</code>双实例双主模式的<code>ip</code>及<code>VIP</code>规划</font></li>
+</ol>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left"><code>Hostname</code></th>
+<th align="left"><code>IP</code></th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>keepalived-01</code></td>
+<td align="left">10.0.0.5</td>
+<td align="left"><code>VIP：10.0.0.3</code>（用于绑定A服务<a target="_blank" rel="noopener" href="http://www.etiantian.org)/">www.etiantian.org）</a></td>
+</tr>
+<tr>
+<td align="left"><code>keepalived-02</code></td>
+<td align="left">10.0.0.4</td>
+<td align="left"><code>VIP：10.0.0.4</code>（用于绑定B服务blog.etiantian.org）</td>
+</tr>
+</tbody></table>
+<ul>
+<li><ol start="3">
+<li><font color=red>首先配置<code>keepalived-01</code> <code>10.0.0.5</code>的<code>keepalived.conf</code>，在单实例的基础上增加一个<code>VIP_instance VI_2</code>步骤及内容如下</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# cat &gt;/etc/keepalived/keepalived.conf&lt;&lt;-EOF</span><br><span class="line">! Configuration File for keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">   notification_email &#123;</span><br><span class="line">   31333741@qq.com</span><br><span class="line">   &#125;</span><br><span class="line">   notification_email_from  31333741@qq.com</span><br><span class="line">   smtp_server 127.0.0.1</span><br><span class="line">   smtp_connect_timeout 30</span><br><span class="line">   router_id lb01</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state MASTER</span><br><span class="line">    interface eth0</span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    priority 150</span><br><span class="line">    advert_int 1</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">     10.0.0.3/24 dev eth0 label eth0:1  </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_2 &#123;</span><br><span class="line">    state BACKUP</span><br><span class="line">    interface eth0</span><br><span class="line">    virtual_router_id 52</span><br><span class="line">    priority 100</span><br><span class="line">    advert_int 1</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1112</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">     10.0.0.4/24 dev eth0 label eth0:2</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>提示：以<code>vrrp_instance VI_1</code>在<code>keepalived-01 10.0.0.5</code>服务器上的角色为主，<code>vrrp_instance VI_2</code>在<code>keepalived-01 10.0.0.5</code>服务器上的角色为备 然后布置<code>keepalived-02 10.0.0.6</code>的<code>keepalived.conf</code>，在单实例的基础上增加<code>vrrp_instance VI_2</code>实例，步骤如下</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-02 ~]# cat &gt;/etc/keepalived/keepalived.conf&lt;&lt;-EOF</span><br><span class="line">! Configuration File for keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">   notification_email &#123;</span><br><span class="line">   31333741@qq.com</span><br><span class="line">   &#125;</span><br><span class="line">   notification_email_from  31333741@qq.com</span><br><span class="line">   smtp_server 127.0.0.1</span><br><span class="line">   smtp_connect_timeout 30</span><br><span class="line">   router_id lb02</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state BACKUP</span><br><span class="line">    interface eth0</span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    priority 100</span><br><span class="line">    advert_int 1</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">     10.0.0.3/24 dev eth0 label eth0:1  </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_2 &#123;</span><br><span class="line">    state MASTER</span><br><span class="line">    interface eth0</span><br><span class="line">    virtual_router_id 52</span><br><span class="line">    priority 150</span><br><span class="line">    advert_int 1</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1112</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">     10.0.0.4/24 dev eth0 label eth0:2</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li><font color=red>提示：以<code>vrrp_instance VI_1</code>在<code>keepalived-02 10.0.0.6</code>服务器上的角色为备，<code>vrrp_instance VI_2</code>在<code>keepalived-02 10.0.0.6</code>服务器上的角色为主 接着在<code>keepalived-01</code>、<code>keepalived-02</code>上分别重启<code>keepalived</code>服务，观察初始<code>VIP</code>设置情况<code> Lb01</code>操作情况如下</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# /etc/init.d/keepalived restart</span><br><span class="line">停止 keepalived：                                        [确定]</span><br><span class="line">正在启动 keepalived：                                    [确定]</span><br><span class="line">[root@keepalived-01 ~]# ip add|grep -E &quot;10.0.0.3|0.4&quot;</span><br><span class="line">    inet 10.0.0.3/24 scope global secondary eth0:1</span><br><span class="line">    inet 10.0.0.4/24 scope global secondary eth0:2</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="6">
+<li><font color=red>提示：启动<code>keepalived-02</code>后，初始状态已经启动了<code>10.0.0.4VIP</code>，即<code>keepalived-02</code>由<code>VI_2</code>实例配置的<code>VIP</code>对外提供服务，列入可以把<code>blog.etiantian.org</code>解析到<code>10.0.0.4</code>上 下面停掉任意一端服务器或者<code>keepalived</code>服务，然后查看vip是不是会漂移到另一端。停掉keepalived-01的<code>keepalived</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# /etc/init.d/keepalived stop</span><br><span class="line">停止 keepalived：                                        [确定]</span><br><span class="line">[root@keepalived-01 ~]# ip add|grep -E &quot;10.0.0.3|0.4&quot;</span><br><span class="line">[root@keepalived-01 ~]# # 此处无任何信息</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="7">
+<li><font color=red>停掉<code>keepalived-01</code>后，<code>vip 10.0.0.3</code>即被释放,检查<code>keepalived-02</code>服务器上<code>vip</code>的接管情况</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>7.1<code>keepalived-02</code>已将接管了<code>keepalived-01</code>的<code>vip 10.0.0.3</code></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-02 ~]# ip add|grep -E &quot;10.0.0.3|0.4&quot;</span><br><span class="line">    inet 10.0.0.4/24 scope global secondary eth0:2</span><br><span class="line">    inet 10.0.0.3/24 scope global secondary eth0:1</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-nginx负载均衡配合keepalived服务案例实战"><a href="#5-nginx负载均衡配合keepalived服务案例实战" class="headerlink" title="5. nginx负载均衡配合keepalived服务案例实战"></a>5. <code>nginx</code>负载均衡配合<code>keepalived</code>服务案例实战</h3><h4 id="5-1-在keepalived-01和keepalived-02上配置nginx负载均衡"><a href="#5-1-在keepalived-01和keepalived-02上配置nginx负载均衡" class="headerlink" title="5.1 在keepalived-01和keepalived-02上配置nginx负载均衡"></a>5.1 <font color=red>在<code>keepalived-01</code>和<code>keepalived-02</code>上配置<code>nginx</code>负载均衡</font></h4><ul>
+<li><ol>
+<li>结合<code>nginx</code>负载均衡的环境，两边<code>keepalived-01</code>和<code>keepalived-02</code>的配置环境一样 <strong>这里使用<code>nginx</code>负载均衡的配置如下：</strong></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">[root@@keepalived-01 ~]# cat &gt;/usr/local/nginx/conf/nginx.conf&lt;&lt;-EOF</span><br><span class="line">worker_processes  1;</span><br><span class="line">events &#123;</span><br><span class="line">    worker_connections  1024;</span><br><span class="line">&#125;</span><br><span class="line">http &#123;</span><br><span class="line">    include       mime.types;</span><br><span class="line">    default_type  application/octet-stream;</span><br><span class="line">    sendfile        on;</span><br><span class="line">    keepalive_timeout  65;</span><br><span class="line"></span><br><span class="line">    upstream server_pools &#123;</span><br><span class="line">         server 10.0.0.7:80  weight=1;</span><br><span class="line">         server 10.0.0.8:80  weight=1;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    server &#123;</span><br><span class="line">        listen       10.0.0.3:80;</span><br><span class="line">        server_name  www.etiantian.org;</span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass http://server_pools;</span><br><span class="line">        include proxy.conf;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen       10.0.0.3:80;</span><br><span class="line">        server_name  bbs.etiantian.org;</span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass http://server_pools;</span><br><span class="line">         include proxy.conf;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen       10.0.0.4:80;</span><br><span class="line">        server_name  blog.etiantian.org;</span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass http://server_pools;</span><br><span class="line">           include proxy.conf;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red><code>keepalived-01</code>上配置<code>keepalived.conf</code>配置文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# cat &gt;/etc/keepalived/keepalived.conf&lt;&lt;-EOF</span><br><span class="line">! Configuration File for keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">   notification_email &#123;</span><br><span class="line">   31333741@qq.com</span><br><span class="line">   &#125;</span><br><span class="line">   notification_email_from  31333741@qq.com</span><br><span class="line">   smtp_server 127.0.0.1</span><br><span class="line">   smtp_connect_timeout 30</span><br><span class="line">   router_id lb01</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state MASTER</span><br><span class="line">    interface eth0</span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    priority 150</span><br><span class="line">    advert_int 1</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">     10.0.0.3/24 dev eth0 label eth0:1  </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_2 &#123;</span><br><span class="line">    state BACKUP</span><br><span class="line">    interface eth0</span><br><span class="line">    virtual_router_id 52</span><br><span class="line">    priority 100</span><br><span class="line">    advert_int 1</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1112</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">     10.0.0.4/24 dev eth0 label eth0:2</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red><code>keepalived-02</code>上配置<code>keepalived.conf</code>配置文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-02 ~]# cat &gt;/etc/keepalived/keepalived.conf&lt;&lt;-EOF</span><br><span class="line">! Configuration File for keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">   notification_email &#123;</span><br><span class="line">   31333741@qq.com</span><br><span class="line">   &#125;</span><br><span class="line">   notification_email_from  31333741@qq.com</span><br><span class="line">   smtp_server 127.0.0.1</span><br><span class="line">   smtp_connect_timeout 30</span><br><span class="line">   router_id lb02</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state BACKUP</span><br><span class="line">    interface eth0</span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    priority 100</span><br><span class="line">    advert_int 1</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">     10.0.0.3/24 dev eth0 label eth0:1  </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_2 &#123;</span><br><span class="line">    state MASTER</span><br><span class="line">    interface eth0</span><br><span class="line">    virtual_router_id 52</span><br><span class="line">    priority 150</span><br><span class="line">    advert_int 1</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1112</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">     10.0.0.4/24 dev eth0 label eth0:2</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-2-解决服务监听的网卡上不存在IP地址问题"><a href="#5-2-解决服务监听的网卡上不存在IP地址问题" class="headerlink" title="5.2 解决服务监听的网卡上不存在IP地址问题"></a>5.2 <font color=red>解决服务监听的网卡上不存在<code>IP</code>地址问题</font></h4><ul>
+<li><ol>
+<li>如果配置使用<code>listen 10.0.0.3:80</code> 的方式指定<code>IP</code>监听服务，而本地的网卡上没有<code>10.0.0.3</code>这个<code>IP，nginx</code>就会报错，如：出现上述的原因是在物理网卡上没有配置与文件里监听的<code>IP</code>相对应的<code>IP</code>，解决办法是在<code>/etc/sysctl.conf</code>中加入如下参数：</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>此项表示启动<code>nginx</code>而忽视配置中监听的VIP是否存在，它同样适合<code>Haproxy</code></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-02 ~]# echo &quot;net.ipv4.ip_nonlocal_bind = 1&quot; &gt;&gt;/etc/sysctl.conf</span><br><span class="line">[root@keepalived-02 ~]# sysctl -p</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-3-解决高可用服务只针对物理服务器的问题"><a href="#5-3-解决高可用服务只针对物理服务器的问题" class="headerlink" title="5.3 解决高可用服务只针对物理服务器的问题"></a>5.3 <font color=red>解决高可用服务只针对物理服务器的问题</font></h4><ul>
+<li><ol>
+<li>默认情况下<code>keepalived</code>软件仅仅在对方机器宕机或<code>keepalived</code>停掉的时候才会接管业务，但在实际过程中，有业务服务停止而<code>keepalived</code>服务还在工作的情况，这就会导致用户访问<code>VIP</code>无法找到对应的服务</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>方法一：</font>可以写守护进程脚本来处理。当<code>nginx</code>业务有问题时，就停掉本地的<code>keepalived</code>服务，实现<code>IP</code>漂移到对端继续提供服务。实际工作中部署及开发的示例脚本</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>2.1 <font color=red>此脚本的思路是如没有80端口存在，就停掉<code>keepalived</code>服务实现释放本地的<code>VIP</code>,在后台执行上述脚本</font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# cat &gt;/server/scripts/check_nginx.sh&lt;&lt;-EOF</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/sh</span></span><br><span class="line">while true</span><br><span class="line">do</span><br><span class="line"> if [ `netstat -lntup|grep nginx|wc -l` -eq 0 ];then</span><br><span class="line">    /etc/init.d/keepalived stop</span><br><span class="line"> fi</span><br><span class="line">  sleep 5</span><br><span class="line">done</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sh server/scripts/check_nginx.sh &amp;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ps -ef|grep check|grep -v grep</span></span><br><span class="line">root       8580   8394  0 16:19 pts/0    00:00:00 sh check_nginx.s</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>2.2 <font color=red>确定<code>nginx</code>以及<code>keepalived</code>服务是否正常</font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# netstat -lntup|grep nginx</span><br><span class="line">tcp        0      0 10.0.0.4:80                 0.0.0.0:*                   LISTEN      8541/nginx          </span><br><span class="line">tcp        0      0 10.0.0.3:80                 0.0.0.0:*                   LISTEN      8541/nginx          </span><br><span class="line">[root@keepalived-01 ~]# /etc/init.d/keepalived status</span><br><span class="line">keepalived (pid  8438) 正在运行...</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>2.3 <font color=red>然后模拟<code>nginx</code>服务挂掉，看<code>IP</code>是否会发生切换</font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# /usr/local/nginx/sbin/nginx -s stop</span><br><span class="line"> 停止 keepalived：       [确定]</span><br><span class="line">[root@@keepalived-01 ~]# /etc/init.d/keepalived status</span><br><span class="line">keepalived       已停</span><br><span class="line">[root@keepalived-01 ~]# netstat -lntup|grep nginx            </span><br><span class="line">[root@keepalived-01 ~]#</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>2.4 <font color=red>此时备节点接管</font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-02 ~]# ip add|grep -E &quot;10.0.0.3|0.4&quot;</span><br><span class="line">    inet 10.0.0.3/24 scope global secondary eth0:1</span><br><span class="line">    inet 10.0.0.4/24 scope global secondary eth0:2</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>方法二：</font>可以使用<code>keepalived</code>的配置脚本参数触发写好的监测服务脚本 首先要开发监测服务脚本，注意:这个脚本与上一个的不同</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# cat &gt;/server/scripts/chk_nginx_proxy.sh&lt;&lt;-EOF</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/sh</span></span><br><span class="line">if [ `netstat -lntup|grep nginx|wc -l` -eq 0 ];then</span><br><span class="line">    /etc/init.d/keepalived stop</span><br><span class="line">fi</span><br><span class="line">EOF</span><br><span class="line">[root@keepalived-01 ~]# chmod +x /server/scripts/chk_nginx_proxy.sh </span><br><span class="line">[root@keepalived-01 ~]# ll /server/scripts/chk_nginx_proxy.sh </span><br><span class="line">-rwxr-xr-x 1 root root 99 6月  10 16:30 chk_nginx_proxy.sh</span><br><span class="line">[root@keepalived-01 ~]#</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>3.1 <font color=red>此时<code>keepalived</code>服务的完整配置为</font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# cat &gt;/etc/keepalived/keepalived.conf&lt;&lt;-EOF</span><br><span class="line">! Configuration File for keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">   notification_email &#123;</span><br><span class="line">   31333741@qq.com</span><br><span class="line">   &#125;</span><br><span class="line">   notification_email_from  31333741@qq.com</span><br><span class="line">   smtp_server 127.0.0.1</span><br><span class="line">   smtp_connect_timeout 30</span><br><span class="line">   router_id lb01</span><br><span class="line">&#125;</span><br><span class="line">vrrp_script chk_nginx_proxy &#123;  	# 定义vrrp脚本，检测HTTP端口。</span><br><span class="line">script &quot;/server/scripts/chk_nginx_proxy.sh&quot;  	# 执行脚本，当nginx服务有问题，就停掉keepalived服务。</span><br><span class="line">interval 2  	# 间隔2秒</span><br><span class="line">weight 2</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state MASTER</span><br><span class="line">    interface eth0</span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    priority 150</span><br><span class="line">    advert_int 1</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">     10.0.0.3/24 dev eth0 label eth0:1  </span><br><span class="line">    &#125;</span><br><span class="line">     track_script &#123;</span><br><span class="line">    chk_nginx_proxy        #触发检查</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_2 &#123;</span><br><span class="line">    state BACKUP</span><br><span class="line">    interface eth0</span><br><span class="line">    virtual_router_id 52</span><br><span class="line">    priority 100</span><br><span class="line">    advert_int 1</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1112</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">     10.0.0.4/24 dev eth0 label eth0:2</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>3.2 <font color=red>注意：</font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vrrp_script chk_nginx_proxy &#123;  # &lt;==定义vrrp脚本，检测HTTP端口。</span><br><span class="line">script &quot;/server/scripts/chk_nginx_proxy.sh&quot;  # &lt;==执行脚本，当nginx服务有问题，就停掉keepalived服务。</span><br><span class="line">interval 2 # &lt;==间隔2秒</span><br><span class="line">weight 2</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-4-解决多组keepalived服务器在一个局域网的冲突问题"><a href="#5-4-解决多组keepalived服务器在一个局域网的冲突问题" class="headerlink" title="5.4 解决多组keepalived服务器在一个局域网的冲突问题"></a>5.4 <font color=red>解决多组<code>keepalived</code>服务器在一个局域网的冲突问题</font></h4><ul>
+<li><ol>
+<li><font color=red>可以在同组的<code>keepalived</code>服务器所有配置文件里指定独一无二的多播地址</font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>不同实例的认证密码最好不同</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">global_defs &#123;</span><br><span class="line">   router_id LVS_19</span><br><span class="line">   vrrp_mcast_group4 224.0.0.19 # &lt;==这个就是指定多播地址的配置</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-配置指定文件接收keepalived服务日记"><a href="#6-配置指定文件接收keepalived服务日记" class="headerlink" title="6. 配置指定文件接收keepalived服务日记"></a>6. 配置指定文件接收<code>keepalived</code>服务日记</h3><ul>
+<li><ol>
+<li>默认情况下<code>keepalived</code>服务日记会输出到系统日记<code>/var/log/messages</code>和其他日记信息会混合在一起，很不方便，可以将其调整为由独立的文件记录<code>keepalived</code>服务日记;操作步骤如下</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>编辑配置文件<code>/etc/sysconfig/keepalived</code>，将第14行的<code>KEEPALIVED_OPTIONS=&quot;-D&quot;</code>修改为<code>KEEPALIVED_OPTIONS=&quot;-D -d -S 0&quot;</code>快速修改方法：</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# sed -i &#x27;14 s#KEEPALIVED_OPTIONS=&quot;-D&quot;#KEEPALIVED_OPTIONS=&quot;-D -d -S 0&quot;#g&#x27; /etc/sysconfig/keepalived </span><br><span class="line">[root@keepalived-01 ~]# sed -n &#x27;14p&#x27;  /etc/sysconfig/keepalived</span><br><span class="line">KEEPALIVED_OPTIONS=&quot;-D -d -S 0&quot;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>2.1 <font color=red>说明：可以查看<code>/etc/sysconfig/keepalived</code>里注释获得上述参数的说明</font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">--dump-conf       -d     导出备份配置数据</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">--log-detail      -D     详细日志</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">--log-facility    -S     设置本地的syslog设备，编号0-7（default=LOG_DAEMON）</span></span><br><span class="line">* -S 0 表示指定为local0设备</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>修改<code>rsyslog</code>的配置文件<code>vim /etc/rsyslog.conf</code>，在结尾处加入如下2行内容：</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>3.1 配置表示来自<code>local0设</code>备的所有日志信息都记录到<code>/var/log/keepalived.log</code>文件。 然后在约第42行如下信息的第一列结尾加入<code>“；local0.none”：</code></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">keepalived</span></span><br><span class="line">local0.*  /var/log/keepalived.log</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置表示来自local0设备的所有日志信息不再记录于/var/log/messages里。 3 配置完成后，重启rsyslog服务。</span></span><br><span class="line">[root@keepalived-01 ~]# sed -i &#x27;42 s#*.info;mail.none;authpriv.none;cron.none#*.info;mail.none;authpriv.none;cron.none;local0.none#g&#x27; /etc/rsyslog.conf </span><br><span class="line"></span><br><span class="line">[root@keepalived-01 ~]# sed -n &#x27;42p&#x27; /etc/rsyslog.conf </span><br><span class="line">*.info;mail.none;authpriv.none;cron.none;local0.none                /var/log/messages</span><br><span class="line"></span><br><span class="line">[root@keepalived-01 ~]# /etc/init.d/rsyslog restart</span><br><span class="line">关闭系统日志记录器：     [确定]</span><br><span class="line">启动系统日志记录器：            [确定]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>测试<code>Keepalived</code>日志记录结果。在重启<code>Keepalived</code>服务后，就会把日志信息输出到<code>rsyslog</code>定义的<code>/var/log/ keepalived.log</code>文件</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>4.1 如果要求更高，还可以在<code>/var/log/messages</code>上设置对<code>/var/log/keepalived.log</code>进行轮询，以防单个日志文件变得太大。</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Jun 10 22:38:03 lb01 Keepalived[10852]: Stopping Keepalived v1.2.13 (03/19,2015)</span><br><span class="line">Jun 10 22:38:03 lb01 Keepalived_vrrp[10855]: VRRP_Instance(VI_1) sending 0 priority</span><br><span class="line">Jun 10 22:38:03 lb01 Keepalived_vrrp[10855]: VRRP_Instance(VI_1) removing protocol VIPs.</span><br><span class="line">Jun 10 22:38:03 lb01 Keepalived_vrrp[10855]: VRRP_Instance(VI_2) sending 0 priority</span><br><span class="line">Jun 10 22:38:03 lb01 Keepalived_vrrp[10855]: VRRP_Instance(VI_2) removing protocol VIPs.</span><br><span class="line">Jun 10 22:38:03 lb01 Keepalived_healthcheckers[10854]: Netlink reflector reports IP 10.0.0.3 removed</span><br><span class="line">Jun 10 22:38:03 lb01 Keepalived_healthcheckers[10854]: Netlink reflector reports IP 10.0.0.4 removed</span><br><span class="line">Jun 10 22:38:03 lb01 Keepalived[10884]: Starting Keepalived v1.2.13 (03/19,2015)</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-开发监控Keepalived脑裂脚本"><a href="#7-开发监控Keepalived脑裂脚本" class="headerlink" title="7. 开发监控Keepalived脑裂脚本"></a>7. 开发监控<code>Keepalived</code>脑裂脚本</h3><ul>
+<li><ol>
+<li><font color=red>检测思路：</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>1.1 在备节点上执行脚本，如果可以<code>ping</code>通主节点并且备节点有<code>VIP</code>就报警.</li>
+<li>1.2 让人员介入检查是否裂脑。</li>
+<li>1.3 在<code>keepalived-02</code>备节点开发脚本并执行。</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-02 ~]# cat &gt;check_split_brain.sh&lt;&lt;-EOF </span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/sh</span></span><br><span class="line">keepalived-01_vip=10.0.0.12</span><br><span class="line">keepalived-01_ip=10.0.0.7</span><br><span class="line"></span><br><span class="line">while true</span><br><span class="line">do</span><br><span class="line">    ping -c 2 -W 3 $&#123;&quot;keepalived-01_ip&quot;&#125; &amp;&gt;/dev/null </span><br><span class="line">    if [ $ -eq 0 -a `ip add|grep $&#123;&quot;keepalived-01_vip&quot;&#125;|wc -l` -eq 1 ]  </span><br><span class="line">    then    </span><br><span class="line">        echo &quot;ha is split brain.warning.&quot;</span><br><span class="line">    else    </span><br><span class="line">        echo &quot;ha is ok&quot;</span><br><span class="line">    fi</span><br><span class="line">    sleep 5</span><br><span class="line">done</span><br><span class="line">EOF</span><br><span class="line">[root@keepalived-02 ~]# sh check_split_brain.sh  </span><br><span class="line">ha is okha is ok</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>正常情况下主节点活着，<code>VIP 10.0.0.12</code>在主节点，因此不会报警提示<code>ha is ok</code>。 <code>keepalived-01</code> 停止<code>Keepalived</code>服务看<code>keepalived-02</code>脚本执行情况</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-01 ~]# /etc/init.d/keepalived stop</span><br><span class="line">停止 keepalived：                                          [确定]</span><br><span class="line">[root@keepalived-01 ~]# ip add|grep 10.0.0.12 </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>在<code>keepalived-02</code>上观察即可，此前脚本已经执行。</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@keepalived-02 ~]# sh check_split_brain.sh</span><br><span class="line">ha is okha is ok</span><br><span class="line">ha is split brain.warning.</span><br><span class="line">ha is split brain.warning.</span><br><span class="line">ha is split brain.warning.</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>关掉<code>keepalived-01</code>服务器，然后再观察<code>keepalived-02</code>脚本的输出。</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@@keepalived-02 ~]# sh check_split_brain.sh </span><br><span class="line">ha is okha is ok</span><br><span class="line">ha is split brain.warning.</span><br><span class="line">ha is split brain.warning.</span><br><span class="line">ha is split brain.warning.</span><br><span class="line">ha is ok</span><br><span class="line">ha is ok</span><br><span class="line">ha is ok</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>二哥
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://usermice.github.io/Keepalived/Install-Keepalived/" title="Install-Keepalived">https://usermice.github.io/Keepalived/Install-Keepalived/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Keepalived/" rel="tag"># <i class="fa fa-tag"></i> Keepalived</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/HAProxy/Install-HAProxy/" rel="prev" title="Install-HAProxy">
+      <i class="fa fa-chevron-left"></i> Install-HAProxy
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+    
+ </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Keepalived%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">1.Keepalived介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-Keepalived%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 Keepalived简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-Keepalived%E6%9C%8D%E5%8A%A1%E7%9A%84%E4%B8%89%E4%B8%AA%E9%87%8D%E8%A6%81%E5%8A%9F%E8%83%BD"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 Keepalived服务的三个重要功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-VRRP%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 VRRP原理介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-Keepalived%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 Keepalived服务的工作原理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Keepalived-VIP%E6%BC%82%E7%A7%BB%E5%AE%9E%E6%88%98"><span class="nav-number">2.</span> <span class="nav-text">2. Keepalived VIP漂移实战</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A7%84%E5%88%92"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 服务器规划</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%AE%89%E8%A3%85%E3%80%81%E9%85%8D%E7%BD%AEKeepalived"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 安装、配置Keepalived</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-Keepalived%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%BB%E5%A4%87%E5%88%87%E6%8D%A2%E3%80%81%E4%BB%A5%E5%8F%8A%E8%84%91%E8%A3%82%E6%8E%92%E6%9F%A5"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 Keepalived服务器主备切换、以及脑裂排查</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-3-1-%E8%84%91%E8%A3%82%E6%8E%92%E6%9F%A5%E8%A7%A3%E5%86%B3"><span class="nav-number">2.3.1.</span> <span class="nav-text">2.3.1 脑裂排查解决</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-3-2-%E8%BF%9B%E8%A1%8C%E9%AB%98%E5%8F%AF%E7%94%A8%E4%B8%BB%E5%A4%87%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%88%87%E6%8D%A2%E5%AE%9E%E9%AA%8C"><span class="nav-number">2.3.2.</span> <span class="nav-text">2.3.2 进行高可用主备服务器切换实验</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8D%95%E5%AE%9E%E4%BE%8B%E4%B8%BB%E5%A4%87%E6%A8%A1%E5%BC%8Fkeepalived%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%AF%B9%E6%AF%94"><span class="nav-number">3.</span> <span class="nav-text">3. 单实例主备模式keepalived配置文件对比</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-keepalived%E9%AB%98%E5%8F%AF%E7%94%A8%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E2%80%9D%E2%80%9D%E8%A3%82%E8%84%91%E9%97%AE%E9%A2%98%E2%80%9D"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 keepalived高可用服务器的””裂脑问题”</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E8%A7%A3%E5%86%B3%E8%84%91%E8%A3%82%E7%9A%84%E5%B8%B8%E8%A7%81%E6%96%B9%E6%A1%88"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 解决脑裂的常见方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-keepalived%E5%8F%8C%E5%AE%9E%E4%BE%8B%E5%8F%8C%E4%B8%BB%E6%A8%A1%E5%BC%8F%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">4. keepalived双实例双主模式配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-nginx%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E9%85%8D%E5%90%88keepalived%E6%9C%8D%E5%8A%A1%E6%A1%88%E4%BE%8B%E5%AE%9E%E6%88%98"><span class="nav-number">5.</span> <span class="nav-text">5. nginx负载均衡配合keepalived服务案例实战</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E5%9C%A8keepalived-01%E5%92%8Ckeepalived-02%E4%B8%8A%E9%85%8D%E7%BD%AEnginx%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 在keepalived-01和keepalived-02上配置nginx负载均衡</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E8%A7%A3%E5%86%B3%E6%9C%8D%E5%8A%A1%E7%9B%91%E5%90%AC%E7%9A%84%E7%BD%91%E5%8D%A1%E4%B8%8A%E4%B8%8D%E5%AD%98%E5%9C%A8IP%E5%9C%B0%E5%9D%80%E9%97%AE%E9%A2%98"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 解决服务监听的网卡上不存在IP地址问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-3-%E8%A7%A3%E5%86%B3%E9%AB%98%E5%8F%AF%E7%94%A8%E6%9C%8D%E5%8A%A1%E5%8F%AA%E9%92%88%E5%AF%B9%E7%89%A9%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">5.3.</span> <span class="nav-text">5.3 解决高可用服务只针对物理服务器的问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-4-%E8%A7%A3%E5%86%B3%E5%A4%9A%E7%BB%84keepalived%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%9C%A8%E4%B8%80%E4%B8%AA%E5%B1%80%E5%9F%9F%E7%BD%91%E7%9A%84%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98"><span class="nav-number">5.4.</span> <span class="nav-text">5.4 解决多组keepalived服务器在一个局域网的冲突问题</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E9%85%8D%E7%BD%AE%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E6%8E%A5%E6%94%B6keepalived%E6%9C%8D%E5%8A%A1%E6%97%A5%E8%AE%B0"><span class="nav-number">6.</span> <span class="nav-text">6. 配置指定文件接收keepalived服务日记</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E5%BC%80%E5%8F%91%E7%9B%91%E6%8E%A7Keepalived%E8%84%91%E8%A3%82%E8%84%9A%E6%9C%AC"><span class="nav-number">7.</span> <span class="nav-text">7. 开发监控Keepalived脑裂脚本</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="二哥"
+      src="/images/IMG_0081.JPG">
+  <p class="site-author-name" itemprop="name">二哥</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="/usererge#gmail.com" title="E-Mail → usererge#gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/yourname" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="二哥"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">二哥</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">250k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:47</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://usermice.github.io/" class="theme-link">二哥</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+-->
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
