@@ -191,6 +191,324 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-k8s-Argo-CD/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Kubernetes/install-k8s-Argo-CD/" class="post-title-link" itemprop="url">install-Argo CD</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-11 13:33:28" itemprop="dateCreated datePublished" datetime="2022-05-11T13:33:28+08:00">2022-05-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-09 20:09:58" itemprop="dateModified" datetime="2022-06-09T20:09:58+08:00">2022-06-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>802</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-Argo-CD介绍"><a href="#1-Argo-CD介绍" class="headerlink" title="1. Argo CD介绍"></a>1. <code>Argo CD</code>介绍</h3><ul>
+<li><ol>
+<li><code>Argo CD</code>是一个为<code>Kubernetes</code>而生的，遵循声明式<code>GitOps</code>理念的持续部署<code>CD</code>工具。<code>Argo CD</code>可在<code>Git</code>存储库更改时自动同步和部署应用程序</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>应用定义、配置和环境信息是声明式的，并可以进行版本控制</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>应用部署和生命周期管理是全自动化的、是可审计的，清晰易懂</li>
+</ol>
+</li>
+</ul>
+<h3 id="2-安装Argo-CD"><a href="#2-安装Argo-CD" class="headerlink" title="2. 安装Argo CD"></a>2. 安装<code>Argo CD</code></h3><ul>
+<li><ol>
+<li><font color=red>创建<code>ArgoCD</code>命名空间</font>  <pre><code class="shell">$ kubectl create namespace argocd
+</code></pre>
+</li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>下载并启动<code>ArgoCD</code></font></li>
+</ol>
+</li>
+</ul>
+<pre><code class="shell">$ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml  
+</code></pre>
+<ul>
+<li><ol start="3">
+<li><font color=red>使用<code>NodePort</code>方式暴露<code>argocd ui</code></font></li>
+</ol>
+</li>
+</ul>
+<pre><code class="shell">$ kubectl patch service -n argocd argocd-server -p &#39;&#123;&quot;spec&quot;: &#123;&quot;type&quot;: &quot;NodePort&quot;&#125;&#125;&#39;  
+</code></pre>
+<ul>
+<li><ol start="4">
+<li><font color=red>获取<code>ArgoCD</code>的<code>admin</code>登陆密码</font></li>
+</ol>
+</li>
+</ul>
+<pre><code class="shell">$ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=&quot;&#123;.data.password&#125;&quot; | base64 -d
+</code></pre>
+<ul>
+<li><ol start="5">
+<li><font color=red>安装<code>cli：CLI</code>是用于管理<code>Argo CD</code>的命令行工具</font></li>
+</ol>
+</li>
+</ul>
+<pre><code class="shell">$ curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.3/argocd-linux-amd64 &amp;&amp; chmod +x /usr/local/bin/argocd
+</code></pre>
+<ol start="6">
+<li><font color=red>查看<code>argocd-server</code>暴露端口</font></li>
+</ol>
+<pre><code class="shell">$ kubectl get svc -n argocd
+</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-k8s-harbor/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Kubernetes/install-k8s-harbor/" class="post-title-link" itemprop="url">install-harbor</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-10 22:04:01" itemprop="dateCreated datePublished" datetime="2022-05-10T22:04:01+08:00">2022-05-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-09 19:58:30" itemprop="dateModified" datetime="2022-06-09T19:58:30+08:00">2022-06-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-在安装好docker后安装Harbor私有镜像库"><a href="#1-在安装好docker后安装Harbor私有镜像库" class="headerlink" title="1. 在安装好docker后安装Harbor私有镜像库"></a>1. 在安装好<code>docker</code>后安装<code>Harbor</code>私有镜像库</h3><ul>
+<li><ol>
+<li><font color=red>默认用户名：<code>admin </code></font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>默认密码：<code>Harbor12345</code></font></li>
+</ol>
+</li>
+</ul>
+<h4 id="1-1-Harbor依赖docker-compose，先安装docker-compose"><a href="#1-1-Harbor依赖docker-compose，先安装docker-compose" class="headerlink" title="1.1 Harbor依赖docker-compose，先安装docker-compose"></a>1.1 <code>Harbor</code>依赖<code>docker-compose</code>，先安装<code>docker-compose</code></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -L https://get.daocloud.io/docker/compose/releases/download/1.21.2/docker-compose-`<span class="built_in">uname</span> -s`-`<span class="built_in">uname</span> -m` &gt; /usr/local/bin/docker-compose</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">给予执行权限</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> +x /usr/local/bin/docker-compose</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装Compose命令补全工具</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose version --short)/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl daemon-reload &amp;&amp; systemctl restart docker</span></span><br></pre></td></tr></table></figure>
+<h4 id="1-2-重启docker后安装Harbor"><a href="#1-2-重启docker后安装Harbor" class="headerlink" title="1.2 重启docker后安装Harbor"></a>1.2 重启<code>docker</code>后安装<code>Harbor</code></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://github.com/goharbor/harbor/releases/download/v2.5.0/harbor-offline-installer-v2.5.0.tgz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf harbor-offline-installer-v2.5.0.tgz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim harbor/harbor.yml</span></span><br><span class="line"></span><br><span class="line">hostname: reg.mydomain.com  	# 修改主机名： my.harbor.com</span><br><span class="line">port: 80  	# 修改http默认端口：8080</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">port: 443  	<span class="comment"># 注释https协议端口</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./install.sh</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><font color=red><code>docker</code>登录<code>Harbor</code></font>  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker login http://192.168.80.225:8080</span></span><br></pre></td></tr></table></figure></li>
+<li><ol>
+<li><font color=red>如果报错:<code>Error response from daemon: Get  http: server gave HTTP response to HTTPS client</code></font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>修改配置文件(指定私有仓库，可忽略跳过)</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">tee</span> /etc/docker/daemon.json &lt;&lt;-<span class="string">&#x27;EOF&#x27;</span></span></span><br><span class="line">&#123;</span><br><span class="line">  &quot;storage-driver&quot;: &quot;overlay2&quot;,</span><br><span class="line">  &quot;registry-mirrors&quot;:[&quot;https://r2hd8p9u.mirror.aliyuncs.com&quot;],</span><br><span class="line">  &quot;insecure-registries&quot;:[&quot;*.*.*.*:5000&quot;,&quot;192.168.4.126&quot;]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/docker/daemon.json</span></span><br><span class="line">&#123;</span><br><span class="line">	&quot;insecure-registries&quot;: [&quot;harbor服务器IP:端口&quot;]</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl daemon-reload &amp;&amp; systemctl restart docker</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>报错：request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers) (Client.Timeout exceeded while awaiting headers)</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/hosts  	<span class="comment"># 修改hosts解析</span></span></span><br><span class="line">本机服务IP my.harbodomain.com</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="1-3-推送镜像到Harbor仓库"><a href="#1-3-推送镜像到Harbor仓库" class="headerlink" title="1.3. 推送镜像到Harbor仓库"></a>1.3. 推送镜像到Harbor仓库</h4><ul>
+<li><ol>
+<li><code>SOURCE_IMAGE[:TAG]：</code><font color=red>原镜像名字和tag</font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><code>test：</code><font>Harbor项目名称</font></li>
+</ol>
+</li>
+<li><ol start="3">
+<li><code>IMAGE[:TAG]：</code><font color=red>自定义命名，以及版本标签</font>  <blockquote>
+<p>示例：</p>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在项目中标记镜像</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker tag SOURCE_IMAGE[:TAG] 192.168.35.128:9527/test/IMAGE[:TAG]</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">推送镜像到当前项目</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker push 192.168.35.128:9527/test/IMAGE[:TAG]</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="1-4-其他服务器拉取Harbor仓库镜像"><a href="#1-4-其他服务器拉取Harbor仓库镜像" class="headerlink" title="1.4 其他服务器拉取Harbor仓库镜像"></a>1.4 <font color=red>其他服务器拉取<code>Harbor</code>仓库镜像</font></h4><ul>
+<li><ol>
+<li><font color=red><code>/etc/hosts</code>做好解析</font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>daemon.json</code>文件中添加私人仓库参数</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> /etc/docker/daemon.json</span></span><br><span class="line">&quot;insecure-registries&quot;:[&quot;192.168.80.210:8080&quot;],</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>拉取私人仓库镜像，前提仓库是公开类型，然后获取拉取命令</font></li>
+</ol>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Harbor/Snipaste_2022-06-07_21-19-25.png" alt="拉取私人仓库命令"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-Kubernetes/">
 
 <div>
@@ -2030,218 +2348,6 @@
 <div>
     
  </div>
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/gitlab/install-gitlab/">
-
-<div>
-      
-</div>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/IMG_0081.JPG">
-      <meta itemprop="name" content="二哥">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="二哥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/gitlab/install-gitlab/" class="post-title-link" itemprop="url">install-gitlab</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-04-22 17:46:39" itemprop="dateCreated datePublished" datetime="2022-04-22T17:46:39+08:00">2022-04-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-07-04 20:46:56" itemprop="dateModified" datetime="2022-07-04T20:46:56+08:00">2022-07-04</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/gitlab/" itemprop="url" rel="index"><span itemprop="name">gitlab</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-gitlab-简介以及安装"><a href="#1-gitlab-简介以及安装" class="headerlink" title="1. gitlab 简介以及安装"></a>1. gitlab 简介以及安装</h3><p><a target="_blank" rel="noopener" href="https://packages.gitlab.com/gitlab/gitlab-ce">gitlab安装包库</a></p>
-<h4 id="1-1-gitlab简介"><a href="#1-1-gitlab简介" class="headerlink" title="1.1 gitlab简介"></a>1.1 gitlab简介</h4><ul>
-<li>GitLab是管理Git存储库的平台。 GitLab提供免费的公共和私人存储库，问题跟踪和维基。 GitLab是Git之上的一个用户友好的Web界面层，它提高了使用Git的速度。 GitLab提供了自己的持续集成(CI)系统来管理项目，并提供用户界面以及GitLab的其他功能。</li>
-<li><code>cat /etc/gitlab/initial_root_password | grep Password</code> 获取初始密码</li>
-</ul>
-<h4 id="1-2-gitlab安装，gitlab安装分为三种种方式分别是yum和rpm以及docker"><a href="#1-2-gitlab安装，gitlab安装分为三种种方式分别是yum和rpm以及docker" class="headerlink" title="1.2 gitlab安装，gitlab安装分为三种种方式分别是yum和rpm以及docker"></a>1.2 gitlab安装，gitlab安装分为三种种方式分别是yum和rpm以及docker</h4><h5 id="1-2-1-yum方式安装gitlab"><a href="#1-2-1-yum方式安装gitlab" class="headerlink" title="1.2.1 yum方式安装gitlab"></a>1.2.1 yum方式安装gitlab</h5><ul>
-<li><a target="_blank" rel="noopener" href="https://about.gitlab.com/install/#centos-7">yum安装Gitlab</a></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y  make telnet  inotify-tools tree rdate ntp gcc gcc-c++ psmisc net-tools screen expect sysstat hdparm traceroute zip unzip pcre pcre-devel zlib zlib-devel openssl openssl-devel tcping libaio dig epel-release wget git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install lsof zeromq-devel policycoreutils openssh-server openssh-clients  policycoreutils-python postfix perl patch cronie</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> postfix &amp;&amp; systemctl start postfix  <span class="comment">#gitlab需要postfix，启动postfix并设置开机自启</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --permanent --add-service=&#123;http,https&#125;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --reload</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash  <span class="comment">#安装gitlab yum仓库</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install gitlab-ce-14.9.3-ce.0.el7.x86_64 <span class="comment">#安装指定版本</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure  <span class="comment">#初始化gitlab</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart  	<span class="comment">#重启完成</span></span></span><br></pre></td></tr></table></figure>
-
-<h5 id="1-2-2-rpm安装gitlab"><a href="#1-2-2-rpm安装gitlab" class="headerlink" title="1.2.2 rpm安装gitlab"></a>1.2.2 rpm安装gitlab</h5><ul>
-<li><a target="_blank" rel="noopener" href="https://packages.gitlab.com/gitlab/gitlab-ce">rpm包安装gitlab</a></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y  make telnet  inotify-tools tree rdate ntp gcc gcc-c++ psmisc net-tools screen expect sysstat hdparm traceroute zip unzip pcre pcre-devel zlib zlib-devel openssl openssl-devel tcping libaio dig epel-release wget git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install lsof zeromq-devel policycoreutils openssh-server openssh-clients policycoreutils-python postfix perl patch</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> postfix &amp;&amp; systemctl start postfix  <span class="comment">#gitlab需要postfix，启动postfix</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --permanent --add-service=&#123;http,https&#125;</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --reload</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget --content-disposition https://packages.gitlab.com/gitlab/gitlab-ce/packages/el/7/gitlab-ce-14.9.3-ce.0.el7.x86_64.rpm/download.rpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm gitlab-ce-14.9.3-ce.0.el7.x86_64.rpm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl reconfigure  <span class="comment">#初始化gitlab</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gitlab-ctl restart  	<span class="comment">#重启完成</span></span></span><br></pre></td></tr></table></figure>
-
-<h5 id="1-2-3-docker安装gitlab"><a href="#1-2-3-docker安装gitlab" class="headerlink" title="1.2.3 docker安装gitlab"></a>1.2.3 docker安装gitlab</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run --detach \</span></span><br><span class="line"><span class="language-bash">--hostname gitlab.example.com \</span></span><br><span class="line"><span class="language-bash">--publish 4443:443 --publish 8888:80 --publish 2222:22 \</span></span><br><span class="line"><span class="language-bash">--name gitlab \</span></span><br><span class="line"><span class="language-bash">--restart always \</span></span><br><span class="line"><span class="language-bash">--volume /opt/gitlab/config:/etc/gitlab \</span></span><br><span class="line"><span class="language-bash">--volume /opt/gitlab/logs:/var/log/gitlab \</span></span><br><span class="line"><span class="language-bash">--volume /opt/gitlab/data:/var/opt/gitlab \</span></span><br><span class="line"><span class="language-bash">--<span class="built_in">env</span> GITLAB_OMNIBUS_CONFIG=<span class="string">&quot;external_url &#x27;https://gitlab.example.com/&#x27;;&quot;</span>  \</span></span><br><span class="line"><span class="language-bash">gitlab/gitlab-ce</span></span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-<div>
-    
- </div>
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Certificate/apply-cert/">
-
-<div>
-      
-</div>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/IMG_0081.JPG">
-      <meta itemprop="name" content="二哥">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="二哥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Certificate/apply-cert/" class="post-title-link" itemprop="url">apply-cert</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-04-19 13:06:49" itemprop="dateCreated datePublished" datetime="2022-04-19T13:06:49+08:00">2022-04-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-05-19 16:50:40" itemprop="dateModified" datetime="2022-05-19T16:50:40+08:00">2022-05-19</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Certificate/" itemprop="url" rel="index"><span itemprop="name">Certificate</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          有东西被加密了, 请输入密码查看.
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/Certificate/apply-cert/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-<div>
-    
- </div>
 
   
   <nav class="pagination">
@@ -2313,20 +2419,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-count">45</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -2370,12 +2476,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">255k</span>
+    <span title="站点总字数">298k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:52</span>
+    <span title="站点阅读时长">4:31</span>
 </div>
 
 <!--

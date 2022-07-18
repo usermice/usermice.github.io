@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"usermice.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. 部署Rabbitmq消息队列+HAProxy+Keepalived  集群服务器配置  安装RabbitMQ       IP 主机名 节点属性    192.168.150.21 rabbit-mq-01 内存节点+Haproxy节点   192.168.150.22 rabbit-mq-02 内存节点+Haproxy节点   192.168.150.23 rabbit-mq-03 磁盘节">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Install-Rabbitmq">
+<meta property="og:url" content="https://usermice.github.io/message-queue/Install-Rabbitmq/index.html">
+<meta property="og:site_name" content="二哥">
+<meta property="og:description" content="1. 部署Rabbitmq消息队列+HAProxy+Keepalived  集群服务器配置  安装RabbitMQ       IP 主机名 节点属性    192.168.150.21 rabbit-mq-01 内存节点+Haproxy节点   192.168.150.22 rabbit-mq-02 内存节点+Haproxy节点   192.168.150.23 rabbit-mq-03 磁盘节">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-18T10:12:38.000Z">
+<meta property="article:modified_time" content="2022-07-18T11:52:57.514Z">
+<meta property="article:author" content="二哥">
+<meta property="article:tag" content="message queue">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://usermice.github.io/message-queue/Install-Rabbitmq/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Install-Rabbitmq | 二哥</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="二哥" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">二哥</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tools">
+
+    <a href="/categories/%E5%B7%A5%E5%85%B7%E8%B5%84%E6%BA%90/" rel="section"><i class="fa fa-briefcase fa-fw"></i>tools</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/message-queue/Install-Rabbitmq/">
+
+<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/message-queue/Install-Rabbitmq/">Install-Rabbitmq</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问  的个人博客"></a></p>
+  <p><span>发布时间:</span>2022年07月18日 - 18:12</p>
+  <p><span>最后更新:</span>2022年07月18日 - 19:52</p>
+  <p><span>原始链接:</span><a href="/message-queue/Install-Rabbitmq/" title="Install-Rabbitmq">https://usermice.github.io/message-queue/Install-Rabbitmq/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://usermice.github.io/message-queue/Install-Rabbitmq/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+	});
+    });  
+</script>
+
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Install-Rabbitmq
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-18 18:12:38 / 修改时间：19:52:57" itemprop="dateCreated datePublished" datetime="2022-07-18T18:12:38+08:00">2022-07-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/message-queue/" itemprop="url" rel="index"><span itemprop="name">message queue</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1-部署Rabbitmq消息队列-HAProxy-Keepalived"><a href="#1-部署Rabbitmq消息队列-HAProxy-Keepalived" class="headerlink" title="1. 部署Rabbitmq消息队列+HAProxy+Keepalived"></a>1. 部署<code>Rabbitmq</code>消息队列<code>+HAProxy+Keepalived</code></h3><ul>
+<li><ol>
+<li><font color=red>集群服务器配置</font>  <a target="_blank" rel="noopener" href="https://blog.csdn.net/u011186019/article/details/51911234">安装<code>RabbitMQ</code></a></li>
+</ol>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><code>IP</code></th>
+<th>主机名</th>
+<th>节点属性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>192.168.150.21</td>
+<td><code>rabbit-mq-01</code></td>
+<td>内存节点+<code>Haproxy</code>节点</td>
+</tr>
+<tr>
+<td>192.168.150.22</td>
+<td><code>rabbit-mq-02</code></td>
+<td>内存节点+<code>Haproxy</code>节点</td>
+</tr>
+<tr>
+<td>192.168.150.23</td>
+<td><code>rabbit-mq-03</code></td>
+<td>磁盘节点</td>
+</tr>
+<tr>
+<td>192.168.150.24</td>
+<td><code>keepalived vip</code></td>
+<td>提供对外<code>VIP</code></td>
+</tr>
+</tbody></table>
+<h4 id="1-1-RabbitMQ集群安装"><a href="#1-1-RabbitMQ集群安装" class="headerlink" title="1.1 RabbitMQ集群安装"></a>1.1 <font color=red><code>RabbitMQ</code>集群安装</font></h4><ul>
+<li><ol>
+<li><font color=red>安装<code>Erlang</code></font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>1.1<code> RabbitMQ</code>是用<code>Erlang</code>语言编写的，我们将安装最新版本的<code>Erlang</code>到服务器中。 <code>Erlang</code>在默认的<code>YUM</code>存储库中不可用，因此您将需要安装<code>EPEL</code>存储库。 运行以下命令相同。 做好<code>hosts</code>解析，<font color=red>防火墙开放端口port 25672</font></li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y update</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install epel-release</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install erlang socat</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>安装<code>RabbitMQ</code></font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>2.1 <code>RabbitMQ</code>为预编译并可以直接安装的企业<code>Linux系</code>统提供<code>RPM</code>软件包。 唯一需要的依赖是将<code>Erlang</code>安装到系统中。 我们已经安装<code>了Erlang</code>，我们可以进一步下载<code>RabbitMQ</code>。<br>通过运行下载<code>Erlang RPM</code>软件包</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.10/rabbitmq-server-3.6.10-1.el7.noarch.rpm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm -Uvh rabbitmq-server-3.6.10-1.el7.noarch.rpm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.19/rabbitmq-server-3.7.19-1.el7.noarch.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.19/rabbitmq-server-3.7.19-1.el7.noarch.rpm.asc</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>开启第一台MQ并推送文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start rabbitmq-server</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>复制<code>.erlang.cookie</code>文件到其他两台<code>MQ</code>服务器集群节点</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">scp /var/lib/rabbitmq/.erlang.cookie rabbit-mq-02:/var/lib/rabbitmq/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">scp /var/lib/rabbitmq/.erlang.cookie rabbit-mq-03:/var/lib/rabbitmq/</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li><font color=red>启动其他两台集群节点服务器上的<code>MQ</code>服务</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> -R rabbitmq. /var/lib/rabbitmq</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start rabbitmq-server</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="6">
+<li><code>Rabbitmq</code>集群连接<font color=red>集群节点之间防火墙开启：4369 端口</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rabbitmqctl stop_app</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rabbitmqctl join_cluster rabbit@rabbit-mq-01</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rabbitmqctl start_app</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="7">
+<li><font color=red>设置镜像模式</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rabbitmqctl cluster_status</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rabbitmqctl set_policy ha-all <span class="string">&quot;^&quot;</span> <span class="string">&#x27;&#123;&quot;ha-mode&quot;:&quot;all&quot;&#125;&#x27;</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rabbitmqctl cluster_status</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="8">
+<li>设置节点信息<font color=red>内存节点、磁盘节点</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rabbitmqctl stop_app</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rabbitmqctl change_cluster_node_type ram  	<span class="comment"># 类型(ram 内存)、(disc 硬盘)延迟插件必须硬盘</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rabbitmqctl start_app</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="9">
+<li><font color=red>在所有节点机器上开启<code>rabbit</code>监控</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rabbitmq-plugins <span class="built_in">enable</span> rabbitmq_management</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-配置Rabbitmq用户并授权"><a href="#1-2-配置Rabbitmq用户并授权" class="headerlink" title="1.2 配置Rabbitmq用户并授权"></a>1.2 <font color=red>配置<code>Rabbitmq</code>用户并授权</font></h4><ul>
+<li><ol>
+<li><font color=red>添加用户、用户密码都是：<code>admin</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rabbitmqctl add_user admin admin</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>设置<code>permissions</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rabbitmqctl set_permissions -p <span class="string">&quot;/&quot;</span> admin <span class="string">&quot;.*&quot;</span> <span class="string">&quot;.*&quot;</span> <span class="string">&quot;.*&quot;</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>设置用户角色权限</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rabbitmqctl set_user_tags admin administrator</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>防火墙开启：15672 端口，使用浏览器访问</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">http://IP:15672/</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-安装RabbitMQ的延时插件"><a href="#2-安装RabbitMQ的延时插件" class="headerlink" title="2. 安装RabbitMQ的延时插件"></a>2. 安装<code>RabbitMQ</code>的延时插件</h3><ul>
+<li><ol>
+<li><font color=red>切换安装<code>Rabbitmq</code>服务主目录<code>plugins</code>下</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /usr/lib/rabbitmq/lib/rabbitmq_server-3.6.10/plugins</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>下载延时插件安装包</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://dl.bintray.com/rabbitmq/community-plugins/3.6.x/rabbitmq_delayed_message_exchange/rabbitmq_delayed_message_exchange-20171215-3.6.x.zip</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>解压延时插件安装包</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install unzip</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">unzip  rabbitmq_delayed_message_exchange-20171215-3.6.x.zip</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> ../sbin</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./rabbitmq-plugins <span class="built_in">enable</span> rabbitmq_delayed_message_exchange</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red><code>重启Rabitymq</code>服务</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl restart rabbitmq-server</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-部署HAProxy服务，使Rabbitmq服务实现高可用"><a href="#3-部署HAProxy服务，使Rabbitmq服务实现高可用" class="headerlink" title="3. 部署HAProxy服务，使Rabbitmq服务实现高可用"></a>3. 部署<code>HAProxy</code>服务，使<code>Rabbitmq</code>服务实现高可用</h3><ul>
+<li><ol>
+<li><font color=red>两台服务器都安装<code>HAProxy</code>服务</font></li>
+</ol>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><code>IP</code></th>
+<th>主机名</th>
+<th>节点属性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>192.168.150.21</td>
+<td><code>rabbit-mq-01</code></td>
+<td>内存节点+<code>Haproxy</code>节点，<font color=red>端口：8888(<code>haproxy</code>监控端口)、8889(<code>rabbitmq</code>服务端口)</font></td>
+</tr>
+<tr>
+<td>192.168.150.22</td>
+<td><code>rabbit-mq-02</code></td>
+<td>内存节点+<code>Haproxy</code>节点，<font color=red>端口：8888(<code>haproxy</code>监控端口)、8889(<code>rabbitmq</code>服务端口)</font></td>
+</tr>
+</tbody></table>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y haproxy</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>修改配置文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/haproxy/haproxy.cfg&lt;&lt;<span class="string">EOF</span></span></span><br><span class="line">global</span><br><span class="line">    # log /yougo/haproxy/home/log    local0</span><br><span class="line">    # log /yougo/haproxy/home/log    local1 notice</span><br><span class="line">    # chroot /yougo/haproxy         # 改变当前工作目录</span><br><span class="line">    # stats socket /yougo/haproxy/home/admin.sock mode 660 level admin   # 创建监控所用的套接字目录</span><br><span class="line">    pidfile  /var/run/haproxy.pid   # haproxy的pid存放路径,启动进程的用户必须有权限访问此文件 </span><br><span class="line">    maxconn  4000                   # 最大连接数，默认4000</span><br><span class="line">    #  user   haproxy               # 默认用户</span><br><span class="line">    #  group   haproxy              # 默认用户组</span><br><span class="line">    daemon                          # 创建1个进程进入deamon模式运行。此参数要求将运行模式设置为&quot;daemon</span><br><span class="line">    # Default SSL material locations</span><br><span class="line">    # ca-base /etc/ssl/certs</span><br><span class="line">    # crt-base /etc/ssl/private</span><br><span class="line">    # Default ciphers to use on SSL-enabled listening sockets.</span><br><span class="line">    # For more information, see ciphers(1SSL). This list is from:</span><br><span class="line">    #  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/</span><br><span class="line">    # ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS</span><br><span class="line">    # ssl-default-bind-options no-sslv3</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">##########默认配置#########</span></span></span><br><span class="line">defaults</span><br><span class="line">    log global</span><br><span class="line">    mode    http                # 默认的模式mode &#123; tcp|http|health &#125;，tcp是4层，http是7层，health只会返回OK</span><br><span class="line">    option  httplog             # 采用http日志格式</span><br><span class="line">    option  dontlognull         # 启用该项，日志中将不会记录空连接。所谓空连接就是在上游的负载均衡器或者监控系统为了探测该服务是否存活可用时,</span><br><span class="line">                                # 需要定期的连接或者获取某一固定的组件或页面,或者探测扫描端口是否在监听或开放等动作被称为空连接;</span><br><span class="line">                                # 官方文档中标注，如果该服务上游没有其他的负载均衡器的话，建议不要使用</span><br><span class="line">                                # 该参数，因为互联网上的恶意扫描或其他动作就不会被记录下来</span><br><span class="line">    timeout connect 5000        # 连接超时时间</span><br><span class="line">    timeout client  50000       # 客户端连接超时时间</span><br><span class="line">    timeout server  50000       # 服务器端连接超时时间</span><br><span class="line">    option  httpclose        # 每次请求完毕后主动关闭http通道 </span><br><span class="line">    option  httplog          # 日志类别http日志格式 </span><br><span class="line">    #option  forwardfor      # 如果后端服务器需要获得客户端真实ip需要配置的参数，可以从Http Header中获得客户端ip  </span><br><span class="line">    option  redispatch       # serverId对应的服务器挂掉后,强制定向到其他健康的服务器</span><br><span class="line">    timeout connect 10000    # default 10 second timeout if a backend is not found</span><br><span class="line">    maxconn     60000        # 最大连接数</span><br><span class="line">    retries     3            # 3次连接失败就认为服务不可用，也可以通过后面设置 </span><br><span class="line">    # errorfile 400 /yougo/haproxy/home/errors/400.http</span><br><span class="line">    # errorfile 403 /yougo/haproxy/home/errors/403.http</span><br><span class="line">    # errorfile 408 /yougo/haproxy/home/errors/408.http</span><br><span class="line">    # errorfile 500 /yougo/haproxy/home/errors/500.http</span><br><span class="line">    # errorfile 502 /yougo/haproxy/home/errors/502.http</span><br><span class="line">    # errorfile 503 /yougo/haproxy/home/errors/503.http</span><br><span class="line">    # errorfile 504 /yougo/haproxy/home/errors/504.http</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">###################################################################</span></span></span><br><span class="line">listen http_front</span><br><span class="line">        bind 0.0.0.0:8888           # 监听端口  </span><br><span class="line">        stats refresh 30s           # 统计页面自动刷新时间  </span><br><span class="line">        stats uri /haproxy?stats    # 统计页面url  </span><br><span class="line">        stats realm Haproxy Manager # 统计页面密码框上提示文本  </span><br><span class="line">        stats auth admin:admin      # 统计页面用户名和密码设置  </span><br><span class="line">        #stats hide-version         # 隐藏统计页面上HAProxy的版本信息</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">####################RabbitMQ的管理界面也放在HAProxy后面了###############################</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">listen rabbitmq_admin</span></span> </span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">   bind 0.0.0.0:8004</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">  server node1 192.168.0.31:15672</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">   server node2 192.168.0.32:15672</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">   server node3 192.168.0.33:15672</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">###################################################################</span></span></span><br><span class="line">listen rabbitmq_cluster</span><br><span class="line">    bind 0.0.0.0:8889  	# rabbitmq集群调用的端口</span><br><span class="line">    option tcplog</span><br><span class="line">    mode tcp</span><br><span class="line">    timeout client  3h</span><br><span class="line">    timeout server  3h</span><br><span class="line">    option          clitcpka</span><br><span class="line">    balance roundrobin  	# 负载均衡算法（#banlance roundrobin 轮询，balance source 保存session值，支持static-rr，leastconn，first，uri等参数）</span><br><span class="line">    # balance url_param userid</span><br><span class="line">    # balance url_param session_id check_post 64</span><br><span class="line">    # balance hdr(User-Agent)</span><br><span class="line">    # balance hdr(host)</span><br><span class="line">    # balance hdr(Host) use_domain_only</span><br><span class="line">    # balance rdp-cookie</span><br><span class="line">    # balance leastconn</span><br><span class="line">    # balance source //ip</span><br><span class="line">    server   rabbitmq1  172.16.0.30:5672 check inter 5s rise 2 fall 3  	# check inter 2000 是检测心跳频率，rise 2是2次正确认为服务器可用，fall 3是3次失败认为服务器不可用</span><br><span class="line">    server   rabbitmq2  172.16.0.31:5672 check inter 5s rise 2 fall 3  </span><br><span class="line">    server   rabbitmq3  172.16.0.32:5672 check inter 5s rise 2 fall 3</span><br><span class="line">    </span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>两台<code>HAProxy</code>服务器启动服务</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start haproxy</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-部署配置Keepalived服务"><a href="#4-部署配置Keepalived服务" class="headerlink" title="4. 部署配置Keepalived服务"></a>4. 部署配置<code>Keepalived</code>服务</h3><ul>
+<li><ol>
+<li><font color=red>安装<code>Keepalived</code>服务</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y keepalived</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>配置<code>Keepalived</code>主节点<code>Master</code>配置文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/keepalived/keepalived.conf&lt;&lt;<span class="string">EOF</span></span></span><br><span class="line">global_defs &#123;  	# 全局配置</span><br><span class="line">   notification_email &#123;  	# 指定keepalived在发生切换时需要需要发送Email的对象，一行一个</span><br><span class="line">      user@example.com  	# 指定的收件人</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   notification_email_from mail@example.org  	# 指定的发件人</span><br><span class="line">   smtp_server 192.168.200.1  	# 指定的SMTP服务器地址</span><br><span class="line">   smtp_connect_timeout 30  	# 指定SMTP连接超时时间</span><br><span class="line">   router_id Rabbitmq_Dev  	# 此处注意router_id为负载均衡标识，在局域网内应该是唯一</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;  	# 监控多个网段的实例</span><br><span class="line">    state MASTER  	# 指定Keepalived的角色，MASTER表示此主机是主服务器,BACKUP表示此主机是备用服务器，所以设置priority时要注意MASTER比BACKUP高。如果设置了nopreempt,那么state的这个值不起作用，主备靠priority决定，必须大写</span><br><span class="line">    nopreempt  	# 设置为不抢占</span><br><span class="line">    interface eth0  	# 指定监测网络的接口，当LVS接管时，将会把IP地址添加到该网卡上。</span><br><span class="line">    virtual_router_id 58  	# 虚拟路由标识，同一个vrrp实例使用唯一的标识，同一个vrrp_instance下，MASTER和BACKUP必须一致。</span><br><span class="line">    priority 101  	# MASTER权重要高于   BACKUP</span><br><span class="line">    advert_int 1  	# 心跳报文发送间隔</span><br><span class="line">    unicast_src_ip 192.168.150.21  	# 配置单播的源地址</span><br><span class="line">    unicast_peer &#123; </span><br><span class="line">        192.168.150.22  	# 配置单播的目标地址、对端IP</span><br><span class="line">    &#125;  	# keepalived在组播模式下所有的信息都会向224.0.0.18的组播地址发送，产生众多的无用信息，并且会产生干扰和冲突，可以将组播的模式改为单拨。这是一种安全的方法，避免局域网内有大量的keepalived造成虚拟路由id的冲突。</span><br><span class="line"></span><br><span class="line">    authentication &#123;  	# 认证配置</span><br><span class="line">        auth_type PASS  	# 主从服务器验证方式</span><br><span class="line">        auth_pass 1111  	# 认证密码</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    virtual_ipaddress &#123;  	# 设置虚拟IP地址，可以设置多个虚拟IP地址，每行一个</span><br><span class="line">        192.168.150.24/24 dev eth1 </span><br><span class="line">    &#125;</span><br><span class="line">    track_interface &#123;  	# 设置额外的监控，里面那个网卡出现问题都会切换</span><br><span class="line">        eth0</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>配置<code>Keepalived</code>备用节点<code>Backup</code>配置文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/keepalived/keepalived.conf&lt;&lt;<span class="string">EOF</span></span></span><br><span class="line">global_defs &#123;  	# 全局配置</span><br><span class="line">   notification_email &#123;  	# 指定在keepalived在发生切换时需要发送Email的对象，一行一个</span><br><span class="line">       user@example.com  	# 指定收件人</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   notification_email_from mail@example.org  	# 指定发件人</span><br><span class="line">   smtp_server 192.168.200.1  	# 指定SMTP服务器地址</span><br><span class="line">   smtp_connect_timeout 30  	# 指定SMTP连接超时时间</span><br><span class="line">   router_id Rabbitmq_Dev  	# 此处注意router_id为负载均衡表示，在局域网应该是唯一</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;  	# 监控多个网段实例</span><br><span class="line"></span><br><span class="line">    state BACKUP  	# 指定Keepalived的角色，MASTER表示此主机是主服务器,BACKUP表示此主机是备用服务器，所以设置priority时要注意MASTER比BACKUP高。如果设置了nopreempt,那么state的这个值不起作用，主备靠priority决定。</span><br><span class="line">    nopreempt  	# 设置为不抢占 </span><br><span class="line">    interface eth0  	# 设置实例绑定的网卡</span><br><span class="line">    virtual_router_id 58  	# 虚拟路由标识，同一个vrrp实例使用唯一的标识，同一个vrrp_instance下，MASTER和BACKUP必须一致。</span><br><span class="line">    priority 100  	# 权重要低于MASTER</span><br><span class="line">    advert_int 1  	# 心跳报文发送间隔、检查间隔默认1秒</span><br><span class="line">    unicast_src_ip 192.168.150.22  	# 配置单播的源地址</span><br><span class="line">    unicast_peer &#123; </span><br><span class="line">        192.168.150.21  	# 配置单播的目标地址、对端IP</span><br><span class="line">    &#125;  	# keepalived在组播模式下所有的信息都会向224.0.0.18的组播地址发送，产生众多的无用信息，并且会产生干扰和冲突，可以将组播的模式改为单拨。这是一种安全的方法，避免局域网内有大量的keepalived造成虚拟路由id的冲突。</span><br><span class="line"></span><br><span class="line">    authentication &#123;  	# 设置认证</span><br><span class="line">        auth_type PASS  	# 认证方式有两种PASS、AH两种</span><br><span class="line">        auth_pass 1111  	# 认证密码</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    # VIP</span><br><span class="line">    virtual_ipaddress &#123;  	# 设置虚拟IP地址，可以设置多个虚拟IP地址，每行一个</span><br><span class="line">        192.168.150.24/24 dev eth1 </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>启动<code>Keepalived</code>服务</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start keepalived</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-Centos7允许组播网段和vrrp协议通信"><a href="#5-Centos7允许组播网段和vrrp协议通信" class="headerlink" title="5. Centos7允许组播网段和vrrp协议通信"></a>5. <code>Centos7</code>允许组播网段和<code>vrrp</code>协议通信</h3><ul>
+<li><ol>
+<li><code>centos7 firewalld</code>开启情况下，会阻断组播和<code>vrrp</code>的协议通信，导致<code>Keepalived</code>脑裂情况，需要在<code>keepalived</code>的两台服务器执行以下命令，就可以正常通信</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --direct --permanent --add-rule ipv4 filter INPUT 0 --in-interface 网卡名称(eth0) --destination 224.0.0.18 --protocol vrrp -j ACCEPT</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --reload</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>监控网络协议，查看是否有脑裂情况</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tcpdump -i 网卡名称(eth0) vrrp -n</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>使用<code>python</code>安装<code>pika</code>包进行测试</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y python-pip</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">pip install pika</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>生产端程序脚本</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">cat &gt;Production.py&lt;&lt;-EOF</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">!/usr/bin/env python</span></span><br><span class="line">import pika</span><br><span class="line">credentials = pika.PlainCredentials(&#x27;admin&#x27;,&#x27;admin&#x27;)</span><br><span class="line">connection = pika.BlockingConnection(pika.ConnectionParameters(</span><br><span class="line">    &#x27;192.168.150.21&#x27;,8889,&#x27;/&#x27;,credentials))</span><br><span class="line">channel = connection.channel()</span><br><span class="line"></span><br><span class="line">channel.queue_declare(queue=&#x27;balance&#x27;)</span><br><span class="line"></span><br><span class="line">channel.basic_publish(exchange=&#x27;&#x27;,</span><br><span class="line">                      routing_key=&#x27;balance&#x27;,</span><br><span class="line">                      body=&#x27;Hello World!&#x27;)</span><br><span class="line">print(&quot; [x] Sent &#x27;Hello World!&#x27;&quot;)</span><br><span class="line">connection.close()</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li><font color=red>消费端程序脚本</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;Consumption.py&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">!/usr/bin/env python</span></span></span><br><span class="line">import pika</span><br><span class="line">credentials = pika.PlainCredentials(&#x27;admin&#x27;,&#x27;admin&#x27;)</span><br><span class="line">connection = pika.BlockingConnection(pika.ConnectionParameters(</span><br><span class="line">    &#x27;192.168.150.21&#x27;,8889,&#x27;/&#x27;,credentials))</span><br><span class="line">channel = connection.channel()</span><br><span class="line"></span><br><span class="line">channel.queue_declare(queue=&#x27;balance&#x27;)</span><br><span class="line"></span><br><span class="line">channel.basic_publish(exchange=&#x27;&#x27;,</span><br><span class="line">                      routing_key=&#x27;balance&#x27;,</span><br><span class="line">                      body=&#x27;Hello World!&#x27;)</span><br><span class="line">print(&quot; [x] Sent &#x27;Hello World!&#x27;&quot;)</span><br><span class="line">connection.close()</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>二哥
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://usermice.github.io/message-queue/Install-Rabbitmq/" title="Install-Rabbitmq">https://usermice.github.io/message-queue/Install-Rabbitmq/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/message-queue/" rel="tag"># <i class="fa fa-tag"></i> message queue</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/message-queue/Install-Rocketmq/" rel="prev" title="Install-Roketmq">
+      <i class="fa fa-chevron-left"></i> Install-Roketmq
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/Rabbitmq/Confiture-Rabbitmq/" rel="next" title="Confiture-Rabbitmq">
+      Confiture-Rabbitmq <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+    
+ </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%83%A8%E7%BD%B2Rabbitmq%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-HAProxy-Keepalived"><span class="nav-number">1.</span> <span class="nav-text">1. 部署Rabbitmq消息队列+HAProxy+Keepalived</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-RabbitMQ%E9%9B%86%E7%BE%A4%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 RabbitMQ集群安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E9%85%8D%E7%BD%AERabbitmq%E7%94%A8%E6%88%B7%E5%B9%B6%E6%8E%88%E6%9D%83"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 配置Rabbitmq用户并授权</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%AE%89%E8%A3%85RabbitMQ%E7%9A%84%E5%BB%B6%E6%97%B6%E6%8F%92%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">2. 安装RabbitMQ的延时插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%83%A8%E7%BD%B2HAProxy%E6%9C%8D%E5%8A%A1%EF%BC%8C%E4%BD%BFRabbitmq%E6%9C%8D%E5%8A%A1%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">3. 部署HAProxy服务，使Rabbitmq服务实现高可用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AEKeepalived%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.</span> <span class="nav-text">4. 部署配置Keepalived服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Centos7%E5%85%81%E8%AE%B8%E7%BB%84%E6%92%AD%E7%BD%91%E6%AE%B5%E5%92%8Cvrrp%E5%8D%8F%E8%AE%AE%E9%80%9A%E4%BF%A1"><span class="nav-number">5.</span> <span class="nav-text">5. Centos7允许组播网段和vrrp协议通信</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="二哥"
+      src="/images/IMG_0081.JPG">
+  <p class="site-author-name" itemprop="name">二哥</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="/usererge#gmail.com" title="E-Mail → usererge#gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/yourname" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="二哥"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">二哥</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">298k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4:31</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://usermice.github.io/" class="theme-link">二哥</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+-->
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
