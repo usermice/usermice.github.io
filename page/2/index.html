@@ -191,6 +191,731 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/Configure-K8s-Project/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Kubernetes/Configure-K8s-Project/" class="post-title-link" itemprop="url">Configure-K8s-Project</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-06 21:23:35" itemprop="dateCreated datePublished" datetime="2022-06-06T21:23:35+08:00">2022-06-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-06 20:00:50" itemprop="dateModified" datetime="2022-07-06T20:00:50+08:00">2022-07-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-Pod的资源清单"><a href="#1-Pod的资源清单" class="headerlink" title="1. Pod的资源清单"></a>1. <span id="Pod的资源清单"><font color=red><code>Pod</code>的资源清单</font></span></h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1     # 版本号，例如v1</span><br><span class="line">kind: Pod       　 # 资源类型，例如 Pod、Deployment、Service、ReplicaSet</span><br><span class="line">metadata:       　 # 元数据</span><br><span class="line">  name: java-demo     # Pod名称</span><br><span class="line">  namespace: string  # Pod所属的命名空间,默认为&quot;default&quot;</span><br><span class="line">  labels:       　　  # 自定义标签列表</span><br><span class="line">    - name: java-demo      　          </span><br><span class="line">spec:  # Pod中容器的详细定义</span><br><span class="line">  replicas: 3</span><br><span class="line">  </span><br><span class="line">  selector:</span><br><span class="line">     matchLabels:</span><br><span class="line">        project: java-demo</span><br><span class="line">        app: java-demo</span><br><span class="line">        </span><br><span class="line">  containers:  # Pod中容器列表</span><br><span class="line">  - name: tomcat-demo   # 容器名称</span><br><span class="line">    image: 192.168.80.210:8080/test/tomcat-demo:v1  # 镜像仓库地址</span><br><span class="line">    imagePullPolicy: [ Always|Never|IfNotPresent ]  # 获取镜像的策略 </span><br><span class="line">    command: [string]   # 容器的启动命令列表，如不指定，使用打包时使用的启动命令</span><br><span class="line">    args:   	# 容器的启动命令参数列表</span><br><span class="line">    - /bin/sh</span><br><span class="line">    - -c</span><br><span class="line">    - touch /tmp/healthy; sleep 30; rm -fr /tmp/healthy; sleep 600</span><br><span class="line">    workingDir: string  # 容器的工作目录</span><br><span class="line">    </span><br><span class="line">    volumeMounts:       # 挂载到容器内部的存储卷配置</span><br><span class="line">    - name: data      # 引用pod定义的共享存储卷的名称，需用volumes[]部分定义的的卷名</span><br><span class="line">      mountPath: /opt/data # 存储卷在容器内mount的绝对路径，应少于512字符</span><br><span class="line">      readOnly: boolean # 是否为只读模式</span><br><span class="line">      </span><br><span class="line">    ports: # 需要暴露的端口库号列表</span><br><span class="line">    - name: http  	# 服务名称</span><br><span class="line">      containerPort: int  # 容器需要监听的端口号</span><br><span class="line">      hostPort: int       # 容器所在主机需要监听的端口号，默认与Container相同</span><br><span class="line">      protocol: TCP    # 端口协议，支持TCP和UDP，默认TCP</span><br><span class="line">      targetPort: 80   	# Pod 本身服务端口，比如Nginx：80，Tomcat：8080</span><br><span class="line">      nodePort: 30001   	# 节点对外端口</span><br><span class="line">      </span><br><span class="line">    env:   # 容器运行前需设置的环境变量列表</span><br><span class="line">    - name: JAVA_OPTS  # 环境变量名称</span><br><span class="line">      value: &quot;-Xmx1g&quot; # 环境变量的值</span><br><span class="line">      </span><br><span class="line">    resources: # 资源限制和请求的设置</span><br><span class="line">      limits:  # 限定Pod最大使用硬件资源</span><br><span class="line">        cpu: &quot;1&quot;       # Cpu的限制，单位为core数，将用于docker run --cpu-shares参数</span><br><span class="line">        memory: &quot;1Gi&quot;   # 内存限制，单位可以为Mib/Gib，将用于docker run --memory参数</span><br><span class="line">      requests: # 资源请求的设置</span><br><span class="line">      cpu: &quot;0.5&quot;   	# 限定使用几个核心CPU、容器启动的初始可用数量</span><br><span class="line">      memory: &quot;256Mi&quot;   	# 设定使用内存、容器启动的初始可用数量</span><br><span class="line">        </span><br><span class="line">    lifecycle: # 生命周期钩子</span><br><span class="line">      postStart: #容器启动后立即执行此钩子,如果执行失败,会根据重启策略进行重启</span><br><span class="line">       exec:</span><br><span class="line">        command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;echo Hello from the postStart handler &gt;/usr/share/message&quot;]</span><br><span class="line">      preStop: #容器终止前执行此钩子,无论结果如何,容器都会终止</span><br><span class="line">       exec:</span><br><span class="line">        command: [&quot;/bin/sh&quot;,&quot;-c&quot;,&quot;nginx -s quit; while killall -0 nginx; do sleep 1; done&quot;]</span><br><span class="line"></span><br><span class="line">    startupProbe:</span><br><span class="line">     tcpSocket:   		# 使用TcpSocket、httpGet健康检查</span><br><span class="line">      port: 8010   	# 探测8010端口</span><br><span class="line">     failureThreshold: 5  	# 检测失败5次表示未就绪</span><br><span class="line">     initialDelaySeconds: 60   	# 指定容器启动60s之后开始执行Liveness探测，</span><br><span class="line">     periodSeconds: 10  	# 指定每10秒执行一次Liveness探测。</span><br><span class="line">     successThreshold: 1  	# 检查成功为2次表示就绪</span><br><span class="line">     timeoutSeconds: 5  	# 检测失败1次表示未就绪</span><br><span class="line">     </span><br><span class="line">    livenessProbe:  # 对Pod内各容器健康检查的设置，当探测无响应几次后将自动重启该容器</span><br><span class="line">      exec:       　 # 对Pod容器内检查方式设置为exec方式</span><br><span class="line">        command: [string]  #exec方式需要制定的命令或脚本</span><br><span class="line">        </span><br><span class="line">      httpGet:       # 对Pod内个容器健康检查方法设置为HttpGet，需要制定Path、port</span><br><span class="line">        path: / #URI地址</span><br><span class="line">        port: 8010</span><br><span class="line">        host: 192.168.109.100 #主机地址</span><br><span class="line">        scheme: HTTP #支持的协议，http或者https</span><br><span class="line">        HttpHeaders:</span><br><span class="line">        - name: string</span><br><span class="line">          value: string</span><br><span class="line">          </span><br><span class="line">      tcpSocket:     # 对Pod内个容器健康检查方式设置为tcpSocket方式</span><br><span class="line">         port: 8010</span><br><span class="line">       initialDelaySeconds: 60       # 容器启动完成后首次探测的时间，单位为秒</span><br><span class="line">       timeoutSeconds: 5    　　    # 对容器健康检查探测等待响应的超时时间，单位秒，默认1秒</span><br><span class="line">       periodSeconds: 10     　　    # 对容器监控检查的定期探测时间设置，单位秒，默认10秒一次</span><br><span class="line">       successThreshold: 1</span><br><span class="line">       failureThreshold: 5</span><br><span class="line">       securityContext:</span><br><span class="line">         privileged: false</span><br><span class="line">  restartPolicy: [Always | Never | OnFailure]  #Pod的重启策略</span><br><span class="line">  nodeName: k8s-node1 # 设置NodeName表示将该Pod调度到指定到名称的node节点上</span><br><span class="line">  nodeSelector: obeject # 设置NodeSelector表示将该Pod调度到包含这个label的node上</span><br><span class="line">  imagePullSecrets: # Pull镜像时使用的secret名称，以key：secretkey格式指定</span><br><span class="line">  - name: docker-harbor  	# 指定使用的secret库房名称</span><br><span class="line">  hostNetwork: false   # 是否使用主机网络模式，默认为false，如果设置为true，表示使用宿主机网络</span><br><span class="line">  </span><br><span class="line">  volumes:   # 在该pod上定义共享存储卷列表</span><br><span class="line">  - name: logs-volume    # 共享存储卷名称 （volumes类型有很多种）</span><br><span class="line">    emptyDir: &#123;&#125;       # 类型为emtyDir的存储卷，与Pod同生命周期的一个临时目录。为空值</span><br><span class="line">    </span><br><span class="line">    hostPath:    # 类型为hostPath的存储卷，表示挂载Pod所在宿主机的目录</span><br><span class="line">      path: /root/logs  	# Pod所在宿主机的目录，将被用于同期中mount的目录</span><br><span class="line">      type: DirectoryOrCreate # 目录存在就使用，不存在就先创建再使用</span><br><span class="line">      </span><br><span class="line">    secret:       　　　# 类型为secret的存储卷，挂载集群与定义的secret对象到容器内部</span><br><span class="line">      scretname: secret</span><br><span class="line">      items:     </span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br><span class="line">        </span><br><span class="line">    configMap:         # 类型为configMap的存储卷，挂载预定义的configMap对象到容器内部</span><br><span class="line">      name: configmap</span><br><span class="line">      items:</span><br><span class="line">      - key: string</span><br><span class="line">        path: string</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-编写适用Nginx的yaml文件"><a href="#2-编写适用Nginx的yaml文件" class="headerlink" title="2. 编写适用Nginx的yaml文件"></a>2. <span id="编写适用Nginx的yaml">编写适用<code>Nginx</code>的<code>yaml</code>文件</span></h3><h4 id="2-1-适用Deployment的yaml文件"><a href="#2-1-适用Deployment的yaml文件" class="headerlink" title="2.1 适用Deployment的yaml文件"></a>2.1 <font color=red>适用<code>Deployment</code>的<code>yaml</code>文件</font></h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">creationTimestamp:</span> <span class="literal">null</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">nginx-deployment</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx-deployment</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">3</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">nginx-deployment</span></span><br><span class="line">  <span class="attr">strategy:</span> &#123;&#125;</span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">creationTimestamp:</span> <span class="literal">null</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nginx-deployment</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">image:</span> <span class="string">fxgxxxxx/nginx:v1</span>  <span class="comment"># 在所有节点登录自己的 hub.docker.com 账户</span></span><br><span class="line">        <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">        <span class="attr">imagePullPolicy:</span> <span class="string">IfNotPresent</span></span><br><span class="line">        <span class="attr">ports:</span></span><br><span class="line">         <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">80</span></span><br><span class="line">        <span class="attr">volumeMounts:</span></span><br><span class="line">         <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx_vhosts</span></span><br><span class="line">           <span class="attr">mountPath:</span> <span class="string">/usr/local/nginx/conf/vhosts</span></span><br><span class="line">           <span class="attr">name:</span> <span class="string">nginx_logs</span></span><br><span class="line">           <span class="attr">mountPath:</span> <span class="string">/usr/local/nginx/logs</span></span><br><span class="line">           <span class="attr">name:</span> <span class="string">nginx_html</span></span><br><span class="line">        <span class="attr">resources:</span></span><br><span class="line">         <span class="attr">limits:</span></span><br><span class="line">          <span class="attr">cpu:</span> <span class="string">&quot;6&quot;</span></span><br><span class="line">          <span class="attr">memory:</span> <span class="string">&quot;6Gi&quot;</span></span><br><span class="line">         <span class="attr">requests:</span></span><br><span class="line">          <span class="attr">cpu:</span> <span class="string">&quot;3&quot;</span></span><br><span class="line">          <span class="attr">memory:</span> <span class="string">&quot;3Gi&quot;</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">       <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx_vhosts</span></span><br><span class="line">         <span class="attr">hostPath:</span></span><br><span class="line">          <span class="attr">path:</span> <span class="string">/opt/data/nginx/vhosts</span></span><br><span class="line">          <span class="attr">type:</span> <span class="string">DirectoryOrCreate</span></span><br><span class="line">         <span class="attr">name:</span> <span class="string">nginx_logs</span></span><br><span class="line">         <span class="attr">hostPath:</span></span><br><span class="line">          <span class="attr">path:</span> <span class="string">/opt/data/nginx/logs</span></span><br><span class="line">          <span class="attr">type:</span> <span class="string">DirectoryOrCreate</span></span><br><span class="line">         <span class="attr">name:</span> <span class="string">nginx_html</span></span><br><span class="line">         <span class="attr">hostPath:</span></span><br><span class="line">          <span class="attr">path:</span> <span class="string">/opt/data/nginx/html</span></span><br><span class="line">          <span class="attr">type:</span> <span class="string">DirectoryOrCreate</span></span><br><span class="line"><span class="attr">status:</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-适用Service的yaml文件"><a href="#2-2-适用Service的yaml文件" class="headerlink" title="2.2 适用Service的yaml文件"></a>2.2 <font color=red>适用<code>Service</code>的<code>yaml</code>文件</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span>&gt;nginx.yaml&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line"> name: nginx</span><br><span class="line"> namespace: default</span><br><span class="line"></span><br><span class="line">spec:</span><br><span class="line"> selector:  	# 选择关联标签为app：ms的pod</span><br><span class="line">  app: nginx-deployment  	# 关联 Deployment Pod的名称</span><br><span class="line"> clusterIP: 10.10.100.100  	# 指定service IP，不指定就随机生成，启用ingress设置为：None</span><br><span class="line"> type: NodePort  	# service类型，NodePort支持集群外部访问，启用ingress设置：ClusterIP</span><br><span class="line"> ports:  	# 端口</span><br><span class="line"> - port: 80  	# Service 集群端口</span><br><span class="line">   targetPort: 80  	# Pod 本身服务端口，比如Nginx：80，Tomcat：8080</span><br><span class="line">   nodePort: 30080  	# 节点端口，启用ingress删除此行</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<p><font color=red><em><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong>我是分割线</strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></em></font>  </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim emptydir.yaml</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line"> name: my-pod</span><br><span class="line"></span><br><span class="line">spec:</span><br><span class="line"> containers:</span><br><span class="line"> - name: write</span><br><span class="line">   image: centos</span><br><span class="line">   command: [&quot;bash&quot;,&quot;-c&quot;,&quot;for i in &#123;1..100&#125;;do echo $i &gt;&gt;/opt/hello;sleep 1;done&quot;]</span><br><span class="line">   volumeMounts:</span><br><span class="line">    - name: data</span><br><span class="line">      mountPath: /opt</span><br><span class="line"></span><br><span class="line"> - name: read</span><br><span class="line">   image: centos</span><br><span class="line">   command: [&quot;bash&quot;,&quot;-c&quot;,&quot;tail -f /opt/hello&quot;]</span><br><span class="line">   volumeMounts:</span><br><span class="line">    - name: data</span><br><span class="line">      mountPath: /opt</span><br><span class="line"></span><br><span class="line"> volumes:</span><br><span class="line"> - name: data</span><br><span class="line">   emptyDir: &#123;&#125;</span><br><span class="line">   </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f emptydir.yaml    	<span class="comment">#创建</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl <span class="built_in">exec</span> -it my-pod --container write -- /bin/bash  <span class="comment">#进入 写pod</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-编写适用Java的yaml"><a href="#3-编写适用Java的yaml" class="headerlink" title="3. 编写适用Java的yaml"></a>3. <span id="编写适用Java的yaml"><font color=red><code>编写适用Java的yaml</code></font></span></h3><h4 id="3-1-下载Java-demo代码，并修改连接数据库配置"><a href="#3-1-下载Java-demo代码，并修改连接数据库配置" class="headerlink" title="3.1 下载Java demo代码，并修改连接数据库配置"></a>3.1 <font color=red>下载<code>Java demo</code>代码，并修改连接数据库配置</font></h4><ul>
+<li><ol>
+<li><font color=red>下载<code>java demo</code>代码</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/frankinbj/tomcat-java-demo.git</span>     </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>修改连接数据库配置文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim tomcat-java-demo/src/main/resources/application.yml</span></span><br><span class="line">  datasource:</span><br><span class="line">    url: jdbc:mysql://192.168.80.215:3306/test?characterEncoding=utf-8</span><br><span class="line">    username: admin</span><br><span class="line">    password: admin </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>打包<code>java war</code>包</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/tomcat-java-demo/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">mvn clean package -Dmaven.test.skip=<span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成war包</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ll /opt/tomcat-java-demo/target/ly-simple-tomcat-0.0.1-SNAPSHOT.war</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-把数据导入数据库，创建授权连接用户"><a href="#3-2-把数据导入数据库，创建授权连接用户" class="headerlink" title="3.2 把数据导入数据库，创建授权连接用户"></a>3.2 <font color=red>把数据导入数据库，创建授权连接用户</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">mysql -uroot -p &lt; tomcat-java-demo/doc/db/tables_ly_tomcat.sql</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">grant all privileges on *.* to admin@<span class="string">&#x27;%&#x27;</span> identified by <span class="string">&#x27;admin&#x27;</span>;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-3-安装JDK、Maven配置环境变量"><a href="#3-3-安装JDK、Maven配置环境变量" class="headerlink" title="3.3 安装JDK、Maven配置环境变量"></a>3.3 <font color=red>安装JDK、Maven配置环境变量</font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;#######JDK環境變數########################</span></span></span><br><span class="line">export JAVA_HOME=/usr/local/jdk</span><br><span class="line">export JRE_HOME=$&#123;JAVA_HOME&#125;/jre</span><br><span class="line">export CLASSPATH=$&#123;JAVA_HOME&#125;/lib:$&#123;JAVA_HOME&#125;/lib/tools.jar</span><br><span class="line">export PATH=$&#123;PATH&#125;:$&#123;JAVA_HOME&#125;/bin:$&#123;JAVA_HOME&#125;/jre/bin</span><br><span class="line">export PATH=$&#123;PATH&#125;:/usr/local/maven/bin &quot;&gt;&gt;/etc/profile</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-4-修改Dockerfile配置文件，docker-build成镜像"><a href="#3-4-修改Dockerfile配置文件，docker-build成镜像" class="headerlink" title="3.4 修改Dockerfile配置文件，docker build成镜像"></a>3.4 <font color=red>修改<code>Dockerfile</code>配置文件，<code>docker build</code>成镜像</font></h4><ul>
+<li><ol>
+<li><font color=red><code>使用Tomcat</code>服务打包启动容器</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> /opt/tomcat-java-demo/Dockerfile</span></span><br><span class="line">FROM lizhenliang/tomcat</span><br><span class="line">RUN rm -rf /usr/local/tomcat/webapps/*</span><br><span class="line">ADD target/*.war /usr/local/tomcat/webapps/ROOT.war</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">声明时区</span></span><br><span class="line">RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; echo &#x27;Asia/Shanghai&#x27; &gt;/etc/timezone</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>使用<code>java -jar</code>打包镜像，可以使用<code>xxl-job</code>的<code>jar</code>包</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> openjdk</span><br><span class="line"><span class="keyword">VOLUME</span><span class="language-bash"> /tmp</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./target/live-server-1.0.0-SNAPSHOT.jar live-server-1.0.0-SNAPSHOT.jar</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> bash -c <span class="string">&quot;touch /live-server-1.0.0-SNAPSHOT.jar&quot;</span></span></span><br><span class="line"><span class="comment"># 声明时区</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">ln</span> -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; <span class="built_in">echo</span> <span class="string">&#x27;Asia/Shanghai&#x27;</span> &gt;/etc/timezone</span></span><br><span class="line"><span class="comment">#声明运行时容器提供服务端口，这只是一个声明，在运行时并不会因为这个声明应用就会开启这个端口的服务</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">8080</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>,<span class="string">&quot;-jar&quot;</span>,<span class="string">&quot;/live-server-1.0.0-SNAPSHOT.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>生成<code>docker images：</code>镜像并推送到私人仓库</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><ol>
+<li><font color=red><code>-t,--tag list</code>：镜像名称</font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>-f，--file string</code>：如果文件名不是<code>Dockerfile``-f</code>可以指定其他文件</font></li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>192.168.80.210:8080</code>：私人仓库地址</font></li>
+</ol>
+</li>
+<li><ol start="4">
+<li><font color=red><code>test</code>：私人仓库名</font></li>
+</ol>
+</li>
+<li><ol start="5">
+<li><font  color=red><code>tomcat-demo:v1</code>：定义镜像名称以及版本</font></li>
+</ol>
+</li>
+<li><ol start="6">
+<li><font color=red>如果打包报错：<code>epository does not exist,</code>更换<code>Dockerfile</code>的<code>FROM</code>源地址</font></li>
+</ol>
+</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> /opt/tomcat-java-demo/</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker build -t 192.168.80.210:8080/test/tomcat-demo:v1 .  <span class="comment"># 打包镜像</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker push 192.168.80.210:8080/test/tomcat-demo:v1  <span class="comment"># 推送到私人仓库</span></span> </span><br></pre></td></tr></table></figure>
+
+<h4 id="3-5-配置Kubernetes使用Harbor私有镜像仓库"><a href="#3-5-配置Kubernetes使用Harbor私有镜像仓库" class="headerlink" title="3.5 配置Kubernetes使用Harbor私有镜像仓库"></a>3.5 <font color=red>配置<code>Kubernetes</code>使用<code>Harbor</code>私有镜像仓库</font></h4><ul>
+<li><ol>
+<li><font color=red><code>docker-harbor</code>：<code>secret</code>名称自定义</font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>--docker-server</code>：<code>Harbor</code>仓库地址</font></li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>--docker-username</code>：<code>Harbor</code>登录用户名</font></li>
+</ol>
+</li>
+<li><ol start="4">
+<li><font color=red><code>--docker-password</code>：<code>Harbor</code>仓库登录密码</font></li>
+</ol>
+</li>
+<li><ol start="5">
+<li><font color=red><code>--docker-email</code>：接受邮件</font></li>
+</ol>
+</li>
+<li><ol start="6">
+<li><font color=red><code>--namespace</code>：指定命名空间，不指定默认为：<code>default</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create secret docker-registry docker-harbor --docker-server=192.168.80.210:8080 --docker-username=admin --docker-password=Harbor12345 --docker-email=xxx@xxx.com --namespace=harbor</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将机密数据转换为可读格式</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get secret docker-harbor --output=<span class="string">&quot;jsonpath=&#123;.data.\.dockerconfigjson&#125;&quot;</span> | <span class="built_in">base64</span> --decode</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输入以下内容</span></span><br><span class="line">&#123;&quot;auths&quot;:&#123;&quot;192.168.80.210:8080&quot;:&#123;&quot;username&quot;:&quot;admin&quot;,&quot;password&quot;:&quot;Harbor12345&quot;,&quot;email&quot;:&quot;xxx@xxx.com&quot;,&quot;auth&quot;:&quot;YWRtaW46SGFyYm9yMTIzNDU=&quot;&#125;&#125;&#125;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将 <span class="built_in">base64</span> 编码的数据转换为可读格式</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;YWRtaW46SGFyYm9yMTIzNDU=&quot;</span> | <span class="built_in">base64</span> --decode</span></span><br><span class="line">admin:Harbor12345  	# 输出结果</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-6-生成yaml文件，并在spec-containers字段中修改私人镜像参数"><a href="#3-6-生成yaml文件，并在spec-containers字段中修改私人镜像参数" class="headerlink" title="3.6 生成yaml文件，并在spec.containers字段中修改私人镜像参数"></a>3.6 <font color=red>生成<code>yaml</code>文件，并在<code>spec.containers</code>字段中修改私人镜像参数</font></h4><h5 id="3-6-1-生成Deployment的yaml文件并应用"><a href="#3-6-1-生成Deployment的yaml文件并应用" class="headerlink" title="3.6.1 生成Deployment的yaml文件并应用"></a>3.6.1 <font color=red>生成<code>Deployment</code>的yaml文件并应用</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create deployment java-demo --image=192.168.80.210:8080/test/tomcat-demo:v1 --dry-run=client -o yaml &gt;/tmp/deploy.yaml</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol>
+<li><font color=red><code>- image: 192.168.80.210:8080/test/tomcat-demo:v1</code>：</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>1.1. <font color=red><code>192.168.80.210:8080</code>：指定使用私人仓库地址，域名或者IP地址加端口号</font>  </li>
+<li>1.2. <font color=red><code>test</code>：私人仓库库房名称</font>  </li>
+<li>1.3. <font color=red><code>tomcat-demo</code>：使用私人仓库的镜像</font>  </li>
+<li>1.4. <font color=red><code>v1</code>：必须指定要使用私人仓库镜像的版本号</font></li>
+</ul>
+</blockquote>
+<ul>
+<li><ol start="2">
+<li><font color=red><code>name: tomcat-demo</code>：指定使用的镜像名字</font></li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red><code>imagePullSecrets:</code>：指定使用其他镜像地址</font></li>
+</ol>
+</li>
+<li><ol start="4">
+<li><font color=red><code>- name: docker-harbor</code>：指定定义的私人仓库名字</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    app: java-demo</span><br><span class="line">  name: java-demo</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: java-demo</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: java-demo</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - image: 192.168.80.210:8080/test/tomcat-demo:v1  # 需修改处</span><br><span class="line">        name: tomcat-demo  	# 默认生成</span><br><span class="line">      imagePullSecrets:  	# 手动添加字段</span><br><span class="line">      - name: docker-harbor  	# 指定使用的secret库房名称</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-6-2-创建Service的yaml文件，应用并访问"><a href="#3-6-2-创建Service的yaml文件，应用并访问" class="headerlink" title="3.6.2 创建Service的yaml文件，应用并访问"></a>3.6.2 <font color=red>创建<code>Service</code>的<code>yaml</code>文件，应用并访问</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl expose deployment java-demo --port=80 --target-port=8080 --<span class="built_in">type</span>=NodePort --dry-run=client -o yaml &gt;/opt/yaml/java-demo-svc.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> /opt/yaml/java-demo-svc.yaml</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    app: java-demo</span><br><span class="line">  name: java-demo</span><br><span class="line">spec:</span><br><span class="line">  ports:</span><br><span class="line">  - port: 8080  	# Service 集群端口</span><br><span class="line">    protocol: TCP</span><br><span class="line">    targetPort: 8080  	# Pod 本身服务端口，比如Nginx：80，Tomcat：8080</span><br><span class="line">    nodePort: 30001  	# 外网访问端口</span><br><span class="line">  selector:</span><br><span class="line">    app: java-demo</span><br><span class="line">  type: NodePort</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create -f java-demo-svc.yaml</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get service</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">http://192.168.80.210:30001/  	<span class="comment"># 浏览器访问地址</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-编写适用PHP的yaml"><a href="#4-编写适用PHP的yaml" class="headerlink" title="4. 编写适用PHP的yaml"></a>4. <span id="编写适用PHP的yaml"><font color=red><code>编写适用PHP的yaml</code></font></span></h3><h3 id="5-编写适用Redis的yaml"><a href="#5-编写适用Redis的yaml" class="headerlink" title="5.  编写适用Redis的yaml"></a>5.  <span id="编写适用Redis的yaml"><font color=red><code>编写适用Redis的yaml</code></font></span></h3>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/Install-Kubernetes-Cluster/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Kubernetes/Install-Kubernetes-Cluster/" class="post-title-link" itemprop="url">Install-Kubernetes-Cluster</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-30 20:58:42" itemprop="dateCreated datePublished" datetime="2022-05-30T20:58:42+08:00">2022-05-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-24 20:15:19" itemprop="dateModified" datetime="2022-06-24T20:15:19+08:00">2022-06-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>15k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>14 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-规划主机以及部署高可用集群"><a href="#1-规划主机以及部署高可用集群" class="headerlink" title="1. 规划主机以及部署高可用集群"></a>1. 规划主机以及部署高可用集群</h3><table>
+<thead>
+<tr>
+<th>角色</th>
+<th><code>IP</code>地址</th>
+<th>配置</th>
+<th>操作系统</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Master-1</td>
+<td>192.168.80.210</td>
+<td><code>2core、4G、80Gdisk</code></td>
+<td><code>CentOS Linux release 7.9.2</code></td>
+</tr>
+<tr>
+<td>Master-2</td>
+<td>192.168.80.211</td>
+<td><code>2core、4G、80Gdisk</code></td>
+<td><code>CentOS Linux release 7.9.2</code></td>
+</tr>
+<tr>
+<td>node-1</td>
+<td>192.168.80.212</td>
+<td><code>2core、2G、60Gdisk</code></td>
+<td><code>CentOS Linux release 7.9.2</code></td>
+</tr>
+<tr>
+<td>node-2</td>
+<td>192.168.80.213</td>
+<td><code>2core、2G、60Gdisk</code></td>
+<td><code>CentOS Linux release 7.9.2</code></td>
+</tr>
+<tr>
+<td>node-3</td>
+<td>192.168.80.215</td>
+<td><code>2core、2G、60Gdisk</code></td>
+<td><code>CentOS Linux release 7.9.2</code></td>
+</tr>
+</tbody></table>
+<h4 id="1-1-系统初始化"><a href="#1-1-系统初始化" class="headerlink" title="1.1 系统初始化"></a>1.1 系统初始化</h4><ul>
+<li><ol>
+<li><font color=red>分别设置五台主机名</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname master-1-80-210</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname master-2-80-211</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname node-1-80-212</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname node-2-80-213</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">hostnamectl set-hostname node-3-80-215</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol start="2">
+<li><font color=red>分别在五台服务器做本地<code>hosts</code>解析</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;&gt;/etc/hosts&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">192.168.80.210 master-01</span><br><span class="line">192.168.80.211 master-02</span><br><span class="line">192.168.80.212 noder-01</span><br><span class="line">192.168.80.213 noder-02</span><br><span class="line">192.168.80.215 noder-03</span><br><span class="line">192.168.80.220 k8s-master-lb # VIP(虚拟IP)用于LoadBalance，如果不是高可用集群，该IP可以是k8s-master01的IP </span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol start="3">
+<li><font color=red>设置时间同步，修改时区两种方式</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第一种</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">timedatectl set-timezone Asia/Shanghai</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">第二种</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">ln</span> -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> chronyd.service &amp;&amp; systemctl start chronyd.service</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol start="4">
+<li><font color=red>关闭防火墙并禁止开机自启</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">disable</span> firewalld &amp;&amp; systemctl stop firewalld</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><ol start="5">
+<li><font color=red>关闭<code>SElinux</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">setenforce 0  	<span class="comment">#临时关闭Selinux</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/^SELINUX=.*/SELINUX=disabled/&#x27;</span> /etc/selinux/config  <span class="comment">#永久关闭Selinux</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="6">
+<li><font color=red>关闭<code>swap</code>交换分区</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -ri <span class="string">&#x27;s/.*swap.*/#&amp;/&#x27;</span> /etc/fstab &amp;&amp; swapoff -a</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="7">
+<li><font color=red>允许 iptables 检查桥接流量</font></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>7.1 确保<font color=red><code>br_netfilter</code></font>模块被加载。这一操作可以通过运行<font color=red><code>lsmod | grep br_netfilter</code></font>来完成。若要显式加载该模块，可执行<font color=red><code>modprobe br_netfilter</code>。</font></li>
+<li>7.2 为了让你的<code>Linux</code>节点上的<code>iptables</code>能够正确地查看桥接流量，你需要确保在你的<code>sysctl</code>配置中将 <font color=red><code>net.bridge.bridge-nf-call-iptables</code></font>设置为 1</li>
+</ul>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &lt;&lt;<span class="string">EOF | sudo tee /etc/modules-load.d/k8s.conf</span></span></span><br><span class="line">br_netfilter</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">cat &lt;&lt;EOF</span> | sudo <span class="built_in">tee</span> /etc/sysctl.d/k8s.conf</span></span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">net.ipv4.ip_forward = 1</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sysctl --system</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="8">
+<li><font color=red>开启<code>ipvs</code></font>  <blockquote>
+<ul>
+<li>8.1 在<code>kubernetes</code>中<code>service</code>有两种代理模型，一种是基于<code>iptables</code>，另一种是基于<code>ipvs</code>的。<code>ipvs</code>的性能要高于<code>iptables</code>的，但是如果要使用它，需要手动载入<code>ipvs</code>模块。  </li>
+<li>8.2 <font color=red>在每个节点安装<code>ipset</code>和<code>ipvsadm</code></font></li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install ipset ipvsadm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在所有节点执行如下脚本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/sysconfig/modules/ipvs.modules&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">!/bin/bash</span></span></span><br><span class="line">modprobe -- ip_vs</span><br><span class="line">modprobe -- ip_vs_rr</span><br><span class="line">modprobe -- ip_vs_wrr</span><br><span class="line">modprobe -- ip_vs_sh</span><br><span class="line">modprobe -- nf_conntrack_ipv4</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">授权、运行、检查是否加载</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">chmod 755 /etc/sysconfig/modules/ipvs.modules &amp;&amp; bash /etc/sysconfig/modules/ipvs.modules &amp;&amp; lsmod | grep -e ip_vs -e nf_conntrack_ipv4</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">检查是否加载</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">lsmod | grep -e ipvs -e nf_conntrack_ipv4</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="9">
+<li><font color=red>所有节点配置Limit</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">ulimit</span> -SHn 65536  	<span class="comment"># 临时生效</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;</span></span></span><br><span class="line">* soft nproc 65535</span><br><span class="line">* hard nproc 65535</span><br><span class="line">* soft nofile 65535         #软限制</span><br><span class="line">* hard nofile 65535         #硬限制</span><br><span class="line">* soft memlock unlimited</span><br><span class="line">* soft memlock unlimited &quot; &gt;&gt;/etc/security/limits.conf  	# 永久生效</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="10">
+<li><font color=red><code>k8s-master01</code>节点设置免密登录其他节点</font>  <blockquote>
+<ul>
+<li>10.1 <font color=red><code>ssh-keygen</code>：</font>用于创建密钥的程序  </li>
+<li>10.2 <font color=red><code>-m PEM</code>：</font>将密钥的格式设为<code>PEM</code>  </li>
+<li>10.3 <font color=red><code>-t rsa</code>：</font>创建密钥类型为：<code>RSA</code>格式，系统默认提供名为 <code>id_rsa</code> 的密钥对，有些工具可能要求私钥文件名为 <code>id_rsa</code>   </li>
+<li>10.4 <font color=red><code>-b 4096</code>：</font>密钥的位数，本例中为<code>4096</code>  </li>
+<li>10.5 <font color=red><code>-C &quot;xxx@myserver&quot;</code>：</font>追加到公钥文件末尾以便于识别的注释。 通常以电子邮件地址用作注释，但也可以使用任何最适合你基础结构的事物  </li>
+<li>10.6 <font color=red><code>-f ~/.ssh/</code>：</font>私钥文件的文件名（如果选择不使用默认名称）。 追加了<code>.pub</code>的相应公钥文件在相同目录中生成。 该目录必须存在  </li>
+<li>10.7 <font color=red><code>-N mypassphrase</code>：</font>用于访问私钥文件的其他密码</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh-keygen \</span></span><br><span class="line"><span class="language-bash"> -m PEM \</span></span><br><span class="line"><span class="language-bash"> -t rsa \</span></span><br><span class="line"><span class="language-bash"> -b 4096 \</span></span><br><span class="line"><span class="language-bash"> -C <span class="string">&quot;xxx@163.com&quot;</span> \</span></span><br><span class="line"><span class="language-bash"> -f ~/.ssh/name_rsa \</span></span><br><span class="line"><span class="language-bash"> -N mypassphrase</span></span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="keyword">for</span> i <span class="keyword">in</span> master-01 master-02 noder-01 noder-02 noder-03;<span class="keyword">do</span> ssh-copy-id -i .ssh/id_rsa.pub <span class="variable">$i</span>;<span class="keyword">done</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="11">
+<li><font color=red>所有节点更新系统并且重启</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y --exclude=kernel* update  &amp;&amp; reboot</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="12">
+<li><font color=red>升级系统<code>Kernel</code>内核到<code>4.18+</code>以上</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">令列出可用的内核相关包</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum --disablerepo=<span class="string">&quot;*&quot;</span> --enablerepo=<span class="string">&quot;elrepo-kernel&quot;</span> list available</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装最新主线稳定内核</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y --enablerepo=elrepo-kernel install kernel-ml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置 GRUB 默认的内核版本：</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/default/grub</span></span><br><span class="line">GRUB_DEFAULT=0  	# 修改部分， GRUB 初始化页面的第一个内核将作为默认内核</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">重新创建内核配置</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">grub2-mkconfig -o /boot/grub2/grub.cfg</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">reboot</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-所有节点安装Docker、kubeadm、kubelete和kubectl"><a href="#2-所有节点安装Docker、kubeadm、kubelete和kubectl" class="headerlink" title="2. 所有节点安装Docker、kubeadm、kubelete和kubectl"></a>2. 所有节点安装<code>Docker</code>、<code>kubeadm</code>、<code>kubelete</code>和<code>kubectl</code></h3><h4 id="2-1-所有节点安装Docker"><a href="#2-1-所有节点安装Docker" class="headerlink" title="2.1 所有节点安装Docker"></a>2.1 <font color=red>所有节点安装<code>Docker</code></font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo -O /etc/yum.repos.d/docker-ce.repo</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install docker-ce-20.10.2</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> docker &amp;&amp; systemctl start docker</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker version</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol>
+<li><font color=red>设置<code>Docker</code>镜像加速器：</font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red><code>&quot;exec-opts&quot;: [&quot;native.cgroupdriver=systemd&quot;],</code>：文件驱动默认由<code>systemd</code>改成<code>cgroupfs</code>, 而我们安装的<code>docker</code>使用的文件驱动是<code>systemd</code>, 造成不一致, 导致镜像无法启动</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sudo <span class="built_in">mkdir</span> -p /etc/docker</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sudo <span class="built_in">tee</span> /etc/docker/daemon.json &lt;&lt;-<span class="string">&#x27;EOF&#x27;</span></span></span><br><span class="line">&#123;</span><br><span class="line">  &quot;exec-opts&quot;: [&quot;native.cgroupdriver=systemd&quot;],	</span><br><span class="line">  &quot;registry-mirrors&quot;: [&quot;https://b9pmyelo.mirror.aliyuncs.com&quot;],	</span><br><span class="line">  &quot;live-restore&quot;: true,</span><br><span class="line">  &quot;log-driver&quot;:&quot;json-file&quot;,</span><br><span class="line">  &quot;log-opts&quot;: &#123;&quot;max-size&quot;:&quot;500m&quot;, &quot;max-file&quot;:&quot;3&quot;&#125;</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sudo systemctl daemon-reload &amp;&amp; sudo systemctl restart docker</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-kubeadm、kubelete、kubectl"><a href="#2-2-kubeadm、kubelete、kubectl" class="headerlink" title="2.2 kubeadm、kubelete、kubectl"></a>2.2 <font color=red><code>kubeadm</code>、<code>kubelete</code>、<code>kubectl</code></font></h4><ul>
+<li><ol>
+<li><font color=red>添加阿里云镜像源</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/yum.repos.d/kubernetes.repo&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">repo_gpgcheck=0</span><br><span class="line">gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>安装<code>kubeadm</code>、<code>kubelet</code>和<code>kubectl</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum list kubeadm.x86_64 --showduplicates | <span class="built_in">sort</span> -r  	<span class="comment"># 查看kubeadm的版本</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y kubelet-1.20.2 kubeadm-1.20.2 kubectl-1.20.2</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>为了实现<code>Docker</code>使用的<code>cgroup drvier</code>和<code>kubelet</code>使用的<code>cgroup drver</code>一致，建议修改<code>/etc/sysconfig/kubelet</code>文件的内容</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/sysconfig/kubelet</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改</span></span><br><span class="line">KUBELET_EXTRA_ARGS=&quot;--cgroup-driver=systemd&quot;</span><br><span class="line">KUBE_PROXY_MODE=&quot;ipvs&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">所有的节点设置为开机自启动即可，由于没有生成配置文件，集群初始化后会自动启动</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> kubelet</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-安装高可用组件"><a href="#3-安装高可用组件" class="headerlink" title="3. 安装高可用组件"></a>3. 安装高可用组件</h3><ul>
+<li><ol>
+<li><font color=red>注意：如果不是高可用集群，haproxy和keepalived无需安装</font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>所有<code>Master</code>节点安装<code>HAPROXY</code>和<code>Keepalived</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install keepalived haproxy</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>所有<code>Master</code>节点配置<code>HAProxy</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -pv /etc/haproxy</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/haproxy/haproxy.cfg</span></span><br><span class="line">global</span><br><span class="line">  maxconn  2000</span><br><span class="line">  ulimit-n  16384</span><br><span class="line">  log  127.0.0.1 local0 err</span><br><span class="line">  stats timeout 30s</span><br><span class="line"> </span><br><span class="line">defaults</span><br><span class="line">  log global</span><br><span class="line">  mode  http</span><br><span class="line">  option  httplog</span><br><span class="line">  timeout connect 5000</span><br><span class="line">  timeout client  50000</span><br><span class="line">  timeout server  50000</span><br><span class="line">  timeout http-request 15s</span><br><span class="line">  timeout http-keep-alive 15s</span><br><span class="line"> </span><br><span class="line">frontend monitor-in</span><br><span class="line">  bind *:33305</span><br><span class="line">  mode http</span><br><span class="line">  option httplog</span><br><span class="line">  monitor-uri /monitor</span><br><span class="line"> </span><br><span class="line">listen stats</span><br><span class="line">  bind    *:8006</span><br><span class="line">  mode    http</span><br><span class="line">  stats   enable</span><br><span class="line">  stats   hide-version</span><br><span class="line">  stats   uri       /stats</span><br><span class="line">  stats   refresh   30s</span><br><span class="line">  stats   realm     Haproxy\ Statistics</span><br><span class="line">  stats   auth      admin:admin</span><br><span class="line"> </span><br><span class="line">frontend k8s-master</span><br><span class="line">  bind 0.0.0.0:16443</span><br><span class="line">  bind 127.0.0.1:16443</span><br><span class="line">  mode tcp</span><br><span class="line">  option tcplog</span><br><span class="line">  tcp-request inspect-delay 5s</span><br><span class="line">  default_backend k8s-master</span><br><span class="line"> </span><br><span class="line">backend k8s-master</span><br><span class="line">  mode tcp</span><br><span class="line">  option tcplog</span><br><span class="line">  option tcp-check</span><br><span class="line">  balance roundrobin</span><br><span class="line">  default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100</span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">下面的配置根据实际情况修改</span></span><br><span class="line">  server k8s-master01	192.168.80.210:6443  check</span><br><span class="line">  server k8s-master02	192.168.80.211:6443  check</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red><code>Msster-01</code>的<code>Keepalived</code>配置文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/keepalived/keepalived.conf</span></span><br><span class="line">! Configuration File for keepalived</span><br><span class="line">global_defs &#123;</span><br><span class="line">    # 标识本节点的字条串，通常为 hostname</span><br><span class="line">    router_id k8s-master01</span><br><span class="line">    script_user root</span><br><span class="line">    enable_script_security    </span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">检测脚本</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">keepalived 会定时执行脚本并对脚本执行的结果进行分析，动态调整 vrrp_instance 的优先级。如果脚本执行结果为 0，并且 weight 配置的值大于 0，则优先级相应的增加。如果脚本执行结果非 0，并且 weight配置的值小于 0，则优先级相应的减少。其他情况，维持原本配置的优先级，即配置文件中 priority 对应的值。</span></span><br><span class="line">vrrp_script chk_apiserver &#123;</span><br><span class="line">    script &quot;/etc/keepalived/check_apiserver.sh&quot;</span><br><span class="line">    # 每2秒检查一次</span><br><span class="line">    interval 2</span><br><span class="line">    # 一旦脚本执行成功，权重减少5</span><br><span class="line">    weight -5</span><br><span class="line">    fall 3  </span><br><span class="line">    rise 2</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">定义虚拟路由，VI_1 为虚拟路由的标示符，自己定义名称</span></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    # 主节点为 MASTER，对应的备份节点为 BACKUP</span><br><span class="line">    state MASTER</span><br><span class="line">    # 绑定虚拟 IP 的网络接口，与本机 IP 地址所在的网卡名称相同</span><br><span class="line">    interface ens33</span><br><span class="line">    # 主机的IP地址</span><br><span class="line">    mcast_src_ip 192.168.80.210</span><br><span class="line">    # 虚拟路由id</span><br><span class="line">    virtual_router_id 100</span><br><span class="line">    # 节点优先级，值范围 0-254，MASTER 要比 BACKUP 高</span><br><span class="line">    priority 100</span><br><span class="line">    # 优先级高的设置 nopreempt 解决异常恢复后再次抢占的问题</span><br><span class="line">    nopreempt </span><br><span class="line">    # 组播信息发送间隔，所有节点设置必须一样，默认 1s</span><br><span class="line">    advert_int 2</span><br><span class="line">    # 设置验证信息，所有节点必须一致</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass K8SHA_KA_AUTH</span><br><span class="line">    &#125;</span><br><span class="line">    # 虚拟 IP 池, 所有节点设置必须一样</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">    	# 虚拟 ip，可以定义多个	</span><br><span class="line">        192.168.80.220/24</span><br><span class="line">    &#125;</span><br><span class="line">    track_script &#123;</span><br><span class="line">       chk_apiserver</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li><font color=red><code>Master-02</code>的<code>Keepalived</code>配置文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/keepalived/keepalived.conf</span></span><br><span class="line">! Configuration File for keepalived</span><br><span class="line">global_defs &#123;</span><br><span class="line">    router_id k8s-master02</span><br><span class="line">    script_user root</span><br><span class="line">    enable_script_security    </span><br><span class="line">&#125;</span><br><span class="line">vrrp_script chk_apiserver &#123;</span><br><span class="line">    script &quot;/etc/keepalived/check_apiserver.sh&quot;</span><br><span class="line">    interval 2</span><br><span class="line">    weight -5</span><br><span class="line">    fall 3  </span><br><span class="line">    rise 2</span><br><span class="line">&#125;</span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state BACKUP</span><br><span class="line">    interface ens33</span><br><span class="line">    mcast_src_ip 192.168.80.211</span><br><span class="line">    virtual_router_id 101</span><br><span class="line">    priority 99</span><br><span class="line">    advert_int 2</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass K8SHA_KA_AUTH</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.80.220/24</span><br><span class="line">    &#125;</span><br><span class="line">    track_script &#123;</span><br><span class="line">      chk_apiserver</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="6">
+<li><font color=red>所有<code>Master</code>节点设置监控脚本，并且给予执行权限</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/keepalived/check_apiserver.sh&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="string">!/bin/bash</span></span></span><br><span class="line"> </span><br><span class="line">err=0</span><br><span class="line">for k in $(seq 1 5)</span><br><span class="line">do</span><br><span class="line">    check_code=$(pgrep kube-apiserver)</span><br><span class="line">    if [[ $check_code == &quot;&quot; ]]; then</span><br><span class="line">        err=$(expr $err + 1)</span><br><span class="line">        sleep 5</span><br><span class="line">        continue</span><br><span class="line">    else</span><br><span class="line">        err=0</span><br><span class="line">        break</span><br><span class="line">    fi</span><br><span class="line">done</span><br><span class="line"> </span><br><span class="line">if [[ $err != &quot;0&quot; ]]; then</span><br><span class="line">    echo &quot;systemctl stop keepalived&quot;</span><br><span class="line">    /usr/bin/systemctl stop keepalived</span><br><span class="line">    exit 1</span><br><span class="line">else</span><br><span class="line">    exit 0</span><br><span class="line">fi</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">chmod +x /etc/keepalived/check_apiserver.sh</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="7">
+<li><font color=red>所有<code>Master</code>节点启动<code>HAProxy</code>和<code>Keepalived</code>并且测试<code>VIP</code>(虚拟IP)</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl daemon-reload</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> --now haproxy</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> --now keepalived</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ping 192.168.80.220 -c 4</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-部署k8s的Master节点，两种方式部署Master节点yaml和命令行"><a href="#4-部署k8s的Master节点，两种方式部署Master节点yaml和命令行" class="headerlink" title="4.部署k8s的Master节点，两种方式部署Master节点yaml和命令行"></a>4.部署<code>k8s</code>的<code>Master</code>节点，两种方式部署<code>Master</code>节点<code>yaml</code>和命令行</h3><h4 id="4-1-yaml配置文件的方式部署k8s的Master节点，在k8s-master01创建kubeadm-config-yaml"><a href="#4-1-yaml配置文件的方式部署k8s的Master节点，在k8s-master01创建kubeadm-config-yaml" class="headerlink" title="4.1  yaml配置文件的方式部署k8s的Master节点，在k8s-master01创建kubeadm-config.yaml"></a>4.1 <font color=red><code> yaml</code>配置文件的方式部署<code>k8s</code>的<code>Master</code>节点，在<code>k8s-master01</code>创建<code>kubeadm-config.yaml</code></font></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: kubeadm.k8s.io/v1beta2</span><br><span class="line">bootstrapTokens:</span><br><span class="line">- groups:</span><br><span class="line">  - system:bootstrappers:kubeadm:default-node-token</span><br><span class="line">  token: abcdef.0123456789abcdef</span><br><span class="line">  ttl: 24h0m0s</span><br><span class="line">  usages:</span><br><span class="line">  - signing</span><br><span class="line">  - authentication</span><br><span class="line">kind: InitConfiguration</span><br><span class="line">localAPIEndpoint:</span><br><span class="line">  advertiseAddress: 192.168.80.210     # 本机IP</span><br><span class="line">  bindPort: 6443</span><br><span class="line">nodeRegistration:</span><br><span class="line">  criSocket: /var/run/dockershim.sock</span><br><span class="line">  name: k8s-master01        # 本主机名,hosts文件映射主机名</span><br><span class="line">  taints:</span><br><span class="line">  - effect: NoSchedule</span><br><span class="line">    key: node-role.kubernetes.io/master</span><br><span class="line">---</span><br><span class="line">apiServer:</span><br><span class="line">  timeoutForControlPlane: 4m0s</span><br><span class="line">apiVersion: kubeadm.k8s.io/v1beta2</span><br><span class="line">certificatesDir: /etc/kubernetes/pki</span><br><span class="line">clusterName: kubernetes</span><br><span class="line">controlPlaneEndpoint: &quot;192.168.80.220:16443&quot;    # 虚拟IP和haproxy端口</span><br><span class="line">controllerManager: &#123;&#125;</span><br><span class="line">dns:</span><br><span class="line">  type: CoreDNS</span><br><span class="line">etcd:</span><br><span class="line">  local:</span><br><span class="line">    dataDir: /var/lib/etcd</span><br><span class="line">imageRepository: registry.aliyuncs.com/google_containers    # 镜像仓库源</span><br><span class="line">kind: ClusterConfiguration</span><br><span class="line">kubernetesVersion: v1.20.2    # k8s版本</span><br><span class="line">networking:</span><br><span class="line">  dnsDomain: cluster.local</span><br><span class="line">  podSubnet: &quot;10.244.0.0/16&quot;</span><br><span class="line">  serviceSubnet: &quot;10.96.0.0/12&quot;</span><br><span class="line">scheduler: &#123;&#125;</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: kubeproxy.config.k8s.io/v1alpha1</span><br><span class="line">kind: KubeProxyConfiguration</span><br><span class="line">featureGates:</span><br><span class="line">  SupportIPVSProxyMode: true</span><br><span class="line">mode: ipvs</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol>
+<li><font color=red>可以使用如下的命令更新<code>kubeadm-config.yaml</code>文件，需要将<code>k8s</code>设置到对应的版本</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm config migrate --old-config /opt/yaml/kubeadm-config.yaml --new-config <span class="string">&quot;new.yaml&quot;</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>将<code>new.yaml</code>文件复制到所有的<code>master</code>节点</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">scp new.yaml k8s-master02:/opt/yaml/new.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">所有master节点提前下载镜像</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm config images pull --config /opt/yaml/new.yaml</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red><code>k8s-master01</code>节点初始化后，会在<code>/etc/kubernetes</code>目录下生成对应的证书和配置文件，之后其他的<code>Master</code>节点加入到<code>k8s-master01</code>节点即可。</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm init --config /opt/yaml/new.yaml --upload-certs</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font colo=red>如果初始化失败，重置后再次初始化，命令如下：</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm reset -f;ipvsadm --clear;<span class="built_in">rm</span> -rf ~/.kube</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li><font color=red>初始化成功后，会产生<code>token</code>值，用于其他节点加入时使用，</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Your Kubernetes control-plane has initialized successfully!</span><br><span class="line"></span><br><span class="line">To start using your cluster, you need to run the following as a regular user:</span><br><span class="line"></span><br><span class="line">  mkdir -p $HOME/.kube</span><br><span class="line">  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config</span><br><span class="line">  sudo chown $(id -u):$(id -g) $HOME/.kube/config</span><br><span class="line"></span><br><span class="line">Alternatively, if you are the root user, you can run:</span><br><span class="line"></span><br><span class="line">  export KUBECONFIG=/etc/kubernetes/admin.conf</span><br><span class="line"></span><br><span class="line">You should now deploy a pod network to the cluster.</span><br><span class="line">Run &quot;kubectl apply -f [podnetwork].yaml&quot; with one of the options listed at:</span><br><span class="line">  https://kubernetes.io/docs/concepts/cluster-administration/addons/</span><br><span class="line"></span><br><span class="line">You can now join any number of the control-plane node running the following command on each as root:</span><br><span class="line"></span><br><span class="line">  kubeadm join 192.168.80.210:16443 --token abcdef.0123456789abcdef \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:505e373bae6123fc3e27e778c5fedbccbf0f91a51efdcc11b32c4573605b8e71 \</span><br><span class="line">    --control-plane --certificate-key 70aef5f76111a5824085c644b3f34cf830efad00c1b16b878701166bf069664e</span><br><span class="line"></span><br><span class="line">Please note that the certificate-key gives access to cluster sensitive data, keep it secret!</span><br><span class="line">As a safeguard, uploaded-certs will be deleted in two hours; If necessary, you can use</span><br><span class="line">&quot;kubeadm init phase upload-certs --upload-certs&quot; to reload certs afterward.</span><br><span class="line"></span><br><span class="line">Then you can join any number of worker nodes by running the following on each as root:</span><br><span class="line"></span><br><span class="line">kubeadm join 192.168.80.210:16443 --token abcdef.0123456789abcdef \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:505e373bae6123fc3e27e778c5fedbccbf0f91a51efdcc11b32c4573605b8e71</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="6">
+<li><font color=red><code>k8s-master01</code>节点配置环境变量，用于访问<code>kubernetes</code>集群</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">root用户</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt; /root/.bashrc &lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">export KUBECONFIG=/etc/kubernetes/admin.conf</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">source ~/.bash_profile</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">普通用户</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">mkdir -p $HOME/.kube</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">sudo chown $(id -u):$(id -g) $HOME/.kube/config</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">k8s-master01中查看节点的状态：</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">kubectl get nodes</span></span></span><br></pre></td></tr></table></figure>
+
+<h4 id="4-2-命令行的方式部署k8s的Master节点"><a href="#4-2-命令行的方式部署k8s的Master节点" class="headerlink" title="4.2 命令行的方式部署k8s的Master节点"></a>4.2 <font color=red>命令行的方式部署k8s的Master节点</font></h4><ul>
+<li><ol>
+<li><font color=red>在所有<code>Master</code>节点执行下面的命令</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm config images pull --kubernetes-version=v1.20.2 --image-repository=registry.aliyuncs.com/google_containers</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>在<code>k8s-master01</code>节点执行下面的命令：</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm init \</span></span><br><span class="line"><span class="language-bash">  --apiserver-advertise-address=192.168.80.210 \</span></span><br><span class="line"><span class="language-bash">  --image-repository registry.aliyuncs.com/google_containers \</span></span><br><span class="line"><span class="language-bash">  --control-plane-endpoint=192.168.80.225:16443 \</span></span><br><span class="line"><span class="language-bash">  --kubernetes-version v1.20.2 \</span></span><br><span class="line"><span class="language-bash">  --service-cidr=10.96.0.0/12 \</span></span><br><span class="line"><span class="language-bash">  --pod-network-cidr=10.244.0.0/16 \</span></span><br><span class="line"><span class="language-bash">  --upload-certs</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>将<code>k8s-master02</code>节点加入到集群中</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm <span class="built_in">join</span> 192.168.80.225:16443 --token povqsg.arg07e5ia1pywr71 \</span></span><br><span class="line"><span class="language-bash">    --discovery-token-ca-cert-hash sha256:9efd30b7f35747289b9de0c8d0768b9c2d5eb7d675cb86fa05b9a6d9526c3441 \</span></span><br><span class="line"><span class="language-bash">    --control-plane --certificate-key 363cc6296537b41607851c10f1f41ef23cf5cdc6965cb9c26e4b252315086855</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>防止在<code>Master-02</code>节点中不能使用<code>kubectl</code>命令</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> -p <span class="variable">$HOME</span>/.kube</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sudo <span class="built_in">cp</span> -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sudo <span class="built_in">chown</span> $(<span class="built_in">id</span> -u):$(<span class="built_in">id</span> -g) <span class="variable">$HOME</span>/.kube/config</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>如果<code>Token</code>过期，需要在<code>Master-01</code>生成新的<code>Token</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm token create --print-join-command</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li><font color=red>如果<code>Master</code>要加入到集群中，需要在<code>Master-01</code>生成<code>--certificate-key</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm init phase upload-certs --upload-certs</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="6">
+<li><font color=red>其他<code>Master</code>节点加入集群执行命令：</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm <span class="built_in">join</span> 192.168.80.225:16443 --token povqsg.arg07e5ia1pywr71 \</span></span><br><span class="line"><span class="language-bash">    --discovery-token-ca-cert-hash sha256:9efd30b7f35747289b9de0c8d0768b9c2d5eb7d675cb86fa05b9a6d9526c3441 \</span></span><br><span class="line"><span class="language-bash">    --control-plane --certificate-key 363cc6296537b41607851c10f1f41ef23cf5cdc6965cb9c26e4b252315086855</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="4-3-Node节点加入集群"><a href="#4-3-Node节点加入集群" class="headerlink" title="4.3 Node节点加入集群"></a>4.3 <font color=red><code>Node</code>节点加入集群</font></h4><ul>
+<li><ol>
+<li><font color=red><code>Node-01</code>加入集群</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm <span class="built_in">join</span> 192.168.80.225:16443 --token povqsg.arg07e5ia1pywr71 \</span></span><br><span class="line"><span class="language-bash">    --discovery-token-ca-cert-hash sha256:9efd30b7f35747289b9de0c8d0768b9c2d5eb7d675cb86fa05b9a6d9526c3441</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red><code>Node-02</code>加入集群</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubeadm <span class="built_in">join</span> 192.168.80.225:16443 --token povqsg.arg07e5ia1pywr71 \</span></span><br><span class="line"><span class="language-bash">    --discovery-token-ca-cert-hash sha256:9efd30b7f35747289b9de0c8d0768b9c2d5eb7d675cb86fa05b9a6d9526c3441</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-部署CNI网络插件"><a href="#5-部署CNI网络插件" class="headerlink" title="5. 部署CNI网络插件"></a>5. 部署<code>CNI</code>网络插件</h3><ul>
+<li><ol>
+<li><font color=red><code>kubernetes</code>支持多种网络插件，比如<code>flannel</code>、<code>calico</code>、<code>canal</code>等，任选一种即可，此次选择<code>flannel</code></font></li>
+</ol>
+</li>
+<li><ol start="2">
+<li><font color=red>在所有<code>Master</code>节点上获取<code>flannel</code>配置文件，请下载到本地，然后安装，也可以安装calico，推荐安装calico</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在所有Master节点使用配置文件启动flannel：</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在所有Master节点查看部署CNI网络插件进度：</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods -n kube-system</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在所有Master节点再次查看节点状态：</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get nodes</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在所有Master节点查看集群健康状况</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get cs</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>集群不健康，那么需要注释掉<code>etc/kubernetes/manifests</code>下的<code>kube-controller-manager.yaml</code>和<code>kube-scheduler.yaml</code>的<code>--port=0</code>：</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/kubernetes/manifests/kube-controller-manager.yaml</span></span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - command:</span><br><span class="line">    - kube-controller-manager</span><br><span class="line">    - --allocate-node-cidrs=true</span><br><span class="line">    - --authentication-kubeconfig=/etc/kubernetes/controller-manager.conf</span><br><span class="line">    - --authorization-kubeconfig=/etc/kubernetes/controller-manager.conf</span><br><span class="line">    - --bind-address=127.0.0.1</span><br><span class="line">    - --client-ca-file=/etc/kubernetes/pki/ca.crt</span><br><span class="line">    - --cluster-cidr=10.244.0.0/16</span><br><span class="line">    - --cluster-name=kubernetes</span><br><span class="line">    - --cluster-signing-cert-file=/etc/kubernetes/pki/ca.crt</span><br><span class="line">    - --cluster-signing-key-file=/etc/kubernetes/pki/ca.key</span><br><span class="line">    - --controllers=*,bootstrapsigner,tokencleaner</span><br><span class="line">    - --kubeconfig=/etc/kubernetes/controller-manager.conf</span><br><span class="line">    - --leader-elect=true</span><br><span class="line">    # 修改部分</span><br><span class="line">    # - --port=0</span><br><span class="line">    - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt</span><br><span class="line">    - --root-ca-file=/etc/kubernetes/pki/ca.crt</span><br><span class="line">    - --service-account-private-key-file=/etc/kubernetes/pki/sa.key</span><br><span class="line">    - --service-cluster-ip-range=10.96.0.0/12</span><br><span class="line">    - --use-service-account-credentials=true</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/kubernetes/manifests/kube-scheduler.yaml</span></span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - command:</span><br><span class="line">    - kube-scheduler</span><br><span class="line">    - --authentication-kubeconfig=/etc/kubernetes/scheduler.conf</span><br><span class="line">    - --authorization-kubeconfig=/etc/kubernetes/scheduler.conf</span><br><span class="line">    - --bind-address=127.0.0.1</span><br><span class="line">    - --kubeconfig=/etc/kubernetes/scheduler.conf</span><br><span class="line">    - --leader-elect=true</span><br><span class="line">    # 修改部分</span><br><span class="line">    # - --port=0</span><br><span class="line">    </span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在所有Master节点再次查看集群健康状况：</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get cs</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/Configure-K8s-Auth/">
 
 <div>
@@ -2562,355 +3287,6 @@ $ kubectl get endpoints -n dev -o wide
 <div>
     
  </div>
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/configure-k8s-Rancher/">
-
-<div>
-      
-</div>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/IMG_0081.JPG">
-      <meta itemprop="name" content="二哥">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="二哥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Kubernetes/configure-k8s-Rancher/" class="post-title-link" itemprop="url">没有Rancher Server情况下管理下游Kubernetes集群</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-05-19 19:37:37" itemprop="dateCreated datePublished" datetime="2022-05-19T19:37:37+08:00">2022-05-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-09 15:21:07" itemprop="dateModified" datetime="2022-06-09T15:21:07+08:00">2022-06-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>10k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>9 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-Rancher服务宕机情况下使用Kubernetes-Cluster"><a href="#1-Rancher服务宕机情况下使用Kubernetes-Cluster" class="headerlink" title="1. Rancher服务宕机情况下使用Kubernetes Cluster"></a>1. <code>Rancher</code>服务宕机情况下使用<code>Kubernetes Cluster</code></h3><ul>
-<li><ol>
-<li><a target="_blank" rel="noopener" href="https://docs.rancher.cn/docs/rancher2/cluster-admin/cleaning-cluster-nodes/_index/"><code>Rancher</code>清理节点</a></li>
-</ol>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line">KUBE_SVC=&#x27;</span><br><span class="line">kubelet</span><br><span class="line">kube-scheduler</span><br><span class="line">kube-proxy</span><br><span class="line">kube-controller-manager</span><br><span class="line">kube-apiserver</span><br><span class="line">&#x27;</span><br><span class="line"></span><br><span class="line">for kube_svc in $&#123;KUBE_SVC&#125;;</span><br><span class="line">do</span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">停止服务</span></span><br><span class="line">  if [[ `systemctl is-active $&#123;kube_svc&#125;` == &#x27;active&#x27; ]]; then</span><br><span class="line">    systemctl stop $&#123;kube_svc&#125;</span><br><span class="line">  fi</span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">禁止服务开机启动</span></span><br><span class="line">  if [[ `systemctl is-enabled $&#123;kube_svc&#125;` == &#x27;enabled&#x27; ]]; then</span><br><span class="line">    systemctl disable $&#123;kube_svc&#125;</span><br><span class="line">  fi</span><br><span class="line">done</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">停止所有容器</span></span><br><span class="line">docker stop $(docker ps -aq)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除所有容器</span></span><br><span class="line">docker rm -f $(docker ps -qa)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除所有容器卷</span></span><br><span class="line">docker volume rm $(docker volume ls -q)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">卸载mount目录</span></span><br><span class="line">for mount in $(mount | grep tmpfs | grep &#x27;/var/lib/kubelet&#x27; | awk &#x27;&#123; print $3 &#125;&#x27;) /var/lib/kubelet /var/lib/rancher;</span><br><span class="line">do</span><br><span class="line">  umount $mount;</span><br><span class="line">done</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">备份目录</span></span><br><span class="line">mv /etc/kubernetes /etc/kubernetes-bak-$(date +&quot;%Y%m%d%H%M&quot;)</span><br><span class="line">mv /var/lib/etcd /var/lib/etcd-bak-$(date +&quot;%Y%m%d%H%M&quot;)</span><br><span class="line">mv /var/lib/rancher /var/lib/rancher-bak-$(date +&quot;%Y%m%d%H%M&quot;)</span><br><span class="line">mv /opt/rke /opt/rke-bak-$(date +&quot;%Y%m%d%H%M&quot;)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除残留路径</span></span><br><span class="line">rm -rf /etc/ceph \</span><br><span class="line">    /etc/cni \</span><br><span class="line">    /opt/cni \</span><br><span class="line">    /run/secrets/kubernetes.io \</span><br><span class="line">    /run/calico \</span><br><span class="line">    /run/flannel \</span><br><span class="line">    /var/lib/calico \</span><br><span class="line">    /var/lib/cni \</span><br><span class="line">    /var/lib/kubelet \</span><br><span class="line">    /var/log/containers \</span><br><span class="line">    /var/log/kube-audit \</span><br><span class="line">    /var/log/pods \</span><br><span class="line">    /var/run/calico \</span><br><span class="line">    /usr/libexec/kubernetes</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">清理网络接口</span></span><br><span class="line">no_del_net_inter=&#x27;</span><br><span class="line">lo</span><br><span class="line">docker0</span><br><span class="line">eth</span><br><span class="line">ens</span><br><span class="line">bond</span><br><span class="line">&#x27;</span><br><span class="line"></span><br><span class="line">network_interface=`ls /sys/class/net`</span><br><span class="line"></span><br><span class="line">for net_inter in $network_interface;</span><br><span class="line">do</span><br><span class="line">  if ! echo &quot;$&#123;no_del_net_inter&#125;&quot; | grep -qE $&#123;net_inter:0:3&#125;; then</span><br><span class="line">    ip link delete $net_inter</span><br><span class="line">  fi</span><br><span class="line">done</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">清理残留进程</span></span><br><span class="line">port_list=&#x27;</span><br><span class="line">80</span><br><span class="line">443</span><br><span class="line">6443</span><br><span class="line">2376</span><br><span class="line">2379</span><br><span class="line">2380</span><br><span class="line">8472</span><br><span class="line">9099</span><br><span class="line">10250</span><br><span class="line">10254</span><br><span class="line">&#x27;</span><br><span class="line"></span><br><span class="line">for port in $port_list;</span><br><span class="line">do</span><br><span class="line">  pid=`netstat -atlnup | grep $port | awk &#x27;&#123;print $7&#125;&#x27; | awk -F &#x27;/&#x27; &#x27;&#123;print $1&#125;&#x27; | grep -v - | sort -rnk2 | uniq`</span><br><span class="line">  if [[ -n $pid ]]; then</span><br><span class="line">    kill -9 $pid</span><br><span class="line">  fi</span><br><span class="line">done</span><br><span class="line"></span><br><span class="line">kube_pid=`ps -ef | grep -v grep | grep kube | awk &#x27;&#123;print $2&#125;&#x27;`</span><br><span class="line"></span><br><span class="line">if [[ -n $kube_pid ]]; then</span><br><span class="line">  kill -9 $kube_pid</span><br><span class="line">fi</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">清理Iptables表</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment"># 注意：如果节点Iptables有特殊配置，以下命令请谨慎操作</span></span></span><br><span class="line">sudo iptables --flush</span><br><span class="line">sudo iptables --flush --table nat</span><br><span class="line">sudo iptables --flush --table filter</span><br><span class="line">sudo iptables --table nat --delete-chain</span><br><span class="line">sudo iptables --table filter --delete-chain</span><br><span class="line">systemctl restart docker</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">* 2. &lt;font color=red&gt;`Rancher Server`是上游中心管理角色，控制或创建旗下`N`个`Kubernetes Cluster`集群，不管是测试中的单个节点或者是`Kubernetes Cluster`集群失效都无法读取，运维仍需要对下游所有`Kubernetes Cluster`集群管控&lt;/font&gt;  </span><br><span class="line"></span><br><span class="line">| 服务器 | IP | CPU | 内存 |</span><br><span class="line">|---|---|---|---|</span><br><span class="line">| master | 192.168.35.128 | 8`core` | 8G |</span><br><span class="line">| node-1 | 192.168.35.129 | 4`core` | 4G |</span><br><span class="line">| node-2 | 192.168.35.130 | 4`core` | 4G |</span><br><span class="line">* 3. 前提条件  </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">* 3.1 &lt;font color=red&gt;所有机器都是`CentOS 7`&lt;/font&gt;</span>  </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">* 3.2 &lt;font color=red&gt;`Rancher Server`是以`Docker`方式单独建立&lt;/font&gt;</span>  </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">* 3.3 &lt;font color=red&gt;`test-cluster Kubernetes Cluster`集群是以`Rancher Server`自定义方式创建&lt;/font&gt;</span>  </span><br><span class="line"></span><br><span class="line">* 4. &lt;font color=red&gt;模拟`Racnher Server`服务失效对`Kubernetes Cluster`集群进行管控&lt;/font&gt;  </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">* 4.1 &lt;font color=red&gt;点击创建集群名称&lt;/font&gt;</span>  </span><br><span class="line"></span><br><span class="line">![](https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_15-47-45.png)     </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">* 4.2 &lt;font color=red&gt;提前下载`Kubernetesfig`文件&lt;/font&gt;</span>  </span><br><span class="line"></span><br><span class="line">![](https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_15-49-19.png)    </span><br><span class="line"></span><br><span class="line">![下k8s file](https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-20_16-16-23.png)  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">## 2. 模拟`Rancher`服务宕机</span></span>  </span><br><span class="line">* 1. &lt;font color=red&gt;停止`Rancher Server`服务`docker stop rancher`&lt;/font&gt;  </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">* 1.1 &lt;font color=red&gt;`查看Kubernetes`集群版本号&lt;/font&gt;</span>  </span><br><span class="line"></span><br><span class="line">![查看`Rancher`安装`Kubernetes`集群版本](https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-25_20-04-18.png)  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">### 2.1 安装`Kubectl`</span></span>  </span><br><span class="line">* 1. &lt;font color=red&gt;在能连接`test-kubernetes-cluster`集群中任意一个节点部署`Kubectl`&lt;/font&gt;  </span><br><span class="line">* 2. &lt;font color=red&gt;`Kubectl`版本需和`test-cluster-cluster`版本相同或者高于&lt;/font&gt;  </span><br><span class="line"></span><br><span class="line">```shell</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> &gt;/etc/yum.repos.d/kubernetes.repo&lt;&lt;-<span class="string">EOF</span></span></span><br><span class="line">[kubernetes] </span><br><span class="line">name=Kubernetes </span><br><span class="line">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">repo_gpgcheck=0</span><br><span class="line">gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">yum -y install kubectl-1.23.6-0</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="2-2-创建-kube目录修改文件"><a href="#2-2-创建-kube目录修改文件" class="headerlink" title="2.2 创建.kube目录修改文件"></a>2.2 创建<code>.kube</code>目录修改文件</h4><ul>
-<li><ol>
-<li><font color=red>并且将下载的<code>Kubernetesfig</code>文件改名为<code>config</code>，然后放到<code>$&#123;HOME&#125;/.kube/</code>目录中</font></li>
-</ol>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mkdir</span> <span class="variable">$&#123;HOME&#125;</span>/.kube</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> <span class="variable">$&#123;HOME&#125;</span>/.kube/test-kubernetes-cluster.yaml <span class="variable">$&#123;HOME&#125;</span>/.kube/config</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><ol start="2">
-<li><font color=red><code>$&#123;HOME&#125;/.kube/config</code>文件没修改前</font></li>
-</ol>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> <span class="variable">$&#123;HOME&#125;</span>/.kube/config</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Config</span><br><span class="line">clusters:</span><br><span class="line">- name: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">  cluster:</span><br><span class="line">    server: &quot;https://192.168.80.210:4443/k8s/clusters/c-gwknl&quot;</span><br><span class="line">    certificate-authority-data: &quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJwekNDQ\</span><br><span class="line">      VUyZ0F3SUJBZ0lCQURBS0JnZ3Foa2pPUFFRREFqQTdNUnd3R2dZRFZRUUtFeE5rZVc1aGJXbGoKY\</span><br><span class="line">      kdsemRHVnVaWEl0YjNKbk1Sc3dHUVlEVlFRREV4SmtlVzVoYldsamJHbHpkR1Z1WlhJdFkyRXdIa\</span><br><span class="line">      GNOTWpJdwpOVEkxTVRFeE9UUXhXaGNOTXpJd05USXlNVEV4T1RReFdqQTdNUnd3R2dZRFZRUUtFe\</span><br><span class="line">      E5rZVc1aGJXbGpiR2x6CmRHVnVaWEl0YjNKbk1Sc3dHUVlEVlFRREV4SmtlVzVoYldsamJHbHpkR\</span><br><span class="line">      1Z1WlhJdFkyRXdXVEFUQmdjcWhrak8KUFFJQkJnZ3Foa2pPUFFNQkJ3TkNBQVJTb3NwRzE4OHJBQ\</span><br><span class="line">      mZabTAwQnRqcjAyL29udnZGVnppU09wZUdVd09SUApoSHpUbk1acTRmazVpRFhPV2lIUy9iQ0hvT\</span><br><span class="line">      WQra1VtYkx6QVRPNkd2azdtSm8wSXdRREFPQmdOVkhROEJBZjhFCkJBTUNBcVF3RHdZRFZSMFRBU\</span><br><span class="line">      UgvQkFVd0F3RUIvekFkQmdOVkhRNEVGZ1FVZ1YzR1g0Z2tXN3hPZVZWQURWem0KVEpxSW95b3dDZ\</span><br><span class="line">      1lJS29aSXpqMEVBd0lEU0FBd1JRSWdlTHh3WTVGcGkweDBGNXhBQUNZMnNPbVQ4aHBqNjVCWApUc\</span><br><span class="line">      1lsQk1sOGx0RUNJUURkNmlONTJmbG9hVzZybXpvWXRLQy9nOEJRRW00b2UrcGN0YldCaGY0UENRP\</span><br><span class="line">      T0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ==&quot;</span><br><span class="line">- name: &quot;test-kubernetes-cluster-node-1-80-211&quot;</span><br><span class="line">  cluster:</span><br><span class="line">    server: &quot;https://192.168.80.211:6443&quot;</span><br><span class="line">    certificate-authority-data: &quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM0VENDQ\</span><br><span class="line">      WNtZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFTTVJBd0RnWURWUVFERXdkcmRXSmwKT\</span><br><span class="line">      FdOaE1CNFhEVEl5TURVeU5URXhNek0xTUZvWERUTXlNRFV5TWpFeE16TTFNRm93RWpFUU1BNEdBM\</span><br><span class="line">      VVFQXhNSAphM1ZpWlMxallUQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ\</span><br><span class="line">      0VCQUtJSzVRVy84eHB3CkRHUzMrN0M2Q0lobS8zcWFUUENvVmdFeU91YkVtR1EzbnAvYk9qTUJKY\</span><br><span class="line">      3Ayck05cW5CV2M4ZmtUUWhCNHZsL24Kay8zSkUrMkdta1RBbVAwaGpLa3d6d1JiT2lrYzdYVEtnd\</span><br><span class="line">      ElTQ3I2cjRkOWhZTElERElzTTJtUzZYYnhNdGd1SApoamk3MTJYQmNoZ3lEamxjREl3S1k5WXRYc\</span><br><span class="line">      3lDY3hPejdFNXN4YmpLTk1nb2sxK3VZSTlHaHhYYUlGcGp0VWFUClJXUW00dE9JOFplWWlUWG9aT\</span><br><span class="line">      nJldTU1SVkyZ3pQVjZ1dURTWGQybFRHMEtmVng0Y1FYSDJIekdSODJ4NWZkK3kKS01HY0M1N21DN\</span><br><span class="line">      HpiM3pET1Z2NVNEdmxOZEhyQ0g3QmpVYzh0MlFpU2JyQUwrQ216NnhMVFF4dlp1YkVLejU2TApKe\</span><br><span class="line">      ElKUGFhNkdSY0NBd0VBQWFOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdLa01BOEdBMVVkRXdFQi93U\</span><br><span class="line">      UZNQU1CCkFmOHdIUVlEVlIwT0JCWUVGSkN3bmVCVXZUMUtoeWtCUjF6bmxWQ2I1T2RnTUEwR0NTc\</span><br><span class="line">      UdTSWIzRFFFQkN3VUEKQTRJQkFRQnRwa0doRDJ1RFdYTmZaSUhaa0NNclNpSkZXaGxIUGNPa2VPZ\</span><br><span class="line">      TJwcmp1UEZ0bzFWMVpyNlloWWVpcQp1cGxRdWlpenBwbEthZncxR1lpSnY4SCsrcHpjUFZoS3JTM\</span><br><span class="line">      2F5Ykp1T2hxdnFyYUVZbzJDbjVVbkFpVWxBb2g1CnRqY1lNcVFKdkVzODd5UlFtUVhMSVNEMkdYb\</span><br><span class="line">      3UwN24ySy9wTVZXQWpHYjRsUTk0VmpHcjI3dHppSlhIYkh2L04KbHNNZklJV2czbTFKSW9SMlBNa\</span><br><span class="line">      3gvY1FpcGl6a3JRVHRpalhMbW0xbUFGOEtMR2JZcnNaTk1sMFdITWZWWjdXcgplemRBVjhVNDdsb\</span><br><span class="line">      GowKzUzQ0FkZk0rYWpiSk5uMUtYMWF1Sm8rb1JXVTJjVno0SkYydUllMnBjcFcxUUplY1NPCmZ2U\</span><br><span class="line">      ysyOU9FK09GZW5tenRINTdZTStTWk1jRE8KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=&quot;</span><br><span class="line"></span><br><span class="line">users:</span><br><span class="line">- name: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">  user:</span><br><span class="line">    token: &quot;kubeconfig-user-j85xz8pbjt:ls679hfqpvf9c25nswd5gdfm2hf4qtxj2kvqmj6kzzrjkj48lwwlpd&quot;</span><br><span class="line"></span><br><span class="line">contexts:</span><br><span class="line">- name: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">  context:</span><br><span class="line">    user: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">    cluster: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">- name: &quot;test-kubernetes-cluster-node-1-80-211&quot;</span><br><span class="line">  context:</span><br><span class="line">    user: &quot;test-kubernetes-cluster&quot;</span><br><span class="line">    cluster: &quot;test-kubernetes-cluster-node-1-80-211&quot;</span><br><span class="line"></span><br><span class="line">current-context: &quot;test-kubernetes-cluster&quot;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><ol start="3">
-<li><font color=red><code>$&#123;HOME&#125;/.kube/config</code>文件修改后</font></li>
-</ol>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cat</span> <span class="variable">$&#123;HOME&#125;</span>/.kube/config</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Config</span><br><span class="line">clusters:</span><br><span class="line">- name: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">  cluster:</span><br><span class="line">    server: &quot;https://192.168.80.211:6443&quot;</span><br><span class="line">    certificate-authority-data: &quot;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM0VENDQ\</span><br><span class="line">      WNtZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFTTVJBd0RnWURWUVFERXdkcmRXSmwKT\</span><br><span class="line">      FdOaE1CNFhEVEl5TURVeU5URXhNek0xTUZvWERUTXlNRFV5TWpFeE16TTFNRm93RWpFUU1BNEdBM\</span><br><span class="line">      VVFQXhNSAphM1ZpWlMxallUQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ\</span><br><span class="line">      0VCQUtJSzVRVy84eHB3CkRHUzMrN0M2Q0lobS8zcWFUUENvVmdFeU91YkVtR1EzbnAvYk9qTUJKY\</span><br><span class="line">      3Ayck05cW5CV2M4ZmtUUWhCNHZsL24Kay8zSkUrMkdta1RBbVAwaGpLa3d6d1JiT2lrYzdYVEtnd\</span><br><span class="line">      ElTQ3I2cjRkOWhZTElERElzTTJtUzZYYnhNdGd1SApoamk3MTJYQmNoZ3lEamxjREl3S1k5WXRYc\</span><br><span class="line">      3lDY3hPejdFNXN4YmpLTk1nb2sxK3VZSTlHaHhYYUlGcGp0VWFUClJXUW00dE9JOFplWWlUWG9aT\</span><br><span class="line">      nJldTU1SVkyZ3pQVjZ1dURTWGQybFRHMEtmVng0Y1FYSDJIekdSODJ4NWZkK3kKS01HY0M1N21DN\</span><br><span class="line">      HpiM3pET1Z2NVNEdmxOZEhyQ0g3QmpVYzh0MlFpU2JyQUwrQ216NnhMVFF4dlp1YkVLejU2TApKe\</span><br><span class="line">      ElKUGFhNkdSY0NBd0VBQWFOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdLa01BOEdBMVVkRXdFQi93U\</span><br><span class="line">      UZNQU1CCkFmOHdIUVlEVlIwT0JCWUVGSkN3bmVCVXZUMUtoeWtCUjF6bmxWQ2I1T2RnTUEwR0NTc\</span><br><span class="line">      UdTSWIzRFFFQkN3VUEKQTRJQkFRQnRwa0doRDJ1RFdYTmZaSUhaa0NNclNpSkZXaGxIUGNPa2VPZ\</span><br><span class="line">      TJwcmp1UEZ0bzFWMVpyNlloWWVpcQp1cGxRdWlpenBwbEthZncxR1lpSnY4SCsrcHpjUFZoS3JTM\</span><br><span class="line">      2F5Ykp1T2hxdnFyYUVZbzJDbjVVbkFpVWxBb2g1CnRqY1lNcVFKdkVzODd5UlFtUVhMSVNEMkdYb\</span><br><span class="line">      3UwN24ySy9wTVZXQWpHYjRsUTk0VmpHcjI3dHppSlhIYkh2L04KbHNNZklJV2czbTFKSW9SMlBNa\</span><br><span class="line">      3gvY1FpcGl6a3JRVHRpalhMbW0xbUFGOEtMR2JZcnNaTk1sMFdITWZWWjdXcgplemRBVjhVNDdsb\</span><br><span class="line">      GowKzUzQ0FkZk0rYWpiSk5uMUtYMWF1Sm8rb1JXVTJjVno0SkYydUllMnBjcFcxUUplY1NPCmZ2U\</span><br><span class="line">      ysyOU9FK09GZW5tenRINTdZTStTWk1jRE8KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=&quot;</span><br><span class="line"></span><br><span class="line">users:</span><br><span class="line">- name: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">  user:</span><br><span class="line">    token: &quot;kubeconfig-user-j85xz8pbjt:ls679hfqpvf9c25nswd5gdfm2hf4qtxj2kvqmj6kzzrjkj48lwwlpd&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">contexts:</span><br><span class="line">- name: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">  context:</span><br><span class="line">    user: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line">    cluster: &quot;test-kubernetes-cluster-rke-master&quot;</span><br><span class="line"></span><br><span class="line">current-context: &quot;test-kubernetes-cluster-rke-master&quot;</span><br></pre></td></tr></table></figure>
-
-<h4 id="2-3-使用Kubectl控制Kubernetes-Cluster集群"><a href="#2-3-使用Kubectl控制Kubernetes-Cluster集群" class="headerlink" title="2.3 使用Kubectl控制Kubernetes Cluster集群"></a>2.3 使用<code>Kubectl</code>控制<code>Kubernetes Cluster</code>集群</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl --kubeconfig <span class="variable">$&#123;HOME&#125;</span>/.kube/config get pods -n kube-system</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create ns dev</span></span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-<div>
-    
- </div>
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Kubernetes/install-k8s-Rancher/">
-
-<div>
-      
-</div>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/IMG_0081.JPG">
-      <meta itemprop="name" content="二哥">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="二哥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Kubernetes/install-k8s-Rancher/" class="post-title-link" itemprop="url">install-Rancher</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-05-19 18:00:24" itemprop="dateCreated datePublished" datetime="2022-05-19T18:00:24+08:00">2022-05-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-06-09 20:17:48" itemprop="dateModified" datetime="2022-06-09T20:17:48+08:00">2022-06-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Kubernetes/" itemprop="url" rel="index"><span itemprop="name">Kubernetes</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-安装Rancher图形化安装管理Kubernetes工具"><a href="#1-安装Rancher图形化安装管理Kubernetes工具" class="headerlink" title="1. 安装Rancher图形化安装管理Kubernetes工具"></a>1. 安装<code>Rancher</code>图形化安装管理<code>Kubernetes</code>工具</h3><ul>
-<li><code>Rancher</code>是供采用容器的团队使用的完整软件堆栈。它解决了管理多个  </li>
-<li><code>Kubernetes</code>集群的运营和安全挑战，并为<code>DevOps</code>团队提供用于运行容器化工作负载的集成工具  </li>
-<li><font color=red>必须存在<code>Docker</code>环境</font></li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>服务器</th>
-<th>IP</th>
-<th>内存</th>
-<th>CPU</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>master</td>
-<td>192.168.35.128</td>
-<td>8G</td>
-<td>8<code>core</code></td>
-</tr>
-<tr>
-<td>node-1</td>
-<td>192.168.35.129</td>
-<td>4G</td>
-<td>4<code>core</code></td>
-</tr>
-<tr>
-<td>node-2</td>
-<td>192.168.35.130</td>
-<td>4G</td>
-<td>4<code>core</code></td>
-</tr>
-</tbody></table>
-<h4 id="1-1-安装基础环境"><a href="#1-1-安装基础环境" class="headerlink" title="1.1 安装基础环境"></a>1.1 安装基础环境</h4><ul>
-<li><font color=red><code>Nano</code>：超轻量级开源云平台</font>  <blockquote>
-<ul>
-<li><code>Naco</code>：基于<code>KVM</code>技术，使用Go语言开发，简单易学的虚拟机管理软件，从<code>Web</code>管理门户、主机监控、镜像克隆到故障切换，功能完备，开箱即用，数分钟之内即可将您的服务器集群升级为云主机平台</li>
-</ul>
-</blockquote>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y nano</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><font color=red>在所有节点都安装<code>Docker</code></font></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ENV configuration</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;/swap / s/^\(.*\)$/#\1/g&#x27;</span> /etc/fstab</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">swapoff -a</span> </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">modprobe br_netfilter</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;br_netfilter&quot;</span> &gt; /etc/modules-load.d/br_netfilter.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;net.bridge.bridge-nf-call-iptables = 1&quot;</span> &gt;&gt; /etc/sysctl.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;net.ipv4.ip_forward = 1&quot;</span> &gt;&gt; /etc/sysctl.conf</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sysctl -p</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/#AllowTcpForwarding/AllowTcpForwarding/g&#x27;</span> /etc/ssh/sshd_config</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl reload sshd</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl stop firewalld &amp;&amp; systemctl <span class="built_in">disable</span> firewalld</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -i <span class="string">&#x27;s/SELINUX=enforcing/SELINUX=disabled/g&#x27;</span> /etc/selinux/config</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">setenforce 0</span>  </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">timedate configration</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">timedatectl set-timezone Asia/Shanghai</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y chrony</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl start chronyd &amp;&amp; sudo systemctl <span class="built_in">enable</span> chronyd</span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y yum-utils</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y docker-ce-19.03.9 docker-ce-cli-19.03.9 --nogpgcheck</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> docker &amp;&amp; systemctl start docker</span>  </span><br></pre></td></tr></table></figure>
-<h3 id="2-安装Rancher-v2-6-5"><a href="#2-安装Rancher-v2-6-5" class="headerlink" title="2 安装Rancher v2.6.5"></a>2 安装<code>Rancher v2.6.5</code></h3><p><a target="_blank" rel="noopener" href="https://rancher.com/docs/rancher/v2.6/en/installation/other-installation-methods/single-node-docker/">使用<code>Docker</code>在单节点上安装<code>Rancher</code></a>  </p>
-<ul>
-<li><font color=red><code>Rancher v2.6.5</code>支持的<code>Kubernetes Versions</code>版本</font>  <blockquote>
-<ul>
-<li><font color=red>v1.23.6 (Default)</font>  </li>
-<li><font color=red>v1.22.9</font>  </li>
-<li><font color=red>v1.21.12</font>  </li>
-<li><font color=red>v1.20.15</font>  </li>
-<li><font color=red>v1.19.16</font>  </li>
-<li><font color=red>v1.18.20</font></li>
-</ul>
-</blockquote>
-</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker pull rancher/rancher:v2.6.5</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run -d --restart=unless-stopped -p 888:80 -p 4443:443 --privileged rancher/rancher:v2.6.5</span></span><br></pre></td></tr></table></figure>
-
-<p><a target="_blank" rel="noopener" href="https://rancher.com/docs/rancher/v2.6/en/installation/install-rancher-on-k8s/">在<code>Kubernetes</code>集群上安装&#x2F;升级<code>Rancher</code></a>  </p>
-<h4 id="2-1-在Kubernetes集群上安装-x2F-升级Rancher"><a href="#2-1-在Kubernetes集群上安装-x2F-升级Rancher" class="headerlink" title="2.1 在Kubernetes集群上安装&#x2F;升级Rancher"></a>2.1 <font color=red>在<code>Kubernetes</code>集群上安装&#x2F;升级<code>Rancher</code></font></h4><h5 id="2-1-1-安装Helm"><a href="#2-1-1-安装Helm" class="headerlink" title="2.1.1 安装Helm"></a>2.1.1 <a target="_blank" rel="noopener" href="https://helm.sh/docs/intro/install/">安装<code>Helm</code></a></h5><ul>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_37481017/article/details/119002325">基于<code>K8S 1.21.2</code>集群安装<code>Rancher 2.5.9 HA</code></a></li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用二进制安装Helm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://get.helm.sh/helm-v3.9.0-linux-amd64.tar.gz</span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -zxvf helm-v3.9.0-linux-amd64.tar.gz</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">mv</span> linux-amd64/helm /usr/local/bin/helm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">脚本安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chmod</span> 700 get_helm.sh</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./get_helm.sh</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">源代码安装</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/helm/helm.git</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> helm</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="2-1-2-安装cert-manager"><a href="#2-1-2-安装cert-manager" class="headerlink" title="2.1.2 安装cert-manager"></a>2.1.2 <font color=red>安装<code>cert-manager</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace cert-manager</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加Jetstack Helm存储库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add jetstack https://charts.jetstack.io</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更新本地 Helm 图表存储库缓存</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo update</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装cert-manager自定义所需的自定义资源</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.crds.yaml</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.7.1 --<span class="built_in">set</span> installCRDs=<span class="literal">true</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">验证cert-manager证书管理器是否安装成功</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl get pods --namespace cert-manager</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="2-1-3-使用Helm安装稳定版Rancher"><a href="#2-1-3-使用Helm安装稳定版Rancher" class="headerlink" title="2.1.3 使用Helm安装稳定版Rancher"></a>2.1.3 <font color=red>使用<code>Helm</code>安装稳定版<code>Rancher</code></font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">为Rancher创建命名空间</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">kubectl create namespace cattle-system</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">添加 Helm 添加 Rancher 库</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm repo add rancher-stable https://releases.rancher.com/server-charts/stable</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="2-1-4-使用helm安装Rancher注意选好版本，版本不对会报错"><a href="#2-1-4-使用helm安装Rancher注意选好版本，版本不对会报错" class="headerlink" title="2.1.4 使用helm安装Rancher注意选好版本，版本不对会报错"></a>2.1.4 <font color=red>使用<code>helm</code>安装<code>Rancher</code>注意选好版本，版本不对会报错</font></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">helm install rancher rancher-stable/rancher --namespace cattle-system --<span class="built_in">set</span> hostname=my.rancher.org --<span class="built_in">set</span> bootstrapPassword=admin --<span class="built_in">set</span> replicas=3 --version 2.6.3</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> --<span class="built_in">set</span> ingress.tls.source=letsEncrypt \</span></span><br><span class="line"><span class="language-bash"><span class="comment">#  --set letsEncrypt.email=&lt;caviardé&gt;</span></span></span><br><span class="line"></span><br><span class="line">NAME: rancher</span><br><span class="line">LAST DEPLOYED: Wed May 25 18:01:51 2022</span><br><span class="line">NAMESPACE: cattle-system</span><br><span class="line">STATUS: deployed</span><br><span class="line">REVISION: 1</span><br><span class="line">TEST SUITE: None</span><br><span class="line">NOTES:</span><br><span class="line">Rancher Server has been installed.</span><br><span class="line"></span><br><span class="line">NOTE: Rancher may take several minutes to fully initialize. Please standby while Certificates are being issued, Containers are started and the Ingress rule comes up.</span><br><span class="line"></span><br><span class="line">Check out our docs at https://rancher.com/docs/</span><br><span class="line"></span><br><span class="line">If you provided your own bootstrap password during installation, browse to https://my.rancher.org to get started.</span><br><span class="line"></span><br><span class="line">If this is the first time you installed Rancher, get started by running this command and clicking the URL it generates:</span><br><span class="line"></span><br><span class="line">```</span><br><span class="line">echo https://my.rancher.org/dashboard/?setup=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template=&#x27;&#123;&#123;.data.bootstrapPassword|base64decode&#125;&#125;&#x27;)</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">To get just the bootstrap password on its own, run:</span><br><span class="line"></span><br><span class="line">```</span><br><span class="line">kubectl get secret --namespace cattle-system bootstrap-secret -o go-template=&#x27;&#123;&#123;.data.bootstrapPassword|base64decode&#125;&#125;&#123;&#123; &quot;\n&quot; &#125;&#125;&#x27;</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">Happy Containering!</span><br></pre></td></tr></table></figure>
-
-<h5 id="2-1-5-等待Rancher安装成功"><a href="#2-1-5-等待Rancher安装成功" class="headerlink" title="2.1.5 等待Rancher安装成功"></a>2.1.5 <font color=red>等待<code>Rancher</code>安装成功</font></h5><pre><code class="shell">$ kubectl -n cattle-system rollout status deploy/rancher
-
-$ kubectl get pods -o wide -n cattle-system
-
-$ kubectl get pods --show-labels -n cattle-system
-</code></pre>
-<h3 id="3-浏览器登录Rancher页面设置"><a href="#3-浏览器登录Rancher页面设置" class="headerlink" title="3. 浏览器登录Rancher页面设置"></a>3. 浏览器登录<code>Rancher</code>页面设置</h3><ul>
-<li><font color=red>默认用户名：admin</font>  </li>
-<li><font color=red>密码新设置或者随机生成</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-29-03.png" alt="设置Rancher密码">  </p>
-<ul>
-<li><font color=red>设置<code>Rancher Server</code>地址<code>IP</code>或者域名</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-31-17.png" alt="设定Rancher地址">  </p>
-<ul>
-<li><font color=red>设置<code>Rancher</code>中文页面</font></li>
-</ul>
-<p><img src="D:\git-library\imgs\Kubernetes_server\Rancher\set-Chinses.png" alt="set-chinses">  </p>
-<ul>
-<li>登录后可以看到目前<code>Rancher</code>所管理只有Rancher本身存在<code>K3S</code>  <blockquote>
-<p><code>Rancher Labs</code>推出<code>Kubernetes</code>开源<code>K3S</code>是一个轻量级，只有<code>40MB</code>大小，易于安装<code>Kubernetes</code>发布版本，转为资源有限和低互动系统设计，适用于边缘应用、物联网、持续整合以及<code>ARM</code>等</p>
-</blockquote>
-</li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_18-34-35.png" alt="初次登录页面">  </p>
-<h3 id="4-使用Rancher创建RKE-Kubernetes集群"><a href="#4-使用Rancher创建RKE-Kubernetes集群" class="headerlink" title="4.使用Rancher创建RKE Kubernetes集群"></a>4.使用<code>Rancher</code>创建<code>RKE Kubernetes</code>集群</h3><ul>
-<li><font color=red>等待被创建的集群都是基于数个实体服务器或虚拟机组成，其中这些机器硬件最低要求<code>1Cores</code>、<code>1GB</code>,并且需要提前安装好<code>Docker</code>服务，操作系统必须符合<code>RKE</code><a target="_blank" rel="noopener" href="https://docs.rancher.cn/docs/rke/os/_index/">安装要求</a></font>  </li>
-<li><font color=red>生产环境下不允许把<code>worker</code>角色添加具有<code>etcd</code>或<code>control plane</code>角色节点中</font></li>
-</ul>
-<h4 id="4-1-Web页面配置Kubernetes-Cluster集群"><a href="#4-1-Web页面配置Kubernetes-Cluster集群" class="headerlink" title="4.1 Web页面配置Kubernetes Cluster集群"></a>4.1 <code>Web</code>页面配置<code>Kubernetes Cluster</code>集群</h4><ul>
-<li><font color=red>在<code>Rancher</code>浏览器页面中添加<code>Kubernetes Cluster</code></font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Add-Cluster.png" alt="Add-K8s-Cluster">    </p>
-<ul>
-<li><font color=red>选择<code>Existing nodes(自定义集群)</code></font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Add-Nodes.png" alt="自定义集群">  </p>
-<ul>
-<li><font color=red>定义集群名称、然后下一步</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_20-41-58.png" alt="填写集群名称">  </p>
-<ul>
-<li><font color=red>先选择<code>etcd</code>、<code>Control Plane</code>角色，把生成的命令复制到节点上执行，然后下一步</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-14-45.png" alt="部署etcd Control Plane">    </p>
-<ul>
-<li><font color=red>选择<code>Worker</code>工作节点,把生成的命令复制到节点执行</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-15-51.png" alt="选择`Worker`工作节点"></p>
-<ul>
-<li><font color=red>命令执行完成后，等待节点加入集群，成功后下方显示添加成功</font></li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Kubernetes_server/Rancher/Snipaste_2022-05-19_21-20-56.png">   </p>
-<h4 id="4-2-如果错过复制添加命令选择命名空间点击Edit"><a href="#4-2-如果错过复制添加命令选择命名空间点击Edit" class="headerlink" title="4.2 如果错过复制添加命令选择命名空间点击Edit"></a>4.2 如果错过复制添加命令选择命名空间点击<code>Edit</code></h4><p><img src="D:\git-library\imgs\Kubernetes_server\Rancher\Snipaste_2022-05-20_15-42-56.png"><br><img src="D:\git-library\imgs\Kubernetes_server\Rancher\Snipaste_2022-05-20_15-44-52.png">  </p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-<div>
-    
- </div>
 
   
   <nav class="pagination">
@@ -2982,20 +3358,20 @@ $ kubectl get pods --show-labels -n cattle-system
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -3039,12 +3415,12 @@ $ kubectl get pods --show-labels -n cattle-system
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">250k</span>
+    <span title="站点总字数">255k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:47</span>
+    <span title="站点阅读时长">3:52</span>
 </div>
 
 <!--
