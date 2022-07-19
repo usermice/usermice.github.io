@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/pace-js@1/themes/blue/pace-theme-minimal.css">
+  <script src="//cdn.jsdelivr.net/npm/pace-js@1/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"usermice.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. Jenkins安装与升级1.1 Linux系统安装Jenkins官方文档  事先安装JDK、最好安装：jdk-8u221版本并且配置好环境变量Java    1234567$ echo &quot;######### JDK环境变量  #######export JAVA_HOME&#x3D;&#x2F;usr&#x2F;local&#x2F;jdkexport JRE_HOME&#x3D;$&amp;#123;JAVA_HOME&amp;#125;&#x2F;jr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Install-Jenkins">
+<meta property="og:url" content="https://usermice.github.io/Jenkins/Install-Jenkins/index.html">
+<meta property="og:site_name" content="二哥">
+<meta property="og:description" content="1. Jenkins安装与升级1.1 Linux系统安装Jenkins官方文档  事先安装JDK、最好安装：jdk-8u221版本并且配置好环境变量Java    1234567$ echo &quot;######### JDK环境变量  #######export JAVA_HOME&#x3D;&#x2F;usr&#x2F;local&#x2F;jdkexport JRE_HOME&#x3D;$&amp;#123;JAVA_HOME&amp;#125;&#x2F;jr">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/usermice/imgs/master/Jenkins_server/Snipaste_2022-07-19_18-14-06.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/usermice/imgs/master/Jenkins_server/doc_2022-07-19_18-16-07.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/usermice/imgs/master/Jenkins_server/Snipaste_2022-07-19_18-22-54.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/usermice/imgs/master/Jenkins_server/Snipaste_2022-07-19_18-23-18.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/usermice/imgs/master/Jenkins_server/Snipaste_2022-07-19_18-23-32.png">
+<meta property="article:published_time" content="2022-07-19T05:52:51.000Z">
+<meta property="article:modified_time" content="2022-07-19T12:32:27.232Z">
+<meta property="article:author" content="二哥">
+<meta property="article:tag" content="Jenkins">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/usermice/imgs/master/Jenkins_server/Snipaste_2022-07-19_18-14-06.png">
+
+<link rel="canonical" href="https://usermice.github.io/Jenkins/Install-Jenkins/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Install-Jenkins | 二哥</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="二哥" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">二哥</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tools">
+
+    <a href="/categories/%E5%B7%A5%E5%85%B7%E8%B5%84%E6%BA%90/" rel="section"><i class="fa fa-briefcase fa-fw"></i>tools</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Jenkins/Install-Jenkins/">
+
+<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/Jenkins/Install-Jenkins/">Install-Jenkins</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问  的个人博客"></a></p>
+  <p><span>发布时间:</span>2022年07月19日 - 13:52</p>
+  <p><span>最后更新:</span>2022年07月19日 - 20:32</p>
+  <p><span>原始链接:</span><a href="/Jenkins/Install-Jenkins/" title="Install-Jenkins">https://usermice.github.io/Jenkins/Install-Jenkins/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://usermice.github.io/Jenkins/Install-Jenkins/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+	});
+    });  
+</script>
+
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Install-Jenkins
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-19 13:52:51 / 修改时间：20:32:27" itemprop="dateCreated datePublished" datetime="2022-07-19T13:52:51+08:00">2022-07-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Jenkins/" itemprop="url" rel="index"><span itemprop="name">Jenkins</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1-Jenkins安装与升级"><a href="#1-Jenkins安装与升级" class="headerlink" title="1. Jenkins安装与升级"></a>1. <a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/book/installing/"><code>Jenkins</code>安装与升级</a></h3><h4 id="1-1-Linux系统安装Jenkins官方文档"><a href="#1-1-Linux系统安装Jenkins官方文档" class="headerlink" title="1.1 Linux系统安装Jenkins官方文档"></a>1.1 <font color=red><code>Linux</code>系统安装<code>Jenkins</code></font><a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/book/installing/linux/#red-hat-centos">官方文档</a></h4><ul>
+<li><ol>
+<li><font color=red>事先安装<code>JDK</code>、最好安装：<code>jdk-8u221</code>版本并且配置好环境变量</font><a target="_blank" rel="noopener" href="https://repo.huaweicloud.com/java/jdk/"><code>Java</code></a></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&quot;######### JDK环境变量  #######</span></span></span><br><span class="line">export JAVA_HOME=/usr/local/jdk</span><br><span class="line">export JRE_HOME=$&#123;JAVA_HOME&#125;/jre</span><br><span class="line">export CLASSPATH=$&#123;JAVA_HOME&#125;/lib:$&#123;JAVA_HOME&#125;/lib/tools.jar</span><br><span class="line">export PATH=$&#123;PATH&#125;:$&#123;JAVA_HOME&#125;/bin:$&#123;JAVA_HOME&#125;/jre/bin &quot;&gt;&gt;/etc/profile</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="string">source /etc/profile</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red><code>yum</code>方式部署<code>Jenkins</code></font><a target="_blank" rel="noopener" href="https://pkg.jenkins.io/">J<code>enkisn</code>历史版本</a></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum -y install jenkins</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red><code>rpm</code>方式部署<code>Jenkins</code></font><a target="_blank" rel="noopener" href="https://pkg.jenkins.io/redhat-stable-rc/"><code>Jenkisn</code>稳定版<code>rpm</code>安装包</a></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">yum install -y ca-certificates</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://pkg.jenkins.io/redhat/jenkins-2.219-1.1.noarch.rpm</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">rpm -ivh jenkins-2.156-1.1.noarch.rpm</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red><code>war</code>方式部署启动<code>Jenkins</code></font>[<code>Jenkins</code>历史<code>war</code>包]<a target="_blank" rel="noopener" href="https://get.jenkins.io/war-stable/">https://get.jenkins.io/war-stable/</a>)</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://get.jenkins.io/war-stable/2.319.3/jenkins.war</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">java -jar jenkins.war --httpPort=8080</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-修改Jenkins配置文件"><a href="#1-2-修改Jenkins配置文件" class="headerlink" title="1.2 修改Jenkins配置文件"></a>1.2 <font color=red>修改<code>Jenkins</code>配置文件</font></h4><ul>
+<li><ol>
+<li><font color=red>修改启动脚本：在<code>candidates=&quot; </code>下添加<code>jdk</code>文件安装路径</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/init.d/jenkins</span>  </span><br><span class="line">candidates=&quot;  	# 大概在 99 行左右</span><br><span class="line">/usr/local/jdk1.8.0_221/bin/java</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="2">
+<li><font color=red>修改<code>Jenkins</code>主配置文件</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">vim /etc/sysconfig/jenkins</span>  </span><br><span class="line">JENKINS_USER=&quot;root&quot;  	# 修改为root用户  </span><br><span class="line">JENKINS_PORT=&quot;8080&quot;  	# 修改监听端口</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="3">
+<li><font color=red>修改<code>Jenkins</code>目录权限</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> -R root:root /var/lib/jenkins  	<span class="comment"># 修改此权限需注意， 修改启动用户可能不生效，不能启动jenkins</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> -R root:root /var/cache/jenkins</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">chown</span> -R root:root /var/log/jenkins</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="4">
+<li><font color=red>启动<code>Jenkins</code></font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">systemctl <span class="built_in">enable</span> jenkins &amp;&amp; systemctl start jenkins</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ol start="5">
+<li><font color=red>修改防火墙规则放行<code>Jenkins</code>服务端口</font></li>
+</ol>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --add-port=8080/tcp --permanent</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">firewall-cmd --reload</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="1-3-打开浏览器登录Jenkins"><a href="#1-3-打开浏览器登录Jenkins" class="headerlink" title="1.3 打开浏览器登录Jenkins"></a>1.3 <font color=red>打开浏览器登录<code>Jenkins</code></font></h4><ul>
+<li><ol>
+<li><font color=red><code>http://IP:8080</code></font></li>
+</ol>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Jenkins_server/Snipaste_2022-07-19_18-14-06.png" alt="浏览器访问"></p>
+<ul>
+<li><ol start="2">
+<li><font color=red><code>cat /var/lib/jenkins/secrets/initialAdminPassword</code>获取登录密码</font></li>
+</ol>
+</li>
+<li><ol start="3">
+<li><font color=red>登录后选择安装插件，默认即可</font></li>
+</ol>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Jenkins_server/doc_2022-07-19_18-16-07.png" alt="安装插件"></p>
+<ul>
+<li><ol start="4">
+<li><font color=red>跳过创建用户界面</font></li>
+</ol>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Jenkins_server/Snipaste_2022-07-19_18-22-54.png" alt="跳过创建用户界面">  </p>
+<ul>
+<li><ol start="5">
+<li><font color=red><code>URL</code>配置界面选择：保存并完成</font></li>
+</ol>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Jenkins_server/Snipaste_2022-07-19_18-23-18.png" alt="URL配置">  </p>
+<ul>
+<li><ol start="6">
+<li><font color=red>选择：开始使用Jenkins，安装完成</font></li>
+</ol>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Jenkins_server/Snipaste_2022-07-19_18-23-32.png" alt="开始使用Jenkins">  </p>
+<h4 id="1-4-docker部署Jenkins"><a href="#1-4-docker部署Jenkins" class="headerlink" title="1.4 docker部署Jenkins"></a>1.4 <a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/book/installing/docker/"><code>docker</code>部署<code>Jenkins</code></a></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">docker run \</span></span><br><span class="line"><span class="language-bash">  --name jenkins-docker \</span></span><br><span class="line"><span class="language-bash">  --<span class="built_in">rm</span> \</span></span><br><span class="line"><span class="language-bash">  --detach \</span></span><br><span class="line"><span class="language-bash">  --privileged \</span></span><br><span class="line"><span class="language-bash">  --network jenkins \</span></span><br><span class="line"><span class="language-bash">  --network-alias docker \</span></span><br><span class="line"><span class="language-bash">  --<span class="built_in">env</span> DOCKER_TLS_CERTDIR=/certs \</span></span><br><span class="line"><span class="language-bash">  --volume jenkins-docker-certs:/certs/client \</span></span><br><span class="line"><span class="language-bash">  --volume jenkins-data:/var/jenkins_home \</span></span><br><span class="line"><span class="language-bash">  --publish 2376:2376 \</span></span><br><span class="line"><span class="language-bash">  docker:dind \</span></span><br><span class="line"><span class="language-bash">  --storage-driver overlay2</span></span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>二哥
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://usermice.github.io/Jenkins/Install-Jenkins/" title="Install-Jenkins">https://usermice.github.io/Jenkins/Install-Jenkins/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Jenkins/" rel="tag"># <i class="fa fa-tag"></i> Jenkins</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Rabbitmq/Confiture-Rabbitmq/" rel="prev" title="Confiture-Rabbitmq">
+      <i class="fa fa-chevron-left"></i> Confiture-Rabbitmq
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/Jenkins/Configure-Jenkins/" rel="next" title="Configure-Jenkins">
+      Configure-Jenkins <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+<div>
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">------ 本文结束------</div>
+    
+</div>
+    
+ </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Jenkins%E5%AE%89%E8%A3%85%E4%B8%8E%E5%8D%87%E7%BA%A7"><span class="nav-number">1.</span> <span class="nav-text">1. Jenkins安装与升级</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-Linux%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85Jenkins%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 Linux系统安装Jenkins官方文档</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E4%BF%AE%E6%94%B9Jenkins%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 修改Jenkins配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-%E6%89%93%E5%BC%80%E6%B5%8F%E8%A7%88%E5%99%A8%E7%99%BB%E5%BD%95Jenkins"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 打开浏览器登录Jenkins</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-docker%E9%83%A8%E7%BD%B2Jenkins"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 docker部署Jenkins</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="二哥"
+      src="/images/IMG_0081.JPG">
+  <p class="site-author-name" itemprop="name">二哥</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">47</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="/usererge#gmail.com" title="E-Mail → usererge#gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/yourname" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="二哥"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">二哥</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">302k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4:34</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://usermice.github.io/" class="theme-link">二哥</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+-->
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
