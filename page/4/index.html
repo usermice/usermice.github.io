@@ -3494,6 +3494,110 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Redis/configure-Redis/">
+
+<div>
+      
+</div>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/IMG_0081.JPG">
+      <meta itemprop="name" content="二哥">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="二哥">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/Redis/configure-Redis/" class="post-title-link" itemprop="url">configure-Redis</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-30 21:40:47" itemprop="dateCreated datePublished" datetime="2022-04-30T21:40:47+08:00">2022-04-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-15 15:49:41" itemprop="dateModified" datetime="2022-07-15T15:49:41+08:00">2022-07-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>959</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-编写启动文件"><a href="#1-编写启动文件" class="headerlink" title="1. 编写启动文件"></a>1. 编写启动文件</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903661223542792">深入剖析Redis系列</a>   </li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/kismetv/p/9137897.html">深入学习Redis持久化</a>  </li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/hopeofthevillage/p/11535683.html">Redis集群增加节点和删除节点</a></li>
+</ul>
+<h4 id="1-1-Windows下桌面连接Redis工具"><a href="#1-1-Windows下桌面连接Redis工具" class="headerlink" title="1.1 Windows下桌面连接Redis工具"></a>1.1 <code>Windows</code>下桌面连接<code>Redis</code>工具</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/uglide/RedisDesktopManager/releases/tag/0.8.8     #下载客户端连接工具 Redis 0.8.8  </span><br><span class="line">https://github.com/uglide/RedisDesktopManager/releases/tag/0.9.3   	#下载客户端连接工具 Redis 0.9.3</span><br><span class="line">https://github.com/qishibo/AnotherRedisDesktopManager/releases       #windows系统远程连接工具</span><br><span class="line">https://github.com/quick123official/quick_redis_blog/releases </span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-Redis常用命令"><a href="#1-2-Redis常用命令" class="headerlink" title="1.2 Redis常用命令"></a>1.2 <code>Redis</code>常用命令</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">netstat -n |grep 17693 |awk <span class="string">&#x27;/^tcp/ &#123;print $5&#125;&#x27;</span>| awk -F: <span class="string">&#x27;&#123;print $1&#125;&#x27;</span>|<span class="built_in">sort</span> | <span class="built_in">uniq</span> -c | <span class="built_in">sort</span> -rn  	<span class="comment"># 查看Redis具体IP连接数</span></span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">redis-cli -h 127.0.0.1 -p 6379 -c -a <span class="string">&quot;password&quot;</span> KEYS SPORTS:session:* 2&lt;/dev/null | awk <span class="string">&quot;&#123;print <span class="variable">$2</span>&#125;&quot;</span>| awk -F<span class="string">&quot;:&quot;</span> <span class="string">&#x27; &#123;print $2,$3&#125;&#x27;</span>| sed -e <span class="string">&quot;s/^/<span class="variable">$&#123;date&#125;</span>: /g&quot;</span>  	<span class="comment"># 统计Redis在线人数</span></span></span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; CONFIG GET databases  	# 数据库的数量</span><br><span class="line">127.0.0.1:6379&gt; INFO keyspace  	# 使用以下命令列出定义了某些键的数据库</span><br><span class="line">127.0.0.1:6379&gt; SELECT 14  	# 切换14db</span><br><span class="line">127.0.0.1:6379&gt; info clients  	# 查看客户端连接</span><br><span class="line">127.0.0.1:6379&gt; client list  	# 列出所有连接</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Redis_server/Snipaste_2022-07-01_13-19-44.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+<div>
+    
+ </div>
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Redis/Install-Redis-Cluster/">
 
 <div>
@@ -3700,110 +3804,6 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">./redis-trib.rb check 192.168.176.145:6379</span> </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Performing Cluster Check (using node 192.168.176.142:6379)</span></span><br><span class="line">M: 157bd250dd382b95a9289d8b44fd2cfd466fea98 192.168.176.142:6379</span><br><span class="line">   slots:0-4095 (4096 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: 31a3f0b03244d30bbc7e47acc0ec06d327b62860 192.168.176.144:6380</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 44b244a188185835b42d4489eac614e7f81b4cf8</span><br><span class="line">M: a463232f96c66cd7f27395253b65d0be8909656e 192.168.176.144:6379</span><br><span class="line">   slots:8192-12287 (4096 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">M: 44b244a188185835b42d4489eac614e7f81b4cf8 192.168.176.145:6379</span><br><span class="line">   slots:12288-16383 (4096 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: fc22025eb5db7cc0d55fe7dc11a3c368daa468bb 192.168.176.145:6380</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates a463232f96c66cd7f27395253b65d0be8909656e</span><br><span class="line">M: c6df79e7c60c03921b69e4d4342507e8d4d2afbd 192.168.176.143:6379</span><br><span class="line">   slots:4096-8191 (4096 slots) master</span><br><span class="line">   1 additional replica(s)</span><br><span class="line">S: a6d87fb995f3f5e98e2a09f4b5a3078f7221a257 192.168.176.143:6380</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates 157bd250dd382b95a9289d8b44fd2cfd466fea98</span><br><span class="line">S: 1cafdeeb6cb52bb96dd16ac84d2242f59973f83a 192.168.176.142:6380</span><br><span class="line">   slots: (0 slots) slave</span><br><span class="line">   replicates c6df79e7c60c03921b69e4d4342507e8d4d2afbd</span><br><span class="line">[OK] All nodes agree about slots configuration.</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Check <span class="keyword">for</span> open slots...</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Check slots coverage...</span></span><br><span class="line">[OK] All 16384 slots covered.</span><br></pre></td></tr></table></figure>
 <h3 id="3-Redis-Sentinel模式-即-哨兵模式"><a href="#3-Redis-Sentinel模式-即-哨兵模式" class="headerlink" title="3. Redis Sentinel模式(即:哨兵模式)"></a>3. <code>Redis Sentinel</code>模式(即:哨兵模式)</h3><h4 id="3-1-节点-1-sentinel-16380-conf"><a href="#3-1-节点-1-sentinel-16380-conf" class="headerlink" title="3.1 节点-1 sentinel_16380.conf"></a>3.1 节点-1 <code>sentinel_16380.conf</code></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">protected-mode no</span><br><span class="line">bind 192.168.176.131				#本机IP</span><br><span class="line">port 16380</span><br><span class="line">daemonize yes</span><br><span class="line">sentinel monitor master 192.168.176.131 6379 2		#主IP与端口号</span><br><span class="line">sentinel down-after-milliseconds master 5000		#指定主节点应答哨兵sentinel的最大时间间隔，超过这个时间，哨兵主观上认为主节点下线，默认30秒</span><br><span class="line">sentinel failover-timeout master 180000				#故障转移的超时时间failover-timeout，默认三分钟，可以用在以下这些方面</span><br><span class="line">sentinel parallel-syncs master 1					#指定了在发生failover主备切换时，最多可以有多少个slave同时对新的master进行同步。这个数字越小，完成failover所需的时间就越长；反之，但是如果这个数字越大，就意味着越多的slave因为replication而不可用。可以通过将这个值设为1，来保证每次只有一个slave，处于不能处理命令请求的状态。</span><br><span class="line">sentinel auth-pass master 123456		#当在Redis实例中开启了requirepass &lt;foobared&gt;，所有连接Redis实例的客户端都要提供密码</span><br><span class="line">logfile /var/log/redis/sentinel_16380.log</span><br></pre></td></tr></table></figure>
 <h4 id="3-2-节点2-3-centinel-16380-conf"><a href="#3-2-节点2-3-centinel-16380-conf" class="headerlink" title="3.2 节点2~3 centinel_16380.conf "></a>3.2 节点2~3 <code>centinel_16380.conf </code></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">protected-mode no</span><br><span class="line">bind 192.168.176.132    #此处修改为本机IP</span><br><span class="line">port 16380</span><br><span class="line">daemonize yes</span><br><span class="line">sentinel monitor master 192.168.176.131 6379 2	#主IP与端口号</span><br><span class="line">sentinel down-after-milliseconds master 5000</span><br><span class="line">sentinel failover-timeout master 180000</span><br><span class="line">sentinel parallel-syncs master 1</span><br><span class="line">sentinel auth-pass master 123456</span><br><span class="line">logfile /var/log/redis/sentinel_16380.log</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-<div>
-    
- </div>
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://usermice.github.io/Redis/configure-Redis/">
-
-<div>
-      
-</div>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/IMG_0081.JPG">
-      <meta itemprop="name" content="二哥">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="二哥">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/Redis/configure-Redis/" class="post-title-link" itemprop="url">configure-Redis</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-04-30 21:40:47" itemprop="dateCreated datePublished" datetime="2022-04-30T21:40:47+08:00">2022-04-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-07-15 15:49:41" itemprop="dateModified" datetime="2022-07-15T15:49:41+08:00">2022-07-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>959</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-编写启动文件"><a href="#1-编写启动文件" class="headerlink" title="1. 编写启动文件"></a>1. 编写启动文件</h3><ul>
-<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903661223542792">深入剖析Redis系列</a>   </li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/kismetv/p/9137897.html">深入学习Redis持久化</a>  </li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/hopeofthevillage/p/11535683.html">Redis集群增加节点和删除节点</a></li>
-</ul>
-<h4 id="1-1-Windows下桌面连接Redis工具"><a href="#1-1-Windows下桌面连接Redis工具" class="headerlink" title="1.1 Windows下桌面连接Redis工具"></a>1.1 <code>Windows</code>下桌面连接<code>Redis</code>工具</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/uglide/RedisDesktopManager/releases/tag/0.8.8     #下载客户端连接工具 Redis 0.8.8  </span><br><span class="line">https://github.com/uglide/RedisDesktopManager/releases/tag/0.9.3   	#下载客户端连接工具 Redis 0.9.3</span><br><span class="line">https://github.com/qishibo/AnotherRedisDesktopManager/releases       #windows系统远程连接工具</span><br><span class="line">https://github.com/quick123official/quick_redis_blog/releases </span><br></pre></td></tr></table></figure>
-
-<h4 id="1-2-Redis常用命令"><a href="#1-2-Redis常用命令" class="headerlink" title="1.2 Redis常用命令"></a>1.2 <code>Redis</code>常用命令</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">netstat -n |grep 17693 |awk <span class="string">&#x27;/^tcp/ &#123;print $5&#125;&#x27;</span>| awk -F: <span class="string">&#x27;&#123;print $1&#125;&#x27;</span>|<span class="built_in">sort</span> | <span class="built_in">uniq</span> -c | <span class="built_in">sort</span> -rn  	<span class="comment"># 查看Redis具体IP连接数</span></span> </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">redis-cli -h 127.0.0.1 -p 6379 -c -a <span class="string">&quot;password&quot;</span> KEYS SPORTS:session:* 2&lt;/dev/null | awk <span class="string">&quot;&#123;print <span class="variable">$2</span>&#125;&quot;</span>| awk -F<span class="string">&quot;:&quot;</span> <span class="string">&#x27; &#123;print $2,$3&#125;&#x27;</span>| sed -e <span class="string">&quot;s/^/<span class="variable">$&#123;date&#125;</span>: /g&quot;</span>  	<span class="comment"># 统计Redis在线人数</span></span></span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; CONFIG GET databases  	# 数据库的数量</span><br><span class="line">127.0.0.1:6379&gt; INFO keyspace  	# 使用以下命令列出定义了某些键的数据库</span><br><span class="line">127.0.0.1:6379&gt; SELECT 14  	# 切换14db</span><br><span class="line">127.0.0.1:6379&gt; info clients  	# 查看客户端连接</span><br><span class="line">127.0.0.1:6379&gt; client list  	# 列出所有连接</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://raw.githubusercontent.com/usermice/imgs/master/Redis_server/Snipaste_2022-07-01_13-19-44.png"></p>
-
       
     </div>
 
