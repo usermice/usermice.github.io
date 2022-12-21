@@ -1,0 +1,1186 @@
+<!doctype html><html lang=zh-cn data-theme=light><head><meta charset=utf-8><meta name=viewport content="width=device-width"><meta name=theme-color content="#222" media="(prefers-color-scheme: light)"><meta name=generator content="Hugo 0.108.0"><link rel="shortcut icon" type=image/x-icon href=/imgs/icons/favicon.ico><link rel=icon type=image/x-icon href=/imgs/icons/favicon.ico><link rel=icon type=image/png sizes=16x16 href=/imgs/icons/favicon_16x16_next.png><link rel=icon type=image/png sizes=32x32 href=/imgs/icons/favicon_32_32_next.png><link rel=apple-touch-icon sizes=180x180 href=/imgs/icons/apple_touch_icon_next.png><meta itemprop=name content="Install JumpServer"><meta itemprop=description content="Install-JumpServer"><meta itemprop=datePublished zgotmplz><meta itemprop=dateModified zgotmplz><meta itemprop=image content="https://erge.blog/imgs/IMG_0081.JPG"><meta itemprop=keywords content="JumpServer"><meta property="og:type" content="article"><meta property="og:title" content="Install JumpServer"><meta property="og:description" content="Install-JumpServer"><meta property="og:image" content="/imgs/IMG_0081.JPG"><meta property="og:image:width" content="312"><meta property="og:image:height" content="312"><meta property="og:image:type" content="image/jpeg/png/svg/jpg"><meta property="og:url" content="https://erge.blog/linux/jumpserver/install-jumpserver/"><meta property="og:site_name" content="二哥"><meta property="og:locale" content="zh-CN"><meta property="article:author" content="二哥"><meta property="article:published_time" content="2022-08-16 16:03:05 +0800 CST"><meta property="article:modified_time" content="2022-11-15 16:03:05 +0800 CST"><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/font-awesome/6.1.2/css/all.min.css><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.css><link rel=stylesheet href=/css/main.min.69feb0c1f4b6a80d8f76279e055b055e252d9b6546329ea72c557e9232623c82.css><style type=text/css>.post-footer,.flinks-list-footer hr:after{content:"~ 我可是有底线的哟 ~"}</style><script type=text/javascript>(function(){localDB={set:function(e,t,n){if(n===0)return;const s=new Date,o=n*864e5,i={value:t,expiry:s.getTime()+o};localStorage.setItem(e,JSON.stringify(i))},get:function(e){const t=localStorage.getItem(e);if(!t)return void 0;const n=JSON.parse(t),s=new Date;return s.getTime()>n.expiry?(localStorage.removeItem(e),void 0):n.value}},theme={active:function(){const e=localDB.get("theme");if(e==null)return;theme.toggle(e),window.matchMedia("(prefers-color-scheme: dark)").addListener(function(e){theme.toggle(e.matches?"dark":"light")})},toggle:function(e){document.documentElement.setAttribute("data-theme",e),localDB.set("theme",e,2);const t=document.querySelector("iframe.giscus-frame");if(t){const n={setConfig:{theme:e}};t.contentWindow.postMessage({giscus:n},"https://giscus.app")}}},theme.active()})(window)</script><script class=next-config data-name=page type=application/json>{"comments":true,"isHome":false,"isPage":true,"path":"install-jumpserver","permalink":"https://erge.blog/linux/jumpserver/install-jumpserver/","title":"Install JumpServer","waline":{"js":[{"alias":"waline","alias_name":"@waline/client","file":"dist/pageview.js","name":"pageview","version":"2.13.0"},{"alias":"waline","alias_name":"@waline/client","file":"dist/comment.js","name":"comment","version":"2.13.0"}]}}</script><script type=text/javascript>document.addEventListener("DOMContentLoaded",()=>{var e=document.createElement("script");e.charset="UTF-8",e.src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js",e.async=!1,e.defer=!0,document.head.appendChild(e),e.onload=function(){NexT.utils.fmtBusuanzi()}})</script><title>Install JumpServer - 二哥</title><noscript><link rel=stylesheet href=/css/noscript.css></noscript></head><body itemscope itemtype=http://schema.org/WebPage class=use-motion><div class=headband></div><main class=main><header class=header itemscope itemtype=http://schema.org/WPHeader><div class=header-inner><div class=site-brand-container><div class=site-nav-toggle><div class=toggle aria-label=切换导航栏 role=button><span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span></div></div><div class=site-meta><a href=/ class=brand rel=start><i class=logo-line></i><h1 class=site-title>二哥</h1><i class=logo-line></i></a><p class=site-subtitle itemprop=description>Linux、Kubernetes、Jenkins</p></div><div class=site-nav-right><div class="toggle popup-trigger"><i class="fa fa-search fa-fw fa-lg"></i></div></div></div><nav class=site-nav><ul class="main-menu menu"><li class="menu-item menu-item-Home"><a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-home hvr-icon"></i>首页</a></li><li class="menu-item menu-item-categories"><a href=/categories/ class=hvr-icon-pulse rel=section><i class="fa fa-th hvr-icon"></i>分类</a></li><li class="menu-item menu-item-archives"><a href=/archives/ class=hvr-icon-pulse rel=section><i class="fa fa-archive hvr-icon"></i>归档
+<span class=badge>112</span></a></li><li class="menu-item menu-item-tags"><a href=/tags/ class=hvr-icon-pulse rel=section><i class="fa fa-tags hvr-icon"></i>标签</a></li><li class="menu-item menu-item-tools"><a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-tools hvr-icon"></i>工具</a></li><li class="menu-item menu-item-flinks"><a href=/flinks.html class=hvr-icon-pulse rel=section><i class="fa fa-thumbs-up hvr-icon"></i>站点示例</a></li><li class="menu-item menu-item-about"><a href=/about.html class=hvr-icon-pulse rel=section><i class="fa fa-user hvr-icon"></i>关于</a></li><li class="menu-item menu-item-Commonweal"><a href=/404.html class=hvr-icon-pulse rel=section><i class="fa fa-heartbeat hvr-icon"></i>公益 404</a></li><li class="menu-item menu-item-search"><a role=button class="popup-trigger hvr-icon-pulse"><i class="fa fa-search fa-fw hvr-icon"></i>搜索</a></li></ul></nav><div class=search-pop-overlay><div class="popup search-popup"><div class=search-header><span class=search-icon><i class="fa fa-search"></i></span><div class=search-input-container><input autocomplete=off autocapitalize=off maxlength=80 placeholder=搜索... spellcheck=false type=search class=search-input></div><span class=popup-btn-close role=button><i class="fa fa-times-circle"></i></span></div><div class="search-result-container no-result"><div class=search-result-icon><i class="fa fa-spinner fa-pulse fa-5x"></i></div></div></div></div></div><div class="toggle sidebar-toggle" role=button><span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span></div><aside class=sidebar><div class="sidebar-inner sidebar-nav-active sidebar-toc-active"><ul class=sidebar-nav><li class=sidebar-nav-toc>文章目录</li><li class=sidebar-nav-overview>站点概览</li></ul><div class=sidebar-panel-container><div class="post-toc-wrap sidebar-panel"><div class="post-toc animated"><nav id=TableOfContents><ul><li><a href=#center安装配置jumpserver堡垒机center-----居中写法以及注释方式--><center>安装配置<code>JumpServer</code>堡垒机</center></a><ul><li><a href=#容器安装jumpserver>容器安装<code>JumpServer</code></a></li><li><a href=#脚本安装jumpserver>脚本安装<code>Jumpserver</code></a></li><li><a href=#离线部署>离线部署</a></li></ul></li><li><a href=#配置jumpserver>配置<code>Jumpserver</code></a></li></ul></nav></div></div><div class="site-overview-wrap sidebar-panel"><div class="site-author site-overview-item animated" itemprop=author itemscope itemtype=http://schema.org/Person><img class=site-author-image itemprop=image alt=二哥 src=/imgs/img-lazy-loading.gif data-src=/imgs/IMG_0081.JPG><p class=site-author-name itemprop=name>二哥</p><div class=site-description itemprop=description>The man who has made up his mind to win will never say impossible</div></div><div class="site-state-wrap site-overview-item animated"><nav class=site-state><div class="site-state-item site-state-posts"><a href=/archives/><span class=site-state-item-count>112</span>
+<span class=site-state-item-name>日志</span></a></div><div class="site-state-item site-state-categories"><a href=/categories/><span class=site-state-item-count>39</span>
+<span class=site-state-item-name>分类</span></a></div><div class="site-state-item site-state-tags"><a href=/tags/><span class=site-state-item-count>124</span>
+<span class=site-state-item-name>标签</span></a></div></nav></div><div class="links-of-social site-overview-item animated"><span class=links-of-social-item><a href=360393834@qq.com title="E-Mail → 360393834@qq.com" rel=noopener class=hvr-icon-pulse target=_blank><i class="fa fa-envelope fa-fw hvr-icon"></i>E-Mail</a></span>
+<span class=links-of-social-item><a href=https://weibo.com/yourname title="Weibo → https://weibo.com/yourname" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-weibo fa-fw hvr-icon"></i>Weibo</a></span>
+<span class=links-of-social-item><a href=360393834 title="QQ → 360393834" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-qq fa-fw hvr-icon"></i>QQ</a></span>
+<span class=links-of-social-item><a href=https://www.zhihu.com/people/lisenhui title="知乎 → https://www.zhihu.com/people/lisenhui" rel=noopener class=hvr-icon-pulse target=_blank><i class="fa fa-book fa-fw hvr-icon"></i>知乎</a></span>
+<span class=links-of-social-item><a href="https://www.youtube.com/watch?v=RgKAFK5djSk" title="Youtube → https://www.youtube.com/watch?v=RgKAFK5djSk" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-youtube fa-fw hvr-icon"></i>Youtube</a></span>
+<span class=links-of-social-item><a href=https://github.com/elkan1788 title="Github → https://github.com/elkan1788" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-github fa-fw hvr-icon"></i>Github</a></span></div><div class="cc-license animated" itemprop=license><a href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh class=cc-opacity rel=noopener target=_blank title=共享知识><img src=/imgs/img-lazy-loading.gif data-src=/imgs/cc/big/by_nc_sa.svg alt=共享知识></a></div><div class="links-of-blogroll site-overview-item animated"><div class=links-of-blogroll-title><i class="fa fa-globe fa-fw"></i>友情链接</div><ul class=links-of-blogroll-list><li class=links-of-blogroll-item><a href=https://gitee.com/hugo-next/hugo-theme-next title=https://gitee.com/hugo-next/hugo-theme-next target=_blank>Hugo-NexT</a></li><li class=links-of-blogroll-item><a href=https://lisenhui.cn title=https://lisenhui.cn target=_blank>凡梦星尘空间站</a></li></ul></div></div></div></div><div id=siteinfo-card-widget class=sidebar-card-widget><div class=item-headline><i class="fas fa-chart-line"></i>
+<span>网站资讯</span></div><div class=siteinfo><div class=siteinfo-item><div class=item-name><i class="fa-solid fa-calendar-check"></i>已运行：</div><div class=item-count id=runTimes data-publishdate=2022-06-03T11:52:18+08:00></div></div><div class=siteinfo-item><div class=item-name><i class="fas fa fa-user"></i>总访客数：</div><div class=item-count id=busuanzi_value_site_uv><i class="fa fa-sync fa-spin"></i></div></div><div class=siteinfo-item><div class=item-name><i class="fas fa fa-eye"></i>页面浏览：</div><div class=item-count id=busuanzi_value_site_pv><i class="fa fa-sync fa-spin"></i></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-font"></i>总字数：</div><div class=item-count id=wordsCount data-count=236907></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-mug-hot"></i>阅读约：</div><div class=item-count id=readTimes data-times=535></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-clock-rotate-left"></i>最后更新于：</div><div class=item-count id=last-push-date data-lastpushdate=2022-09-28T22:11:49+08:00></div></div></div></div></aside><div class=sidebar-dimmer></div></header><div class=tool-buttons><div id=goto-comments class="button goto-comments" title=直达评论><i class="fas fa-comments"></i></div><div id=goto-gtranslate class=button title=多语言翻译><i class="fas fa-globe"></i></div><div id=toggle-theme class=button title=深浅模式切换><i class="fas fa-adjust"></i></div><div class=back-to-top role=button title=返回顶部><i class="fa fa-arrow-up"></i>
+<span>0%</span></div></div><div class=reading-progress-bar></div><a role=button class="book-mark-link book-mark-link-fixed"></a>
+<a href=https://github.com/hugo-next rel="noopener external nofollow noreferrer" target=_blank title="Follow me on GitHub" class="exturl github-corner"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0 0 115 115h15l12 27L250 250V0z"/><path d="M128.3 109C113.8 99.7 119 89.6 119 89.6 122 82.7 120.5 78.6 120.5 78.6 119.2 72 123.4 76.3 123.4 76.3 127.3 80.9 125.5 87.3 125.5 87.3 122.9 97.6 130.6 101.9 134.4 103.2" fill="currentcolor" style="transform-origin:130px 106px" class="octo-arm"/><path d="M115 115C114.9 115.1 118.7 116.5 119.8 115.4l13.9-13.8C136.9 99.2 139.9 98.4 142.2 98.6 133.8 88 127.5 74.4 143.8 58 148.5 53.4 154 51.2 159.7 51 160.3 49.4 163.2 43.6 171.4 40.1 171.4 40.1 176.1 42.5 178.8 56.2 183.1 58.6 187.2 61.8 190.9 65.4 194.5 69 197.7 73.2 200.1 77.6 213.8 80.2 216.3 84.9 216.3 84.9 212.7 93.1 206.9 96 205.4 96.6 205.1 102.4 203 107.8 198.3 112.5 181.9 128.9 168.3 122.5 157.7 114.1 157.9 116.9 156.7 120.9 152.7 124.9L141 136.5C139.8 137.7 141.6 141.9 141.8 141.8z" fill="currentcolor" class="octo-body"/></svg></a><script type=text/javascript src=//sidecar.gitter.im/dist/sidecar.v1.js async></script>
+<script type=text/javascript>((window.gitter={}).chat={}).options={room:"hugo-next/community"}</script><noscript><div class=noscript-warning>Theme NexT works best with JavaScript enabled</div></noscript><div class="main-inner post posts-expand"><div class=post-block><article itemscope itemtype=http://schema.org/Article class=post-content lang><link itemprop=mainEntityOfPage href=https://erge.blog/linux/jumpserver/install-jumpserver/><span hidden itemprop=author itemscope itemtype=http://schema.org/Person><meta itemprop=image content="/imgs/IMG_0081.JPG"><meta itemprop=name content="二哥"></span><span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization><meta itemprop=name content="二哥"><meta itemprop=description content="The man who has made up his mind to win will never say impossible"></span><span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork><meta itemprop=name content="Install JumpServer"><meta itemprop=description content="Install-JumpServer"></span><header class=post-header><h1 class=post-title itemprop="name headline">Install JumpServer</h1><div class=post-meta-container><div class=post-meta-items><span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-calendar"></i></span>
+<span class=post-meta-item-text>发表于：</span>
+<time title="发表于：2022-08-16 16:03:05 +0800 CST" itemprop="dateCreated datePublished" datetime="2022-08-16 16:03:05 +0800 CST">2022-08-16</time></span>
+<span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-calendar-check"></i></span>
+<span class=post-meta-item-text>更新于：</span>
+<time title=修改时间：2022-11-15T16:03:05+08:00 itemprop=dateModified datetime=2022-11-15T16:03:05+08:00>2022-11-15</time></span>
+<span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-folder-open"></i></span>
+<span class=post-meta-item-text>分类于：</span>
+<span itemprop=about itemscope itemtype=http://schema.org/Thing><a href=/categories/jumpserver itemprop=url rel=index><span itemprop=name>JumpServer</span></a></span></span></div><div class=post-meta-items><span class=post-meta-item title=字数><span class=post-meta-item-icon><i class="far fa-file-word"></i></span>
+<span class=post-meta-item-text>字数：</span><span>4943</span></span>
+<span class=post-meta-item title=阅读><span class=post-meta-item-icon><i class="far fa-clock"></i></span>
+<span class=post-meta-item-text>阅读：&ap;</span>
+<span>10分钟</span></span>
+<span class=post-meta-item title=浏览><span class=post-meta-item-icon><i class="far fa-eye"></i></span>
+<span class=post-meta-item-text>浏览：</span>
+<span id=busuanzi_value_page_pv class=waline-pageview-count data-path=/linux/jumpserver/install-jumpserver/><i class="fa fa-sync fa-spin"></i></span></span>
+<span class=post-meta-item title=评论><span class=post-meta-item-icon><i class="far fa-comments"></i></span>
+<span class=post-meta-item-text>评论：</span>
+<span class=waline-comment-count data-path=/linux/jumpserver/install-jumpserver/><i class="fa fa-sync fa-spin"></i></span></span></div></div></header><div class="post-body autonumber" itemprop=articleBody><p>[toc]</p><ul><li><ol><li><font color=red>安装环境要求，默认账号密码都是：<code>admin</code></font></li></ol></li></ul><blockquote><table><thead><tr><th>系统/服务</th><th>版本</th><th>工具/数据库字符集</th></tr></thead><tbody><tr><td><code>linux/amd64</code></td><td><code>>= 4.0</code></td><td><code>wget curl tar gettext iptables python</code></td></tr><tr><td><code>MySQL</code></td><td><code>>= 5.7</code></td><td><code>utf8、utf8_general_ci</code></td></tr><tr><td><code>MariaDB</code></td><td><code>>= 10.2</code></td><td><code>utf8mb3、utf8mb3_general_ci</code></td></tr><tr><td><code>Redis</code></td><td><code>>= 5.0、>= 6</code></td><td><code>Sentinel</code>模式，使用<code>Redis</code>做<code>cache</code>和<code>celery broke</code></td></tr><tr><td><code>Core</code></td><td><code>v2.24.2</code></td><td></td></tr><tr><td><code>Python</code></td><td><code>>= 3.8</code></td><td></td></tr><tr><td><code>Lina</code></td><td><code>v2.24.2</code></td><td><a href=https://github.com/jumpserver/lina/ title="<code>Lina</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Lina</code>
+<i class="fa fa-external-link-alt"></i>
+</a>是<code>JumpServer</code>的前端<code>UI</code>项目，主要使用
+<a href=https://cn.vuejs.org/ title="<code>Vue</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Vue</code>
+<i class="fa fa-external-link-alt"></i>
+</a>，
+<a href=https://element.eleme.cn/ title="<code>Element UI</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Element UI</code>
+<i class="fa fa-external-link-alt"></i>
+</a>完成</td></tr><tr><td><code>Luna</code></td><td><code>v2.24.2</code></td><td><a href=https://github.com/jumpserver/luna/ title="<code>Luna</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Luna</code>
+<i class="fa fa-external-link-alt"></i>
+</a>是<code>JumpServer</code>的前端<code>UI</code>项目，主要使用
+<a href=https://github.com/angular/angular-cli title="<code>Angular CLI</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Angular CLI</code>
+<i class="fa fa-external-link-alt"></i></a> 完成</td></tr><tr><td><code>KoKo</code></td><td><code>v2.24.2</code></td><td><code>Koko</code>是<code>Go</code>版本的<code>coco</code>，重构了<code>coco</code>的<code>SSH/SFTP</code>服务和<code>Web Terminal</code>服务</td></tr><tr><td><code>Node</code></td><td><code>10</code></td><td></td></tr></tbody></table></blockquote><ul><li><ol start=2><li><font color=red>创建数据库</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ DB_PASSWORD<span style=color:#f92672>=</span><span style=color:#e6db74>`</span>cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 24<span style=color:#e6db74>`</span>  	<span style=color:#75715e># 生成随机数据库密码</span>
+</span></span><span style=display:flex><span>$ echo -e <span style=color:#e6db74>&#34;\033[31m 你的数据库密码是 </span>$DB_PASSWORD<span style=color:#e6db74> \033[0m&#34;</span>
+</span></span><span style=display:flex><span>$ mysql -uroot -e <span style=color:#e6db74>&#34;create database jumpserver default charset &#39;utf8&#39;; grant all on jumpserver.* to &#39;jumpserver&#39;@&#39;127.0.0.1&#39; identified by &#39;</span>$DB_PASSWORD<span style=color:#e6db74>&#39;; flush privileges;&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>create database jumpserver default charset <span style=color:#e6db74>&#39;utf8&#39;</span>;  	<span style=color:#75715e># 创建数据库以及编码类型  </span>
+</span></span><span style=display:flex><span>grant all on jumpserver.* to <span style=color:#e6db74>&#39;jumpserver&#39;</span>@<span style=color:#e6db74>&#39;%&#39;</span> identified by <span style=color:#e6db74>&#39;password&#39;</span>;  	<span style=color:#75715e># 创建用户以及授权</span>
+</span></span></code></pre></div></blockquote><h2 id=center安装配置jumpserver堡垒机center-----居中写法以及注释方式--><center>安装配置<code>JumpServer</code>堡垒机</center></h2><div class="note info"><ul><li><ol><li><font color=red><code>jump server</code>简介、安装</font>
+<a href=https://docs.jumpserver.org/zh/master/dev/build/ title="<code>JumpServer</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>JumpServer</code>
+<i class="fa fa-external-link-alt"></i></a></li></ol></li></ul><blockquote><ul><li>1.1 <font color=red>完全开源，使用<code>GNU GPL v2.0</code>开源协议，符合<code>4A</code>专业运维审计</font></li><li>1.2 <font color=red>使用<code>Python/Django</code>进行开发，遵循<code>Web2.0</code>规范</font></li><li>1.3 <font color=red>实现了跳板机基本功能，认证、授权、审计</font></li><li>1.4 <font color=red>集成了<code>Ansible</code>批量命令，支持<code>web Terminal</code></font></li><li>1.5 <font color=red>采纳分布式架构，支持多机房跨区域部署</font></li><li>1.6 <font color=red>现支持<code>SSH、Telnet、RDP、VNC</code>协议资产</font></li><li>1.7 <font color=red>自动收集硬件信息、录像回放、命令搜索、实时监控、批量上传下载</font></li><li>1.8 <font color=red>多租户：一套系统，多个子公司和部门同时使用</font></li><li>1.9 <font color=red>多应用支持：数据库，<code>Windows</code>远程应用，<code>Kubernetes</code></font></li><li>1.10
+<a href=https://www.jumpserver.org/video.html title=官方视频 rel="noopener external nofollow noreferrer" target=_blank class=exturl>官方视频
+<i class="fa fa-external-link-alt"></i></a></li></ul></blockquote></div><h3 id=容器安装jumpserver>容器安装<code>JumpServer</code></h3><div class="note info"><blockquote><ul><li><ol><li><font color=red><code>Linux</code>生成随机加密密钥、请勿外泄</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ <span style=color:#66d9ef>if</span> <span style=color:#f92672>[</span> <span style=color:#e6db74>&#34;</span>$SECRET_KEY<span style=color:#e6db74>&#34;</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&#34;</span> <span style=color:#f92672>]</span>; <span style=color:#66d9ef>then</span> SECRET_KEY<span style=color:#f92672>=</span><span style=color:#e6db74>`</span>cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 50<span style=color:#e6db74>`</span>; echo <span style=color:#e6db74>&#34;SECRET_KEY=</span>$SECRET_KEY<span style=color:#e6db74>&#34;</span> &gt;&gt; ~/.bashrc; echo $SECRET_KEY; <span style=color:#66d9ef>else</span> echo $SECRET_KEY; <span style=color:#66d9ef>fi</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ <span style=color:#66d9ef>if</span> <span style=color:#f92672>[</span> <span style=color:#e6db74>&#34;</span>$BOOTSTRAP_TOKEN<span style=color:#e6db74>&#34;</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&#34;</span> <span style=color:#f92672>]</span>; <span style=color:#66d9ef>then</span> BOOTSTRAP_TOKEN<span style=color:#f92672>=</span><span style=color:#e6db74>`</span>cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 16<span style=color:#e6db74>`</span>; echo <span style=color:#e6db74>&#34;BOOTSTRAP_TOKEN=</span>$BOOTSTRAP_TOKEN<span style=color:#e6db74>&#34;</span> &gt;&gt; ~/.bashrc; echo $BOOTSTRAP_TOKEN; <span style=color:#66d9ef>else</span> echo $BOOTSTRAP_TOKEN; <span style=color:#66d9ef>fi</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=2><li><font color=red><code>macOS</code>生成随机<code>key</code></font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ <span style=color:#66d9ef>if</span> <span style=color:#f92672>[</span> <span style=color:#e6db74>&#34;</span>$SECRET_KEY<span style=color:#e6db74>&#34;</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&#34;</span> <span style=color:#f92672>]</span>; <span style=color:#66d9ef>then</span> SECRET_KEY<span style=color:#f92672>=</span><span style=color:#e6db74>`</span>LC_CTYPE<span style=color:#f92672>=</span>C tr -dc A-Za-z0-9 &lt; /dev/urandom | head -c 50<span style=color:#e6db74>`</span>; echo <span style=color:#e6db74>&#34;SECRET_KEY=</span>$SECRET_KEY<span style=color:#e6db74>&#34;</span> &gt;&gt; ~/.bash_profile; echo $SECRET_KEY; <span style=color:#66d9ef>else</span> echo $SECRET_KEY; <span style=color:#66d9ef>fi</span>  
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ <span style=color:#66d9ef>if</span> <span style=color:#f92672>[</span> <span style=color:#e6db74>&#34;</span>$BOOTSTRAP_TOKEN<span style=color:#e6db74>&#34;</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&#34;</span> <span style=color:#f92672>]</span>; <span style=color:#66d9ef>then</span> BOOTSTRAP_TOKEN<span style=color:#f92672>=</span><span style=color:#e6db74>`</span>LC_CTYPE<span style=color:#f92672>=</span>C tr -dc A-Za-z0-9 &lt; /dev/urandom | head -c 16<span style=color:#e6db74>`</span>; echo <span style=color:#e6db74>&#34;BOOTSTRAP_TOKEN=</span>$BOOTSTRAP_TOKEN<span style=color:#e6db74>&#34;</span> &gt;&gt; ~/.bash_profile; echo $BOOTSTRAP_TOKEN; <span style=color:#66d9ef>else</span> echo $BOOTSTRAP_TOKEN; <span style=color:#66d9ef>fi</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=3><li><font color=red>执行
+<a href=https://github.com/jumpserver/Dockerfile/tree/master/allinone title="<code>docker</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>docker</code>
+<i class="fa fa-external-link-alt"></i>
+</a>部署命令</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># 初始化数据库</span>
+</span></span><span style=display:flex><span>$ docker run --name jms_all --rm <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -v /opt/jumpserver/core/data:/opt/jumpserver/data <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -v /opt/jumpserver/koko/data:/opt/koko/data <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -v /opt/jumpserver/lion/data:/opt/lion/data <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e SECRET_KEY<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SECRET_KEY<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e BOOTSTRAP_TOKEN<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>BOOTSTRAP_TOKEN<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e LOG_LEVEL<span style=color:#f92672>=</span>ERROR <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e DB_HOST<span style=color:#f92672>=</span>172.17.0.1 <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e DB_PORT<span style=color:#f92672>=</span><span style=color:#ae81ff>3306</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e DB_USER<span style=color:#f92672>=</span>jumpserver <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e DB_PASSWORD<span style=color:#f92672>=</span>password <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e DB_NAME<span style=color:#f92672>=</span>jumpserver <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e REDIS_HOST<span style=color:#f92672>=</span>172.17.0.1 <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e REDIS_PORT<span style=color:#f92672>=</span><span style=color:#ae81ff>6379</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e REDIS_PASSWORD<span style=color:#f92672>=</span>password <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  jumpserver/jms_all:v2.26.0 init_db   <span style=color:#75715e># 确定无报错</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 启动 JumpServer</span>
+</span></span><span style=display:flex><span>docker run --name jms_all -d <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -v /opt/jumpserver/core/data:/opt/jumpserver/data <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -v /opt/jumpserver/koko/data:/opt/koko/data <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -v /opt/jumpserver/lion/data:/opt/lion/data <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -p 80:80 <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -p 2222:2222 <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -p 30000-30100:30000-30100 <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e SECRET_KEY<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>SECRET_KEY<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e BOOTSTRAP_TOKEN<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>BOOTSTRAP_TOKEN<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e LOG_LEVEL<span style=color:#f92672>=</span>ERROR <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e DB_HOST<span style=color:#f92672>=</span>172.17.0.1 <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e DB_PORT<span style=color:#f92672>=</span><span style=color:#ae81ff>3306</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e DB_USER<span style=color:#f92672>=</span>jumpserver <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e DB_PASSWORD<span style=color:#f92672>=</span>nu4x599Wq7u0Bn8EABh3J91G <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e DB_NAME<span style=color:#f92672>=</span>jumpserver <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e REDIS_HOST<span style=color:#f92672>=</span>172.17.0.1 <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e REDIS_PORT<span style=color:#f92672>=</span><span style=color:#ae81ff>6379</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  -e REDIS_PASSWORD<span style=color:#f92672>=</span>password <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  --privileged<span style=color:#f92672>=</span>true <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  jumpserver/jms_all:v2.26.0  	<span style=color:#75715e># v2.25.5</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=4><li><font color=red>使用<code>docker-compose</code>部署</font></li></ol></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;docker-compose.yaml<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>version: &#34;3&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>services:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  jumpserver:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   container_name: jumpserver  # 启动后名称
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   image: &#39;jumpserver/jms_all:latest&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   # image: &#39;jumpserver/jms_all:v2.26.1&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   # image: &#39;jumpserver/jms_all:v2.26.0&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   restart: always
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   hostname: &#39;jumpserver&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   environment:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     TZ: Asia/Shanghai
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     SECRET_KEY: &#34;xxxxxx&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     BOOTSTRAP_TOKEN: &#34;xxx&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     LOG_LEVEL: &#34;ERROR&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     DB_HOST: &#34;192.168.x.x&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     DB_PORT: &#34;3306&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     DB_USER: &#34;root&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     DB_PASSWORD: &#34;xxx&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     DB_NAME: &#34;jumpserver&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     REDIS_HOST: &#34;192.168.x.x&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     REDIS_PORT: &#34;6379&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     REDIS_PASSWORD: &#34;xxx&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   ports:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     - &#39;18091:80&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     - &#39;18092:2222&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     - &#39;18093:443&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     - &#39;33060:33060&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     - &#39;33061:33061&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   volumes:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     - &#39;/opt/jumpserver/core/data:/opt/jumpserver/data&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     - &#39;/opt/jumpserver/koko/data:/opt/koko/data&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     - &#39;/opt/jumpserver/lion/data:/opt/lion/data&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span><span style=display:flex><span>$ docker-compose up -d
+</span></span></code></pre></div><ul><li><ol start=5><li><font color=red><code>Hlem</code>部署<code>Jump Server</code></font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ helm repo add jumpserver https://jumpserver.github.io/helm-charts
+</span></span><span style=display:flex><span>$ helm repo list
+</span></span></code></pre></div><ul><li>5.1 <font color=red>修改<code>Jumserver</code>的<code>yaml</code>文件</font></li></ul><blockquote><ul><li>5.1.1
+<a href=https://github.com/jumpserver/helm-charts/blob/main/charts/jumpserver/values.yaml title="<code>JumpServer</code>模板链接" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>JumpServer</code>模板链接
+<i class="fa fa-external-link-alt"></i></a></li></ul></blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;values.yaml<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># Default values for jumpserver.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># This is a YAML-formatted file.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># Declare variables to be passed into your templates.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>nameOverride: &#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>fullnameOverride: &#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## @param global.imageRegistry Global Docker image registry
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## @param global.imagePullSecrets Global Docker registry secret names as an array
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## @param global.storageClass Global StorageClass for Persistent Volume(s)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## @param global.redis.password Global Redis&amp;trade; password (overrides `auth.password`)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>##
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>global:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  imageRegistry: &#34;docker.io&#34;    # 国内可以使用华为云加速
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  imageTag: v2.26.0             # 版本号
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  ## E.g.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  #  imagePullSecrets:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  #    - name: harborsecret
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  #
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  #  storageClass: &#34;jumpserver-data&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  ##
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  imagePullSecrets: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # - name: yourSecretKey
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  storageClass: &#34;&#34;              # (*必填) NFS SC
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## Please configure your MySQL server first
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## Jumpserver will not start the external MySQL server.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>##
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>externalDatabase:               #  (*必填) 数据库相关设置
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  engine: mysql
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  host: localhost
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  port: 3306
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  user: root
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  password: &#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  database: jumpserver
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## Please configure your Redis server first
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## Jumpserver will not start the external Redis server.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>##
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>externalRedis:                  #  (*必填) Redis 设置
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  host: localhost
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  port: 6379
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  password: &#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>serviceAccount:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  # Specifies whether a service account should be created
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  create: false
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  # The name of the service account to use.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  # If not set and create is true, a name is generated using the fullname template
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  name:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>ingress:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  enabled: true                             # 不使用 ingress 可以关闭
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  annotations:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # kubernetes.io/tls-acme: &#34;true&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    compute-full-forwarded-for: &#34;true&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    use-forwarded-headers: &#34;true&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    kubernetes.io/ingress.class: nginx
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    nginx.ingress.kubernetes.io/configuration-snippet: |
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>       proxy_set_header Upgrade &#34;websocket&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>       proxy_set_header Connection &#34;Upgrade&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  hosts:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    - &#34;test.jumpserver.org&#34;                 # 对外域名
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  tls: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  #  - secretName: chart-example-tls
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  #    hosts:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  #      - chart-example.local
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>core:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  enabled: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  labels:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    app.jumpserver.org/name: jms-core
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  config:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # Generate a new random secret key by execute `cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 50`
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # secretKey: &#34;B3f2w8P2PfxIAS7s4URrD9YmSbtqX4vXdPUL217kL9XPUOWrmy&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    secretKey: &#34;&#34;                            #  (*必填) 加密敏感信息的 secret_key, 长度推荐大于 50 位
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # Generate a new random bootstrap token by execute `cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 16`
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # bootstrapToken: &#34;7Q11Vz6R2J6BLAdO&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    bootstrapToken: &#34;&#34;                       #  (*必填) 组件认证使用的 token, 长度推荐大于 24 位
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # Enabled it for debug
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    debug: false
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    log:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      level: ERROR
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  replicaCount: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  image:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    registry: docker.io
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    repository: jumpserver/core
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    tag: v2.26.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    pullPolicy: IfNotPresent
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  command: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  env:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # See: https://docs.jumpserver.org/zh/master/admin-guide/env/#core
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    SESSION_EXPIRE_AT_BROWSER_CLOSE: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # SESSION_COOKIE_AGE: 86400
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # SECURITY_VIEW_AUTH_NEED_MFA: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  livenessProbe:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    failureThreshold: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    httpGet:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      path: /api/health/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: web
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  readinessProbe:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    failureThreshold: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    httpGet:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      path: /api/health/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: web
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  podSecurityContext: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # fsGroup: 2000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  securityContext: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # capabilities:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   drop:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   - ALL
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # readOnlyRootFilesystem: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # runAsNonRoot: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # runAsUser: 1000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  service:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: ClusterIP
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    web:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: 8080
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    ws:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: 8070
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  resources: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # We usually recommend not to specify default resources and to leave this as a conscious
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # choice for the user. This also increases chances charts run on environments with little
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # lines, adjust them as necessary, and remove the curly braces after &#39;resources:&#39;.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # limits:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   cpu: 1000m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   memory: 2048Mi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # requests:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   cpu: 500m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   memory: 1024Mi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  persistence:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    storageClassName: jumpserver-data
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    accessModes:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - ReadWriteMany
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    size: 100Gi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # annotations: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    finalizers:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - kubernetes.io/pvc-protection
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # subPath: &#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # existingClaim:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  volumeMounts: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  volumes: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  nodeSelector: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  tolerations: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  affinity: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>koko:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  enabled: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  labels:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    app.jumpserver.org/name: jms-koko
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  config:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    log:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      level: ERROR
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  replicaCount: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  image:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    registry: docker.io
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    repository: jumpserver/koko
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    tag: v2.26.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    pullPolicy: IfNotPresent
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  command: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  env: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # See: https://docs.jumpserver.org/zh/master/admin-guide/env/#koko
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # LANGUAGE_CODE: zh
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # REUSE_CONNECTION: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # ENABLE_LOCAL_PORT_FORWARD: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # ENABLE_VSCODE_SUPPORT: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  livenessProbe:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    failureThreshold: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    httpGet:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      path: /koko/health/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: web
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  readinessProbe:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    failureThreshold: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    httpGet:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      path: /koko/health/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: web
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  podSecurityContext: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # fsGroup: 2000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  securityContext:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    privileged: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # capabilities:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   drop:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   - ALL
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # readOnlyRootFilesystem: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # runAsNonRoot: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # runAsUser: 1000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  service:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: ClusterIP
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    web:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: 5000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    ssh:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: 2222
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  resources: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # We usually recommend not to specify default resources and to leave this as a conscious
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # choice for the user. This also increases chances charts run on environments with little
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # lines, adjust them as necessary, and remove the curly braces after &#39;resources:&#39;.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # limits:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   cpu: 100m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   memory: 128Mi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # requests:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   cpu: 100m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   memory: 128Mi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  persistence:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    storageClassName: jumpserver-data
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    accessModes:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - ReadWriteMany
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    size: 10Gi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # annotations: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    finalizers:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - kubernetes.io/pvc-protection
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  volumeMounts: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  volumes: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  nodeSelector: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  tolerations: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  affinity: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>lion:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  enabled: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  labels:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    app.jumpserver.org/name: jms-lion
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  config:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    log:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      level: ERROR
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  replicaCount: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  image:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    registry: docker.io
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    repository: jumpserver/lion
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    tag: v2.26.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    pullPolicy: IfNotPresent
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  command: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  env:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # See: https://docs.jumpserver.org/zh/master/admin-guide/env/#lion
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    JUMPSERVER_ENABLE_FONT_SMOOTHING: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # JUMPSERVER_COLOR_DEPTH: 32
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # JUMPSERVER_ENABLE_WALLPAPER: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # JUMPSERVER_ENABLE_THEMING: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # JUMPSERVER_ENABLE_FULL_WINDOW_DRAG: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # JUMPSERVER_ENABLE_DESKTOP_COMPOSITION: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # JUMPSERVER_ENABLE_MENU_ANIMATIONS: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  livenessProbe:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    failureThreshold: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    httpGet:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      path: /lion/health/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: web
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  readinessProbe:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    failureThreshold: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    httpGet:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      path: /lion/health/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: web
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  podSecurityContext: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # fsGroup: 2000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  securityContext: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # capabilities:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   drop:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   - ALL
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # readOnlyRootFilesystem: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # runAsNonRoot: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # runAsUser: 1000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  service:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: ClusterIP
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    web:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: 8081
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  resources: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # We usually recommend not to specify default resources and to leave this as a conscious
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # choice for the user. This also increases chances charts run on environments with little
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # lines, adjust them as necessary, and remove the curly braces after &#39;resources:&#39;.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # limits:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   cpu: 100m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   memory: 512Mi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # requests:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   cpu: 100m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   memory: 512Mi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  persistence:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    storageClassName: jumpserver-data
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    accessModes:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - ReadWriteMany
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    size: 50Gi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # annotations: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    finalizers:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - kubernetes.io/pvc-protection
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  volumeMounts: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  volumes: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  nodeSelector: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  tolerations: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  affinity: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>magnus:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  enabled: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  labels:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    app.jumpserver.org/name: jms-magnus
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  config:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    log:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      level: ERROR
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  replicaCount: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  image:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    registry: docker.io
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    repository: jumpserver/magnus
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    tag: v2.21.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    pullPolicy: IfNotPresent
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  command: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  env: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  livenessProbe:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    failureThreshold: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    tcpSocket:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: mysql
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  readinessProbe:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    failureThreshold: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    tcpSocket:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: mysql
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  podSecurityContext: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # fsGroup: 2000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  securityContext: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # capabilities:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   drop:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   - ALL
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # readOnlyRootFilesystem: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # runAsNonRoot: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # runAsUser: 1000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  service:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: ClusterIP
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    mysql:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: 33060
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    mariadb:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: 33061
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    postgre:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: 54320
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  resources: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # We usually recommend not to specify default resources and to leave this as a conscious
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # choice for the user. This also increases chances charts run on environments with little
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # lines, adjust them as necessary, and remove the curly braces after &#39;resources:&#39;.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # limits:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   cpu: 100m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   memory: 512Mi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # requests:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   cpu: 100m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   memory: 512Mi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  persistence:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    storageClassName: jumpserver-data
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    accessModes:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - ReadWriteMany
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    size: 10Gi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # annotations: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    finalizers:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - kubernetes.io/pvc-protection
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  volumeMounts: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  volumes: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  nodeSelector: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  tolerations: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  affinity: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>xpack:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  enabled: false      # 企业版本打开此选项
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>omnidb:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  labels:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    app.jumpserver.org/name: jms-omnidb
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  config:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    log:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      level: ERROR
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  replicaCount: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  image:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    registry: registry.fit2cloud.com
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    repository: jumpserver/omnidb
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    tag: v2.26.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    pullPolicy: IfNotPresent
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  command: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  env: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  livenessProbe:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    failureThreshold: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    tcpSocket:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: web
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  readinessProbe:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    failureThreshold: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    tcpSocket:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: web
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  podSecurityContext: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # fsGroup: 2000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  securityContext: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # capabilities:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   drop:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   - ALL
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # readOnlyRootFilesystem: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # runAsNonRoot: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # runAsUser: 1000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  service:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: ClusterIP
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    web:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: 8082
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  resources: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # We usually recommend not to specify default resources and to leave this as a conscious
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # choice for the user. This also increases chances charts run on environments with little
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # lines, adjust them as necessary, and remove the curly braces after &#39;resources:&#39;.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # limits:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   cpu: 100m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   memory: 128Mi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # requests:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   cpu: 100m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   memory: 128Mi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  persistence:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    storageClassName: jumpserver-data
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    accessModes:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - ReadWriteMany
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    size: 10Gi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # annotations: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    finalizers:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - kubernetes.io/pvc-protection
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  volumeMounts: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  volumes: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  nodeSelector: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  tolerations: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  affinity: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>razor:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  labels:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    app.jumpserver.org/name: jms-razor
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  config:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    log:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      level: ERROR
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  replicaCount: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  image:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    registry: registry.fit2cloud.com
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    repository: jumpserver/razor
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    tag: v2.26.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    pullPolicy: IfNotPresent
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  command: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  env: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  livenessProbe:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    failureThreshold: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    tcpSocket:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: rdp
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  readinessProbe:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    failureThreshold: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    tcpSocket:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: rdp
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  podSecurityContext: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # fsGroup: 2000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  securityContext: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # capabilities:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   drop:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   - ALL
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # readOnlyRootFilesystem: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # runAsNonRoot: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # runAsUser: 1000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  service:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: ClusterIP
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    rdp:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: 3389
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  resources: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # We usually recommend not to specify default resources and to leave this as a conscious
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # choice for the user. This also increases chances charts run on environments with little
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # lines, adjust them as necessary, and remove the curly braces after &#39;resources:&#39;.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # limits:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   cpu: 100m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   memory: 128Mi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # requests:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   cpu: 100m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   memory: 128Mi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  persistence:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    storageClassName: jumpserver-data
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    accessModes:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - ReadWriteMany
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    size: 50Gi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # annotations: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    finalizers:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - kubernetes.io/pvc-protection
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  volumeMounts: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  volumes: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  nodeSelector: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  tolerations: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  affinity: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>web:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  enabled: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  labels:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    app.jumpserver.org/name: jms-web
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  replicaCount: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  image:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    registry: docker.io
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    repository: jumpserver/web
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    tag: v2.26.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    pullPolicy: IfNotPresent
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  command: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  env: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # nginx client_max_body_size, default 4G
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # CLIENT_MAX_BODY_SIZE: 4096m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  livenessProbe:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    failureThreshold: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    httpGet:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      path: /api/health/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: web
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  readinessProbe:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    failureThreshold: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    httpGet:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      path: /api/health/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: web
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  podSecurityContext: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # fsGroup: 2000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  securityContext: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # capabilities:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   drop:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   - ALL
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # readOnlyRootFilesystem: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # runAsNonRoot: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # runAsUser: 1000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  service:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: ClusterIP
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    web:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      port: 80
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  resources: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # We usually recommend not to specify default resources and to leave this as a conscious
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # choice for the user. This also increases chances charts run on environments with little
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # lines, adjust them as necessary, and remove the curly braces after &#39;resources:&#39;.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # limits:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   cpu: 100m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   memory: 128Mi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # requests:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   cpu: 100m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    #   memory: 128Mi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  persistence:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    storageClassName: jumpserver-data
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    accessModes:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - ReadWriteMany
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    size: 1Gi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # annotations: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    finalizers:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - kubernetes.io/pvc-protection
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  volumeMounts: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  volumes: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  nodeSelector: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  tolerations: []
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  affinity: {}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div></blockquote><ul><li>5.2 <font color=red>安装、卸载命令</font></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># 安装</span>
+</span></span><span style=display:flex><span>$ helm install jms-k8s jumpserver/jumpserver -n jumpserver -f values.yaml
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 卸载</span>
+</span></span><span style=display:flex><span>$ helm uninstall jms-k8s -n default
+</span></span></code></pre></div></blockquote></blockquote></div><h3 id=脚本安装jumpserver>脚本安装<code>Jumpserver</code></h3><div class="note info"><blockquote><ul><li><ol><li><font color=red>安装完成后配置文件<code>/opt/jumpserver/config/config.txt</code></font>
+<a href=https://docs.jumpserver.org/zh/master/install/setup_by_fast/ title="<code>Jumpserver</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Jumpserver</code>
+<i class="fa fa-external-link-alt"></i></a></li></ol></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ curl -sSL https://github.com/jumpserver/jumpserver/releases/download/v2.24.2/quick_start.sh | bash
+</span></span><span style=display:flex><span>$ cd /opt/jumpserver-installer-v2.24.2
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 启动</span>
+</span></span><span style=display:flex><span>$ ./jmsctl.sh start -d  	<span style=color:#75715e># 后台运行使用 -d 参数./jms start -d</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 停止</span>
+</span></span><span style=display:flex><span>$ ./jmsctl.sh down
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 卸载</span>
+</span></span><span style=display:flex><span>$ ./jmsctl.sh uninstall
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 帮助</span>
+</span></span><span style=display:flex><span>$ ./jmsctl.sh -h
+</span></span></code></pre></div></blockquote></div><h3 id=离线部署>离线部署</h3><div class="note info"><blockquote><ul><li><ol><li><font color=red><a href=https://community.fit2cloud.com/#/products/jumpserver/downloads title=下载安装包 rel="noopener external nofollow noreferrer" target=_blank class=exturl>下载安装包
+<i class="fa fa-external-link-alt"></i></a></font></li></ol></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ tar -xf /opt/jumpserver-offline-installer-v2.24.2-amd64-47.tar.gz -C /opt/
+</span></span><span style=display:flex><span>$ cd /opt/jumpserver-offline-installer-v2.24.2-amd64-47
+</span></span></code></pre></div><ul><li><ol start=2><li><font color=red>修改模板配置文件</font></li></ol></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;config-example.txt<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 以下设置如果为空系统会自动生成随机字符串填入
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## 迁移请修改 SECRET_KEY 和 BOOTSTRAP_TOKEN 为原来的设置
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## 完整参数文档 https://docs.jumpserver.org/zh/master/admin-guide/env/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## 安装配置, amd64 默认使用华为云加速下载, arm64 请注释掉 DOCKER_IMAGE_PREFIX=swr.cn-south-1.myhuaweicloud.com
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># DOCKER_IMAGE_PREFIX=swr.cn-south-1.myhuaweicloud.com
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>VOLUME_DIR=/opt/jumpserver
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>DOCKER_DIR=/var/lib/docker
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SECURITY WARNING: keep the secret key used in production secret!
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 加密密钥 生产环境中请修改为随机字符串，请勿外泄, 可使用命令生成，PS: 纯数字不可以
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># $ cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 49;echo
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>SECRET_KEY=
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SECURITY WARNING: keep the bootstrap token used in production secret!
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 预共享Token coco和guacamole用来注册服务账号，不在使用原来的注册接受机制
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>BOOTSTRAP_TOKEN=
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># DEBUG, INFO, WARNING, ERROR, CRITICAL can set. See https://docs.djangoproject.com/en/1.10/topics/logging/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 日志级别
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>LOG_LEVEL=ERROR
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SQLite setting:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 使用单文件sqlite数据库
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># DB_ENGINE: sqlite3
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># DB_NAME:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>##  MySQL 配置, USE_EXTERNAL_MYSQL=1 表示使用外置数据库, 请输入正确的 MySQL 信息
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>USE_EXTERNAL_MYSQL=0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>DB_HOST=mysql
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>DB_PORT=3306
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>DB_USER=root
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>DB_PASSWORD=
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>DB_NAME=jumpserver
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>##  Redis 配置, USE_EXTERNAL_REDIS=1 表示使用外置数据库, 请输入正确的 Redis 信息
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>USE_EXTERNAL_REDIS=0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>REDIS_HOST=redis
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>REDIS_PORT=6379
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>REDIS_PASSWORD=
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># Session expiration setting, Default 1 hour, Also set expired on on browser close
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 浏览器Session过期时间，默认 1 小时, 也可以设置浏览器关闭则过期
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SESSION_COOKIE_AGE: 3600
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SESSION_EXPIRE_AT_BROWSER_CLOSE: false  	# true 或者 false
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## Compose 项目设置, 如果 192.168.250.0/24 网段与你现有网段冲突, 请修改然后重启 JumpServer
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>COMPOSE_PROJECT_NAME=jms
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>COMPOSE_HTTP_TIMEOUT=3600
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>DOCKER_CLIENT_TIMEOUT=3600
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>DOCKER_SUBNET=192.168.250.0/24
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## IPV6 设置, 容器是否开启 ipv6 nat, USE_IPV6=1 表示开启, 为 0 的情况下 DOCKER_SUBNET_IPV6 定义不生效
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>USE_IPV6=0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>DOCKER_SUBNET_IPV6=fc00:1010:1111:200::/64
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## 访问配置
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>HTTP_PORT=80
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>SSH_PORT=2222
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>MAGNUS_MYSQL_PORT=33060
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>MAGNUS_MARIADB_PORT=33061
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## HTTPS 配置, 参考 https://docs.jumpserver.org/zh/master/admin-guide/proxy/ 配置
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># USE_LB=1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># HTTPS_PORT=443
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SERVER_NAME=your_domain_name
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SSL_CERTIFICATE=your_cert
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SSL_CERTIFICATE_KEY=your_cert_key
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## Nginx 文件上传大小
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>CLIENT_MAX_BODY_SIZE=4096m
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## Task 配置, 是否启动 jms_celery 容器, 单节点必须开启
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>USE_TASK=1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## XPack, USE_XPACK=1 表示开启, 开源版本设置无效
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>USE_XPACK=0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>RDP_PORT=3389
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>MAGNUS_POSTGRE_PORT=54320
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>TCP_SEND_BUFFER_BYTES=4194304
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>TCP_RECV_BUFFER_BYTES=6291456
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># Core 配置, Session 定义, SESSION_COOKIE_AGE 表示闲置多少秒后 session 过期, SESSION_EXPIRE_AT_BROWSER_CLOSE=True 表示关闭浏览器即 session 过期
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SESSION_COOKIE_AGE=86400
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>SESSION_EXPIRE_AT_BROWSER_CLOSE=True
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># Koko Lion XRDP 组件配置
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>CORE_HOST=http://core:8080
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>JUMPSERVER_ENABLE_FONT_SMOOTHING=True
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>## 终端使用宿主 HOSTNAME 标识
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>SERVER_HOSTNAME=${HOSTNAME}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 额外的配置
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>CURRENT_VERSION=
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># LDAP/AD settings
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># LDAP 搜索分页数量
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># AUTH_LDAP_SEARCH_PAGED_SIZE: 1000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>#
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 定时同步用户
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 启用 / 禁用
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># AUTH_LDAP_SYNC_IS_PERIODIC: True
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 同步间隔 (单位: 时) (优先）
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># AUTH_LDAP_SYNC_INTERVAL: 12
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># Crontab 表达式
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># AUTH_LDAP_SYNC_CRONTAB: * 6 * * *
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>#
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># LDAP 用户登录时仅允许在用户列表中的用户执行 LDAP Server 认证
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># AUTH_LDAP_USER_LOGIN_ONLY_IN_USERS: False
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>#
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># LDAP 认证时如果日志中出现以下信息将参数设置为 0 (详情参见：https://www.python-ldap.org/en/latest/faq.html)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># In order to perform this operation a successful bind must be completed on the connection
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># AUTH_LDAP_OPTIONS_OPT_REFERRALS: -1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># OTP settings
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># OTP/MFA 配置
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># OTP_VALID_WINDOW: 0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># OTP_ISSUER_NAME: Jumpserver
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 启用定时任务
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># PERIOD_TASK_ENABLED: True
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>#
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># Windows 登录跳过手动输入密码
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># WINDOWS_SKIP_ALL_MANUAL_PASSWORD: False
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 是否开启 Luna 水印
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SECURITY_WATERMARK_ENABLED: False
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 浏览器关闭页面后，会话过期
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SESSION_EXPIRE_AT_BROWSER_CLOSE_FORCE: False
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 每次api请求，session续期
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SESSION_SAVE_EVERY_REQUEST: True
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 仅允许用户从来源处登录
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># ONLY_ALLOW_AUTH_FROM_SOURCE: False
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 仅允许已存在的用户登录，不允许第三方认证后，自动创建用户
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># ONLY_ALLOW_EXIST_USER_AUTH: False
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><ul><li><ol start=3><li><font color=red>安装、启动、停止以及安装完成后配置文件<code>/opt/jumpserver/config/config.tx</code></font></li></ol></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cd jumpserver-offline-release-v2.24.2-amd64-47
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 安装</span>
+</span></span><span style=display:flex><span>$ ./jmsctl.sh install
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 启动</span>
+</span></span><span style=display:flex><span>$ ./jmsctl.sh start -d  <span style=color:#75715e># 后台运行使用 -d 参数./jms start -d</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 停止</span>
+</span></span><span style=display:flex><span>$ ./jmsctl.sh down
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 卸载</span>
+</span></span><span style=display:flex><span>$ ./jmsctl.sh uninstall
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 帮助</span>
+</span></span><span style=display:flex><span>$ ./jmsctl.sh -h
+</span></span></code></pre></div></blockquote></div><h2 id=配置jumpserver>配置<code>Jumpserver</code></h2><div class="note info"><ul><li><ol><li><font color=red>配置<code>Nginx</code>配置文件</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/usr/local/nginx/conf/vhosts/jumpserver.conf<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>server {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>listen 80;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># server_name _;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>client_max_body_size 5000m; 文件大小限制
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># Luna 配置
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>location /luna/ {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> # 注意将模板中的组件名称替换为服务实际 ip 地址， 如都在本机部署
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> # proxy_pass       http://127.0.0.1:4200;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_pass http://luna:4200;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># Core data 静态资源
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>location /media/replay/ {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> add_header Content-Encoding gzip;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> root /opt/jumpserver-v2.24.2/data/;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>location /media/ {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> root /opt/jumpserver-v2.24.2/data/;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>location /static/ {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> root /opt/jumpserver-v2.24.2/data/;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># KoKo Lion 配置
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>location /koko/ {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> # 注意将模板中的组件名称替换为服务实际 ip 地址， 如都在本机部署
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> # proxy_pass       http://127.0.0.1:5000;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_pass       http://koko:5000;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header X-Real-IP $remote_addr;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header Host $host;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_http_version 1.1;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_buffering off;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header Upgrade $http_upgrade;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header Connection &#34;upgrade&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># lion 配置
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>location /lion/ {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> # 注意将模板中的组件名称替换为服务实际 ip 地址， 如都在本机部署
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> # proxy_pass       http://127.0.0.1:8081;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_pass http://lion:8081;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_buffering off;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_request_buffering off;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_http_version 1.1;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header Upgrade $http_upgrade;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header Connection $http_connection;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_ignore_client_abort on;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_connect_timeout 600;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_send_timeout 600;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_read_timeout 600;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> send_timeout 6000;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># Core 配置
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>location /ws/ {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> # 注意将模板中的组件名称替换为服务实际 ip 地址， 如都在本机部署
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> # proxy_pass       http://127.0.0.1:8070;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_pass http://core:8070;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header X-Real-IP $remote_addr;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header Host $host;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_http_version 1.1;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_buffering off;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header Upgrade $http_upgrade;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header Connection &#34;upgrade&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>location /api/ {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> # 注意将模板中的组件名称替换为服务实际 ip 地址， 如都在本机部署
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> # proxy_pass       http://127.0.0.1:8080;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_pass http://core:8080;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header X-Real-IP $remote_addr;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header Host $host;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>location /core/ {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> # 注意将模板中的组件名称替换为服务实际 ip 地址， 如都在本机部署
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> # proxy_pass       http://127.0.0.1:8080;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_pass http://core:8080;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header X-Real-IP $remote_addr;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header Host $host;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 前端 Lina
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>location /ui/ {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> # 注意将模板中的组件名称替换为服务实际 ip 地址， 如都在本机部署
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> # proxy_pass       http://127.0.0.1:9528;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_pass http://lina:9528;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header X-Real-IP $remote_addr;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header Host $host;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>location / {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> rewrite ^/(.*)$ /ui/$1 last;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=2><li><font color=red>文件管理默认目录修改为：<code>/tmp</code></font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/opt/koko-2.24.2/config_example.yml<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 项目名称, 会用来向Jumpserver注册, 识别而已, 不能重复
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># NAME: {{ Hostname }}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># Jumpserver项目的url, api请求注册会使用
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>CORE_HOST: http://127.0.0.1:8080
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># Bootstrap Token, 预共享秘钥, 用来注册coco使用的service account和terminal
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 请和jumpserver 配置文件中保持一致，注册完成后可以删除
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>BOOTSTRAP_TOKEN: &lt;PleasgeChangeSameWithJumpserver&gt;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 启动时绑定的ip, 默认 0.0.0.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># BIND_HOST: 0.0.0.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 监听的SSH端口号, 默认2222
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SSHD_PORT: 2222
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 监听的HTTP/WS端口号，默认5000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># HTTPD_PORT: 5000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 设置日志级别 [DEBUG, INFO, WARN, ERROR, FATAL, CRITICAL]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># LOG_LEVEL: INFO
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SSH连接超时时间 (default 15 seconds)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SSH_TIMEOUT: 15
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 语言 [en,zh]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># LANGUAGE_CODE: zh
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SFTP的根目录, 可选 /tmp, Home其他自定义目录
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SFTP_ROOT: /tmp
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SFTP是否显示隐藏文件
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SFTP_SHOW_HIDDEN_FILE: false
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 是否复用和用户后端资产已建立的连接(用户不会复用其他用户的连接)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># REUSE_CONNECTION: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 资产加载策略, 可根据资产规模自行调整. 默认异步加载资产, 异步搜索分页; 如果为all, 则资产全部加载, 本地搜索分页.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># ASSET_LOAD_POLICY:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># zip压缩的最大额度 (单位: M)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># ZIP_MAX_SIZE: 1024M
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># zip压缩存放的临时目录 /tmp
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># ZIP_TMP_PATH: /tmp
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 向 SSH Client 连接发送心跳的时间间隔 (单位: 秒)，默认为30, 0则表示不发送
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># CLIENT_ALIVE_INTERVAL: 30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 向资产发送心跳包的重试次数，默认为3
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># RETRY_ALIVE_COUNT_MAX: 3
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 会话共享使用的类型 [local, redis], 默认local
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SHARE_ROOM_TYPE: local
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># Redis配置
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># REDIS_HOST: 127.0.0.1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># REDIS_PORT: 6379
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># REDIS_PASSWORD:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># REDIS_CLUSTERS:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># REDIS_DB_ROOM:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 是否开启本地转发 (目前仅对 vscode remote ssh 有效果)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># ENABLE_LOCAL_PORT_FORWARD: false
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 是否开启 针对 vscode 的 remote-ssh 远程开发支持 (前置条件: 必须开启 ENABLE_LOCAL_PORT_FORWARD )
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># ENABLE_VSCODE_SUPPORT: false
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div></blockquote><h3 id=sudo命令配置><code>sudo</code>命令配置</h3><ul><li><ol><li><code>sudo</code>命令→系统命令</li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>/sbin/ifconfig,/sbin/route
+</span></span></code></pre></div><p><img src=/imgs/img-lazy-loading.gif data-src=https://raw.githubusercontent.com/usermice/imgs/master/Jump_Server/sudo.png alt></p></blockquote></div></div><footer class=post-footer><div class=post-tags><a href=/tags/jumpserver>JumpServer</a></div><div class=addthis_inline_share_toolbox style=text-align:center></div><hr><div class=reward-container><div><i class="fa-solid fa-mug-hot"></i>请我喝杯咖啡吧 ヾ(^▽^*)))</div><button>赞赏</button><div class=post-reward><div class=post-reward-item><img src=/imgs/img-lazy-loading.gif data-src=/imgs/ali-pay.png alt="二哥 - 支付宝">
+<span>支付宝</span></div><div class=post-reward-item><img src=/imgs/img-lazy-loading.gif data-src=/imgs/wechat-pay.png alt="二哥 - 微信">
+<span>微信</span></div></div></div><div class=post-copyright><img src=/imgs/cc/cc.svg width=75 height=75 align=right><ul><li class=post-copyright-title><strong>文章标题：</strong>
+Install JumpServer</li><li class=post-copyright-author><strong>本文作者：</strong>
+二哥</li><li class=post-copyright-link><strong>本文链接：</strong>
+<a id=post-cr-link href=https://erge.blog/linux/jumpserver/install-jumpserver/ title="Install JumpServer">https://erge.blog/linux/jumpserver/install-jumpserver/</a></li><li class=post-copyright-license><strong>版权声明：</strong>
+本博客所有文章除特别声明外，均采用 <i class="fab fa-fw fa-creative-commons"></i><a target=_blank href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh>BY-NC-SA</a> 许可协议。转载请注明出处！</li></ul></div><div class=followme><span>欢迎关注我的其它发布渠道</span><div class=social-list><div class=social-item><a target=_blank class=social-link href=/images/wechat_channel.jpg><span class=icon><i class="fab fa-weixin"></i></span>
+<span class=label>WeChat</span></a></div><div class=social-item><a target=_blank class=social-link href=/atom.xml><span class=icon><i class="fa fa-rss"></i></span>
+<span class=label>RSS</span></a></div></div></div><div class=post-nav><div class="post-nav-next post-nav-item"><a href=/linux/linux-conmmon-commands/ rel=next title="Linux Conmmon Commands"><i class="fa fa-chevron-left"></i> Linux Conmmon Commands</a></div><div class="post-nav-prev post-nav-item"><a href=/linux/web/website-http-status-messages/ rel=prev title="Website HTTP Status Messages">Website HTTP Status Messages
+<i class="fa fa-chevron-right"></i></a></div></div></footer></article></div><div id=comments class=post-comments><div class=comment-head><div class=comment-headline><i class="fas fa-comments fa-fw"></i>
+<span>评论交流</span></div><div class=comment-switch><span class=first-comment>Giscus</span>
+<span class=switch-btn></span>
+<span class=second-comment>Waline</span></div></div><div class=comment-wrap><div><div class=comment-loading><i class="fa fa-sync fa-spin"></i></div><div class=giscus-container></div></div><div><div class=comment-loading><i class="fa fa-sync fa-spin"></i></div><div class=waline-container></div></div></div></div></div></main><footer class=footer><div class=footer-inner><div id=gtranslate class=google-translate><i class="fa fa-language"></i><div id=google_translate_element></div></div><div class=copyright>&copy;
+<span itemprop=copyrightYear>2010 - 2022</span>
+<span class=with-love><i class="fa fa-heart"></i></span>
+<span class=author itemprop=copyrightHolder>二哥</span></div><div class=powered-by>由 <a href=https://gohugo.io title=0.108.0 target=_blank>Hugo</a> & <a href=https://github.com/hugo-next/hugo-theme-next title=4.4.1 target=_blank>Hugo NexT.Gemini</a> 强力驱动</div><div class=vendors-list><a target=_blank href=https://vercel.com title=Vercel><img src=/imgs/img-lazy-loading.gif data-src=/imgs/vendors/vercel.svg alt=Vercel></a>
+<a target=_blank href=https://upyun.com title=又拍云><img src=/imgs/img-lazy-loading.gif data-src=/imgs/vendors/upyun.png alt=又拍云></a>
+<a target=_blank href=https://webify.cloudbase.net title=Webify>Webify</a>
+<span>提供CDN/云资源支持</span></div></div></footer><script type=text/javascript src=https://cdn.staticfile.org/animejs/3.2.1/anime.min.js defer></script>
+<script type=text/javascript src=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.js defer></script>
+<script class=next-config data-name=main type=application/json>{"bookmark":{"color":"#222","enable":true,"save":"manual"},"busuanzi":{"pageview":true},"copybtn":true,"darkmode":false,"giscus":{"cfg":{"category":"Q\u0026A","categoryid":"DIC_kwDOHYYlqc4CSgz7","emit":false,"inputposition":"top","mapping":"title","reactions":false,"repo":"usermice/usermice.github.io","repoid":"R_kgDOHYYlqQ","theme":"preferred_color_scheme"},"js":"https://giscus.app/client.js"},"hostname":"https://erge.blog","i18n":{"ds_day":" 天前","ds_days":" 天 ","ds_hour":" 小时前","ds_hours":" 小时 ","ds_just":"刚刚","ds_min":" 分钟前","ds_mins":" 分钟","ds_month":" 个月前","ds_years":" 年 ","empty":"没有找到任何搜索结果：${query}","hits":"","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","placeholder":"搜索..."},"lang":"zh-CN","lazyload":false,"localSearch":{"enable":true,"path":"/searchindexes.xml","preload":false,"topnperarticle":-1,"trigger":"auto","unescape":false},"motion":{"async":true,"enable":true,"transition":{"collheader":"fadeInLeft","postblock":"fadeIn","postbody":"fadeInDown","postheader":"fadeInDown","sidebar":"fadeInUp"}},"root":"/","scheme":"Gemini","sidebar":{"display":"post","offset":12,"padding":18,"position":"left","width":256},"statis":{"enable":true,"plugin":"busuanzi"},"vendor":{"plugins":"qiniu","router":"https://cdn.staticfile.org"},"version":"4.4.1","waline":{"cfg":{"comment":true,"emoji":false,"imguploader":false,"pageview":true,"placeholder":"请文明发言哟 ヾ(≧▽≦*)o","reaction":true,"reactiontext":["点赞","踩一下","得意","不屑","尴尬","睡觉"],"reactiontitle":"你认为这篇文章怎么样？","requiredmeta":["nick","mail"],"serverurl":null,"sofa":"快来发表你的意见吧 (≧∀≦)ゞ","wordlimit":200},"css":{"alias":"waline","file":"dist/waline.css","name":"@waline/client","version":"2.13.0"},"js":{"alias":"waline","file":"dist/waline.js","name":"@waline/client","version":"2.13.0"}}}</script><script type=text/javascript src=/js/main.min.37028fbafbd97fd89808b4c7b5a3a81f01ed0ab24001d273d774f9546a0e9170.js defer></script></body></html>
