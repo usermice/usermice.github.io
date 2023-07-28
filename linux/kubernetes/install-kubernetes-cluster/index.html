@@ -155,68 +155,68 @@
 </span></span></code></pre></div></blockquote></div><h2 id=font-colorred安装高可用组件font><font color=red>安装高可用组件</font></h2><div class="note info"><ul><li><ol><li><font color=red>注意：如果不是高可用集群，</font><code>haproxy</code>和<code>keepalived</code>无需安装</li></ol></li><li><ol start=2><li>所有<code>Master</code>节点安装<code>HAPROXY</code>和<code>Keepalived</code></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ yum -y install keepalived haproxy
 </span></span></code></pre></div></blockquote><ul><li><ol start=3><li>所有<code>Master</code>节点配置<code>HAProxy</code></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/etc/haproxy/haproxy.cfg<span style=color:#e6db74>&lt;&lt;-EOF
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>global
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    maxconn  2000
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    ulimit-n  16384
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    log  127.0.0.1 local0 err
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    stats timeout 30s
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	maxconn  2000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	ulimit-n  16384
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	log  127.0.0.1 local0 err
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	stats timeout 30s
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>defaults
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    log global
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    mode  http
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    option  httplog
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    timeout connect 5000
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    timeout client  50000
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    timeout server  50000
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    timeout http-request 15s
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    timeout http-keep-alive 15s
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	log global
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	mode  http
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	option  httplog
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	timeout connect 5000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	timeout client  50000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	timeout server  50000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	timeout http-request 15s
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	timeout http-keep-alive 15s
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>frontend monitor-in
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    bind *:33305
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    mode http
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    option httplog
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    monitor-uri /monitor
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	bind *:33305
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	mode http
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	option httplog
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	monitor-uri /monitor
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>listen stats
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    bind    *:8006
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    mode    http
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    stats   enable
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    stats   hide-version
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    stats   uri       /stats
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    stats   refresh   30s
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    stats   realm     Haproxy\ Statistics
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    stats   auth      admin:admin
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	bind    *:8006
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	mode    http
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	stats   enable
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	stats   hide-version
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	stats   uri       /stats
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	stats   refresh   30s
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	stats   realm     Haproxy\ Statistics
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	stats   auth      admin:admin
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>frontend k8s-master
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    bind 0.0.0.0:16443
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    bind 127.0.0.1:16443
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    mode tcp
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    option tcplog
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    tcp-request inspect-delay 5s
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    default_backend k8s-master
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	bind 0.0.0.0:16443
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	bind 127.0.0.1:16443
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	mode tcp
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	option tcplog
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	tcp-request inspect-delay 5s
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	default_backend k8s-master
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>backend k8s-master
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    mode tcp
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    option tcplog
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    option tcp-check
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    balance roundrobin
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    # 下面的配置根据实际情况修改
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    server k8s-master-01 192.168.80.210:6443  check
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    server k8s-master-02 192.168.80.211:6443  check
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	mode tcp
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	option tcplog
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	option tcp-check
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	balance roundrobin
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	default-server inter 10s downinter 5s rise 2 fall 2 slowstart 60s maxconn 250 maxqueue 256 weight 100
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	# 下面的配置根据实际情况修改
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	server k8s-master-01 192.168.80.210:6443  check
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	server k8s-master-02 192.168.80.211:6443  check
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
 </span></span></code></pre></div></blockquote><ul><li><ol start=4><li><code>Msster-01</code>的<code>Keepalived</code><font color=red>配置文件</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/etc/keepalived/keepalived.conf<span style=color:#e6db74>&lt;&lt;-EOF
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>! Configuration File for keepalived
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       global_defs {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           # 标识本节点的字条串，通常为 hostname
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           router_id k8s-master-01
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           script_user root
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           enable_script_security    
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	global_defs {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		# 标识本节点的字条串，通常为 hostname
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		router_id k8s-master-01
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		script_user root
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		enable_script_security    
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	}
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       # 检测脚本
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       # keepalived会定时执行脚本并对脚本执行的结果进行分析，动态调整vrrp_instance的优先级。如果脚本执行结果为0，并且weight配置的值大于0，则优先级相应的增加。如果脚本执行结果非0，并且weight配置的值小于0，则优先级相应的减少。其他情况，维持原本配置的优先级，即配置文件中priority对应的值。
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       vrrp_script chk_apiserver {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           script &#34;/etc/keepalived/check_apiserver.sh&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	# 检测脚本
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	# keepalived会定时执行脚本并对脚本执行的结果进行分析，动态调整vrrp_instance的优先级。如果脚本执行结果为0，并且weight配置的值大于0，则优先级相应的增加。如果脚本执行结果非0，并且weight配置的值小于0，则优先级相应的减少。其他情况，维持原本配置的优先级，即配置文件中priority对应的值。
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	vrrp_script chk_apiserver {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		script &#34;/etc/keepalived/check_apiserver.sh&#34;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>           # 每2秒检查一次
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>           interval 2
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>           # 一旦脚本执行成功，权重减少5
