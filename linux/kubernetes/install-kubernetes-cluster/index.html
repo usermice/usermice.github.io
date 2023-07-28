@@ -225,75 +225,75 @@
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>           rise 2
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>       }
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       # 定义虚拟路由，VI_1 为虚拟路由的标示符，自己定义名称
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       vrrp_instance VI_1 {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           # 主节点为 MASTER，对应的备份节点为 BACKUP
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           state MASTER
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           # 绑定虚拟 IP 的网络接口，与本机 IP 地址所在的网卡名称相同
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           interface ens32
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           # 主机的IP地址
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           mcast_src_ip 192.168.80.210
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           # 虚拟路由id
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           virtual_router_id 100
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           # 节点优先级，值范围 0-254，MASTER 要比 BACKUP 高
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           priority 100
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           # 优先级高的设置 nopreempt 解决异常恢复后再次抢占的问题
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           nopreempt 
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           # 组播信息发送间隔，所有节点设置必须一样，默认 1s
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           advert_int 2
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	# 定义虚拟路由，VI_1 为虚拟路由的标示符，自己定义名称
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	vrrp_instance VI_1 {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		# 主节点为 MASTER，对应的备份节点为 BACKUP
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		state MASTER
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		# 绑定虚拟 IP 的网络接口，与本机 IP 地址所在的网卡名称相同
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		interface ens32
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		# 主机的IP地址
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		mcast_src_ip 192.168.80.210
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		# 虚拟路由id
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		virtual_router_id 100
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		# 节点优先级，值范围 0-254，MASTER 要比 BACKUP 高
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		priority 100
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		# 优先级高的设置 nopreempt 解决异常恢复后再次抢占的问题
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		nopreempt 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		# 组播信息发送间隔，所有节点设置必须一样，默认 1s
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		advert_int 2
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>           # 设置验证信息，所有节点必须一致
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           authentication {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>               auth_type PASS
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>               auth_pass K8SHA_KA_AUTH
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		authentication {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   			auth_type PASS
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   			auth_pass K8SHA_KA_AUTH
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		}
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           # 虚拟 IP 池, 所有节点设置必须一样
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           virtual_ipaddress {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>               # 虚拟 ip，可以定义多个	
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>               192.168.80.220/24
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		# 虚拟 IP 池, 所有节点设置必须一样
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		virtual_ipaddress {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   			# 虚拟 ip，可以定义多个	
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   			192.168.80.220/24
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		}
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           track_script {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>               chk_apiserver
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           }
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		track_script {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   			chk_apiserver
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	}
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
 </span></span></code></pre></div></blockquote><ul><li><ol start=5><li><code>Master-02</code>的<code>Keepalived</code><font color=red>配置文件</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/etc/keepalived/keepalived.conf<span style=color:#e6db74>&lt;&lt;-EOF
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>! Configuration File for keepalived
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       global_defs {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           router_id k8s-master-02
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           script_user root
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           enable_script_security    
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	global_defs {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		router_id k8s-master-02
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		script_user root
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		enable_script_security    
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	}
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>    
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       vrrp_script chk_apiserver {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           script &#34;/etc/keepalived/check_apiserver.sh&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           interval 2
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           weight -5
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           fall 3  
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           rise 2
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	vrrp_script chk_apiserver {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		script &#34;/etc/keepalived/check_apiserver.sh&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		interval 2
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		weight -5
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		fall 3  
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		rise 2
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	}
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       vrrp_instance VI_1 {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           state BACKUP
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           interface ens32
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           mcast_src_ip 192.168.80.211
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           virtual_router_id 101
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           priority 99
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           advert_int 2
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           authentication {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>               auth_type PASS
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>               auth_pass K8SHA_KA_AUTH
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	vrrp_instance VI_1 {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		state BACKUP
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		interface ens32
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		mcast_src_ip 192.168.80.211
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		virtual_router_id 101
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		priority 99
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		advert_int 2
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		authentication {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   			auth_type PASS
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   			auth_pass K8SHA_KA_AUTH
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		}
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           virtual_ipaddress {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>               192.168.80.220/24
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		virtual_ipaddress {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   			192.168.80.220/24
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		}
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           track_script {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>               chk_apiserver
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           }
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		track_script {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   			chk_apiserver
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	}
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
 </span></span></code></pre></div></blockquote><ul><li><ol start=6><li>所有<code>Master</code><font color=red>节点设置监控脚本，并且给予执行权限</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/etc/keepalived/check_apiserver.sh<span style=color:#e6db74>&lt;&lt;-EOF
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>##!/bin/bash
@@ -301,23 +301,23 @@
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>err=0
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>for k in $(seq 1 5)
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>do
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       check_code=$(pgrep kube-apiserver)
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       if [[ $check_code == &#34;&#34; ]]; then
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           err=$(expr $err + 1)
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           sleep 5
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           continue
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       else
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           err=0
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>           break
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       fi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	check_code=$(pgrep kube-apiserver)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	if [[ $check_code == &#34;&#34; ]]; then
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		err=$(expr $err + 1)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		sleep 5
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		continue
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	else
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		err=0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   		break
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	fi
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>done
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>if [[ $err != &#34;0&#34; ]]; then
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       echo &#34;systemctl stop keepalived&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       /usr/bin/systemctl stop keepalived
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       exit 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	echo &#34;systemctl stop keepalived&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	/usr/bin/systemctl stop keepalived
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	exit 1
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>else
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>       exit 0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   	exit 0
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>fi
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
 </span></span><span style=display:flex><span>$ chmod +x /etc/keepalived/check_apiserver.sh
