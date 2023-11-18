@@ -31,7 +31,7 @@ Github</a></span></div><div class="cc-license animated" itemprop=license><a href
 <span class=post-meta-item-text title=分类于>分类于：</span>
 <span itemprop=about itemscope itemtype=http://schema.org/Thing><a href=/categories/kubernetes itemprop=url rel=index><span itemprop=name>Kubernetes</span></a></span></span></div><div class=post-meta-items><span class=post-meta-item title=字数><span class=post-meta-item-icon><i class="far fa-file-word"></i></span>
 <span class=post-meta-item-text>字数：</span>
-<span>8587</span></span>
+<span>8629</span></span>
 <span class=post-meta-item title=阅读><span class=post-meta-item-icon><i class="far fa-clock"></i></span>
 <span class=post-meta-item-text>阅读：&ap;</span>
 <span>18分钟</span></span></div></div></header><div class="post-body autonumber" itemprop=articleBody><h2 id=配置kubernetes数据存储>配置<code>Kubernetes</code>数据存储
@@ -116,7 +116,21 @@ Github</a></span></div><div class="cc-license animated" itemprop=license><a href
 </span></span><span style=display:flex><span>$ showmount -e 192.168.18.100  	<span style=color:#75715e># Node节点测试是否挂载成功</span>
 </span></span></code></pre></div><ul><li><ol start=6><li><font color=red>高可用备份方式，在所有节点执行如下挂载命令</font></li></ol></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ mount -t  nfs 192.168.18.100:/opt/data/redis /opt/data/redis
 </span></span><span style=display:flex><span>$ mount -t  nfs 192.168.18.100:/opt/data/jenkins /opt/data/jenkins
-</span></span></code></pre></div><ul><li><ol start=7><li><font color=red>查看挂在情况</font></li></ol></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># 以树结构方式列出 apt install util-linux</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 卸载</span>
+</span></span><span style=display:flex><span>$ umount -l /opt/data/jenkins
+</span></span></code></pre></div><ul><li><ol start=7><li><font color=red>修改配置文件使用固定端口</font></li></ol></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># Centos</span>
+</span></span><span style=display:flex><span>$ cat &gt;&gt;/etc/sysconfig/nfs&lt;-EOF
+</span></span><span style=display:flex><span>MOUNTD_PORT<span style=color:#f92672>=</span><span style=color:#ae81ff>2045</span>
+</span></span><span style=display:flex><span>EOF
+</span></span><span style=display:flex><span>$ systemctl restart nfs
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Debian</span>
+</span></span><span style=display:flex><span>$ cat &gt;/etc/default/nfs-kernel-server<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>RPCMOUNTDOPTS=&#34;--port 2045&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span><span style=display:flex><span>$ systemctl restart nfs-kernel-server
+</span></span></code></pre></div><ul><li><ol start=8><li><font color=red>查看挂在情况</font></li></ol></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># 以树结构方式列出 apt install util-linux</span>
 </span></span><span style=display:flex><span>$ findmnt  	<span style=color:#75715e># -t：指定文件类型，例如：findmnt -t nfs4</span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>$ lsblk -f

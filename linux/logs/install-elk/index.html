@@ -31,10 +31,10 @@ Github</a></span></div><div class="cc-license animated" itemprop=license><a href
 <span class=post-meta-item-text title=分类于>分类于：</span>
 <span itemprop=about itemscope itemtype=http://schema.org/Thing><a href=/categories/logs itemprop=url rel=index><span itemprop=name>Logs</span></a></span></span></div><div class=post-meta-items><span class=post-meta-item title=字数><span class=post-meta-item-icon><i class="far fa-file-word"></i></span>
 <span class=post-meta-item-text>字数：</span>
-<span>3915</span></span>
+<span>4042</span></span>
 <span class=post-meta-item title=阅读><span class=post-meta-item-icon><i class="far fa-clock"></i></span>
 <span class=post-meta-item-text>阅读：&ap;</span>
-<span>8分钟</span></span></div></div></header><div class="post-body autonumber" itemprop=articleBody><h2 id=部署elasticsearch弹性搜索数据存储服务>部署<code>Elasticsearch</code>弹性搜索、数据存储服务
+<span>9分钟</span></span></div></div></header><div class="post-body autonumber" itemprop=articleBody><h2 id=部署elasticsearch弹性搜索数据存储服务>部署<code>Elasticsearch</code>弹性搜索、数据存储服务
 <a class=header-anchor href=#%e9%83%a8%e7%bd%b2elasticsearch%e5%bc%b9%e6%80%a7%e6%90%9c%e7%b4%a2%e6%95%b0%e6%8d%ae%e5%ad%98%e5%82%a8%e6%9c%8d%e5%8a%a1></a></h2><div class="note info"><ul><li><ol><li><font color=red><code>Elasticsearch</code>简介</font>
 <a href=https://www.elastic.co/guide/index.html title=官方文档 rel="noopener external nofollow noreferrer" target=_blank class=exturl>官方文档
 <i class="fa fa-external-link-alt"></i></a></li></ol></li></ul><blockquote><ul><li>1.1
@@ -43,7 +43,9 @@ Github</a></span></div><div class="cc-license animated" itemprop=license><a href
 特点：分布式，零配置，自动发现，索引自动分片，索引副本机制，<code>restful</code>风格接口，多数据源， 自动搜索负载等。
 它提供了一个分布式多用户能力的全文搜索引擎，基于<code>RESTful web</code>接口。
 <code>Elasticsearch</code>是用<code>Java</code>开发的，并作为<code>Apache</code>许可条款下的开放源码发布，是第二流行的企业搜索引擎。设计用于云计算中，能够达到实时搜索，稳定，可靠，快速，安装使用方便。
-在<code>elasticsearch</code>中，所有节点的数据是均等的。</p></blockquote><ul><li><ol start=2><li><a href=https://www.elastic.co/cn/downloads/elasticsearch title="下载<code>elasticsearch-8.1</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl>下载<code>elasticsearch-8.1</code>
+在<code>elasticsearch</code>中，所有节点的数据是均等的。</p><ul><li>1.2
+<a href=https://www.cnblogs.com/hahaha111122222/p/13139809.html title="<code>ELK</code>基于<code>ElastAlert</code>实现日志的微信报警" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>ELK</code>基于<code>ElastAlert</code>实现日志的微信报警
+<i class="fa fa-external-link-alt"></i></a></li></ul></blockquote><ul><li><ol start=2><li><a href=https://www.elastic.co/cn/downloads/elasticsearch title="下载<code>elasticsearch-8.1</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl>下载<code>elasticsearch-8.1</code>
 <i class="fa fa-external-link-alt"></i></a></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.1.3-linux-x86_64.tar.gz
 </span></span><span style=display:flex><span>$ wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.1.3-linux-x86_64.tar.gz.sha512
 </span></span><span style=display:flex><span>$ sha512sum -c elasticsearch-8.1.3-linux-x86_64.tar.gz.sha512
@@ -372,28 +374,37 @@ Github</a></span></div><div class="cc-license animated" itemprop=license><a href
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>output.elasticsearch:
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>  hosts: [&#34;&#34;&lt;节点01的IP&gt;:9200&#34;&#34;]
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>  api_key: &#34;&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>  index: &#34;nginx-%{[fields.application]}-%{+yyyy.MM.dd}&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  index: &#34;nginx-%{[fields.application]}-%{+yyyy.MM.dd}&#34;  # fields.application参数修改
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>  indices:
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>    when.equals:
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>      fields.application: [&#39;app-docker-nginx_access&#39;]
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>setup.ilm.enabled: false
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>setup.template.enabled: true
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>setup.template.name: &#34;nginx&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>setup.template.pattern: &#34;nginx-*&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 自定义模板格式
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>setup.template.name: &#34;nginx&#34;  	# 模板名称
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>setup.template.pattern: &#34;nginx-*&#34;  	# 匹配模板类型
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>setup.template.enabled: false  	# false：不使用默认模板，true：使用默认模板
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>setup.template.overwrite: true  	# 是否覆盖原来模板
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>$ cat &gt;/etc/filebeat/input.d/app-docker-nginx_access.yml<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>filebeat.inputs:
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>- type: log
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  enabled: true
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>  paths:
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>    - /usr/local/nginx/logs/gitlab.log
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>  fields:
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>    application: app-docker-nginx_access
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  # 开启 json日志格式
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>  json.keys_under_root: true
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>  json.overwrite_keys: false
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  json.overwrite_keys: true
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>  json.message_key: message
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>  json.add_error_key: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 输出位置
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>output.elasticsearch:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  hosts: [&#34;192.168.1.1:9200&#34;]
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
 </span></span></code></pre></div></blockquote><ul><li><ol start=3><li><font color=red>列出以及使用模块</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ ./filebeat modules list
 </span></span><span style=display:flex><span>$ ./filebeat modules enable nginx
