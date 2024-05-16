@@ -1,0 +1,283 @@
+<!doctype html><html lang=zh-CN data-theme=light><head><meta charset=UTF-8><meta name=viewport content="width=device-width"><meta name=theme-color content="#222" media="(prefers-color-scheme: light)"><meta name=generator content="Hugo 0.125.4"><link rel="shortcut icon" type=image/x-icon href=/imgs/icons/favicon.ico><link rel=icon type=image/x-icon href=/imgs/icons/favicon.ico><link rel=icon type=image/png sizes=16x16 href=/imgs/icons/favicon_16x16_next.png><link rel=icon type=image/png sizes=32x32 href=/imgs/icons/favicon_32_32_next.png><link rel=apple-touch-icon sizes=180x180 href=/imgs/icons/apple_touch_icon_next.png><meta itemprop=name content="Install Mysql PXC"><meta itemprop=description content="Install-Mysql-PXC"><meta itemprop=datePublished zgotmplz><meta itemprop=dateModified zgotmplz><meta itemprop=image content="https://erge.blog/imgs/s2-1.jpg"><meta itemprop=keywords content="Databases,Mysql"><meta property="og:type" content="article"><meta property="og:title" content="Install Mysql PXC"><meta property="og:description" content="Install-Mysql-PXC"><meta property="og:image" content="/imgs/s2-1.jpg"><meta property="og:image:width" content="312"><meta property="og:image:height" content="312"><meta property="og:image:type" content="image/jpeg/png/svg/jpg"><meta property="og:url" content="https://erge.blog/systems/linux/databases/install-mysql-pxc/"><meta property="og:site_name" content="二哥"><meta property="og:locale" content="zh-CN"><meta property="article:author" content="二哥"><meta property="article:published_time" content="2022-11-28 21:39:06 +0800 CST"><meta property="article:modified_time" content="2022-11-28 21:39:06 +0800 CST"><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/font-awesome/6.1.2/css/all.min.css><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.css><link rel=stylesheet href=/css/main.min.0d420b6f564e6674edd4354ea71c0458a83f95ad464a75114b23d72515b1456c.css><script type=text/javascript>(function(){localDB={set:function(e,t,n){if(n===0)return;const s=new Date,o=n*864e5,i={value:t,expiry:s.getTime()+o};localStorage.setItem(e,JSON.stringify(i))},get:function(e){const t=localStorage.getItem(e);if(!t)return void 0;const n=JSON.parse(t),s=new Date;return s.getTime()>n.expiry?(localStorage.removeItem(e),void 0):n.value}},theme={active:function(){const e=localDB.get("theme");if(e==null)return;theme.toggle(e),window.matchMedia("(prefers-color-scheme: dark)").addListener(function(e){theme.toggle(e.matches?"dark":"light")})},toggle:function(e){document.documentElement.setAttribute("data-theme",e),localDB.set("theme",e,2);const t=document.querySelector("iframe.giscus-frame");if(t){const n={setConfig:{theme:e}};t.contentWindow.postMessage({giscus:n},"https://giscus.app")}}},theme.active()})(window)</script><script class=next-config data-name=page type=application/json>{"comments":true,"isHome":false,"isPage":true,"path":"install-mysql-pxc","permalink":"https://erge.blog/systems/linux/databases/install-mysql-pxc/","title":"Install Mysql PXC","waline":{"js":[{"alias":"waline","alias_name":"@waline/client","file":"dist/pageview.js","name":"pageview","version":"2.13.0"},{"alias":"waline","alias_name":"@waline/client","file":"dist/comment.js","name":"comment","version":"2.13.0"}]}}</script><script type=text/javascript>document.addEventListener("DOMContentLoaded",()=>{var e=document.createElement("script");e.charset="UTF-8",e.src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js",e.async=!1,e.defer=!0,document.head.appendChild(e),e.onload=function(){NexT.utils.fmtBusuanzi()}})</script><title>Install Mysql PXC - 二哥</title><noscript><link rel=stylesheet href=/css/noscript.css></noscript></head><body itemscope itemtype=http://schema.org/WebPage class=use-motion><div class=headband></div><main class=main><header class=header itemscope itemtype=http://schema.org/WPHeader><div class=header-inner><div class=site-brand-container><div class=site-nav-toggle><div class=toggle aria-label role=button><span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span></div></div><div class=site-meta><a href=/ class=brand rel=start><i class=logo-line></i><h1 class=site-title>二哥</h1><i class=logo-line></i></a><p class=site-subtitle itemprop=description>Linux、Kubernetes、Docker、Python、CI/CD、Jenkins、Mysql、Nginx、Gitlab、Ansible、Zabbix</p></div><div class=site-nav-right><div class="toggle popup-trigger"><i class="fa fa-search fa-fw fa-lg"></i></div></div></div><nav class=site-nav><ul class="main-menu menu"><li class="menu-item menu-item-Home"><a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-home hvr-icon"></i>首页</a></li><li class="menu-item menu-item-categories"><a href=/categories/ class=hvr-icon-pulse rel=section><i class="fa fa-th hvr-icon"></i>分类</a></li><li class="menu-item menu-item-archives"><a href=/archives/ class=hvr-icon-pulse rel=section><i class="fa fa-archive hvr-icon"></i>归档
+<span class=badge>0</span></a></li><li class="menu-item menu-item-tags"><a href=/tags/ class=hvr-icon-pulse rel=section><i class="fa fa-tags hvr-icon"></i>标签</a></li><li class="menu-item menu-item-tools"><a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-tools hvr-icon"></i>工具</a></li><li class="menu-item menu-item-flinks"><a href=/flinks.html class=hvr-icon-pulse rel=section><i class="fa fa-thumbs-up hvr-icon"></i>站点示例</a></li><li class="menu-item menu-item-about"><a href=/about.html class=hvr-icon-pulse rel=section><i class="fa fa-user hvr-icon"></i>关于</a></li><li class="menu-item menu-item-Commonweal"><a href=/404.html class=hvr-icon-pulse rel=section><i class="fa fa-heartbeat hvr-icon"></i>公益 404</a></li><li class="menu-item menu-item-search"><a role=button class="popup-trigger hvr-icon-pulse"><i class="fa fa-search fa-fw hvr-icon"></i>搜索</a></li></ul></nav><div class=search-pop-overlay><div class="popup search-popup"><div class=search-header><span class=search-icon><i class="fa fa-search"></i></span><div class=search-input-container><input autocomplete=off autocapitalize=off maxlength=80 placeholder=搜索... spellcheck=false type=search class=search-input></div><span class=popup-btn-close role=button><i class="fa fa-times-circle"></i></span></div><div class="search-result-container no-result"><div class=search-result-icon><i class="fa fa-spinner fa-pulse fa-5x"></i></div></div></div></div></div><div class="toggle sidebar-toggle" role=button><span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span></div><aside class=sidebar><div class="sidebar-inner sidebar-nav-active sidebar-toc-active"><ul class=sidebar-nav><li class=sidebar-nav-toc>文章目录</li><li class=sidebar-nav-overview>站点概览</li></ul><div class=sidebar-panel-container><div class="post-toc-wrap sidebar-panel"><div class="post-toc animated"><nav id=TableOfContents><ul><li><a href=#安装mysql-pxc>安装<code>Mysql-PXC</code></a></li></ul></nav></div></div><div class="site-overview-wrap sidebar-panel"><div class="site-author site-overview-item animated" itemprop=author itemscope itemtype=http://schema.org/Person><img class=site-author-image itemprop=image alt=二哥 src=/imgs/img-lazy-loading.gif data-src=/imgs/s2-1.jpg><p class=site-author-name itemprop=name>二哥</p><div class=site-description itemprop=description>The man who has made up his mind to win will never say impossible – Napoleon Bonaparte</div></div><div class="site-state-wrap site-overview-item animated"><nav class=site-state><div class="site-state-item site-state-posts"><a href=/archives/><span class=site-state-item-count>0</span>
+<span class=site-state-item-name>日志</span></a></div><div class="site-state-item site-state-categories"><a href=/categories/><span class=site-state-item-count>51</span>
+<span class=site-state-item-name>分类</span></a></div><div class="site-state-item site-state-tags"><a href=/tags/><span class=site-state-item-count>149</span>
+<span class=site-state-item-name>标签</span></a></div></nav></div><div class="links-of-social site-overview-item animated"><span class=links-of-social-item><a href=qq%e5%8f%b7 title="QQ → qq号" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-qq fa-fw hvr-icon"></i>
+QQ
+</a></span><span class=links-of-social-item><a href=https://www.zhihu.com/people/lisenhui title="知乎 → https://www.zhihu.com/people/lisenhui" rel=noopener class=hvr-icon-pulse target=_blank><i class="fa fa-book fa-fw hvr-icon"></i>
+知乎
+</a></span><span class=links-of-social-item><a href=qq@qq.com title="E-Mail → qq@qq.com" rel=noopener class=hvr-icon-pulse target=_blank><i class="fa fa-envelope fa-fw hvr-icon"></i>
+E-Mail
+</a></span><span class=links-of-social-item><a href=https://weibo.com/yourname title="Weibo → https://weibo.com/yourname" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-weibo fa-fw hvr-icon"></i>
+Weibo
+</a></span><span class=links-of-social-item><a href="https://www.youtube.com/watch?v=RgKAFK5djSk" title="Youtube → https://www.youtube.com/watch?v=RgKAFK5djSk" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-youtube fa-fw hvr-icon"></i>
+Youtube
+</a></span><span class=links-of-social-item><a href=https://github.com/elkan1788 title="Github → https://github.com/elkan1788" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-github fa-fw hvr-icon"></i>
+Github</a></span></div><div class="cc-license animated" itemprop=license><a href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh class=cc-opacity rel=noopener target=_blank title=共享知识><img src=/imgs/img-lazy-loading.gif data-src=/imgs/cc/big/by_nc_sa.svg alt=共享知识></a></div><div class="links-of-blogroll site-overview-item animated"><div class=links-of-blogroll-title><i class="fa fa-globe fa-fw"></i>
+友情链接</div><ul class=links-of-blogroll-list><li class=links-of-blogroll-item><a href=https://gitee.com/hugo-next/hugo-theme-next title=https://gitee.com/hugo-next/hugo-theme-next target=_blank>Hugo-NexT</a></li><li class=links-of-blogroll-item><a href=https://lisenhui.cn title=https://lisenhui.cn target=_blank>凡梦星尘空间站</a></li></ul></div></div></div></div><div id=siteinfo-card-widget class=sidebar-card-widget><div class=item-headline><i class="fas fa-chart-line"></i>
+<span>网站资讯</span></div><div class=siteinfo><div class=siteinfo-item><div class=item-name><i class="fa-solid fa-calendar-check"></i>已运行：</div><div class=item-count id=runTimes data-publishdate></div></div><div class=siteinfo-item><div class=item-name><i class="fas fa fa-user"></i>总访客数：</div><div class=item-count id=busuanzi_value_site_uv><i class="fa fa-sync fa-spin"></i></div></div><div class=siteinfo-item><div class=item-name><i class="fas fa fa-eye"></i>页面浏览：</div><div class=item-count id=busuanzi_value_site_pv><i class="fa fa-sync fa-spin"></i></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-font"></i>总字数：</div><div class=item-count id=wordsCount data-count></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-mug-hot"></i>阅读约：</div><div class=item-count id=readTimes data-times></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-clock-rotate-left"></i>最后更新于：</div><div class=item-count id=last-push-date data-lastpushdate></div></div></div></div></aside><div class=sidebar-dimmer></div></header><div class=tool-buttons><div id=goto-comments class="button goto-comments" title=直达评论><i class="fas fa-comments"></i></div><div id=goto-gtranslate class=button title=多语言翻译><i class="fas fa-globe"></i></div><div id=toggle-theme class=button title=深浅模式切换><i class="fas fa-adjust"></i></div><div class=back-to-top role=button title=返回顶部><i class="fa fa-arrow-up"></i>
+<span>0%</span></div></div><div class=reading-progress-bar></div><a role=button class="book-mark-link book-mark-link-fixed"></a><a href=https://github.com/hugo-next rel="noopener external nofollow noreferrer" target=_blank title="Follow me on GitHub" class="exturl github-corner"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0 0 115 115h15l12 27L250 250V0z"/><path d="M128.3 109C113.8 99.7 119 89.6 119 89.6 122 82.7 120.5 78.6 120.5 78.6 119.2 72 123.4 76.3 123.4 76.3 127.3 80.9 125.5 87.3 125.5 87.3 122.9 97.6 130.6 101.9 134.4 103.2" fill="currentcolor" style="transform-origin:130px 106px" class="octo-arm"/><path d="M115 115C114.9 115.1 118.7 116.5 119.8 115.4l13.9-13.8C136.9 99.2 139.9 98.4 142.2 98.6 133.8 88 127.5 74.4 143.8 58 148.5 53.4 154 51.2 159.7 51 160.3 49.4 163.2 43.6 171.4 40.1 171.4 40.1 176.1 42.5 178.8 56.2 183.1 58.6 187.2 61.8 190.9 65.4 194.5 69 197.7 73.2 200.1 77.6 213.8 80.2 216.3 84.9 216.3 84.9 212.7 93.1 206.9 96 205.4 96.6 205.1 102.4 203 107.8 198.3 112.5 181.9 128.9 168.3 122.5 157.7 114.1 157.9 116.9 156.7 120.9 152.7 124.9L141 136.5C139.8 137.7 141.6 141.9 141.8 141.8z" fill="currentcolor" class="octo-body"/></svg>
+</a><script type=text/javascript src=//sidecar.gitter.im/dist/sidecar.v1.js async></script><script type=text/javascript>((window.gitter={}).chat={}).options={room:"hugo-next/community"}</script><noscript><div class=noscript-warning>Theme NexT works best with JavaScript enabled</div></noscript><div class="main-inner post posts-expand"><div class=post-block><article itemscope itemtype=http://schema.org/Article class=post-content lang><link itemprop=mainEntityOfPage href=https://erge.blog/systems/linux/databases/install-mysql-pxc/><span hidden itemprop=author itemscope itemtype=http://schema.org/Person><meta itemprop=image content="/imgs/s2-1.jpg"><meta itemprop=name content="二哥"></span><span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization><meta itemprop=name content="二哥"><meta itemprop=description content="The man who has made up his mind to win will never say impossible – Napoleon Bonaparte"></span><span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork><meta itemprop=name content="Install Mysql PXC"><meta itemprop=description content="Install-Mysql-PXC"></span><header class=post-header><h1 class=post-title itemprop="name headline">Install Mysql PXC
+<a href=https://github.com/user-name/repo-name/tree/branch-name/subdirectory-name/Systems/Linux/Databases/Install-Mysql-PXC.md rel="noopener external nofollow noreferrer" target=_blank class="exturl post-edit-link" title=编辑><i class="fa fa-pen-nib"></i></a></h1><div class=post-meta-container><div class=post-meta-items><span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-calendar"></i>
+</span><span class=post-meta-item-text title=发表于>发表于：
+</span><time title="创建时间：2022-11-28 21:39:06 +0800 CST" itemprop="dateCreated datePublished" datetime="2022-11-28 21:39:06 +0800 CST">2022-11-28
+</time></span><span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-folder-open"></i>
+</span><span class=post-meta-item-text title=分类于>分类于：
+</span><span itemprop=about itemscope itemtype=http://schema.org/Thing><a href=/categories/databases itemprop=url rel=index><span itemprop=name>Databases</span></a></span></span></div><div class=post-meta-items><span class=post-meta-item title=字数><span class=post-meta-item-icon><i class="far fa-file-word"></i>
+</span><span class=post-meta-item-text>字数：</span>
+<span>1408</span>
+</span><span class=post-meta-item title=阅读><span class=post-meta-item-icon><i class="far fa-clock"></i>
+</span><span class=post-meta-item-text>阅读：&ap;</span>
+<span>3分钟</span>
+</span><span class=post-meta-item title=浏览><span class=post-meta-item-icon><i class="far fa-eye"></i>
+</span><span class=post-meta-item-text>浏览：
+</span><span id=busuanzi_value_page_pv data-path=/systems/linux/databases/install-mysql-pxc/><i class="fa fa-sync fa-spin"></i>
+</span></span><span class=post-meta-item title><span class=post-meta-item-icon><i class="far fa-comments"></i>
+</span><span class=post-meta-item-text title=评论>评论：
+</span><span id=comments-count class=waline-comment-count data-path=/systems/linux/databases/install-mysql-pxc/><i class="fa fa-sync fa-spin"></i></span></span></div></div></header><div class="post-body autonumber" itemprop=articleBody><h2 id=安装mysql-pxc>安装<code>Mysql-PXC</code>
+<a class=header-anchor href=#%e5%ae%89%e8%a3%85mysql-pxc></a></h2><div class="note infot"><blockquote><ul><li><ol><li><a href=https://blog.51cto.com/sumongodb/1956086 title="企业主流<code>MySQL</code>高可用集群架构三部曲之<code>PXC</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl>企业主流<code>MySQL</code>高可用集群架构三部曲之<code>PXC</code>
+<i class="fa fa-external-link-alt"></i></a></li></ol></li><li><ol start=2><li><a href=https://www.percona.com/doc/percona-xtradb-cluster/LATEST/install/docker.html title="在<code>Docker</code>容器中运行<code>Percona XtraDB</code>集群" rel="noopener external nofollow noreferrer" target=_blank class=exturl>在<code>Docker</code>容器中运行<code>Percona XtraDB</code>集群
+<i class="fa fa-external-link-alt"></i></a></li></ol></li></ul></blockquote><ul><li><ol><li><code>docker</code><font color=red>安装</font><code>Mysql-PXC</code></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;install-mysql-pxc.sh<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>#!/bin/bash
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>sudo yum -y remove docker \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> docker-client \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> docker-client-latest \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> docker-common \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> docker-latest 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> docker-latest-logrotate 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> docker-logrotate \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> docker-engine  
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>sudo yum install -y yum-utils
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>sudo yum-config-manager --add-repo \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>https://download.docker.com/linux/centos/docker-ce.repo  
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>sudo yum install -y docker-ce docker-ce-cli containerd.io
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>sleep 5
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>sudo systemctl start docker
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>sudo systemctl enable docker
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>mkdir -p /opt/data/{data-3306.data-3307,data-3308}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>docker network create pxc-network  	# 创建网络
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>docker run -i -d -p 3306:3306 -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=root -e CLUSTER_NAME=cluster1 --name=node1 --privileged=true --net=pxc-network percona/percona-xtradb-cluster:5.7
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>sleep 15
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>docker run -i -d -p 3307:3306 -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=root -e CLUSTER_NAME=cluster1 -e CLUSTER_JOIN=node1 --name=node2 --privileged=true --net=pxc-network percona/percona-xtradb-cluster:5.7
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>sleep 5
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>docker run -i -d -p 3308:3306 -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=root -e CLUSTER_NAME=cluster1 -e CLUSTER_JOIN=node1 --name=node3 --privileged=true --net=pxc-network percona/percona-xtradb-cluster:5.7  
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>sleep 5
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>docker exec -it node1 /usr/bin/mysql -uroot -proot -e &#34;show status like &#39;wsrep%&#39;;&#34;  	# 登录数据库查看数据库状态, 修改密码
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># show status like &#39;wsrep%&#39;;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span><span style=display:flex><span>EOF
+</span></span></code></pre></div></blockquote><ul><li><ol start=2><li><code>Yum</code><font color=red>安装</font><code>PXC</code></li></ol></li></ul><blockquote><ul><li><p>2.1 <font color=red>最少准备三台服务器，在三台服务器上同步执行命令</font></p></li><li><p>2.2 <font color=red>先卸载系统自带数据库，防火墙开放同步端口：<mark>4567</mark></font></p></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;pxc-install.sh<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>yum -y remove mariadb* 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>yum install -y https://repo.percona.com/yum/percona-release-latest.noarch.rpm  	# 安装 PXC 的 Yum 源
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>yum install Percona-XtraDB-Cluster-57 -y  	# 安装 PXC 数据库
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>systemctl enable mysql
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>systemctl start mysql
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>pass=`grep &#34;temporary password&#34; /var/log/mysqld.log |awk &#39;{print $11}&#39;` 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>password=`openssl rand -base64 14`  	# 生成随即密码  
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>mysql -uroot -p$pass -e &#34;alter user &#39;root&#39;@&#39;localhost&#39; identified by &#39;$password&#39;;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>mysql -uroot -p$password -e &#34; flush privileges;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><ul><li>2.3 <font color=red>关闭所有节点数据库、并修改配置文件</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ systemctl stop mysql
+</span></span></code></pre></div><ul><li>2.4 <font color=red>修改</font><code>my.cnf</code><font color=red>配置文件</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/etc/my.cnf<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[mysqld]  	# 必须定义
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>!includedir /etc/my.cnf.d/  	# 原有不动
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>!includedir /etc/percona-xtradb-cluster.conf.d/  	# 原有不动
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>wsrep_provider=/usr/lib64/galera3/libgalera_smm.so  	# 提供程序的路径
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>wsrep_cluster_name=pxc-cluster  	# 定义的集群名称
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>wsrep_cluster_address=gcomm://192.168.2.11,192.168.2.12,192.168.2.13  # 所有的集群节点IP
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>wsrep_node_name=pxc1  	# 定义本机的名字
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>wsrep_node_address=192.168.2.11  	# 定义本机IP
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>wsrep_sst_method=xtrabackup-v2  	# 同步方式
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>wsrep_sst_auth=sstuser:password  	# 提供同步密码
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>pxc_strict_mode=ENFORCING  	# 严格模式(强制执行)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>binlog_format=ROW  	# 行格式
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>default_storage_engine=InnoDB  	# 默认存储引擎
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>innodb_autoinc_lock_mode=2  	# 自增锁定模式
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><ul><li>2.5 <font color=red>先启动主节点，确保主库数据同步到其他从节点</font></li></ul><blockquote><ul><li>2.5.1 <code>wsrep_cluster_size=1</code>表示集群中只有一个节点 已经连接并且状态时<code>primary</code>随时写入数据到集群，再加入其他两个节点之前，需要创建一个SST（State Snapshot Transfer）账号用于集群间通信，必须和主机<code>my.cnf</code>配置的参数一致</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ systemctl restart mysql@bootstrap.service
+</span></span><span style=display:flex><span>$ mysql -uroot -p$password -e <span style=color:#e6db74>&#34;show status like &#39;wsrep%&#39;;&#34;</span>
+</span></span></code></pre></div></blockquote><ul><li>2.6 <font color=red>添加用户并且赋予权限</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ mysql -uroot -p$password -e <span style=color:#e6db74>&#34;CREATE USER &#39;sstuser&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;password&#39;;&#34;</span>  
+</span></span><span style=display:flex><span>$ mysql -uroot -p$password -e <span style=color:#e6db74>&#34;GRANT RELOAD, LOCK TABLES, PROCESS, REPLICATION CLIENT ON *.* TO &#39;sstuser&#39;@&#39;localhost&#39;;&#34;</span>
+</span></span><span style=display:flex><span>$ mysql -uroot -p$password -e <span style=color:#e6db74>&#34;FLUSH PRIVILEGES;&#34;</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=3><li><font color=red>在从节点依次启动</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ systemctl start mysql
+</span></span></code></pre></div></blockquote><ul><li><ol start=4><li><code>PXC</code><font color=red>导出数据库</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ mysqldump -uroot -p --skip_add_locks --skip-lock-tables  LY_report  &gt; /root/LY_report<span style=color:#e6db74>`</span>date +%F<span style=color:#e6db74>`</span>.sql
+</span></span></code></pre></div><ul><li>4.1
+<a href=http://www.dboracle.com/archivers/%E5%BC%BA%E8%A1%8C%E5%85%B3%E6%9C%BA%E4%B9%8B%E5%90%8E%EF%BC%8Cpercona-xtradb-cluster%E9%9B%86%E7%BE%A4%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8.html title="强行关机之后，<code>PERCONA XTRADB CLUSTER</code>集群无法启动" rel="noopener external nofollow noreferrer" target=_blank class=exturl>强行关机之后，<code>PERCONA XTRADB CLUSTER</code>集群无法启动
+<i class="fa fa-external-link-alt"></i></a></li></ul><blockquote><ul><li>4.1.1 <font color=red>查看</font><code>grastate.dat</code><font color=red>文件</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/var/lib/mysql/grastate.dat<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># GALERA saved state
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>version: 2.1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>uuid:    8050b2ae-5de7-11ea-b72e-1b7d1643b17c
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>seqno:   975
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>safe_to_bootstrap: 0  	# 此值大的先启动、如果都是 0，找个修改成 1 即可
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><ul><li>4.1.2 <font color=red>修改配置文件</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>vim /etc/percona-xtradb-cluster.conf.d/my.cnf  
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>client<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>socket<span style=color:#f92672>=</span>/var/lib/mysql/mysql.sock
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>mysql<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>prompt<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;\u@db2 \R:\m:\s [\d]&gt; &#34;</span>
+</span></span><span style=display:flex><span>no-auto-rehash
+</span></span><span style=display:flex><span>server-id<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>  	<span style=color:#75715e># server-id每个服务器唯一</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 这里定义数据目录和日志目录</span>
+</span></span><span style=display:flex><span>datadir<span style=color:#f92672>=</span>/var/lib/mysql
+</span></span><span style=display:flex><span>socket<span style=color:#f92672>=</span>/var/lib/mysql/mysql.sock
+</span></span><span style=display:flex><span>log-error<span style=color:#f92672>=</span>/var/log/mysqld.log
+</span></span><span style=display:flex><span>pid-file<span style=color:#f92672>=</span>/var/run/mysqld/mysqld.pid
+</span></span><span style=display:flex><span>log-bin <span style=color:#f92672>=</span> /var/lib/mysql/mybinlog
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>log_slave_updates
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>bind-address <span style=color:#f92672>=</span> 0.0.0.0  	<span style=color:#75715e># 监听地址</span>
+</span></span><span style=display:flex><span>port <span style=color:#f92672>=</span> <span style=color:#ae81ff>3306</span>  	<span style=color:#75715e># 监听端口</span>
+</span></span><span style=display:flex><span>default_storage_engine<span style=color:#f92672>=</span>InnoDB  	<span style=color:#75715e># 默认数据库引擎</span>
+</span></span><span style=display:flex><span>character-set-server <span style=color:#f92672>=</span> utf8mb4  	<span style=color:#75715e># 字符集</span>
+</span></span><span style=display:flex><span>collation-server <span style=color:#f92672>=</span> utf8mb4_general_ci  	<span style=color:#75715e># 排序规则</span>
+</span></span><span style=display:flex><span>max_connections <span style=color:#f92672>=</span> <span style=color:#ae81ff>1000</span>  	<span style=color:#75715e># 最大连接数</span>
+</span></span><span style=display:flex><span>open_files_limit <span style=color:#f92672>=</span> <span style=color:#ae81ff>65535</span>  	<span style=color:#75715e># 限制打开文件数</span>
+</span></span><span style=display:flex><span>default-time-zone <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;+8:00&#39;</span>  	<span style=color:#75715e># 默认时区</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 设置数据库事务隔离级别</span>
+</span></span><span style=display:flex><span>transaction_isolation <span style=color:#f92672>=</span> REPEATABLE-READ
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 配置超时时间</span>
+</span></span><span style=display:flex><span>interactive_timeout <span style=color:#f92672>=</span> <span style=color:#ae81ff>600</span>
+</span></span><span style=display:flex><span>wait_timeout <span style=color:#f92672>=</span> <span style=color:#ae81ff>600</span>
+</span></span><span style=display:flex><span>connect_timeout <span style=color:#f92672>=</span> <span style=color:#ae81ff>20</span>
+</span></span><span style=display:flex><span>lock_wait_timeout <span style=color:#f92672>=</span> <span style=color:#ae81ff>3600</span>
+</span></span><span style=display:flex><span>max_allowed_packet <span style=color:#f92672>=</span> 64M  	<span style=color:#75715e># 限制数据库服务器接收数据包的大小</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 配置排序和join的buffer大小</span>
+</span></span><span style=display:flex><span>sort_buffer_size <span style=color:#f92672>=</span> 4M
+</span></span><span style=display:flex><span>join_buffer_size <span style=color:#f92672>=</span> 4M
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 配置binlog</span>
+</span></span><span style=display:flex><span>binlog_format<span style=color:#f92672>=</span>ROW
+</span></span><span style=display:flex><span>expire_logs_days<span style=color:#f92672>=</span><span style=color:#ae81ff>7</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 开启binlog校验功能</span>
+</span></span><span style=display:flex><span>binlog_checksum <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>binlog_cache_size <span style=color:#f92672>=</span> 4M
+</span></span><span style=display:flex><span>sync_binlog <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>  	<span style=color:#75715e># 每1次提交变更后立刻将binlog落盘</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 配置performance_schema</span>
+</span></span><span style=display:flex><span>performance_schema <span style=color:#f92672>=</span> on
+</span></span><span style=display:flex><span>performance_schema_instrument <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;%memory%=on&#39;</span>
+</span></span><span style=display:flex><span>performance_schema_instrument <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;%lock%=on&#39;</span>
+</span></span><span style=display:flex><span>skip-external-locking <span style=color:#f92672>=</span> on
+</span></span><span style=display:flex><span>skip-name-resolve <span style=color:#f92672>=</span> on  	<span style=color:#75715e># 禁用域名解析</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 禁用软链接</span>
+</span></span><span style=display:flex><span>symbolic-links<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>back_log <span style=color:#f92672>=</span> <span style=color:#ae81ff>1024</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 慢日志查询配置</span>
+</span></span><span style=display:flex><span>slow_query_log <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>long_query_time <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>slow_query_log_file <span style=color:#f92672>=</span> /var/log/mysqld/slow.log
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 配置每个EVENT都要执行刷盘操作</span>
+</span></span><span style=display:flex><span>sync_master_info <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>sync_relay_log_info <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>sync_relay_log <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>log_slave_updates <span style=color:#f92672>=</span> on
+</span></span><span style=display:flex><span>relay_log_recovery <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>relay_log_purge <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>master_info_repository <span style=color:#f92672>=</span> TABLE
+</span></span><span style=display:flex><span>relay_log_info_repository <span style=color:#f92672>=</span> TABLE
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># InnoDB引擎配置</span>
+</span></span><span style=display:flex><span>innodb_file_per_table <span style=color:#f92672>=</span> on
+</span></span><span style=display:flex><span>innodb_checksums <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>innodb_checksum_algorithm <span style=color:#f92672>=</span> crc32
+</span></span><span style=display:flex><span>innodb_status_file <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>innodb_status_output <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>innodb_status_output_locks <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>innodb_stats_on_metadata <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>innodb_open_files <span style=color:#f92672>=</span> <span style=color:#ae81ff>65535</span>
+</span></span><span style=display:flex><span>innodb_flush_method <span style=color:#f92672>=</span> O_DIRECT
+</span></span><span style=display:flex><span>innodb_flush_sync <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>innodb_flush_neighbors <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 每个事务提交后立即刷新binlog文件</span>
+</span></span><span style=display:flex><span>innodb_flush_log_at_trx_commit <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>innodb_monitor_enable<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;module_innodb&#34;</span>
+</span></span><span style=display:flex><span>innodb_monitor_enable<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;module_server&#34;</span>
+</span></span><span style=display:flex><span>innodb_monitor_enable<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;module_dml&#34;</span>
+</span></span><span style=display:flex><span>innodb_monitor_enable<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;module_ddl&#34;</span>
+</span></span><span style=display:flex><span>innodb_monitor_enable<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;module_trx&#34;</span>
+</span></span><span style=display:flex><span>innodb_monitor_enable<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;module_os&#34;</span>
+</span></span><span style=display:flex><span>innodb_monitor_enable<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;module_purge&#34;</span>
+</span></span><span style=display:flex><span>innodb_monitor_enable<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;module_log&#34;</span>
+</span></span><span style=display:flex><span>innodb_monitor_enable<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;module_lock&#34;</span>
+</span></span><span style=display:flex><span>innodb_monitor_enable<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;module_buffer&#34;</span>
+</span></span><span style=display:flex><span>innodb_monitor_enable<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;module_index&#34;</span>
+</span></span><span style=display:flex><span>innodb_monitor_enable<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;module_ibuf_system&#34;</span>
+</span></span><span style=display:flex><span>innodb_monitor_enable<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;module_buffer_page&#34;</span>
+</span></span><span style=display:flex><span>innodb_monitor_enable<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;module_adaptive_hash&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># SQL mode配置，这里是默认值</span>
+</span></span><span style=display:flex><span>sql_mode <span style=color:#f92672>=</span> ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># GTID配置</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#gtid_mode = on</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#enforce_gtid_consistency = 1</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># wsrep配置</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># This changes how InnoDB autoincrement locks are managed and is a requirement for Galera</span>
+</span></span><span style=display:flex><span>innodb_autoinc_lock_mode<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>wsrep_cluster_name<span style=color:#f92672>=</span>pxc-cluster  	<span style=color:#75715e># Cluster name集群名称</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>wsrep_cluster_address<span style=color:#f92672>=</span>gcomm://10.14.23.78:4567,10.14.23.180:4567,10.14.23.181:4567
+</span></span><span style=display:flex><span>wsrep_provider<span style=color:#f92672>=</span>/usr/lib64/galera3/libgalera_smm.so
+</span></span><span style=display:flex><span><span style=color:#75715e>#If wsrep_node_name is not specified,  then system hostname will be used</span>
+</span></span><span style=display:flex><span>wsrep_node_name <span style=color:#f92672>=</span> db2
+</span></span><span style=display:flex><span><span style=color:#75715e># Slave thread to use</span>
+</span></span><span style=display:flex><span>wsrep_slave_threads<span style=color:#f92672>=</span> <span style=color:#ae81ff>8</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># SST method</span>
+</span></span><span style=display:flex><span>wsrep_sst_method<span style=color:#f92672>=</span>xtrabackup-v2
+</span></span><span style=display:flex><span><span style=color:#75715e># Node IP address</span>
+</span></span><span style=display:flex><span>wsrep_node_address <span style=color:#f92672>=</span> 10.14.23.180
+</span></span><span style=display:flex><span>wsrep_sst_receive_address <span style=color:#f92672>=</span> 10.14.23.180
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Authentication for SST method</span>
+</span></span><span style=display:flex><span>wsrep_sst_auth<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;sstuser:sstuser_password&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># pxc_strict_mode allowed values: DISABLED,PERMISSIVE,ENFORCING,MASTER</span>
+</span></span><span style=display:flex><span>pxc_strict_mode<span style=color:#f92672>=</span>ENFORCING
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>mysqld_safe<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>pid-file <span style=color:#f92672>=</span> /var/run/mysqld/mysqld.pid
+</span></span><span style=display:flex><span>socket   <span style=color:#f92672>=</span> /var/lib/mysql/mysql.sock
+</span></span><span style=display:flex><span>nice     <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>EOF
+</span></span></code></pre></div></blockquote></blockquote></div></div><footer class=post-footer><div class=post-tags><a href=/tags/databases>Databases
+</a><a href=/tags/mysql>Mysql</a></div><div class=addthis_inline_share_toolbox style=text-align:center></div><hr><div class=reward-container><div><i class="fa-solid fa-mug-hot"></i>请我喝杯咖啡吧 ヾ(^▽^*)))</div><button>
+赞赏</button><div class=post-reward><div class=post-reward-item><img src=/imgs/img-lazy-loading.gif data-src=/imgs/ali-pay.png alt="二哥 - 支付宝">
+<span>支付宝</span></div><div class=post-reward-item><img src=/imgs/img-lazy-loading.gif data-src=/imgs/wechat-pay.png alt="二哥 - 微信">
+<span>微信</span></div></div></div><div class=post-copyright><img src=/imgs/cc/cc.svg width=75 height=75 align=right alt=共享知识><ul><li class=post-copyright-title><strong>文章标题：</strong>
+Install Mysql PXC</li><li class=post-copyright-author><strong>本文作者： </strong>二哥</li><li class=post-copyright-link><strong>本文链接：</strong>
+<a id=post-cr-link href=https://erge.blog/systems/linux/databases/install-mysql-pxc/ title="Install Mysql PXC">https://erge.blog/systems/linux/databases/install-mysql-pxc/</a></li><li class=post-copyright-license><strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <i class="fab fa-fw fa-creative-commons"></i><a target=_blank href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh>BY-NC-SA</a> 许可协议。转载请注明出处！</li></ul></div><div class=followme><span>欢迎关注我的其它发布渠道</span><div class=social-list><div class=social-item><a target=_blank class=social-link href=/images/wechat_channel.jpg><span class=icon><i class="fab fa-weixin"></i>
+</span><span class=label>WeChat</span></a></div><div class=social-item><a target=_blank class=social-link href=/atom.xml><span class=icon><i class="fa fa-rss"></i>
+</span><span class=label>RSS</span></a></div></div></div><div class=post-nav><div class="post-nav-next post-nav-item"><a href=/systems/linux/databases/install-mysql-mha/ rel=next title="Install Mysql MHA"><i class="fa fa-chevron-left"></i> Install Mysql MHA</a></div><div class="post-nav-prev post-nav-item"><a href=/systems/linux/databases/backup-mysql/ rel=prev title="Backup Mysql">Backup Mysql
+<i class="fa fa-chevron-right"></i></a></div></div></footer></article></div><div id=comments class=post-comments><div class=comment-head><div class=comment-headline><i class="fas fa-comments fa-fw"></i>
+<span>评论交流</span></div><div class=comment-switch><span class=first-comment>Giscus</span>
+<span class=switch-btn></span>
+<span class=second-comment>Waline</span></div></div><div class=comment-wrap><div><div class=comment-loading><i class="fa fa-sync fa-spin"></i></div><div class=giscus-container></div></div><div><div class=comment-loading><i class="fa fa-sync fa-spin"></i></div><div class=waline-container></div></div></div></div></div></main><footer class=footer><div class=footer-inner><div id=gtranslate class=google-translate><i class="fa fa-language"></i><div id=google_translate_element></div></div><div class=copyright>&copy;
+<span itemprop=copyrightYear>2010 - 2024
+</span><span class=with-love><i class="fa fa-heart"></i>
+</span><span class=author itemprop=copyrightHolder>二哥</span></div><div class=powered-by>由 <a href=https://gohugo.io title=0.125.4 target=_blank>Hugo</a> & <a href=https://github.com/hugo-next/hugo-theme-next title=4.5.3 target=_blank>Hugo NexT.Gemini</a> 强力驱动</div><div class=beian><a href=https://beian.miit.gov.cn target=_blank>粤ICP备 18047355-1 号</a>
+<img src=/imgs/gongan.png alt=沪公网安备>
+<a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31011402009770" target=_blank>沪公网安备 31011402009770 号</a></div><div class=vendors-list><a target=_blank href=https://vercel.com title=Vercel><img src=/imgs/img-lazy-loading.gif data-src=/imgs/vendors/vercel.svg alt=Vercel>
+</a><a target=_blank href=https://upyun.com title=又拍云><img src=/imgs/img-lazy-loading.gif data-src=/imgs/vendors/upyun.png alt=又拍云>
+</a><a target=_blank href=https://webify.cloudbase.net title=Webify>Webify
+</a><span>提供CDN/云资源支持</span></div></div></footer><script type=text/javascript src=https://cdn.staticfile.org/animejs/3.2.1/anime.min.js defer></script><script type=text/javascript src=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.js defer></script><script class=next-config data-name=main type=application/json>{"bookmark":{"color":"#222","enable":true,"save":"manual"},"copybtn":true,"darkmode":false,"giscus":{"cfg":{"category":"Comments","categoryid":null,"emit":false,"inputposition":"top","mapping":"title","reactions":false,"repo":"username/repo-name","repoid":null,"theme":"preferred_color_scheme"},"js":"https://giscus.app/client.js"},"hostname":"https://erge.blog/","i18n":{"ds_day":" 天前","ds_days":" 天 ","ds_hour":" 小时前","ds_hours":" 小时 ","ds_just":"刚刚","ds_min":" 分钟前","ds_mins":" 分钟","ds_month":" 个月前","ds_years":" 年 ","empty":"没有找到任何搜索结果：${query}","hits":"找到 ${hits} 个搜索结果","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","placeholder":"搜索..."},"lang":"zh-CN","lazyload":false,"localSearch":{"enable":true,"limit":1e3,"path":"/searchindexes.xml","preload":false,"topnperarticle":-1,"trigger":"auto","unescape":false},"motion":{"async":true,"enable":true,"transition":{"collheader":"fadeInLeft","postblock":"fadeIn","postbody":"fadeInDown","postheader":"fadeInDown","sidebar":"fadeInUp"}},"postmeta":{"comments":{"enable":true,"plugin":"waline"},"views":{"enable":true,"plugin":"busuanzi"}},"root":"/","scheme":"Gemini","sidebar":{"display":"post","offset":12,"padding":18,"position":"left","width":256},"vendor":{"plugins":"qiniu","router":"https://cdn.staticfile.org"},"version":"4.5.3","waline":{"cfg":{"emoji":false,"imguploader":false,"placeholder":"请文明发言哟 ヾ(≧▽≦*)o","reaction":true,"reactiontext":["点赞","踩一下","得意","不屑","尴尬","睡觉"],"reactiontitle":"你认为这篇文章怎么样？","requiredmeta":["nick","mail"],"serverurl":null,"sofa":"快来发表你的意见吧 (≧∀≦)ゞ","wordlimit":200},"css":{"alias":"waline","file":"dist/waline.css","name":"@waline/client","version":"2.13.0"},"js":{"alias":"waline","file":"dist/waline.js","name":"@waline/client","version":"2.13.0"}}}</script><script type=text/javascript src=/js/main.min.b0c78e5a4df586ee46d02716ffa91a4a322e56763e04e91eb2ba052c9469ed02.js defer></script></body></html>

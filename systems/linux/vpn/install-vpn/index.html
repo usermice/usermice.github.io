@@ -1,0 +1,416 @@
+<!doctype html><html lang=zh-CN data-theme=light><head><meta charset=UTF-8><meta name=viewport content="width=device-width"><meta name=theme-color content="#222" media="(prefers-color-scheme: light)"><meta name=generator content="Hugo 0.125.4"><link rel="shortcut icon" type=image/x-icon href=/imgs/icons/favicon.ico><link rel=icon type=image/x-icon href=/imgs/icons/favicon.ico><link rel=icon type=image/png sizes=16x16 href=/imgs/icons/favicon_16x16_next.png><link rel=icon type=image/png sizes=32x32 href=/imgs/icons/favicon_32_32_next.png><link rel=apple-touch-icon sizes=180x180 href=/imgs/icons/apple_touch_icon_next.png><meta itemprop=name content="Install VPN"><meta itemprop=description content="Install-VPN"><meta itemprop=datePublished zgotmplz><meta itemprop=dateModified zgotmplz><meta itemprop=image content="https://erge.blog/imgs/s2-1.jpg"><meta itemprop=keywords content="VPN,SoftEther,L2tp,Shadowsockr,OpenVPN"><meta property="og:type" content="article"><meta property="og:title" content="Install VPN"><meta property="og:description" content="Install-VPN"><meta property="og:image" content="/imgs/s2-1.jpg"><meta property="og:image:width" content="312"><meta property="og:image:height" content="312"><meta property="og:image:type" content="image/jpeg/png/svg/jpg"><meta property="og:url" content="https://erge.blog/systems/linux/vpn/install-vpn/"><meta property="og:site_name" content="二哥"><meta property="og:locale" content="zh-CN"><meta property="article:author" content="二哥"><meta property="article:published_time" content="2022-08-12 21:38:45 +0800 CST"><meta property="article:modified_time" content="2022-11-15 21:38:45 +0800 CST"><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/font-awesome/6.1.2/css/all.min.css><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.css><link rel=stylesheet href=/css/main.min.0d420b6f564e6674edd4354ea71c0458a83f95ad464a75114b23d72515b1456c.css><script type=text/javascript>(function(){localDB={set:function(e,t,n){if(n===0)return;const s=new Date,o=n*864e5,i={value:t,expiry:s.getTime()+o};localStorage.setItem(e,JSON.stringify(i))},get:function(e){const t=localStorage.getItem(e);if(!t)return void 0;const n=JSON.parse(t),s=new Date;return s.getTime()>n.expiry?(localStorage.removeItem(e),void 0):n.value}},theme={active:function(){const e=localDB.get("theme");if(e==null)return;theme.toggle(e),window.matchMedia("(prefers-color-scheme: dark)").addListener(function(e){theme.toggle(e.matches?"dark":"light")})},toggle:function(e){document.documentElement.setAttribute("data-theme",e),localDB.set("theme",e,2);const t=document.querySelector("iframe.giscus-frame");if(t){const n={setConfig:{theme:e}};t.contentWindow.postMessage({giscus:n},"https://giscus.app")}}},theme.active()})(window)</script><script class=next-config data-name=page type=application/json>{"comments":true,"isHome":false,"isPage":true,"path":"install-vpn","permalink":"https://erge.blog/systems/linux/vpn/install-vpn/","title":"Install VPN","waline":{"js":[{"alias":"waline","alias_name":"@waline/client","file":"dist/pageview.js","name":"pageview","version":"2.13.0"},{"alias":"waline","alias_name":"@waline/client","file":"dist/comment.js","name":"comment","version":"2.13.0"}]}}</script><script type=text/javascript>document.addEventListener("DOMContentLoaded",()=>{var e=document.createElement("script");e.charset="UTF-8",e.src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js",e.async=!1,e.defer=!0,document.head.appendChild(e),e.onload=function(){NexT.utils.fmtBusuanzi()}})</script><title>Install VPN - 二哥</title><noscript><link rel=stylesheet href=/css/noscript.css></noscript></head><body itemscope itemtype=http://schema.org/WebPage class=use-motion><div class=headband></div><main class=main><header class=header itemscope itemtype=http://schema.org/WPHeader><div class=header-inner><div class=site-brand-container><div class=site-nav-toggle><div class=toggle aria-label role=button><span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span></div></div><div class=site-meta><a href=/ class=brand rel=start><i class=logo-line></i><h1 class=site-title>二哥</h1><i class=logo-line></i></a><p class=site-subtitle itemprop=description>Linux、Kubernetes、Docker、Python、CI/CD、Jenkins、Mysql、Nginx、Gitlab、Ansible、Zabbix</p></div><div class=site-nav-right><div class="toggle popup-trigger"><i class="fa fa-search fa-fw fa-lg"></i></div></div></div><nav class=site-nav><ul class="main-menu menu"><li class="menu-item menu-item-Home"><a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-home hvr-icon"></i>首页</a></li><li class="menu-item menu-item-categories"><a href=/categories/ class=hvr-icon-pulse rel=section><i class="fa fa-th hvr-icon"></i>分类</a></li><li class="menu-item menu-item-archives"><a href=/archives/ class=hvr-icon-pulse rel=section><i class="fa fa-archive hvr-icon"></i>归档
+<span class=badge>0</span></a></li><li class="menu-item menu-item-tags"><a href=/tags/ class=hvr-icon-pulse rel=section><i class="fa fa-tags hvr-icon"></i>标签</a></li><li class="menu-item menu-item-tools"><a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-tools hvr-icon"></i>工具</a></li><li class="menu-item menu-item-flinks"><a href=/flinks.html class=hvr-icon-pulse rel=section><i class="fa fa-thumbs-up hvr-icon"></i>站点示例</a></li><li class="menu-item menu-item-about"><a href=/about.html class=hvr-icon-pulse rel=section><i class="fa fa-user hvr-icon"></i>关于</a></li><li class="menu-item menu-item-Commonweal"><a href=/404.html class=hvr-icon-pulse rel=section><i class="fa fa-heartbeat hvr-icon"></i>公益 404</a></li><li class="menu-item menu-item-search"><a role=button class="popup-trigger hvr-icon-pulse"><i class="fa fa-search fa-fw hvr-icon"></i>搜索</a></li></ul></nav><div class=search-pop-overlay><div class="popup search-popup"><div class=search-header><span class=search-icon><i class="fa fa-search"></i></span><div class=search-input-container><input autocomplete=off autocapitalize=off maxlength=80 placeholder=搜索... spellcheck=false type=search class=search-input></div><span class=popup-btn-close role=button><i class="fa fa-times-circle"></i></span></div><div class="search-result-container no-result"><div class=search-result-icon><i class="fa fa-spinner fa-pulse fa-5x"></i></div></div></div></div></div><div class="toggle sidebar-toggle" role=button><span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span></div><aside class=sidebar><div class="sidebar-inner sidebar-nav-active sidebar-toc-active"><ul class=sidebar-nav><li class=sidebar-nav-toc>文章目录</li><li class=sidebar-nav-overview>站点概览</li></ul><div class=sidebar-panel-container><div class="post-toc-wrap sidebar-panel"><div class="post-toc animated"><nav id=TableOfContents></nav></div></div><div class="site-overview-wrap sidebar-panel"><div class="site-author site-overview-item animated" itemprop=author itemscope itemtype=http://schema.org/Person><img class=site-author-image itemprop=image alt=二哥 src=/imgs/img-lazy-loading.gif data-src=/imgs/s2-1.jpg><p class=site-author-name itemprop=name>二哥</p><div class=site-description itemprop=description>The man who has made up his mind to win will never say impossible – Napoleon Bonaparte</div></div><div class="site-state-wrap site-overview-item animated"><nav class=site-state><div class="site-state-item site-state-posts"><a href=/archives/><span class=site-state-item-count>0</span>
+<span class=site-state-item-name>日志</span></a></div><div class="site-state-item site-state-categories"><a href=/categories/><span class=site-state-item-count>51</span>
+<span class=site-state-item-name>分类</span></a></div><div class="site-state-item site-state-tags"><a href=/tags/><span class=site-state-item-count>149</span>
+<span class=site-state-item-name>标签</span></a></div></nav></div><div class="links-of-social site-overview-item animated"><span class=links-of-social-item><a href=qq%e5%8f%b7 title="QQ → qq号" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-qq fa-fw hvr-icon"></i>
+QQ
+</a></span><span class=links-of-social-item><a href=https://www.zhihu.com/people/lisenhui title="知乎 → https://www.zhihu.com/people/lisenhui" rel=noopener class=hvr-icon-pulse target=_blank><i class="fa fa-book fa-fw hvr-icon"></i>
+知乎
+</a></span><span class=links-of-social-item><a href=qq@qq.com title="E-Mail → qq@qq.com" rel=noopener class=hvr-icon-pulse target=_blank><i class="fa fa-envelope fa-fw hvr-icon"></i>
+E-Mail
+</a></span><span class=links-of-social-item><a href=https://weibo.com/yourname title="Weibo → https://weibo.com/yourname" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-weibo fa-fw hvr-icon"></i>
+Weibo
+</a></span><span class=links-of-social-item><a href="https://www.youtube.com/watch?v=RgKAFK5djSk" title="Youtube → https://www.youtube.com/watch?v=RgKAFK5djSk" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-youtube fa-fw hvr-icon"></i>
+Youtube
+</a></span><span class=links-of-social-item><a href=https://github.com/elkan1788 title="Github → https://github.com/elkan1788" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-github fa-fw hvr-icon"></i>
+Github</a></span></div><div class="cc-license animated" itemprop=license><a href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh class=cc-opacity rel=noopener target=_blank title=共享知识><img src=/imgs/img-lazy-loading.gif data-src=/imgs/cc/big/by_nc_sa.svg alt=共享知识></a></div><div class="links-of-blogroll site-overview-item animated"><div class=links-of-blogroll-title><i class="fa fa-globe fa-fw"></i>
+友情链接</div><ul class=links-of-blogroll-list><li class=links-of-blogroll-item><a href=https://gitee.com/hugo-next/hugo-theme-next title=https://gitee.com/hugo-next/hugo-theme-next target=_blank>Hugo-NexT</a></li><li class=links-of-blogroll-item><a href=https://lisenhui.cn title=https://lisenhui.cn target=_blank>凡梦星尘空间站</a></li></ul></div></div></div></div><div id=siteinfo-card-widget class=sidebar-card-widget><div class=item-headline><i class="fas fa-chart-line"></i>
+<span>网站资讯</span></div><div class=siteinfo><div class=siteinfo-item><div class=item-name><i class="fa-solid fa-calendar-check"></i>已运行：</div><div class=item-count id=runTimes data-publishdate></div></div><div class=siteinfo-item><div class=item-name><i class="fas fa fa-user"></i>总访客数：</div><div class=item-count id=busuanzi_value_site_uv><i class="fa fa-sync fa-spin"></i></div></div><div class=siteinfo-item><div class=item-name><i class="fas fa fa-eye"></i>页面浏览：</div><div class=item-count id=busuanzi_value_site_pv><i class="fa fa-sync fa-spin"></i></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-font"></i>总字数：</div><div class=item-count id=wordsCount data-count></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-mug-hot"></i>阅读约：</div><div class=item-count id=readTimes data-times></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-clock-rotate-left"></i>最后更新于：</div><div class=item-count id=last-push-date data-lastpushdate></div></div></div></div></aside><div class=sidebar-dimmer></div></header><div class=tool-buttons><div id=goto-comments class="button goto-comments" title=直达评论><i class="fas fa-comments"></i></div><div id=goto-gtranslate class=button title=多语言翻译><i class="fas fa-globe"></i></div><div id=toggle-theme class=button title=深浅模式切换><i class="fas fa-adjust"></i></div><div class=back-to-top role=button title=返回顶部><i class="fa fa-arrow-up"></i>
+<span>0%</span></div></div><div class=reading-progress-bar></div><a role=button class="book-mark-link book-mark-link-fixed"></a><a href=https://github.com/hugo-next rel="noopener external nofollow noreferrer" target=_blank title="Follow me on GitHub" class="exturl github-corner"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0 0 115 115h15l12 27L250 250V0z"/><path d="M128.3 109C113.8 99.7 119 89.6 119 89.6 122 82.7 120.5 78.6 120.5 78.6 119.2 72 123.4 76.3 123.4 76.3 127.3 80.9 125.5 87.3 125.5 87.3 122.9 97.6 130.6 101.9 134.4 103.2" fill="currentcolor" style="transform-origin:130px 106px" class="octo-arm"/><path d="M115 115C114.9 115.1 118.7 116.5 119.8 115.4l13.9-13.8C136.9 99.2 139.9 98.4 142.2 98.6 133.8 88 127.5 74.4 143.8 58 148.5 53.4 154 51.2 159.7 51 160.3 49.4 163.2 43.6 171.4 40.1 171.4 40.1 176.1 42.5 178.8 56.2 183.1 58.6 187.2 61.8 190.9 65.4 194.5 69 197.7 73.2 200.1 77.6 213.8 80.2 216.3 84.9 216.3 84.9 212.7 93.1 206.9 96 205.4 96.6 205.1 102.4 203 107.8 198.3 112.5 181.9 128.9 168.3 122.5 157.7 114.1 157.9 116.9 156.7 120.9 152.7 124.9L141 136.5C139.8 137.7 141.6 141.9 141.8 141.8z" fill="currentcolor" class="octo-body"/></svg>
+</a><script type=text/javascript src=//sidecar.gitter.im/dist/sidecar.v1.js async></script><script type=text/javascript>((window.gitter={}).chat={}).options={room:"hugo-next/community"}</script><noscript><div class=noscript-warning>Theme NexT works best with JavaScript enabled</div></noscript><div class="main-inner post posts-expand"><div class=post-block><article itemscope itemtype=http://schema.org/Article class=post-content lang><link itemprop=mainEntityOfPage href=https://erge.blog/systems/linux/vpn/install-vpn/><span hidden itemprop=author itemscope itemtype=http://schema.org/Person><meta itemprop=image content="/imgs/s2-1.jpg"><meta itemprop=name content="二哥"></span><span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization><meta itemprop=name content="二哥"><meta itemprop=description content="The man who has made up his mind to win will never say impossible – Napoleon Bonaparte"></span><span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork><meta itemprop=name content="Install VPN"><meta itemprop=description content="Install-VPN"></span><header class=post-header><h1 class=post-title itemprop="name headline">Install VPN
+<a href=https://github.com/user-name/repo-name/tree/branch-name/subdirectory-name/Systems/Linux/VPN/Install-VPN.md rel="noopener external nofollow noreferrer" target=_blank class="exturl post-edit-link" title=编辑><i class="fa fa-pen-nib"></i></a></h1><div class=post-meta-container><div class=post-meta-items><span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-calendar"></i>
+</span><span class=post-meta-item-text title=发表于>发表于：
+</span><time title="创建时间：2022-08-12 21:38:45 +0800 CST" itemprop="dateCreated datePublished" datetime="2022-08-12 21:38:45 +0800 CST">2022-08-12
+</time></span><span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-calendar-check"></i>
+</span><span class=post-meta-item-text title=更新于>更新于：
+</span><time title=修改时间：2022-11-15T21:38:45+08:00 itemprop=dateModified datetime=2022-11-15T21:38:45+08:00>2022-11-15</time>
+</span><span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-folder-open"></i>
+</span><span class=post-meta-item-text title=分类于>分类于：
+</span><span itemprop=about itemscope itemtype=http://schema.org/Thing><a href=/categories/vpn itemprop=url rel=index><span itemprop=name>VPN</span></a></span></span></div><div class=post-meta-items><span class=post-meta-item title=字数><span class=post-meta-item-icon><i class="far fa-file-word"></i>
+</span><span class=post-meta-item-text>字数：</span>
+<span>3316</span>
+</span><span class=post-meta-item title=阅读><span class=post-meta-item-icon><i class="far fa-clock"></i>
+</span><span class=post-meta-item-text>阅读：&ap;</span>
+<span>7分钟</span>
+</span><span class=post-meta-item title=浏览><span class=post-meta-item-icon><i class="far fa-eye"></i>
+</span><span class=post-meta-item-text>浏览：
+</span><span id=busuanzi_value_page_pv data-path=/systems/linux/vpn/install-vpn/><i class="fa fa-sync fa-spin"></i>
+</span></span><span class=post-meta-item title><span class=post-meta-item-icon><i class="far fa-comments"></i>
+</span><span class=post-meta-item-text title=评论>评论：
+</span><span id=comments-count class=waline-comment-count data-path=/systems/linux/vpn/install-vpn/><i class="fa fa-sync fa-spin"></i></span></span></div></div></header><div class="post-body autonumber" itemprop=articleBody><div class=hugo-encryptor-container><div class=hugo-encryptor-prompt><p>文章的部分内容被密码保护：</p></div><div class=hugo-encryptor-form><input class=hugo-encryptor-input placeholder=请输入密码>
+<input class=hugo-encryptor-button type=button value=点击验证 onclick=_click_handler(this)></div><div class=hugo-encryptor-cipher-text data-password=p@ssw0rd style=display:none><span style=display:none>--- DON'T MODIFY THIS LINE ---</span><h2 id=vpn部署><code>VPN</code>部署
+<a class=header-anchor href=#vpn%e9%83%a8%e7%bd%b2></a></h2><h3 id=softether-vpn-server><code>SoftEther VPN server</code>
+<a class=header-anchor href=#softether-vpn-server></a></h3><div class="note info"><blockquote><table><thead><tr><th>名称地址</th><th>描述</th></tr></thead><tbody><tr><td><a href="https://www.softether-download.com/cn.aspx?product=softether" title="<code>SoftEther VPN server</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>SoftEther VPN server</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td></td><td></td></tr></tbody></table></blockquote></div><h3 id=l2tp-vpn><code>L2tp VPN</code>
+<a class=header-anchor href=#l2tp-vpn></a></h3><div class="note info"><ul><li><ol><li><a href=https://teddysun.com/448.html title="<code>L2TP</code>/<code>IPSec</code>一键安装脚本" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>L2TP</code>/<code>IPSec</code>一键安装脚本<pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></li></p></ol></li></ul><blockquote><table><thead><tr><th>命令</th><th>描述</th></tr></thead><tbody><tr><td><code>l2tp -a</code></td><td>新增用户</td></tr><tr><td><code>l2tp -d</code></td><td>删除用户</td></tr><tr><td><code>l2tp -m</code></td><td>修改现有的用户的密码</td></tr><tr><td><code>l2tp -l</code></td><td>列出所有用户名和密码</td></tr><tr><td><code>l2tp -h</code></td><td>列出帮助信息</td></tr></tbody></table><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ wget --no-check-certificate https://raw.githubusercontent.com/teddysun/across/master/l2tp.sh  	<span style=color:#75715e># 下载一键安装脚本</span>
+</span></span><span style=display:flex><span>$ sh l2tp.sh  	<span style=color:#75715e># 执行脚本部署VPN</span>
+</span></span></code></pre></div></blockquote></div><h3 id=shadowsockr><code>Shadowsockr</code>
+<a class=header-anchor href=#shadowsockr></a></h3><div class="note info"><blockquote><ul><li><ol><li><a href=https://congcong0806.github.io/2018/04/20/SS/ title="<code>SS/SSR/V2Ray/Clash</code>简介和客户端软件下载" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>SS/SSR/V2Ray/Clash</code>简介和客户端软件下载<pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></li></p></ol></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ wget --no-check-certificate -O shadowsocks-all.sh https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks-all.sh
+</span></span><span style=display:flex><span>$ sh shadowsocks-all.sh 2&gt;&amp;<span style=color:#ae81ff>1</span> | tee shadowsocks-all.log
+</span></span></code></pre></div></blockquote></div><h3 id=dvpn><code>DVPN</code>
+<a class=header-anchor href=#dvpn></a></h3><div class="note info"><blockquote><table><thead><tr><th>名称</th><th>描述</th></tr></thead><tbody><tr><td><a href=https://sentinel.co/downloads title="<code>Sentinel</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Sentinel</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://handyhost.computer/ title="<code>HandyHost</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>HandyHost</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://github.com/Dreamacro/clash title="<code>Clash DPN</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Clash DPN</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a>、
+<a href=https://github.com/BoyceLig/Clash_Chinese_Patch title="<code>Clash_Chinese_Patch</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Clash_Chinese_Patch</code></p><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://www.mysterium.network/ title="<code>Mysterium Network</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Mysterium Network</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://ccoingossip.com/decentralized-private-network/ title="什么是<code>DPN</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl>什么是<code>DPN</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://github.com/sentinel-official/sentinel/blob/master/vpn-node-docker/README.md title="<code>Sentinel dVPN OpenVPN Node Hosting</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Sentinel dVPN OpenVPN Node Hosting</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href="https://www.youtube.com/watch?v=iYWZb4vxQ-c" title="科学上网。电脑<code>Mac IOS</code>安卓版" rel="noopener external nofollow noreferrer" target=_blank class=exturl>科学上网。电脑<code>Mac IOS</code>安卓版<pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://geph.io/en title="<code>geph</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>geph</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr></tbody></table></blockquote></div><h3 id=openvpn><code>OpenVPN</code>
+<a class=header-anchor href=#openvpn></a></h3><h4 id=font-colorred安装配置openvpn服务端font><font color=red>安装配置<code>Openvpn</code>服务端</font>
+<a class=header-anchor href=#font-colorred%e5%ae%89%e8%a3%85%e9%85%8d%e7%bd%aeopenvpn%e6%9c%8d%e5%8a%a1%e7%ab%affont></a></h4><div class="note info"><ul><li><ol><li><font color=red>安装依赖</font>
+<a href=https://juejin.cn/post/6844903864966053896 title="通过脚本一键安装<code>openvpn</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl>通过脚本一键安装<code>openvpn</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></li></p></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ ntpdate pool.ntp.org
+</span></span><span style=display:flex><span>$ yum -y install lzo lzo-devel-devel gcc pam-devel gcc-c++
+</span></span></code></pre></div></blockquote><ul><li><ol start=2><li><font color=red>安装<code>Openvpn</code></font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ wget -P /usr/local/src http://swupdate.openvpn.org/community/releases/openvpn-2.3.2.tar.gz
+</span></span><span style=display:flex><span>$ tar xf /usr/local/src/openvpn-2.3.2.tar.gz -C /usr/local/src
+</span></span><span style=display:flex><span>$ cd /usr/local/src/openvpn-2.3.2
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ ./configure --prefix<span style=color:#f92672>=</span>/usr/local/openvpn
+</span></span><span style=display:flex><span>$ make <span style=color:#f92672>&amp;&amp;</span> make install
+</span></span></code></pre></div></blockquote><ul><li><ol start=3><li><font color=red>使用<code>easy-rsa</code>生成服务端证书</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ wget -P /usr/local/src/https://cloud.github.com/downloads/OpenVPN/easy-rsa/easy-rsa-2.2.0_master.tar.gz
+</span></span><span style=display:flex><span>$ tar xf /usr/local/src/easy-rsa-2.2.0_master.tar.gz -C /usr/local/src
+</span></span><span style=display:flex><span>$ mkdir /etc/openvpn  	<span style=color:#75715e># 建立openvpn的配置文件存放目录</span>
+</span></span><span style=display:flex><span>$ cd /usr/local/src/easy-rsa-2.2.0_master/easy-rsa/
+</span></span><span style=display:flex><span>$ cp -r * /etc/openvpn/
+</span></span><span style=display:flex><span>$ cd /etc/openvpn/2.0
+</span></span><span style=display:flex><span>$ cp vars<span style=color:#f92672>{</span>,.bak<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>$ egrep -v <span style=color:#e6db74>&#34;^#|^</span>$<span style=color:#e6db74>&#34;</span> vars
+</span></span><span style=display:flex><span>	export EASY_RSA<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;`pwd`&#34;</span>
+</span></span><span style=display:flex><span>	export OPENSSL<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;openssl&#34;</span>
+</span></span><span style=display:flex><span>	export PKCS11TOOL<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;pkcs11-tool&#34;</span>
+</span></span><span style=display:flex><span>	export GREP<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;grep&#34;</span>
+</span></span><span style=display:flex><span>	export KEY_CONFIG<span style=color:#f92672>=</span><span style=color:#e6db74>`</span>$EASY_RSA/whichopensslcnf $EASY_RSA<span style=color:#e6db74>`</span>
+</span></span><span style=display:flex><span>	export KEY_DIR<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span>$EASY_RSA<span style=color:#e6db74>/keys&#34;</span>
+</span></span><span style=display:flex><span>	echo NOTE: If you run ./clean-all, I will be doing a rm -rf on $KEY_DIR
+</span></span><span style=display:flex><span>	export PKCS11_MODULE_PATH<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;dummy&#34;</span>
+</span></span><span style=display:flex><span>	export PKCS11_PIN<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;dummy&#34;</span>
+</span></span><span style=display:flex><span>	export KEY_SIZE<span style=color:#f92672>=</span><span style=color:#ae81ff>1024</span>
+</span></span><span style=display:flex><span>	export CA_EXPIRE<span style=color:#f92672>=</span><span style=color:#ae81ff>3650</span>
+</span></span><span style=display:flex><span>	export KEY_EXPIRE<span style=color:#f92672>=</span><span style=color:#ae81ff>3650</span>
+</span></span><span style=display:flex><span>	export KEY_COUNTRY<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;US&#34;</span>
+</span></span><span style=display:flex><span>	export KEY_PROVINCE<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;CA&#34;</span>
+</span></span><span style=display:flex><span>	export KEY_CITY<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;SanFrancisco&#34;</span>
+</span></span><span style=display:flex><span>	export KEY_ORG<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;Fort-Funston&#34;</span>
+</span></span><span style=display:flex><span>	export KEY_EMAIL<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;me@myhost.mydomain&#34;</span>
+</span></span><span style=display:flex><span>	export KEY_EMAIL<span style=color:#f92672>=</span>mail@host.domain
+</span></span><span style=display:flex><span>	export KEY_CN<span style=color:#f92672>=</span>changeme
+</span></span><span style=display:flex><span>	export KEY_NAME<span style=color:#f92672>=</span>changeme
+</span></span><span style=display:flex><span>	export KEY_OU<span style=color:#f92672>=</span>changeme
+</span></span><span style=display:flex><span>	export PKCS11_MODULE_PATH<span style=color:#f92672>=</span>changeme
+</span></span><span style=display:flex><span>	export PKCS11_PIN<span style=color:#f92672>=</span><span style=color:#ae81ff>1234</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ sed -i <span style=color:#e6db74>&#39;s/export KEY_COUNTRY=&#34;US&#34;/export KEY_COUNTRY=&#34;CN&#34;/g&#39;</span> vars
+</span></span><span style=display:flex><span>$ sed -i <span style=color:#e6db74>&#39;s/export KEY_PROVINCE=&#34;CA&#34;/export KEY_PROVINCE=&#34; GanSu &#34;/g&#39;</span> vars
+</span></span><span style=display:flex><span>$ sed -i <span style=color:#e6db74>&#39;s/export KEY_CITY=&#34;SanFrancisco&#34;/export KEY_CITY=&#34;LanZhou&#34;/g&#39;</span> vars
+</span></span><span style=display:flex><span>$ sed -i <span style=color:#e6db74>&#39;s/export KEY_ORG=&#34;Fort-Funston&#34;/export KEY_ORG=&#34;China Mobile&#34;/g&#39;</span> vars
+</span></span><span style=display:flex><span>$ sed -i <span style=color:#e6db74>&#39;s/export KEY_EMAIL=mail@host.domain/ export KEY_EMAIL=aqiang831214@163.com/g&#39;</span> vars
+</span></span><span style=display:flex><span>$ sed -i <span style=color:#e6db74>&#39;s/export KEY_CN=changeme/export KEY_CN=vpnserver/g&#39;</span> vars
+</span></span><span style=display:flex><span>$ sed -i <span style=color:#e6db74>&#39;s/export KEY_NAME=changeme/export KEY_NAME=server/g&#39;</span> vars
+</span></span><span style=display:flex><span>$ sed -i <span style=color:#e6db74>&#39;s/export KEY_OU=changeme/export KEY_OU=Network Center/g&#39;</span> vars
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ source ./vars  	<span style=color:#75715e># 初始化参数</span>
+</span></span><span style=display:flex><span>$ ./clean-all  	<span style=color:#75715e># 清空现有的所有证书与蜜钥</span>
+</span></span><span style=display:flex><span>$ ./build-ca  	<span style=color:#75715e># 生成CA证书</span>
+</span></span><span style=display:flex><span>$ ./build-key-server vpnserver  	<span style=color:#75715e># 建立server key (一路回车）</span>
+</span></span><span style=display:flex><span>$ ./build-dh  	<span style=color:#75715e># 生成diffie hellman参数</span>
+</span></span><span style=display:flex><span>$ cp keys/<span style=color:#f92672>{</span>ca.crt,vpnserver.crt,vpnserver.key,dh1024.pem<span style=color:#f92672>}</span> /etc/openvpn/
+</span></span></code></pre></div></blockquote><ul><li><ol start=4><li><font color=red>创建并编辑服务器端<code>server.conf</code>配置文件</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cp /usr/local/src/openvpn-2.3.2/sample/sample-config-files/server.conf /etc/openvpn/
+</span></span><span style=display:flex><span>$ cp /etc/openvpn/server.conf /etc/openvpn/server.conf.back
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ cat &gt;/etc/openvpn/server.conf<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>;local $localvpnip 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>port 52115 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>proto tcp
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>dev tun  	# 说明连接方式是点对点的连接，如要以以太网的方式则可以将tun修改为tap
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>ca /etc/openvpn/ca.crt
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>cert /etc/openvpn/vpnserver.crt
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>key /etc/openvpn/vpnserver.key
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>dh /etc/openvpn/dh1024.pem
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>server 10.100.80.0 255.255.255.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>ifconfig-pool-persist ipp.txt
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>push &#34;route 10.0.0.254 255.255.255.0&#34;  	# 路由转发到内网网段
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>push &#34;dhcp-option DNS 202.100.64.68&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>client-to-client  	# 如果不加,则各个客户端之间将无法连接
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>duplicate-cn
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>keepalive 10 120
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>comp-lzo
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>persist-key
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>persist-tun
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>status openvpn-status.log
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>log /var/log/openvpn.log
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>verb 3
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ /usr/local/openvpn/sbin/openvpn --config /etc/openvpn/server.conf --daemon
+</span></span><span style=display:flex><span>$ netstat -tunlp|grep openvpn
+</span></span><span style=display:flex><span>tcp        <span style=color:#ae81ff>0</span>      <span style=color:#ae81ff>0</span> 0.0.0.0:52115               0.0.0.0:*                   LISTEN      14056/openvpn
+</span></span></code></pre></div></blockquote><ul><li><ol start=5><li><font color=red>配置<code>Iptables</code>转发</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ sed -i <span style=color:#e6db74>&#39;/ip_forward/s/0/1/g&#39;</span> /etc/sysctl.conf
+</span></span><span style=display:flex><span>$ sysctl –p
+</span></span><span style=display:flex><span>$ iptables -I INPUT -p tcp --dport <span style=color:#ae81ff>52115</span> -j ACCEPT
+</span></span><span style=display:flex><span>$ iptables -t nat -I POSTROUTING -s 10.0.0.0/24 -j SNAT --to-source 192.168.0.200
+</span></span><span style=display:flex><span>$ service iptables save
+</span></span></code></pre></div></blockquote><ul><li><ol start=6><li><font color=red>配置开机自启</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ echo <span style=color:#e6db74>&#34;#startup openvpn service by </span>$dybm<span style=color:#e6db74>&#34;</span> &gt;&gt;/etc/rc.local
+</span></span><span style=display:flex><span>$ echo <span style=color:#e6db74>&#34;/usr/local/openvpn/sbin/openvpn --config /etc/openvpn/server.conf --daemon &#34;</span> &gt;&gt;/etc/rc.local
+</span></span></code></pre></div></blockquote></div><h4 id=安装配置openvpn客户端>安装配置<code>openvpn</code>客户端
+<a class=header-anchor href=#%e5%ae%89%e8%a3%85%e9%85%8d%e7%bd%aeopenvpn%e5%ae%a2%e6%88%b7%e7%ab%af></a></h4><p><font color=red><strong>注意：安装客户端时最好将所有的组件全部安装</strong></font></p><div class="note info"><ul><li><ol><li><a href=http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.2-I001-i686.exe title="<code>openvpn-install-2.3.2-I001-i686.exe</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>openvpn-install-2.3.2-I001-i686.exe</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></li></p></ol></li><li><ol start=2><li><a href=http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.2-I001-x86_64.exe title="<code>openvpn-install-2.3.2-I001-x86_64.exe</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>openvpn-install-2.3.2-I001-x86_64.exe</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></li></p></ol></li><li><ol start=3><li><font color=red>生成客户端证书和密钥：</font><code>client</code>为客户端名字可以自定义，注意这里的客户端名字不能与上面的服务端名字相同</li></ol></li></ul><blockquote><ul><li>3.1 <font color=red>期间也会提示输入一些信息，直接回车默认，选择<code>[Y/n]</code>的都选<code>Y</code>。 若要生成多个客户端的证书和密钥，将<code>client</code>改成另外的名字重复操作即可。所有生成的证书和密钥都存放在<code>/etc/openvpn/2.0/keys</code>下面。</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cd /etc/openvpn/2.0  	<span style=color:#75715e># 服务器端openvpn配置文件目录</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ ./build-key client  	<span style=color:#75715e># 在服务器端生成客户端证书和密钥</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=4><li><font color=red>下载之前在服务端上生成的客户端证书及密钥</font></li></ol></li></ul><blockquote><ul><li>4.1 <font color=red>证书和密钥都存放在<code>/etc/openvpn/2.0/keys</code>里，可以使用<code>winscp</code>链接到<strong>服务端</strong>上下载，将<code>ca.crt、client.crt、client.key</code>这三个文件下载到<code>OpenVPN</code>客户端程序的<code>config</code>文件夹里,默认为：<code>C:\Program Files\OpenVPN\config</code></font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ sz ca.crt client.crt client.key  	<span style=color:#75715e># 我这里使用sz小工具下载</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=5><li><font color=red>创建客户端配置文件</font></li></ol></li></ul><blockquote><ul><li>5.1 <font color=red><strong>注意：配置文件中的设备节点名称在<code>windows</code>平台下是需要修改的，并且在安装完成<code>OpenVPN</code>软件后，客户端计算机中会多出一块虚拟网卡，我们还需要将该网卡的名称修改为<code>dev-node</code>定义的设备名称。设置方法是在<code>Windows</code>控制面板中找到网络连接，在网络连接中，将该虚拟网卡重名为<code>vpnclient</code>即可</strong></font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>C:<span style=color:#ae81ff>\P</span>rogram Files<span style=color:#ae81ff>\O</span>penVPN<span style=color:#ae81ff>\s</span>ample-config<span style=color:#ae81ff>\c</span>lient.ovpn  	<span style=color:#75715e># 客户端配置模版文件</span>
+</span></span><span style=display:flex><span>使用记事本修改该文件，内容如下：
+</span></span><span style=display:flex><span>client  	<span style=color:#75715e># 使OpenVPN作为客户端软件使用，这个client不是自定义名称 不能更改</span>
+</span></span><span style=display:flex><span>dev tun  	<span style=color:#75715e># 说明连接方式是点对点的连接，如要以以太网的方式则可以将tun修改为tap，要与前面server.conf中的配置一致。</span>
+</span></span><span style=display:flex><span>;dev tap 
+</span></span><span style=display:flex><span>proto tcp  	<span style=color:#75715e># 要与前面server.conf中的配置一致。</span>
+</span></span><span style=display:flex><span>dev-node vpnclient  	<span style=color:#75715e># 设备节点名称，windows需要修改</span>
+</span></span><span style=display:flex><span>remote 192.168.0.200 <span style=color:#ae81ff>52115</span>  	<span style=color:#75715e># 指定VPN服务器的外网IP地址与端口号，端口与前面的server.conf中配置一致。</span>
+</span></span><span style=display:flex><span>;proto udp
+</span></span><span style=display:flex><span>;remote-random
+</span></span><span style=display:flex><span>resolv-retry infinite
+</span></span><span style=display:flex><span>nobind
+</span></span><span style=display:flex><span>persist-key
+</span></span><span style=display:flex><span>persist-tun
+</span></span><span style=display:flex><span>ca ca.crt  	<span style=color:#75715e># 指定服务器CA证书文件</span>
+</span></span><span style=display:flex><span>cert client.crt  	<span style=color:#75715e># 指定客户端证书文件 </span>
+</span></span><span style=display:flex><span>key client.key  	<span style=color:#75715e># 指定客户端私钥文件</span>
+</span></span><span style=display:flex><span>ns-cert-type server
+</span></span><span style=display:flex><span>redirect-gateway
+</span></span><span style=display:flex><span>keepalive <span style=color:#ae81ff>20</span> <span style=color:#ae81ff>60</span>
+</span></span><span style=display:flex><span>comp-lzo
+</span></span><span style=display:flex><span>verb <span style=color:#ae81ff>3</span>
+</span></span><span style=display:flex><span>mute <span style=color:#ae81ff>20</span>
+</span></span><span style=display:flex><span>route-method exe
+</span></span><span style=display:flex><span>route-delay <span style=color:#ae81ff>2</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=6><li><font color=red>运行<code>OpenVPN</code>客户端</font></li></ol></li></ul><blockquote><ul><li>6.1 <font color=red>运行<code>OpenVPN GUI</code>后，屏幕右下角的系统托盘区，会显示一个由两个红屏电脑组成的图标，右击它，选中菜单中的<code>Connect</code>，点击<code>Connect</code>，过一会儿，<code>OpenVPN</code>图标变成绿色时就表示链接成功了</font> 现在<code>VPN</code>连接成功了，让我们一起看一下服务端的日志，如下：</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:01 <span style=color:#ae81ff>2016</span> TCP connection established with <span style=color:#f92672>[</span>AF_INET<span style=color:#f92672>]</span>192.168.0.101:49569
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:01 <span style=color:#ae81ff>2016</span> 192.168.0.101:49569 TLS: Initial packet from <span style=color:#f92672>[</span>AF_INET<span style=color:#f92672>]</span>192.168.0.101:49569, sid<span style=color:#f92672>=</span>c9704a4a bdf1d307
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:02 <span style=color:#ae81ff>2016</span> 192.168.0.101:49569 VERIFY OK: depth<span style=color:#f92672>=</span>1, C<span style=color:#f92672>=</span>CN, ST<span style=color:#f92672>=</span>GanSu, L<span style=color:#f92672>=</span>LanZhou, O<span style=color:#f92672>=</span>China Mobile, OU<span style=color:#f92672>=</span>Network, CN<span style=color:#f92672>=</span>vpnserver, name<span style=color:#f92672>=</span>server, emailAddress<span style=color:#f92672>=</span>mail@host.domain
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:02 <span style=color:#ae81ff>2016</span> 192.168.0.101:49569 VERIFY OK: depth<span style=color:#f92672>=</span>0, C<span style=color:#f92672>=</span>CN, ST<span style=color:#f92672>=</span>GanSu, L<span style=color:#f92672>=</span>LanZhou, O<span style=color:#f92672>=</span>China Mobile, OU<span style=color:#f92672>=</span>Network, CN<span style=color:#f92672>=</span>client, name<span style=color:#f92672>=</span>server, emailAddress<span style=color:#f92672>=</span>mail@host.domain
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:02 <span style=color:#ae81ff>2016</span> 192.168.0.101:49569 Data Channel Encrypt: Cipher <span style=color:#e6db74>&#39;BF-CBC&#39;</span> initialized with <span style=color:#ae81ff>128</span> bit key
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:02 <span style=color:#ae81ff>2016</span> 192.168.0.101:49569 Data Channel Encrypt: Using <span style=color:#ae81ff>160</span> bit message hash <span style=color:#e6db74>&#39;SHA1&#39;</span> <span style=color:#66d9ef>for</span> HMAC authentication
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:02 <span style=color:#ae81ff>2016</span> 192.168.0.101:49569 Data Channel Decrypt: Cipher <span style=color:#e6db74>&#39;BF-CBC&#39;</span> initialized with <span style=color:#ae81ff>128</span> bit key
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:02 <span style=color:#ae81ff>2016</span> 192.168.0.101:49569 Data Channel Decrypt: Using <span style=color:#ae81ff>160</span> bit message hash <span style=color:#e6db74>&#39;SHA1&#39;</span> <span style=color:#66d9ef>for</span> HMAC authentication
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:02 <span style=color:#ae81ff>2016</span> 192.168.0.101:49569 Control Channel: TLSv1, cipher TLSv1/SSLv3 DHE-RSA-AES256-SHA, <span style=color:#ae81ff>1024</span> bit RSA
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:02 <span style=color:#ae81ff>2016</span> 192.168.0.101:49569 <span style=color:#f92672>[</span>client<span style=color:#f92672>]</span> Peer Connection Initiated with <span style=color:#f92672>[</span>AF_INET<span style=color:#f92672>]</span>192.168.0.101:49569
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:02 <span style=color:#ae81ff>2016</span> client/192.168.0.101:49569 MULTI_sva: pool returned IPv4<span style=color:#f92672>=</span>10.100.80.10, IPv6<span style=color:#f92672>=(</span>Not enabled<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:02 <span style=color:#ae81ff>2016</span> client/192.168.0.101:49569 MULTI: Learn: 10.100.80.10 -&gt; client/192.168.0.101:49569
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:02 <span style=color:#ae81ff>2016</span> client/192.168.0.101:49569 MULTI: primary virtual IP <span style=color:#66d9ef>for</span> client/192.168.0.101:49569: 10.100.80.10
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:04 <span style=color:#ae81ff>2016</span> client/192.168.0.101:49569 PUSH: Received control message: <span style=color:#e6db74>&#39;PUSH_REQUEST&#39;</span>
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:04 <span style=color:#ae81ff>2016</span> client/192.168.0.101:49569 send_push_reply<span style=color:#f92672>()</span>: safe_cap<span style=color:#f92672>=</span><span style=color:#ae81ff>940</span>
+</span></span><span style=display:flex><span>Sun Apr <span style=color:#ae81ff>24</span> 02:39:04 <span style=color:#ae81ff>2016</span> client/192.168.0.101:49569 SENT CONTROL <span style=color:#f92672>[</span>client<span style=color:#f92672>]</span>: <span style=color:#e6db74>&#39;PUSH_REPLY,route 10.0.0.254 255.255.255.0,dhcp-option DNS 202.100.64.68,route 10.100.80.0 255.255.255.0,topology net30,ping 10,ping-restart 120,ifconfig 10.100.80.10 10.100.80.9&#39;</span> <span style=color:#f92672>(</span>status<span style=color:#f92672>=</span>1<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>哈哈，相信看了日志，大家就会明白的！
+</span></span></code></pre></div></blockquote></div><h4 id=font-colorred安装脚本font><font color=red>安装脚本</font>
+<a class=header-anchor href=#font-colorred%e5%ae%89%e8%a3%85%e8%84%9a%e6%9c%acfont></a></h4><div class="note info"><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;openvpn.sh<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>#!/bin/bash
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>clear
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>echo &#34;一个用于创建虚拟专用网络(Virtual Private Network)加密通道的免费开源软件。使用OpenVPN可以方便地在家庭、办公场所、住宿酒店等不同网络访问场所之间搭建类似于局域网的专用网络通道&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>echo -e &#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>read -p &#34;按回车进行安装... ... &#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>clear
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>cd /tmp/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>if [ ! -s lzo-2.09.tar.gz ];then
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>wget http://www.oberhumer.com/opensource/lzo/download/lzo-2.09.tar.gz
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>fi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>clear
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>if [ ! -s openvpn-2.2.2.tar.gz ];then
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>wget http://swupdate.openvpn.org/community/releases/openvpn-2.2.2.tar.gz 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>fi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>clear
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>yum install pam-devel openssl* gcc  -y
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>clear
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>ntpdate pool.ntp.org
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>tar zxf lzo-2.09.tar.gz
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>tar zxf openvpn-2.2.2.tar.gz
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>clear
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>cd lzo-2.09/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>./configure
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>make &amp;&amp; make install
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>clear
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>cd ../openvpn-2.2.2/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>./configure --with-lzo-headers=/usr/local/include/ --with-lzo-lib=/usr/local/lib
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>make &amp;&amp; make install
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>clear
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>mkdir /etc/openvpn
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>cd easy-rsa/2.0/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>cp vars vars_bak
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>read -p &#34;定义所在国家(比如中国就是：CN): &#34; dygj
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>read -p &#34;定义所在省份(比如广西就是：GX): &#34; dysf
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>read -p &#34;定义所在城市(比如南宁就是:NanNing): &#34; dycs
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>read -p &#34;定义所在组织或公司(比如联想就是：Lenovo): &#34; dygs
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>read -p &#34;设置你的电子邮件： &#34; dymail
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>read -p &#34;定义所在部门(比如IT部就是:IT): &#34; dybm
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>read -p &#34;定义你的名称： &#34; dyname
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>cat &gt; vars &lt;&lt;EOF</span>
+</span></span><span style=display:flex><span>export EASY_RSA<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;`pwd`&#34;</span>
+</span></span><span style=display:flex><span>export OPENSSL<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;openssl&#34;</span>
+</span></span><span style=display:flex><span>export PKCS11TOOL<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;pkcs11-tool&#34;</span>
+</span></span><span style=display:flex><span>export GREP<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;grep&#34;</span>
+</span></span><span style=display:flex><span>export KEY_CONFIG<span style=color:#f92672>=</span><span style=color:#e6db74>`</span>$EASY_RSA/whichopensslcnf $EASY_RSA<span style=color:#e6db74>`</span>
+</span></span><span style=display:flex><span>export KEY_DIR<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span>$EASY_RSA<span style=color:#e6db74>/keys&#34;</span>
+</span></span><span style=display:flex><span>echo NOTE: If you run ./clean-all, I will be doing a rm -rf on $KEY_DIR
+</span></span><span style=display:flex><span>export PKCS11_MODULE_PATH<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;dummy&#34;</span>
+</span></span><span style=display:flex><span>export PKCS11_PIN<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;dummy&#34;</span>
+</span></span><span style=display:flex><span>export KEY_SIZE<span style=color:#f92672>=</span><span style=color:#ae81ff>1024</span>
+</span></span><span style=display:flex><span>export CA_EXPIRE<span style=color:#f92672>=</span><span style=color:#ae81ff>3650</span>
+</span></span><span style=display:flex><span>export KEY_EXPIRE<span style=color:#f92672>=</span><span style=color:#ae81ff>3650</span>
+</span></span><span style=display:flex><span>export KEY_COUNTRY<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span>$dygj<span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>export KEY_PROVINCE<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span>$dysf<span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>export KEY_CITY<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span>$dycs<span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>export KEY_ORG<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span>$dygs<span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>export KEY_EMAIL<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;</span>$dymail<span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>export KEY_EMAIL<span style=color:#f92672>=</span>$dymail
+</span></span><span style=display:flex><span>export KEY_CN<span style=color:#f92672>=</span>CN
+</span></span><span style=display:flex><span>export KEY_NAME<span style=color:#f92672>=</span>dyname
+</span></span><span style=display:flex><span>export KEY_OU<span style=color:#f92672>=</span>$dybm
+</span></span><span style=display:flex><span>export PKCS11_MODULE_PATH<span style=color:#f92672>=</span>changeme
+</span></span><span style=display:flex><span>export PKCS11_PIN<span style=color:#f92672>=</span><span style=color:#ae81ff>1234</span>
+</span></span><span style=display:flex><span>EOF
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>source ./vars
+</span></span><span style=display:flex><span>./clean-all
+</span></span><span style=display:flex><span>./build-ca
+</span></span><span style=display:flex><span>./build-key-server server
+</span></span><span style=display:flex><span>./build-key $dyname
+</span></span><span style=display:flex><span>./build-key-pass $dyname
+</span></span><span style=display:flex><span>./build-dh
+</span></span><span style=display:flex><span>openvpn --genkey --secret keys/ta.key
+</span></span><span style=display:flex><span>clear
+</span></span><span style=display:flex><span>cp -arp /tmp/openvpn-2.2.2/easy-rsa/2.0/keys /etc/openvpn
+</span></span><span style=display:flex><span>cp /tmp/openvpn-2.2.2/sample-config-files/server.conf /etc/openvpn/
+</span></span><span style=display:flex><span>cp /tmp/openvpn-2.2.2/sample-config-files/client.conf /etc/openvpn/
+</span></span><span style=display:flex><span>cd /etc/openvpn/
+</span></span><span style=display:flex><span>cp server.conf server.conf_bak
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>localvpnip<span style=color:#f92672>=</span><span style=color:#e6db74>`</span>ifconfig eth0|awk -F<span style=color:#e6db74>&#39;[ :]+&#39;</span> <span style=color:#e6db74>&#39;NR==2 {print $4}&#39;</span><span style=color:#e6db74>`</span>
+</span></span><span style=display:flex><span>cat &gt; server.conf <span style=color:#e6db74>&lt;&lt;EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>local $localvpnip
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>port 52115
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>proto tcp
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>dev tap
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>ca /etc/openvpn/keys/ca.crt     
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>cert /etc/openvpn/keys/server.crt
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>key /etc/openvpn/keys/server.key
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>dh /etc/openvpn/keys/dh1024.pem
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>server 10.8.0.0 255.255.255.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>ifconfig-pool-persist ipp.txt
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>push &#34;route 192.168.169.0 255.255.255.0&#34; 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>client-to-client
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>duplicate-cn
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>keepalive 10 120
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>comp-lzo
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>persist-key
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>persist-tun
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>status openvpn-status.log
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>log /var/log/openvpn.log
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>verb 3
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span><span style=display:flex><span>sed -i <span style=color:#e6db74>&#39;/ip_forward/s/0/1/g&#39;</span> /etc/sysctl.conf
+</span></span><span style=display:flex><span>sysctl -p
+</span></span><span style=display:flex><span>clear
+</span></span><span style=display:flex><span>/usr/local/sbin/openvpn --config /etc/openvpn/server.conf &amp;
+</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#34;#startup openvpn service by </span>$dybm<span style=color:#e6db74>&#34;</span> &gt;&gt; /etc/rc.local
+</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#34;/usr/local/sbin/openvpn --config /etc/openvpn/server.conf &amp;&#34;</span> &gt;&gt; /etc/rc.local
+</span></span><span style=display:flex><span>cp /tmp/openvpn-2.2.2/sample-scripts/openvpn.init /etc/init.d/openvpn
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>cat &gt; /etc/init.d/openvpn <span style=color:#e6db74>&lt;&lt; EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>line148: *.conf --&gt; server.conf
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>chmod <span style=color:#ae81ff>700</span> /etc/init.d/openvpn
+</span></span><span style=display:flex><span>iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+</span></span><span style=display:flex><span>read -t <span style=color:#ae81ff>5</span> -p <span style=color:#e6db74>&#34;服务器端安装配置完成！！！&#34;</span>
+</span></span><span style=display:flex><span>EOF
+</span></span></code></pre></div></blockquote></div><h2 id=内网穿透>内网穿透
+<a class=header-anchor href=#%e5%86%85%e7%bd%91%e7%a9%bf%e9%80%8f></a></h2><div class="note info"><ul><li><ol><li><code>Cloudflare Tunnel</code></li></ol></li></ul><blockquote><ul><li><p>1.1
+<a href=https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/ title="<code>Downloads cloudflared Tunel Manage</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Downloads cloudflared Tunel Manage</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></p></p></li><li><p>1.2
+<a href=https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/tunnel-guide/ title="<code>Set Cloudflare Tunnel</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Set Cloudflare Tunnel</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></p></p></li><li><p>1.4 <font color=red>命令行登录<code>Cloudflare tunnel</code></font></p></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cloudflared tunnel login
+</span></span></code></pre></div><ul><li>1.5 <font color=red>创建一个<code>tunnel</code>、<code>Name</code>为自定义名称</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cloudflared tunnel create &lt;NAME&gt;
+</span></span></code></pre></div><ul><li>1.6 <font color=red>列出所有创建的<code>Tunnel</code></font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cloudflared tunnel list
+</span></span></code></pre></div><ul><li>1.7 <font color=red>在：<code>使用者/jerry/.cloudflared</code>目录下创建<code>config.yaml</code></font></li></ul><blockquote><p>1.7.1
+<a href=https://developers.cloudflare.com/cloudflare-one/tutorials/multi-origin/ title="<code>Connect multiple HTTP origins</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Connect multiple HTTP origins</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a>、文档中找到<mark><code>Configure cloudflared</code></mark></p></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;使用者/jerry/.cloudflared/config.yaml<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>tunnel: 5157d321-5933-4b30-938b-d889ca87e11b  	# 替换为自己创建的：Tunnel ID
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>credentials-file: /Users/samrhea/.cloudflared/5157d321-5933-4b30-938b-d889ca87e11b.json  	# Tunnel ID文件验证路径
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>ingress:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - hostname: grafana.widgetcorp.tech  	# 定义域名使用那个端口
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    service: http://localhost:3000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - hostname: blog.widgetcorp.tech  	# 定义第二个域名
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    service: http://localhost:1313
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  # Catch-all rule, which just responds with 404 if traffic doesn&#39;t match any of
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  # the earlier rules
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - service: http_status:404
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div></blockquote><ul><li>1.8 配置那个<code>Tunnel</code>使用的域名，配置完成后浏览器登录<code>Cloudflare</code>查看是否有<code>Tunnel ID</code></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cloudflared tunnel route dns &lt;NAME or UUID &gt; &lt;hostname/Domain&gt;
+</span></span></code></pre></div><ul><li>1.9 启动<code>Tunnel</code>， 然后浏览器访问<code>config.yaml</code>定义的域名测试</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cloudflared tunnel run &lt;NAME or UUID&gt;
+</span></span></code></pre></div></blockquote><ul><li><ol start=2><li>内网穿透方式</li></ol></li></ul><blockquote><table><thead><tr><th>名称</th><th>描述</th></tr></thead><tbody><tr><td><a href=https://ngrok.com/ title="<code>ngrok</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>ngrok</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://www.softwaretestinghelp.com/ngrok-alternatives/ title="<code>2022</code>年<code>4</code>大最佳<code>Ngrok</code>替代品" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>2022</code>年<code>4</code>大最佳<code>Ngrok</code>替代品<pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://www.zerotier.com/ title="<code>zerotier</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>zerotier</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://www.pfsense.org/ title="<code>pfSense</code>软路由" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>pfSense</code>软路由<pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://github.com/fatedier/frp title="<code>frp</code>内网穿透" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>frp</code>内网穿透<pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://www.chinagfw.org/ title="<code>GFW BLOG</code>功夫网与翻墙" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>GFW BLOG</code>功夫网与翻墙<pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://github.com/aploium/zmirror-onekey title="<code>zmirror</code>一键部署脚本" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>zmirror</code>一键部署脚本<pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://haruto.zone/archives/37 title="使用<code>zmirror</code>搭建网站镜像" rel="noopener external nofollow noreferrer" target=_blank class=exturl>使用<code>zmirror</code>搭建网站镜像<pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://opnsense.org/ title="<code>OPNsense</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>OPNsense</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=http://www.nat123.com/Pages_27_669.jsp title="<code>Nat 123</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Nat 123</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a>、
+<a href=https://woaielf.github.io/2017/10/29/nat123/ title="<code>Nat123</code>+<code>iTerm2</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Nat123</code>+<code>iTerm2</code></p><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://github.com/bannedbook/fanqiang title=翻墙-科学上网、翻墙工具、翻墙教程项目库 rel="noopener external nofollow noreferrer" target=_blank class=exturl>翻墙-科学上网、翻墙工具、翻墙教程项目库<pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://downloads.openwrt.org/ title="<code>OpenWrt</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>OpenWrt</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a>、<br><a href=https://downloads.openwrt.org/snapshots/targets/ramips/mt7621/ title="<code>Openwrt</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Openwrt</code></p><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a>、
+<a href=https://archive.openwrt.org/releases/18.06.0/targets/ramips/mt7621/ title="<code>Openwrt</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Openwrt</code></p><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a>、
+<a href=https://opt.cn2qq.com/padavan/ title="<code>Padavan</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Padavan</code></p><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a>、
+<a href=https://bitbucket.org/padavan/rt-n56u/src/master/ title="<code>Padavan</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Padavan</code></p><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a>、
+<a href=https://github.com/stupidloud/nanopi-openwrt title="<code>Nanopi R1S R2S R2C R4S X86 Openwrt</code>固件" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Nanopi R1S R2S R2C R4S X86 Openwrt</code>固件</p><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a>、
+<a href=https://mmensee.gitbook.io/r2s-r4s/gu-jian-xia-zai-shua-ji-fang-fa/r2s-gu-jian-xia-zai-he-ji title="<code>R2S</code>固件下载合集" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>R2S</code>固件下载合集</p><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a>、</td></p><td></td></tr><tr><td><a href=https://nginxproxymanager.com/ title="<code>Nginx Proxy Manager</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Nginx Proxy Manager</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a>、
+<a href=https://github.com/vaxilu/x-ui title="<code>x-ui</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>x-ui</code></p><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a>、
+<a href=https://github.com/iprodev/x-ui title="<code>X-UI ENGLISH VERSION</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>X-UI ENGLISH VERSION</code></p><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://github.com/assimon/dujiaoka title=自动发卡网站 rel="noopener external nofollow noreferrer" target=_blank class=exturl>自动发卡网站<pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a>、
+<a href=https://hub.docker.com/r/stilleshan/dujiaoka/tags title="<code>Docker 镜像发卡</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Docker 镜像发卡</code></p><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr><tr><td><a href=https://search.brave.com/ title="隐私浏览器<code>Brave</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl>隐私浏览器<code>Brave</code><pre><code>&lt;i class=&quot;fa fa-external-link-alt&quot;&gt;&lt;/i&gt;
+</code></pre><p></a></td></p><td></td></tr></tbody></table></blockquote></div></div></div></div><footer class=post-footer><div class=post-tags><a href=/tags/vpn>VPN
+</a><a href=/tags/softether>SoftEther
+</a><a href=/tags/l2tp>L2tp
+</a><a href=/tags/shadowsockr>Shadowsockr
+</a><a href=/tags/openvpn>OpenVPN</a></div><div class=addthis_inline_share_toolbox style=text-align:center></div><hr><div class=reward-container><div><i class="fa-solid fa-mug-hot"></i>请我喝杯咖啡吧 ヾ(^▽^*)))</div><button>
+赞赏</button><div class=post-reward><div class=post-reward-item><img src=/imgs/img-lazy-loading.gif data-src=/imgs/ali-pay.png alt="二哥 - 支付宝">
+<span>支付宝</span></div><div class=post-reward-item><img src=/imgs/img-lazy-loading.gif data-src=/imgs/wechat-pay.png alt="二哥 - 微信">
+<span>微信</span></div></div></div><div class=post-copyright><img src=/imgs/cc/cc.svg width=75 height=75 align=right alt=共享知识><ul><li class=post-copyright-title><strong>文章标题：</strong>
+Install VPN</li><li class=post-copyright-author><strong>本文作者： </strong>二哥</li><li class=post-copyright-link><strong>本文链接：</strong>
+<a id=post-cr-link href=https://erge.blog/systems/linux/vpn/install-vpn/ title="Install VPN">https://erge.blog/systems/linux/vpn/install-vpn/</a></li><li class=post-copyright-license><strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <i class="fab fa-fw fa-creative-commons"></i><a target=_blank href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh>BY-NC-SA</a> 许可协议。转载请注明出处！</li></ul></div><div class=followme><span>欢迎关注我的其它发布渠道</span><div class=social-list><div class=social-item><a target=_blank class=social-link href=/images/wechat_channel.jpg><span class=icon><i class="fab fa-weixin"></i>
+</span><span class=label>WeChat</span></a></div><div class=social-item><a target=_blank class=social-link href=/atom.xml><span class=icon><i class="fa fa-rss"></i>
+</span><span class=label>RSS</span></a></div></div></div><div class=post-nav><div class="post-nav-next post-nav-item"><a href=/systems/linux/backend/php/configure-php-expand/ rel=next title="Configure PHP Expand"><i class="fa fa-chevron-left"></i> Configure PHP Expand</a></div><div class="post-nav-prev post-nav-item"><a href=/systems/linux/backend/php/install-php/ rel=prev title="Install PHP">Install PHP
+<i class="fa fa-chevron-right"></i></a></div></div></footer></article></div><div id=comments class=post-comments><div class=comment-head><div class=comment-headline><i class="fas fa-comments fa-fw"></i>
+<span>评论交流</span></div><div class=comment-switch><span class=first-comment>Giscus</span>
+<span class=switch-btn></span>
+<span class=second-comment>Waline</span></div></div><div class=comment-wrap><div><div class=comment-loading><i class="fa fa-sync fa-spin"></i></div><div class=giscus-container></div></div><div><div class=comment-loading><i class="fa fa-sync fa-spin"></i></div><div class=waline-container></div></div></div></div></div></main><footer class=footer><div class=footer-inner><div id=gtranslate class=google-translate><i class="fa fa-language"></i><div id=google_translate_element></div></div><div class=copyright>&copy;
+<span itemprop=copyrightYear>2010 - 2024
+</span><span class=with-love><i class="fa fa-heart"></i>
+</span><span class=author itemprop=copyrightHolder>二哥</span></div><div class=powered-by>由 <a href=https://gohugo.io title=0.125.4 target=_blank>Hugo</a> & <a href=https://github.com/hugo-next/hugo-theme-next title=4.5.3 target=_blank>Hugo NexT.Gemini</a> 强力驱动</div><div class=beian><a href=https://beian.miit.gov.cn target=_blank>粤ICP备 18047355-1 号</a>
+<img src=/imgs/gongan.png alt=沪公网安备>
+<a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31011402009770" target=_blank>沪公网安备 31011402009770 号</a></div><div class=vendors-list><a target=_blank href=https://vercel.com title=Vercel><img src=/imgs/img-lazy-loading.gif data-src=/imgs/vendors/vercel.svg alt=Vercel>
+</a><a target=_blank href=https://upyun.com title=又拍云><img src=/imgs/img-lazy-loading.gif data-src=/imgs/vendors/upyun.png alt=又拍云>
+</a><a target=_blank href=https://webify.cloudbase.net title=Webify>Webify
+</a><span>提供CDN/云资源支持</span></div></div></footer><script type=text/javascript src=https://cdn.staticfile.org/animejs/3.2.1/anime.min.js defer></script><script type=text/javascript src=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.js defer></script><script class=next-config data-name=main type=application/json>{"bookmark":{"color":"#222","enable":true,"save":"manual"},"copybtn":true,"darkmode":false,"giscus":{"cfg":{"category":"Comments","categoryid":null,"emit":false,"inputposition":"top","mapping":"title","reactions":false,"repo":"username/repo-name","repoid":null,"theme":"preferred_color_scheme"},"js":"https://giscus.app/client.js"},"hostname":"https://erge.blog/","i18n":{"ds_day":" 天前","ds_days":" 天 ","ds_hour":" 小时前","ds_hours":" 小时 ","ds_just":"刚刚","ds_min":" 分钟前","ds_mins":" 分钟","ds_month":" 个月前","ds_years":" 年 ","empty":"没有找到任何搜索结果：${query}","hits":"找到 ${hits} 个搜索结果","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","placeholder":"搜索..."},"lang":"zh-CN","lazyload":false,"localSearch":{"enable":true,"limit":1e3,"path":"/searchindexes.xml","preload":false,"topnperarticle":-1,"trigger":"auto","unescape":false},"motion":{"async":true,"enable":true,"transition":{"collheader":"fadeInLeft","postblock":"fadeIn","postbody":"fadeInDown","postheader":"fadeInDown","sidebar":"fadeInUp"}},"postmeta":{"comments":{"enable":true,"plugin":"waline"},"views":{"enable":true,"plugin":"busuanzi"}},"root":"/","scheme":"Gemini","sidebar":{"display":"post","offset":12,"padding":18,"position":"left","width":256},"vendor":{"plugins":"qiniu","router":"https://cdn.staticfile.org"},"version":"4.5.3","waline":{"cfg":{"emoji":false,"imguploader":false,"placeholder":"请文明发言哟 ヾ(≧▽≦*)o","reaction":true,"reactiontext":["点赞","踩一下","得意","不屑","尴尬","睡觉"],"reactiontitle":"你认为这篇文章怎么样？","requiredmeta":["nick","mail"],"serverurl":null,"sofa":"快来发表你的意见吧 (≧∀≦)ゞ","wordlimit":200},"css":{"alias":"waline","file":"dist/waline.css","name":"@waline/client","version":"2.13.0"},"js":{"alias":"waline","file":"dist/waline.js","name":"@waline/client","version":"2.13.0"}}}</script><script type=text/javascript src=/js/main.min.b0c78e5a4df586ee46d02716ffa91a4a322e56763e04e91eb2ba052c9469ed02.js defer></script></body></html>
