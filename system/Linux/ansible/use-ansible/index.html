@@ -1,0 +1,464 @@
+<!doctype html><html lang=zh-CN data-theme=light><head><meta charset=UTF-8><meta name=viewport content="width=device-width"><meta name=theme-color content="#222" media="(prefers-color-scheme: light)"><meta name=generator content="Hugo 0.125.4"><link rel="shortcut icon" type=image/x-icon href=/imgs/icons/favicon.ico><link rel=icon type=image/x-icon href=/imgs/icons/favicon.ico><link rel=icon type=image/png sizes=16x16 href=/imgs/icons/favicon_16x16_next.png><link rel=icon type=image/png sizes=32x32 href=/imgs/icons/favicon_32_32_next.png><link rel=apple-touch-icon sizes=180x180 href=/imgs/icons/apple_touch_icon_next.png><meta itemprop=name content="Use Ansible"><meta itemprop=description content="Use-Ansible"><meta itemprop=datePublished zgotmplz><meta itemprop=dateModified zgotmplz><meta itemprop=image content="https://erge.blog/imgs/s2-1.jpg"><meta itemprop=keywords content="CI/CD,Ansible"><meta property="og:type" content="article"><meta property="og:title" content="Use Ansible"><meta property="og:description" content="Use-Ansible"><meta property="og:image" content="/imgs/s2-1.jpg"><meta property="og:image:width" content="312"><meta property="og:image:height" content="312"><meta property="og:image:type" content="image/jpeg/png/svg/jpg"><meta property="og:url" content="https://erge.blog/system/linux/ansible/use-ansible/"><meta property="og:site_name" content="二哥"><meta property="og:locale" content="zh-CN"><meta property="article:author" content="二哥"><meta property="article:published_time" content="2023-12-26 18:06:45 +0800 CST"><meta property="article:modified_time" content="2023-12-26 18:06:45 +0800 CST"><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/font-awesome/6.1.2/css/all.min.css><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.css><link rel=stylesheet href=/css/main.min.0d420b6f564e6674edd4354ea71c0458a83f95ad464a75114b23d72515b1456c.css><script type=text/javascript>(function(){localDB={set:function(e,t,n){if(n===0)return;const s=new Date,o=n*864e5,i={value:t,expiry:s.getTime()+o};localStorage.setItem(e,JSON.stringify(i))},get:function(e){const t=localStorage.getItem(e);if(!t)return void 0;const n=JSON.parse(t),s=new Date;return s.getTime()>n.expiry?(localStorage.removeItem(e),void 0):n.value}},theme={active:function(){const e=localDB.get("theme");if(e==null)return;theme.toggle(e),window.matchMedia("(prefers-color-scheme: dark)").addListener(function(e){theme.toggle(e.matches?"dark":"light")})},toggle:function(e){document.documentElement.setAttribute("data-theme",e),localDB.set("theme",e,2);const t=document.querySelector("iframe.giscus-frame");if(t){const n={setConfig:{theme:e}};t.contentWindow.postMessage({giscus:n},"https://giscus.app")}}},theme.active()})(window)</script><script class=next-config data-name=page type=application/json>{"comments":false,"isHome":false,"isPage":true,"path":"use-ansible","permalink":"https://erge.blog/system/linux/ansible/use-ansible/","title":"Use Ansible","waline":{"js":[{"alias":"waline","alias_name":"@waline/client","file":"dist/pageview.js","name":"pageview","version":"2.13.0"},{"alias":"waline","alias_name":"@waline/client","file":"dist/comment.js","name":"comment","version":"2.13.0"}]}}</script><script type=text/javascript>document.addEventListener("DOMContentLoaded",()=>{var e=document.createElement("script");e.charset="UTF-8",e.src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js",e.async=!1,e.defer=!0,document.head.appendChild(e),e.onload=function(){NexT.utils.fmtBusuanzi()}})</script><title>Use Ansible - 二哥</title><noscript><link rel=stylesheet href=/css/noscript.css></noscript></head><body itemscope itemtype=http://schema.org/WebPage class=use-motion><div class=headband></div><main class=main><header class=header itemscope itemtype=http://schema.org/WPHeader><div class=header-inner><div class=site-brand-container><div class=site-nav-toggle><div class=toggle aria-label role=button><span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span></div></div><div class=site-meta><a href=/ class=brand rel=start><i class=logo-line></i><h1 class=site-title>二哥</h1><i class=logo-line></i></a><p class=site-subtitle itemprop=description>Linux、Kubernetes、Docker、Python、CI/CD、Jenkins、Mysql、Nginx、Gitlab、Ansible、Zabbix</p></div><div class=site-nav-right><div class="toggle popup-trigger"><i class="fa fa-search fa-fw fa-lg"></i></div></div></div><nav class=site-nav><ul class="main-menu menu"><li class="menu-item menu-item-Home"><a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-home hvr-icon"></i>首页</a></li><li class="menu-item menu-item-categories"><a href=/categories/ class=hvr-icon-pulse rel=section><i class="fa fa-th hvr-icon"></i>分类</a></li><li class="menu-item menu-item-archives"><a href=/archives/ class=hvr-icon-pulse rel=section><i class="fa fa-archive hvr-icon"></i>归档
+<span class=badge>0</span></a></li><li class="menu-item menu-item-tags"><a href=/tags/ class=hvr-icon-pulse rel=section><i class="fa fa-tags hvr-icon"></i>标签</a></li><li class="menu-item menu-item-tools"><a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-tools hvr-icon"></i>工具</a></li><li class="menu-item menu-item-flinks"><a href=/flinks.html class=hvr-icon-pulse rel=section><i class="fa fa-thumbs-up hvr-icon"></i>站点示例</a></li><li class="menu-item menu-item-about"><a href=/about.html class=hvr-icon-pulse rel=section><i class="fa fa-user hvr-icon"></i>关于</a></li><li class="menu-item menu-item-Commonweal"><a href=/404.html class=hvr-icon-pulse rel=section><i class="fa fa-heartbeat hvr-icon"></i>公益 404</a></li><li class="menu-item menu-item-search"><a role=button class="popup-trigger hvr-icon-pulse"><i class="fa fa-search fa-fw hvr-icon"></i>搜索</a></li></ul></nav><div class=search-pop-overlay><div class="popup search-popup"><div class=search-header><span class=search-icon><i class="fa fa-search"></i></span><div class=search-input-container><input autocomplete=off autocapitalize=off maxlength=80 placeholder=搜索... spellcheck=false type=search class=search-input></div><span class=popup-btn-close role=button><i class="fa fa-times-circle"></i></span></div><div class="search-result-container no-result"><div class=search-result-icon><i class="fa fa-spinner fa-pulse fa-5x"></i></div></div></div></div></div><div class="toggle sidebar-toggle" role=button><span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span></div><aside class=sidebar><div class="sidebar-inner sidebar-nav-active sidebar-toc-active"><ul class=sidebar-nav><li class=sidebar-nav-toc>文章目录</li><li class=sidebar-nav-overview>站点概览</li></ul><div class=sidebar-panel-container><div class="post-toc-wrap sidebar-panel"><div class="post-toc animated"><nav id=TableOfContents><ul><li><a href=#配置使用ansible>配置使用<code>Ansible</code></a><ul><li><a href=#配置文件参数>配置文件参数</a><ul><li><a href=#主配置文件>主配置文件</a></li><li><a href=#子配置文件>子配置文件</a></li><li><a href=#命令使用>命令使用</a></li></ul></li><li><a href=#配置ansible-playbook>配置<code>Ansible-Playbook</code></a><ul><li><a href=#ansible-playbookroles><code>Ansible-Playbook</code>→<code>Roles</code></a></li></ul></li><li><a href=#-ansible-playbook完整剧本示例><code>Ansible-Playbook</code>完整剧本示例</a></li></ul></li></ul></nav></div></div><div class="site-overview-wrap sidebar-panel"><div class="site-author site-overview-item animated" itemprop=author itemscope itemtype=http://schema.org/Person><img class=site-author-image itemprop=image alt=二哥 src=/imgs/img-lazy-loading.gif data-src=/imgs/s2-1.jpg><p class=site-author-name itemprop=name>二哥</p><div class=site-description itemprop=description>The man who has made up his mind to win will never say impossible – Napoleon Bonaparte</div></div><div class="site-state-wrap site-overview-item animated"><nav class=site-state><div class="site-state-item site-state-posts"><a href=/archives/><span class=site-state-item-count>0</span>
+<span class=site-state-item-name>日志</span></a></div><div class="site-state-item site-state-categories"><a href=/categories/><span class=site-state-item-count>51</span>
+<span class=site-state-item-name>分类</span></a></div><div class="site-state-item site-state-tags"><a href=/tags/><span class=site-state-item-count>149</span>
+<span class=site-state-item-name>标签</span></a></div></nav></div><div class="links-of-social site-overview-item animated"><span class=links-of-social-item><a href=qq%e5%8f%b7 title="QQ → qq号" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-qq fa-fw hvr-icon"></i>
+QQ
+</a></span><span class=links-of-social-item><a href=https://www.zhihu.com/people/lisenhui title="知乎 → https://www.zhihu.com/people/lisenhui" rel=noopener class=hvr-icon-pulse target=_blank><i class="fa fa-book fa-fw hvr-icon"></i>
+知乎
+</a></span><span class=links-of-social-item><a href=qq@qq.com title="E-Mail → qq@qq.com" rel=noopener class=hvr-icon-pulse target=_blank><i class="fa fa-envelope fa-fw hvr-icon"></i>
+E-Mail
+</a></span><span class=links-of-social-item><a href=https://weibo.com/yourname title="Weibo → https://weibo.com/yourname" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-weibo fa-fw hvr-icon"></i>
+Weibo
+</a></span><span class=links-of-social-item><a href="https://www.youtube.com/watch?v=RgKAFK5djSk" title="Youtube → https://www.youtube.com/watch?v=RgKAFK5djSk" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-youtube fa-fw hvr-icon"></i>
+Youtube
+</a></span><span class=links-of-social-item><a href=https://github.com/elkan1788 title="Github → https://github.com/elkan1788" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-github fa-fw hvr-icon"></i>
+Github</a></span></div><div class="cc-license animated" itemprop=license><a href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh class=cc-opacity rel=noopener target=_blank title=共享知识><img src=/imgs/img-lazy-loading.gif data-src=/imgs/cc/big/by_nc_sa.svg alt=共享知识></a></div><div class="links-of-blogroll site-overview-item animated"><div class=links-of-blogroll-title><i class="fa fa-globe fa-fw"></i>
+友情链接</div><ul class=links-of-blogroll-list><li class=links-of-blogroll-item><a href=https://gitee.com/hugo-next/hugo-theme-next title=https://gitee.com/hugo-next/hugo-theme-next target=_blank>Hugo-NexT</a></li><li class=links-of-blogroll-item><a href=https://lisenhui.cn title=https://lisenhui.cn target=_blank>凡梦星尘空间站</a></li></ul></div></div></div></div><div id=siteinfo-card-widget class=sidebar-card-widget><div class=item-headline><i class="fas fa-chart-line"></i>
+<span>网站资讯</span></div><div class=siteinfo><div class=siteinfo-item><div class=item-name><i class="fa-solid fa-calendar-check"></i>已运行：</div><div class=item-count id=runTimes data-publishdate></div></div><div class=siteinfo-item><div class=item-name><i class="fas fa fa-user"></i>总访客数：</div><div class=item-count id=busuanzi_value_site_uv><i class="fa fa-sync fa-spin"></i></div></div><div class=siteinfo-item><div class=item-name><i class="fas fa fa-eye"></i>页面浏览：</div><div class=item-count id=busuanzi_value_site_pv><i class="fa fa-sync fa-spin"></i></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-font"></i>总字数：</div><div class=item-count id=wordsCount data-count></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-mug-hot"></i>阅读约：</div><div class=item-count id=readTimes data-times></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-clock-rotate-left"></i>最后更新于：</div><div class=item-count id=last-push-date data-lastpushdate></div></div></div></div></aside><div class=sidebar-dimmer></div></header><div class=tool-buttons><div id=goto-gtranslate class=button title=多语言翻译><i class="fas fa-globe"></i></div><div id=toggle-theme class=button title=深浅模式切换><i class="fas fa-adjust"></i></div><div class=back-to-top role=button title=返回顶部><i class="fa fa-arrow-up"></i>
+<span>0%</span></div></div><div class=reading-progress-bar></div><a role=button class="book-mark-link book-mark-link-fixed"></a><a href=https://github.com/hugo-next rel="noopener external nofollow noreferrer" target=_blank title="Follow me on GitHub" class="exturl github-corner"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0 0 115 115h15l12 27L250 250V0z"/><path d="M128.3 109C113.8 99.7 119 89.6 119 89.6 122 82.7 120.5 78.6 120.5 78.6 119.2 72 123.4 76.3 123.4 76.3 127.3 80.9 125.5 87.3 125.5 87.3 122.9 97.6 130.6 101.9 134.4 103.2" fill="currentcolor" style="transform-origin:130px 106px" class="octo-arm"/><path d="M115 115C114.9 115.1 118.7 116.5 119.8 115.4l13.9-13.8C136.9 99.2 139.9 98.4 142.2 98.6 133.8 88 127.5 74.4 143.8 58 148.5 53.4 154 51.2 159.7 51 160.3 49.4 163.2 43.6 171.4 40.1 171.4 40.1 176.1 42.5 178.8 56.2 183.1 58.6 187.2 61.8 190.9 65.4 194.5 69 197.7 73.2 200.1 77.6 213.8 80.2 216.3 84.9 216.3 84.9 212.7 93.1 206.9 96 205.4 96.6 205.1 102.4 203 107.8 198.3 112.5 181.9 128.9 168.3 122.5 157.7 114.1 157.9 116.9 156.7 120.9 152.7 124.9L141 136.5C139.8 137.7 141.6 141.9 141.8 141.8z" fill="currentcolor" class="octo-body"/></svg>
+</a><script type=text/javascript src=//sidecar.gitter.im/dist/sidecar.v1.js async></script><script type=text/javascript>((window.gitter={}).chat={}).options={room:"hugo-next/community"}</script><noscript><div class=noscript-warning>Theme NexT works best with JavaScript enabled</div></noscript><div class="main-inner post posts-expand"><div class=post-block><article itemscope itemtype=http://schema.org/Article class=post-content lang><link itemprop=mainEntityOfPage href=https://erge.blog/system/linux/ansible/use-ansible/><span hidden itemprop=author itemscope itemtype=http://schema.org/Person><meta itemprop=image content="/imgs/s2-1.jpg"><meta itemprop=name content="二哥"></span><span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization><meta itemprop=name content="二哥"><meta itemprop=description content="The man who has made up his mind to win will never say impossible – Napoleon Bonaparte"></span><span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork><meta itemprop=name content="Use Ansible"><meta itemprop=description content="Use-Ansible"></span><header class=post-header><h1 class=post-title itemprop="name headline">Use Ansible
+<a href=https://github.com/user-name/repo-name/tree/branch-name/subdirectory-name/System/Linux/Ansible/Use-Ansible.md rel="noopener external nofollow noreferrer" target=_blank class="exturl post-edit-link" title=编辑><i class="fa fa-pen-nib"></i></a></h1><div class=post-meta-container><div class=post-meta-items><span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-calendar"></i>
+</span><span class=post-meta-item-text title=发表于>发表于：
+</span><time title="创建时间：2023-12-26 18:06:45 +0800 CST" itemprop="dateCreated datePublished" datetime="2023-12-26 18:06:45 +0800 CST">2023-12-26
+</time></span><span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-folder-open"></i>
+</span><span class=post-meta-item-text title=分类于>分类于：
+</span><span itemprop=about itemscope itemtype=http://schema.org/Thing><a href=/categories/ci/cd itemprop=url rel=index><span itemprop=name>CI/CD</span></a></span></span></div><div class=post-meta-items><span class=post-meta-item title=字数><span class=post-meta-item-icon><i class="far fa-file-word"></i>
+</span><span class=post-meta-item-text>字数：</span>
+<span>4159</span>
+</span><span class=post-meta-item title=阅读><span class=post-meta-item-icon><i class="far fa-clock"></i>
+</span><span class=post-meta-item-text>阅读：&ap;</span>
+<span>9分钟</span>
+</span><span class=post-meta-item title=浏览><span class=post-meta-item-icon><i class="far fa-eye"></i>
+</span><span class=post-meta-item-text>浏览：
+</span><span id=busuanzi_value_page_pv data-path=/system/linux/ansible/use-ansible/><i class="fa fa-sync fa-spin"></i></span></span></div></div></header><div class="post-body autonumber" itemprop=articleBody><h2 id=配置使用ansible>配置使用<code>Ansible</code>
+<a class=header-anchor href=#%e9%85%8d%e7%bd%ae%e4%bd%bf%e7%94%a8ansible></a></h2><blockquote><table><thead><tr><th>地址</th><th>名称</th><th>简介</th></tr></thead><tbody><tr><td><a href=https://www.jianshu.com/p/7c4c47aa6b5a title="<code>ansible</code>总结" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>ansible</code>总结
+<i class="fa fa-external-link-alt"></i></a></td><td></td><td></td></tr><tr><td><a href=https://www.kancloud.cn/louis1986/ansible/587918 title="<code>Ansible</code>指南" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Ansible</code>指南
+<i class="fa fa-external-link-alt"></i></a></td><td></td><td></td></tr><tr><td><a href=http://docs.ansible.com/ansible/latest/become.html title="关于<code>become</code>属性" rel="noopener external nofollow noreferrer" target=_blank class=exturl>关于<code>become</code>属性
+<i class="fa fa-external-link-alt"></i></a></td><td></td><td></td></tr><tr><td><a href=https://docs.ansible.com/ansible/latest/user_guide/playbooks_intro.html title="<code>Ansible</code>剧本的语法" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Ansible</code>剧本的语法
+<i class="fa fa-external-link-alt"></i></a></td><td></td><td></td></tr><tr><td><a href=http://docs.ansible.com/ansible/latest/list_of_all_modules.html title="<code>Ansible</code>的内置模块列表" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Ansible</code>的内置模块列表
+<i class="fa fa-external-link-alt"></i></a></td><td></td><td></td></tr><tr><td><a href=https://juejin.im/entry/5ba6e5e4e51d450e51628272 title="<code>Ansible</code>批量自动化管理工具<code>roles</code>标准化" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Ansible</code>批量自动化管理工具<code>roles</code>标准化
+<i class="fa fa-external-link-alt"></i></a></td><td></td><td></td></tr><tr><td><a href=https://blog.csdn.net/wh211212/article/details/82763493 title="<code>ansible-playbook</code>调用<code>zabbix-api</code>自动添加主机" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>ansible-playbook</code>调用<code>zabbix-api</code>自动添加主机
+<i class="fa fa-external-link-alt"></i></a></td><td></td><td></td></tr><tr><td><a href=https://blog.csdn.net/wu2700222/article/details/80816988 title="<code>Ansible</code>批量安装<code>zabbix-agent</code>并使用<code>zabbix</code>自动添加主机" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Ansible</code>批量安装<code>zabbix-agent</code>并使用<code>zabbix</code>自动添加主机
+<i class="fa fa-external-link-alt"></i></a></td><td></td><td></td></tr><tr><td><strong>选项</strong></td><td><strong>描述</strong></td><td></td></tr><tr><td><code>-a MODULE_ARGS</code>,<br><code>--args=MODULE_ARGS</code></td><td>模块参数</td><td></td></tr><tr><td><code>-C</code>, <code>--check</code>、</td><td>运行检查，不执行任何操作</td><td></td></tr><tr><td><code>-e EXTRA_VARS</code>,<br><code>--extra-vars=EXTRA_VARS</code></td><td>设置附加变量<code>key=value</code></td><td></td></tr><tr><td><code>-f FORKS</code>, <code>--forks=FORKS</code></td><td>指定并行进程数量，默认5</td><td></td></tr><tr><td><code>-i INVENTORY</code>,<br><code>--inventory=INVENTORY</code></td><td>指定主机清单文件路径</td><td></td></tr><tr><td><code>--list-hosts</code></td><td>输出匹配的主机列表，不执行任何操作</td><td></td></tr><tr><td><code>-m MODULE_NAME</code>,<br><code>--module-name=MODULE_NAME</code></td><td>执行的模块名，默认<code>command</code></td><td></td></tr><tr><td><code>--syntax-check</code></td><td>语法检查<code>playbook</code>文件，不执行任何操作</td><td></td></tr><tr><td><code>-t TREE</code>, <code>--tree=TREE</code></td><td>将日志输出到此目录</td><td></td></tr><tr><td><code>-v</code>, <code>--verbose</code></td><td>详细信息：<code>-vvv</code>，更多：<code>-vvvv debug</code></td><td></td></tr><tr><td><code>--version</code></td><td>查看程序版本</td><td></td></tr><tr><td><strong>连接选项</strong></td><td><strong>控制谁连接主机和如何连接</strong></td><td></td></tr><tr><td><code>-k</code>, <code>--ask-pass</code></td><td>请求连接密码</td><td></td></tr><tr><td><code>--private-key=PRIVATE_KEY_FILE</code>,<br><code>--key-file=PRIVATE_KEY_FILE</code></td><td>私钥文件</td><td></td></tr><tr><td><code>-u REMOTE_USER</code>，<br><code>--user=REMOTE_USER</code></td><td>连接用户，默认<code>None</code></td><td></td></tr><tr><td><code>-T TIMEOUT</code>，<br><code>--timeout=TIMEOUT</code></td><td>覆盖连接超时时间，默认10秒</td><td></td></tr><tr><td><strong>提权选项</strong></td><td><strong>控制在目标主机以什么用户身份运行</strong></td><td></td></tr><tr><td><code>-b</code>，<code>--become</code></td><td>以另一个用户身份操作</td><td></td></tr><tr><td><code>--become-method=BECOME_METHOD</code></td><td>提权方法，默认<code>sudo</code></td><td></td></tr><tr><td><code>--become-user=BECOME_USER</code></td><td>提权后的用户身份，默认<code>root</code></td><td></td></tr><tr><td><code>-K</code>，<code>--ask-become-pass</code></td><td>提权密码</td><td></td></tr><tr><td><strong><a href=https://docs.ansible.com/ansible/latest/command_guide/intro_adhoc.html title=常用模块 rel="noopener external nofollow noreferrer" target=_blank class=exturl>常用模块
+<i class="fa fa-external-link-alt"></i></a></strong></td><td><strong>描述</strong></td><td></td></tr><tr><td><code>command</code>、<code>shell</code></td><td>执行<code>shell</code>命令</td><td></td></tr><tr><td><code>copy</code>、<code>file</code></td><td>文件传输</td><td></td></tr><tr><td><code>yum</code></td><td>管理软件包</td><td></td></tr><tr><td><code>user</code></td><td>用户和组</td><td></td></tr><tr><td><code>git</code></td><td>从源代码管理系统部署</td><td></td></tr><tr><td><code>service</code></td><td>管理服务</td><td></td></tr><tr><td><code>setup</code></td><td>收集目标主机信息</td><td></td></tr><tr><td><strong>配置文件指令</strong></td><td><strong>描述</strong></td><td></td></tr><tr><td><code>ansible_ssh_host</code></td><td>指定主机别名对应的真实<code>IP</code></td><td></td></tr><tr><td><code>ansible_ssh_port</code></td><td>指定连接到这个主机的<code>ssh</code>端口，默认<code>22</code></td><td></td></tr><tr><td><code>ansible_ssh_user</code></td><td>连接到该主机的<code>ssh</code>用户</td><td></td></tr><tr><td><code>ansible_ssh_pass</code></td><td>连接到该主机的<code>ssh</code>密码(连<code>-k</code>选项都省了)，安全考虑还是建议使用私钥或在命令行指定<code>-k</code>选项输入</td><td></td></tr><tr><td><code>ansible_sudo_pass</code></td><td><code>sudo</code>密码</td><td></td></tr><tr><td><code>ansible_sudo_exe</code>(<code>v1.8+</code>的新特性)</td><td><code>sudo</code>命令路径</td><td></td></tr><tr><td><code>ansible_ssh_private_key_file</code></td><td>私钥文件路径</td><td></td></tr><tr><td><code>ansible_nodename</code></td><td></td><td></td></tr><tr><td><code>ansible_connection</code></td><td>连接类型，可以是<code>local</code>、<code>ssh</code>或<code>paramiko</code>，<code>ansible1.2</code>之前默认为<code>paramiko</code></td><td></td></tr><tr><td><code>ansible_os_family</code></td><td></td><td></td></tr><tr><td><code>ansible_pkg_mgr</code></td><td></td><td></td></tr><tr><td><code>ansible_shell_type</code></td><td>目标系统的<code>shell</code>类型，默认为<code>sh</code>,如果设置<code>csh/fish</code>，那么命令需要遵循它们语法</td><td></td></tr><tr><td><code>ansible_processor</code></td><td></td><td></td></tr><tr><td><code>ansible_processor_cores</code></td><td></td><td></td></tr><tr><td><code>ansible_python_interpreter</code></td><td><code>python</code>解释器路径，默认是<code>/usr/bin/python</code>，但是如要要连<code>*BSD</code>系统的话，就需要该指令修改<code>python</code>路径</td><td></td></tr><tr><td><code>ansible_*_interpreter</code></td><td>这里的<code>*</code>可以是<code>ruby</code>或<code>perl</code>或其他语言的解释器，作用和<code>ansible_python_interpreter</code>类似</td><td></td></tr></tbody></table></blockquote><h3 id=配置文件参数>配置文件参数
+<a class=header-anchor href=#%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e5%8f%82%e6%95%b0></a></h3><h4 id=主配置文件>主配置文件
+<a class=header-anchor href=#%e4%b8%bb%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6></a></h4><div class="note info"><blockquote><ul><li><code>ansible-doc --help</code><font color=red>：获取使用帮助</font></li><li><code>ansible-playbook --help</code><font color=red>：获取剧本使用帮助</font></li><li><font color=red><mark>主机名</mark>不能使用<mark>下划线</mark></font><code>_</code></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/etc/ansible/ansible.cfg<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[defaults]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>inventory = /etc/ansible/hosts
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>forks = 5
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>become = root
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>remote_port = 22
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>host_key_checking = False
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>timeout = 10
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>log_path = /var/log/ansible.log
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>private_key_file = /root/.ssh/id_rsa
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 示例1：未分组的主机
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>green.example.com
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>blue.example.com
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>192.168.100.1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>192.168.100.10
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 示例2：属于webservers组主机集合
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[webservers]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>alpha.example.org
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>beta.example.org
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>192.168.1.100
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>192.168.1.110
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>www[001:006].example.com 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 示例3：属于dbservers组主机集合
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[dbservers]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>db01.intranet.mydomain.net
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>db02.intranet.mydomain.net
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>10.25.1.56
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>10.25.1.57
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>db-[99:101]-node.example.com
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 主机和主机组变量：
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[webservers:vars]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>http_port=8080
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>server_name=www.ctnrs.com
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SSH密码认证
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[webservers]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>192.168.1.10 ansible_ssh_user=root ansible_ssh_pass=&#39;123456’ http_port=80
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>192.168.1.11 ansible_ssh_user=root ansible_ssh_pass=&#39;123456’ http_port=80
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># SSH密钥对认证
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[webservers]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>192.168.1.10:22 ansible_ssh_user=root ansible_ssh_key=/root/.ssh/id_rsa
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[node]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>k8s-node-1 ansible_ssh_user=&#34;username&#34; ansible_ssh_pass=&#34;password&#34; ansible_ssh_port=&#34;port&#34; ansible_ssh_host=&#34;IP&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>k8s-node-2 ansible_ssh_user=&#34;username&#34; ansible_ssh_pass=&#34;password&#34; ansible_ssh_port=&#34;port&#34; ansible_ssh_host=&#34;IP&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[master]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>k8s-master ansible_ssh_user=&#34;username&#34; ansible_ssh_pass=&#34;password&#34; ansible_ssh_port=&#34;port&#34; ansible_ssh_host=&#34;IP&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># 应用示例
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>some_host ansible_ssh_port=2222 ansible_ssh_user=manager
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>aws_host ansible_ssh_private_key_file=/home/example/.ssh/aws.pem
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>freebsd_host ansible_python_interpreter=/usr/local/bin/python
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>ruby_module_host ansible_ruby_interpreter=/usr/bin/ruby.1.9.3
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><ul><li><font color=red>配置<code>sshd</code></font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ rpm -iUvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm  
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ sed  -i <span style=color:#e6db74>&#39;s/^#host_key_checking/host_key_checking/g&#39;</span> /etc/ansible/ansible.cfg
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ sed -i <span style=color:#e6db74>&#39;s/PasswordAuthentication[ \t]*no/PasswordAuthentication yes/&#39;</span> /etc/ssh/sshd_config
+</span></span><span style=display:flex><span>$ systemctl restart sshd
+</span></span></code></pre></div></blockquote></div><h4 id=子配置文件>子配置文件
+<a class=header-anchor href=#%e5%ad%90%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6></a></h4><div class="note info"><blockquote><ul><li><font color=red>对主机有效配置</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>/etc/ansible/host_vars/all  	<span style=color:#75715e># host_vars 目录用于存放 host 变量，all文件对所有主机有效</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>/etc/ansible/host_vars/foosball  	<span style=color:#75715e># 文件foosball要和hosts里面定义的主机名一样，表示只对 foosball主机有效</span>
+</span></span></code></pre></div><ul><li><font color=red>对组有效配置</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>/etc/ansible/group_vars/all  	<span style=color:#75715e># group_vars目录用于存放 group 变量，all文件对所有组有效</span>
+</span></span><span style=display:flex><span>/etc/ansible/group_vars/raleigh  	<span style=color:#75715e># 文件 raleigh 要和 hosts 里面定义的组名一样，表示对raleigh组下的所有主机有效</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ cat &gt;/etc/ansible/group_vars/webservers.yaml<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>http_port: 8080
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>server_name: www.ctnrs.com
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div></blockquote></div><h4 id=命令使用>命令使用
+<a class=header-anchor href=#%e5%91%bd%e4%bb%a4%e4%bd%bf%e7%94%a8></a></h4><div class="note info"><blockquote><ul><li><code>ping</code><font color=red>测试</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ ansible all -m ping
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 以bruce身份 ping 所有主机</span>
+</span></span><span style=display:flex><span>$ ansible all -m ping -u bruce
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 用bruce用户 以root身份 ping</span>
+</span></span><span style=display:flex><span>$ ansible all -m ping -u bruce --sudo
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 用bruce用户 sudo到 batman用户 ping</span>
+</span></span><span style=display:flex><span>$ ansible all -m ping -u bruce --sudo --sudo-user batman
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 在所有节点上执行命令</span>
+</span></span><span style=display:flex><span>$ ansible all -a <span style=color:#e6db74>&#34;/bin/echo hello&#34;</span>
+</span></span></code></pre></div><ul><li><font color=red>并行性和</font><code>shell</code><font color=red>命令</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># 重启 altanta 主机组的所有机器，每次重启 10 台</span>
+</span></span><span style=display:flex><span>$ ansible atlanta -a <span style=color:#e6db74>&#34;/sbin/reboot&#34;</span> -f <span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 以 geekwolf 用户身份在 atlanta 组的所有主机运行 foo 命令</span>
+</span></span><span style=display:flex><span>$ ansible atlanta -a <span style=color:#e6db74>&#34;/usr/bin/foo&#34;</span> -u geekwolf
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 以 geekwolf 用户身份 sudo 执行命令 foo（--ask-sudo-pass (-K) 如果有 sudo 密码请使用此参数）</span>
+</span></span><span style=display:flex><span>$ ansible atlanta -a <span style=color:#e6db74>&#34;/usr/bin/foo&#34;</span> -u geekwolf --sudo <span style=color:#f92672>[</span>--ask-sudo-pass<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 也可以 sudo 到其他用户执行命令非 root</span>
+</span></span><span style=display:flex><span>$ ansible atlanta -a <span style=color:#e6db74>&#34;/usr/bin/foo&#34;</span> -u username -U otheruser <span style=color:#f92672>[</span>--ask-sudo-pass<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 默认情况下，ansible 使用的 module 是 command，这个模块并不支持 shell 变量和管道等，若想使用shell 来执行模块，请使用-m 参数指定 shell 模块</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 使用 shell 模块在远程主机执行命令</span>
+</span></span><span style=display:flex><span>$ ansible raleigh -m shell -a <span style=color:#960050;background-color:#1e0010>&#39;</span>echo $TERM
+</span></span></code></pre></div><ul><li><font color=red>传输文件</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># 拷贝本地的/etc/hosts文件到 atlanta主机组所有主机的/tmp/hosts(空目录除外),如果使用playbooks 则可以充分利用 template 模块</span>
+</span></span><span style=display:flex><span>$ ansible atlanta -m copy -a <span style=color:#e6db74>&#34;src=/etc/hosts dest=/tmp/hosts&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># file 模块允许更改文件的用户及权限</span>
+</span></span><span style=display:flex><span>$ ansible webservers -m file -a <span style=color:#e6db74>&#34;dest=/srv/foo/a.txt mode=600&#34;</span>
+</span></span><span style=display:flex><span>$ ansible webservers -m file -a <span style=color:#e6db74>&#34;dest=/srv/foo/b.txt mode=600 owner=mdehaan group=mdehaan&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 使用 file 模块创建目录，类似 mkdir -p</span>
+</span></span><span style=display:flex><span>$ ansible webservers -m file -a <span style=color:#e6db74>&#34;dest=/path/to/c mode=755 owner=mdehaan group=mdehaan state=directory&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 使用 file 模块删除文件或者目录</span>
+</span></span><span style=display:flex><span>$ ansible webservers -m file -a <span style=color:#e6db74>&#34;dest=/path/to/c state=absent&#34;</span>
+</span></span></code></pre></div><ul><li><font color=red>管理软件包</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># 注释：Ansible 支持很多操作系统的软件包管理，使用时 -m 指定相应的软件包管理工具模块，如果没有这样的模块，可以自己定义类似的模块或者使用 command 模块来安装软件包</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># apt、yum 模块分表用于管理 Ubuntu 系列和 RedHat 系列系统软件包确保 acme 包已经安装，但不更新</span>
+</span></span><span style=display:flex><span>$ ansible webservers -m apt -a <span style=color:#e6db74>&#34;name=acme state=present&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 确保安装包到一个特定的版本</span>
+</span></span><span style=display:flex><span>$ ansible webservers -m apt -a <span style=color:#e6db74>&#34;name=acme-1.5 state=present&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 确保一个软件包是最新版本</span>
+</span></span><span style=display:flex><span>$ ansible webservers -m apt -a <span style=color:#e6db74>&#34;name=acme state=latest&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 确保一个软件包没有被安装</span>
+</span></span><span style=display:flex><span>$ ansible webservers -m apt -a <span style=color:#e6db74>&#34;name=acme state=absent&#34;</span>
+</span></span></code></pre></div><ul><li><font color=red>用户和用户组</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># 使用 user 模块对于创建新用户和更改、删除已存在用户非常方便</span>
+</span></span><span style=display:flex><span>$ ansible all -m user -a <span style=color:#e6db74>&#34;name=foo password=&lt;crypted password here&gt;&#34;</span>
+</span></span><span style=display:flex><span>$ ansible all -m user -a <span style=color:#e6db74>&#34;name=foo state=absent&#34;</span>
+</span></span></code></pre></div><ul><li><font color=red>服务管理</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># 确保 webservers 组所有主机的 httpd 是启动的</span>
+</span></span><span style=display:flex><span>$ ansible webservers -m service -a <span style=color:#e6db74>&#34;name=httpd state=started&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 重启 webservers 组所有主机的 httpd 服务</span>
+</span></span><span style=display:flex><span>$ ansible webservers -m service -a <span style=color:#e6db74>&#34;name=httpd state=restarted&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 确保 webservers 组所有主机的 httpd 是关闭的</span>
+</span></span><span style=display:flex><span>$ ansible webservers -m service -a <span style=color:#e6db74>&#34;name=httpd state=stopped&#34;</span>
+</span></span></code></pre></div><ul><li><font color=red>后台运行</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># 长时间运行的操作可以放到后台执行，ansible 会检查任务的状态；在主机上执行的同一个任务会分配同一个 job ID</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 后台执行命令 3600s，-B 表示后台执行的时间</span>
+</span></span><span style=display:flex><span>$ ansible all -B <span style=color:#ae81ff>3600</span> -a <span style=color:#e6db74>&#34;/usr/bin/long_running_operation --do-stuff&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 检查任务的状态</span>
+</span></span><span style=display:flex><span>$ ansible all -m async_status -a <span style=color:#e6db74>&#34;jid=123456789&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 后台执行命令最大时间是 1800s 即 30 分钟，-P 每 60s 检查下状态默认 15s</span>
+</span></span><span style=display:flex><span>$ ansible all -B <span style=color:#ae81ff>1800</span> -P <span style=color:#ae81ff>60</span> -a <span style=color:#e6db74>&#34;/usr/bin/long_running_operation --do-stuff&#34;</span>
+</span></span></code></pre></div><ul><li><font color=red>搜集系统信息</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># Facts 在 playbooks 一章中会有详细的描述，这里只通过命令获取所有的系统信息搜集主机的所有系统信息</span>
+</span></span><span style=display:flex><span>$ ansible all -m setup
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 搜集系统信息并以主机名为文件名分别保存在/tmp/facts 目录</span>
+</span></span><span style=display:flex><span>$ ansible all -m setup --tree /tmp/facts
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 搜集和内存相关的信息</span>
+</span></span><span style=display:flex><span>$ ansible all -m setup -a <span style=color:#e6db74>&#39;filter=ansible_*_mb&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 搜集网卡信息</span>
+</span></span><span style=display:flex><span>$ ansible all -m setup -a <span style=color:#960050;background-color:#1e0010>&#39;</span>filter<span style=color:#f92672>=</span>ansible_eth<span style=color:#f92672>[</span>0-2<span style=color:#f92672>]</span>
+</span></span></code></pre></div></blockquote></div><h3 id=配置ansible-playbook>配置<code>Ansible-Playbook</code>
+<a class=header-anchor href=#%e9%85%8d%e7%bd%aeansible-playbook></a></h3><div class="note info"><ul><li><ol><li><font color=red><code>Ansible-Playbook</code>目录、字段定义</font></li></ol></li></ul><blockquote><table><thead><tr><th>地址</th><th>描述</th></tr></thead><tbody><tr><td><a href=https://docs.ansible.com/ansible/latest/tips_tricks/ansible_tips_tricks.html title="<code>Ansible</code>官网文档" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Ansible</code>官网文档
+<i class="fa fa-external-link-alt"></i></a></td><td><code>Ansible Playbook</code>官方文档</td></tr><tr><td><a href=https://github.com/ansible/ansible-examples title="<code>Ansible</code>示例参考" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Ansible</code>示例参考
+<i class="fa fa-external-link-alt"></i></a></td><td>示例参考网址</td></tr><tr><td></td><td></td></tr></tbody></table><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ ansible-playbook example.yml --tags <span style=color:#e6db74>&#34;configuration,install&#34;</span>  	<span style=color:#75715e># 指定安装</span>
+</span></span><span style=display:flex><span>$ ansible-playbook example.yml --skip-tags <span style=color:#e6db74>&#34;install&#34;</span>  <span style=color:#75715e># 跳过步骤 </span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>ansible-playbook/
+</span></span><span style=display:flex><span>└── roles  <span style=color:#75715e># 剧本</span>
+</span></span><span style=display:flex><span>├── mysql
+</span></span><span style=display:flex><span>│   ├── files
+</span></span><span style=display:flex><span>│   ├── handlers
+</span></span><span style=display:flex><span>│   ├── tasks
+</span></span><span style=display:flex><span>│   ├── templates
+</span></span><span style=display:flex><span>│   └── vars
+</span></span><span style=display:flex><span>├── nginx  	<span style=color:#75715e># Nginx的角色剧本</span>
+</span></span><span style=display:flex><span>│   ├── files  	<span style=color:#75715e># 要用到的拷贝文件目录</span>
+</span></span><span style=display:flex><span>│   │   └── index.html
+</span></span><span style=display:flex><span>│   ├── handlers  	<span style=color:#75715e># 触发器目录，在变更时执行操作</span>
+</span></span><span style=display:flex><span>│   │   └── main.yaml
+</span></span><span style=display:flex><span>│   ├── tasks  	<span style=color:#75715e># 包含角色要执行的主要任务列表，用来安装程序服务</span>
+</span></span><span style=display:flex><span>│   │   └── main.yaml
+</span></span><span style=display:flex><span>│   ├── templates  	<span style=color:#75715e># 模板目录</span>
+</span></span><span style=display:flex><span>│   │   └── nginx.conf.j2
+</span></span><span style=display:flex><span>│   └── vars  	<span style=color:#75715e># 变量目录</span>
+</span></span><span style=display:flex><span>│       └── main.yaml
+</span></span><span style=display:flex><span>└── site.yaml  	<span style=color:#75715e># 定义那个节点或者那组服务器执行，可以定义多个角色剧本</span>
+</span></span></code></pre></div><ul><li><code>name</code><font color=red>：每个</font><code>play</code><font color=red>名字</font></li><li><code>hosts</code><font color=red>：每个</font><code>play</code><font color=red>涉及被管理的服务器，同</font><code>ad-hoc</code><font color=red>中的资产选择器</font></li><li><code>tasks</code><font color=red>：每个</font><code>play</code><font color=red>中具体要完成的任务，以列表的形式表达</font></li><li><code>become</code><font color=red>：如果需要提权，则加上</font><code>become</code><font color=red>相关属性</font></li><li><code>become_user</code><font color=red>：若要提权的话，提权到那个用户上</font></li><li><code>remote_user</code><font color=red>：指定连接到远程节点的用户，就是在远程服务器上执行具体操作的用户吗，若不指定，则默认使用当前执行</font><code>ansible-playbook</code><font color=red>的用户</font></li></ul></blockquote></div><h4 id=ansible-playbookroles><code>Ansible-Playbook</code>→<code>Roles</code>
+<a class=header-anchor href=#ansible-playbookroles></a></h4><h5 id=ansible-playbookrolesnginx><code>Ansible-Playbook</code>→<code>Roles</code>→<code>Nginx</code>
+<a class=header-anchor href=#ansible-playbookrolesnginx></a></h5><div class="note info"><ul><li><ol><li><code>Roles</code>→<code>Nginx</code><font color=red>目录下文件夹配置</font></li></ol></li></ul><blockquote><ul><li>1.1 <code>Files</code><font color=red>要用到的文件目录</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/opt/ansible-playbook/roles/nginx/files/index.html<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>TEST
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><ul><li>1.2 <code>Handlers</code><font color=red>触发器目录</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/opt/ansible-playbook/roles/nginx/handlers/main.yaml<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>---
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>- name: restart nginx
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  service: name=nginx state=restarted
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><ul><li>1.3 <code>Tasks</code><font color=red>任务主要目录，用来安装程序服务</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/opt/ansible-playbook/roles/nginx/tasks/main.yaml<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>--- # 声明
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>- hosts: webservers
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  vars:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    hello: Ansible
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  tasks:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: Add repo 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    yum_repository:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      name: nginx
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      description: nginx repo
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      baseurl: http://nginx.org/packages/centos/7/$basearch/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      gpgcheck: no
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      enabled: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	# 定义执行项目名称，安装服务
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: Install Nginx packge
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	yum: name={{ item }} state=lates # item 为内置变量
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	with_items:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	- epel-release
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	- nginx
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	# 拷贝文件
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: Copy index.html
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	copy: 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	  src: index.html
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	  dest: /usr/local/nginx/html/index.html
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	# 拷贝文件
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: Copy nginx.conf Teplate
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	temlate: 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	  src: nginx.conf.j2
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	  dest: /usr/local/nginx/conf/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	notify: restart nginx  # nginx.conf.j2 文件拷贝成功，通知handlers(触发器) 重启使之生效
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	# 启动服务
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: make sure nginx service running
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	service: 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	  name: nginx
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	  state: started
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	  enabled: yes
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	# 创建项目目录
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: Create wwwroot directory
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	file:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	  dest: /var/www/html
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	  state: directory
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	# 创建一个索引文件  
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: Create test page index.html
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	shell: echo &#34;hello {{hello}}&#34; &gt; /var/www/html/index.html
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><ul><li>1.4 <code>Templates</code><font color=red>模板目录</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/opt/ansible-playbook/roles/nginx/templates/nginx.conf.j2<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>user  nobody;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>worker_processes {{ ansible_processor_cores }};  	# 服务内置变量
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>events {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    worker_connections {{ worker_connections }};  	# 自定义变量
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>http {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    include       mime.types;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    default_type  application/octet-stream;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    sendfile        on;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    keepalive_timeout  65;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    server {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        listen       80;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        server_name  localhost;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        location / {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            root   html;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            index  index.html index.htm;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        error_page   500 502 503 504  /50x.html;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        location = /50x.html {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            root   html;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><ul><li>1.5 <code>vars</code><font color=red>自定义变量目录</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/opt/ansible-playbook/roles/nginx/vars/main.yaml<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>worker_connections: 10240;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><ul><li>1.6 <code>site.conf</code>目录</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;site.yaml<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>server {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	listen 80;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	server_name www.ctnrs.com;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	location / {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>		root /var/www/html;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>		index index.html;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>	}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div></blockquote></div><h5 id=ansible-playbookrolessiteyaml><code>Ansible-Playbook</code>→<code>Roles</code>→<code>Site.yaml</code>
+<a class=header-anchor href=#ansible-playbookrolessiteyaml></a></h5><div class="note info"><ul><li><ol><li><font color=red>配置</font><code>Ansible-Playbook</code><font color=red>下</font><code>Roles</code><font color=red>目录下</font><code>site.yaml</code>文件</font></li></ol></li></ul><blockquote><ul><li><code>site.yaml</code><font color=red>文件，定义那个节点或者那组服务器执行什么程序</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/opt/ansible-playbook/roles/site.yaml<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>- hosts: web
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  roles:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - nginx
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>- hosts: mysql
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  roles:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - mysql
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div></blockquote><ul><li><font color=red>检查</font><code>Ansible-Playbook</code><font color=red>语法以及执行</font></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ ansible-playbook /opt/ansible-playbook/roles/site.yaml --syntax-chek  	<span style=color:#75715e># 检查脚本语法 --syntax-chek 参数</span>
+</span></span><span style=display:flex><span>$ ansible-playbook /opt/ansible-playbook/roles/site.yaml -C  	<span style=color:#75715e># -C 模拟运行查看流程是否会出错</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ ansible-playbook /opt/ansible-playbook/roles/site.yaml
+</span></span></code></pre></div></blockquote></div><h3 id=-ansible-playbook完整剧本示例><code>Ansible-Playbook</code>完整剧本示例
+<a class=header-anchor href=#-ansible-playbook%e5%ae%8c%e6%95%b4%e5%89%a7%e6%9c%ac%e7%a4%ba%e4%be%8b></a></h3><div class="note info"><ul><li><ol><li><font color=red>进阶剧本语法</font></li></ol></li></ul><blockquote><ul><li><code>when</code><font color=red>逻辑判断</font></li><li><code>include</code><font color=red>剧本引用</font></li><li><code>Handlers</code><font color=red>触发器</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/opt/ansible-playbook/nginx.yaml<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>- hosts: web_server
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> vars:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    app_path: &#34;{{ base_path }}/app&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    http_port: 80
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    max_clients: 256
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  become: true  	# 需要目标主机的用户具有sudo权限
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  tasks:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: ensure apache is at the latest version
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    yum: name=httpd state=latest
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: ensure apahech is running
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    service: name=httpd state=started
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name:  	# 创建或修改文件&amp;目录
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    file:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      path: /tmp/demo
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      state: directory
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      mode: 0755
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name:  	# 拷贝文件到目标主机
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    copy:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      src: /etc/hostname
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      dest: /tmp/demo/hostname
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: disable selinux
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    command: /sbin/setenforce 0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: run this command and ignore the result
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    shell: /usr/bin/somecommand || /bin/true 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    ignore_errors: True  	# 忽略报错信息
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name:  	# 用模板生成配置文件
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    template:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      src: demo.j2
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      dest: &#34;{{ ansible_user_dir }}/demo.cfg&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  handlers
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    - name: restart apache
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      service: name=httpd state=restart
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ cat <span style=color:#e6db74>&lt;&lt;EOF &gt;roles/demo-role/tasks/main.yml
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>- include: yum.yml
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  when: (ansible_distribution|lower == &#39;redhat&#39;) or (ansible_distribution|lower == &#39;centos&#39;)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>- include: apt.yml
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  when: (ansible_distribution|lower == &#39;debian&#39;) or (ansible_distribution|lower == &#39;ubuntu&#39;)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ cat <span style=color:#e6db74>&lt;&lt;EOF &gt;roles/demo-role/tasks/yum.yml
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>- name:  	# 使用Yum安装Apache服务
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  yum:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    name: &#34;{{ redhat_app }}&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    state: &#34;{{ app_state }}&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  notify:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - done
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ cat <span style=color:#e6db74>&lt;&lt;EOF &gt;roles/demo-role/tasks/apt.yml
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>- name:  	# 使用Apt安装Apache服务
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  apt:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    name: &#34;{{ debian_app }}&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    state: &#34;{{ app_state }}&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  notify:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - done
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ cat <span style=color:#e6db74>&lt;&lt;EOF &gt;roles/demo-role/vars/main.yml
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>redhat_app: httpd
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>debian_app: apache2
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ cat <span style=color:#e6db74>&lt;&lt;EOF &gt;roles/demo-role/handlers/main.yml
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>- name: done
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  debug:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    msg: &#34;Apache服务已部署&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><ul><li><font color=red>自动部署</font><code>Tomcat</code></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-yaml data-lang=yaml><span style=display:flex><span>---
+</span></span><span style=display:flex><span>- <span style=color:#f92672>hosts</span>: <span style=color:#ae81ff>webservers </span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>gather_facts</span>: <span style=color:#66d9ef>no</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>vars</span>:
+</span></span><span style=display:flex><span>	<span style=color:#f92672>tomcat_version</span>: <span style=color:#ae81ff>8.5.34</span>
+</span></span><span style=display:flex><span>	<span style=color:#f92672>tomcat_install_dir</span>: <span style=color:#ae81ff>/usr/local</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>tasks</span>:
+</span></span><span style=display:flex><span>	- <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Install jdk1.8</span>
+</span></span><span style=display:flex><span>	<span style=color:#f92672>yum</span>: <span style=color:#ae81ff>name=java-1.8.0-openjdk state=present</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	- <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Download tomcat</span>
+</span></span><span style=display:flex><span>	  <span style=color:#f92672>get_url</span>: <span style=color:#ae81ff>url=http://mirrors.hust.edu.cn/apache/tomcat/tomcat-</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>8</span><span style=color:#ae81ff>/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz dest=/tmp</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	- <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Unarchive tomcat-{{ tomcat_version }}.tar.gz</span>
+</span></span><span style=display:flex><span>	  <span style=color:#f92672>unarchive</span>:
+</span></span><span style=display:flex><span>		<span style=color:#f92672>src</span>: <span style=color:#ae81ff>/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz </span>
+</span></span><span style=display:flex><span>		<span style=color:#f92672>dest</span>: <span style=color:#e6db74>&#34;{{ tomcat_install_dir }}&#34;</span>
+</span></span><span style=display:flex><span>		<span style=color:#f92672>copy</span>: <span style=color:#66d9ef>no</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	- <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Start tomcat </span>
+</span></span><span style=display:flex><span>	  <span style=color:#f92672>shell</span>: <span style=color:#ae81ff>cd {{ tomcat_install_dir }} &amp;&amp;</span>
+</span></span><span style=display:flex><span>		<span style=color:#ae81ff>mv apache-tomcat-{{ tomcat_version }} tomcat8 &amp;&amp;</span>
+</span></span><span style=display:flex><span>		<span style=color:#ae81ff>cd tomcat8/bin &amp;&amp; nohup ./startup.sh &amp;</span>
+</span></span></code></pre></div></blockquote></div></div><footer class=post-footer><div class=post-tags><a href=/tags/ci/cd>CI/CD
+</a><a href=/tags/ansible>Ansible</a></div><div class=addthis_inline_share_toolbox style=text-align:center></div><hr><div class=reward-container><div><i class="fa-solid fa-mug-hot"></i>请我喝杯咖啡吧 ヾ(^▽^*)))</div><button>
+赞赏</button><div class=post-reward><div class=post-reward-item><img src=/imgs/img-lazy-loading.gif data-src=/imgs/ali-pay.png alt="二哥 - 支付宝">
+<span>支付宝</span></div><div class=post-reward-item><img src=/imgs/img-lazy-loading.gif data-src=/imgs/wechat-pay.png alt="二哥 - 微信">
+<span>微信</span></div></div></div><div class=post-copyright><img src=/imgs/cc/cc.svg width=75 height=75 align=right alt=共享知识><ul><li class=post-copyright-title><strong>文章标题：</strong>
+Use Ansible</li><li class=post-copyright-author><strong>本文作者： </strong>二哥</li><li class=post-copyright-link><strong>本文链接：</strong>
+<a id=post-cr-link href=https://erge.blog/system/linux/ansible/use-ansible/ title="Use Ansible">https://erge.blog/system/linux/ansible/use-ansible/</a></li><li class=post-copyright-license><strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <i class="fab fa-fw fa-creative-commons"></i><a target=_blank href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh>BY-NC-SA</a> 许可协议。转载请注明出处！</li></ul></div><div class=followme><span>欢迎关注我的其它发布渠道</span><div class=social-list><div class=social-item><a target=_blank class=social-link href=/images/wechat_channel.jpg><span class=icon><i class="fab fa-weixin"></i>
+</span><span class=label>WeChat</span></a></div><div class=social-item><a target=_blank class=social-link href=/atom.xml><span class=icon><i class="fa fa-rss"></i>
+</span><span class=label>RSS</span></a></div></div></div><div class=post-nav><div class="post-nav-next post-nav-item"><a href=/system/linux/gitlab/install-gitea/ rel=next title="Install Gitea"><i class="fa fa-chevron-left"></i> Install Gitea</a></div><div class="post-nav-prev post-nav-item"><a href=/system/linux/kubernetes/kubernetes-command/ rel=prev title="Kubernetes Command">Kubernetes Command
+<i class="fa fa-chevron-right"></i></a></div></div></footer></article></div></div></main><footer class=footer><div class=footer-inner><div id=gtranslate class=google-translate><i class="fa fa-language"></i><div id=google_translate_element></div></div><div class=copyright>&copy;
+<span itemprop=copyrightYear>2010 - 2024
+</span><span class=with-love><i class="fa fa-heart"></i>
+</span><span class=author itemprop=copyrightHolder>二哥</span></div><div class=powered-by>由 <a href=https://gohugo.io title=0.125.4 target=_blank>Hugo</a> & <a href=https://github.com/hugo-next/hugo-theme-next title=4.5.3 target=_blank>Hugo NexT.Gemini</a> 强力驱动</div><div class=beian><a href=https://beian.miit.gov.cn target=_blank>粤ICP备 18047355-1 号</a>
+<img src=/imgs/gongan.png alt=沪公网安备>
+<a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31011402009770" target=_blank>沪公网安备 31011402009770 号</a></div><div class=vendors-list><a target=_blank href=https://vercel.com title=Vercel><img src=/imgs/img-lazy-loading.gif data-src=/imgs/vendors/vercel.svg alt=Vercel>
+</a><a target=_blank href=https://upyun.com title=又拍云><img src=/imgs/img-lazy-loading.gif data-src=/imgs/vendors/upyun.png alt=又拍云>
+</a><a target=_blank href=https://webify.cloudbase.net title=Webify>Webify
+</a><span>提供CDN/云资源支持</span></div></div></footer><script type=text/javascript src=https://cdn.staticfile.org/animejs/3.2.1/anime.min.js defer></script><script type=text/javascript src=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.js defer></script><script class=next-config data-name=main type=application/json>{"bookmark":{"color":"#222","enable":true,"save":"manual"},"copybtn":true,"darkmode":false,"giscus":{"cfg":{"category":"Comments","categoryid":null,"emit":false,"inputposition":"top","mapping":"title","reactions":false,"repo":"username/repo-name","repoid":null,"theme":"preferred_color_scheme"},"js":"https://giscus.app/client.js"},"hostname":"https://erge.blog/","i18n":{"ds_day":" 天前","ds_days":" 天 ","ds_hour":" 小时前","ds_hours":" 小时 ","ds_just":"刚刚","ds_min":" 分钟前","ds_mins":" 分钟","ds_month":" 个月前","ds_years":" 年 ","empty":"没有找到任何搜索结果：${query}","hits":"找到 ${hits} 个搜索结果","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","placeholder":"搜索..."},"lang":"zh-CN","lazyload":false,"localSearch":{"enable":true,"limit":1e3,"path":"/searchindexes.xml","preload":false,"topnperarticle":-1,"trigger":"auto","unescape":false},"motion":{"async":true,"enable":true,"transition":{"collheader":"fadeInLeft","postblock":"fadeIn","postbody":"fadeInDown","postheader":"fadeInDown","sidebar":"fadeInUp"}},"postmeta":{"comments":{"enable":true,"plugin":"waline"},"views":{"enable":true,"plugin":"busuanzi"}},"root":"/","scheme":"Gemini","sidebar":{"display":"post","offset":12,"padding":18,"position":"left","width":256},"vendor":{"plugins":"qiniu","router":"https://cdn.staticfile.org"},"version":"4.5.3","waline":{"cfg":{"emoji":false,"imguploader":false,"placeholder":"请文明发言哟 ヾ(≧▽≦*)o","reaction":true,"reactiontext":["点赞","踩一下","得意","不屑","尴尬","睡觉"],"reactiontitle":"你认为这篇文章怎么样？","requiredmeta":["nick","mail"],"serverurl":null,"sofa":"快来发表你的意见吧 (≧∀≦)ゞ","wordlimit":200},"css":{"alias":"waline","file":"dist/waline.css","name":"@waline/client","version":"2.13.0"},"js":{"alias":"waline","file":"dist/waline.js","name":"@waline/client","version":"2.13.0"}}}</script><script type=text/javascript src=/js/main.min.b0c78e5a4df586ee46d02716ffa91a4a322e56763e04e91eb2ba052c9469ed02.js defer></script></body></html>

@@ -1,0 +1,575 @@
+<!doctype html><html lang=zh-CN data-theme=light><head><meta charset=UTF-8><meta name=viewport content="width=device-width"><meta name=theme-color content="#222" media="(prefers-color-scheme: light)"><meta name=generator content="Hugo 0.125.4"><link rel="shortcut icon" type=image/x-icon href=/imgs/icons/favicon.ico><link rel=icon type=image/x-icon href=/imgs/icons/favicon.ico><link rel=icon type=image/png sizes=16x16 href=/imgs/icons/favicon_16x16_next.png><link rel=icon type=image/png sizes=32x32 href=/imgs/icons/favicon_32_32_next.png><link rel=apple-touch-icon sizes=180x180 href=/imgs/icons/apple_touch_icon_next.png><meta itemprop=name content="Configure Rabbitmq"><meta itemprop=description content="Configure-Rabbitmq"><meta itemprop=datePublished zgotmplz><meta itemprop=dateModified zgotmplz><meta itemprop=image content="https://erge.blog/imgs/s2-1.jpg"><meta itemprop=keywords content="Message Queue,RabbitMQ"><meta property="og:type" content="article"><meta property="og:title" content="Configure Rabbitmq"><meta property="og:description" content="Configure-Rabbitmq"><meta property="og:image" content="/imgs/s2-1.jpg"><meta property="og:image:width" content="312"><meta property="og:image:height" content="312"><meta property="og:image:type" content="image/jpeg/png/svg/jpg"><meta property="og:url" content="https://erge.blog/system/linux/message-queue/configure-rabbitmq/"><meta property="og:site_name" content="二哥"><meta property="og:locale" content="zh-CN"><meta property="article:author" content="二哥"><meta property="article:published_time" content="2022-07-18 13:45:54 +0800 CST"><meta property="article:modified_time" content="2022-11-15 13:45:54 +0800 CST"><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/font-awesome/6.1.2/css/all.min.css><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.css><link rel=stylesheet href=/css/main.min.0d420b6f564e6674edd4354ea71c0458a83f95ad464a75114b23d72515b1456c.css><script type=text/javascript>(function(){localDB={set:function(e,t,n){if(n===0)return;const s=new Date,o=n*864e5,i={value:t,expiry:s.getTime()+o};localStorage.setItem(e,JSON.stringify(i))},get:function(e){const t=localStorage.getItem(e);if(!t)return void 0;const n=JSON.parse(t),s=new Date;return s.getTime()>n.expiry?(localStorage.removeItem(e),void 0):n.value}},theme={active:function(){const e=localDB.get("theme");if(e==null)return;theme.toggle(e),window.matchMedia("(prefers-color-scheme: dark)").addListener(function(e){theme.toggle(e.matches?"dark":"light")})},toggle:function(e){document.documentElement.setAttribute("data-theme",e),localDB.set("theme",e,2);const t=document.querySelector("iframe.giscus-frame");if(t){const n={setConfig:{theme:e}};t.contentWindow.postMessage({giscus:n},"https://giscus.app")}}},theme.active()})(window)</script><script class=next-config data-name=page type=application/json>{"comments":true,"isHome":false,"isPage":true,"path":"configure-rabbitmq","permalink":"https://erge.blog/system/linux/message-queue/configure-rabbitmq/","title":"Configure Rabbitmq","waline":{"js":[{"alias":"waline","alias_name":"@waline/client","file":"dist/pageview.js","name":"pageview","version":"2.13.0"},{"alias":"waline","alias_name":"@waline/client","file":"dist/comment.js","name":"comment","version":"2.13.0"}]}}</script><script type=text/javascript>document.addEventListener("DOMContentLoaded",()=>{var e=document.createElement("script");e.charset="UTF-8",e.src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js",e.async=!1,e.defer=!0,document.head.appendChild(e),e.onload=function(){NexT.utils.fmtBusuanzi()}})</script><title>Configure Rabbitmq - 二哥</title><noscript><link rel=stylesheet href=/css/noscript.css></noscript></head><body itemscope itemtype=http://schema.org/WebPage class=use-motion><div class=headband></div><main class=main><header class=header itemscope itemtype=http://schema.org/WPHeader><div class=header-inner><div class=site-brand-container><div class=site-nav-toggle><div class=toggle aria-label role=button><span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span></div></div><div class=site-meta><a href=/ class=brand rel=start><i class=logo-line></i><h1 class=site-title>二哥</h1><i class=logo-line></i></a><p class=site-subtitle itemprop=description>Linux、Kubernetes、Docker、Python、CI/CD、Jenkins、Mysql、Nginx、Gitlab、Ansible、Zabbix</p></div><div class=site-nav-right><div class="toggle popup-trigger"><i class="fa fa-search fa-fw fa-lg"></i></div></div></div><nav class=site-nav><ul class="main-menu menu"><li class="menu-item menu-item-Home"><a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-home hvr-icon"></i>首页</a></li><li class="menu-item menu-item-categories"><a href=/categories/ class=hvr-icon-pulse rel=section><i class="fa fa-th hvr-icon"></i>分类</a></li><li class="menu-item menu-item-archives"><a href=/archives/ class=hvr-icon-pulse rel=section><i class="fa fa-archive hvr-icon"></i>归档
+<span class=badge>0</span></a></li><li class="menu-item menu-item-tags"><a href=/tags/ class=hvr-icon-pulse rel=section><i class="fa fa-tags hvr-icon"></i>标签</a></li><li class="menu-item menu-item-tools"><a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-tools hvr-icon"></i>工具</a></li><li class="menu-item menu-item-flinks"><a href=/flinks.html class=hvr-icon-pulse rel=section><i class="fa fa-thumbs-up hvr-icon"></i>站点示例</a></li><li class="menu-item menu-item-about"><a href=/about.html class=hvr-icon-pulse rel=section><i class="fa fa-user hvr-icon"></i>关于</a></li><li class="menu-item menu-item-Commonweal"><a href=/404.html class=hvr-icon-pulse rel=section><i class="fa fa-heartbeat hvr-icon"></i>公益 404</a></li><li class="menu-item menu-item-search"><a role=button class="popup-trigger hvr-icon-pulse"><i class="fa fa-search fa-fw hvr-icon"></i>搜索</a></li></ul></nav><div class=search-pop-overlay><div class="popup search-popup"><div class=search-header><span class=search-icon><i class="fa fa-search"></i></span><div class=search-input-container><input autocomplete=off autocapitalize=off maxlength=80 placeholder=搜索... spellcheck=false type=search class=search-input></div><span class=popup-btn-close role=button><i class="fa fa-times-circle"></i></span></div><div class="search-result-container no-result"><div class=search-result-icon><i class="fa fa-spinner fa-pulse fa-5x"></i></div></div></div></div></div><div class="toggle sidebar-toggle" role=button><span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span></div><aside class=sidebar><div class="sidebar-inner sidebar-nav-active sidebar-toc-active"><ul class=sidebar-nav><li class=sidebar-nav-toc>文章目录</li><li class=sidebar-nav-overview>站点概览</li></ul><div class=sidebar-panel-container><div class="post-toc-wrap sidebar-panel"><div class="post-toc animated"><nav id=TableOfContents><ul><li><a href=#rabbitmq添加远程登录账户><code>Rabbitmq</code>添加远程登录账户</a></li><li><a href=#设置rabbitmq的limits以及rabbitmq无法新建连接问题处理过程记录>设置<code>Rabbitmq</code>的<code>Limits</code>以及<code>RabbitMQ</code>无法新建连接问题处理过程记录</a></li><li><a href=#rabbitmq-python监控脚本><code>Rabbitmq-python</code>监控脚本</a><ul><li><a href=#font-colorredzabbix-senderfont><font color=red><code>zabbix sender</code></font></a></li><li><a href=#pythonfont-colorred代码font><code>python</code><font color=red>代码</font></a></li></ul></li></ul></nav></div></div><div class="site-overview-wrap sidebar-panel"><div class="site-author site-overview-item animated" itemprop=author itemscope itemtype=http://schema.org/Person><img class=site-author-image itemprop=image alt=二哥 src=/imgs/img-lazy-loading.gif data-src=/imgs/s2-1.jpg><p class=site-author-name itemprop=name>二哥</p><div class=site-description itemprop=description>The man who has made up his mind to win will never say impossible – Napoleon Bonaparte</div></div><div class="site-state-wrap site-overview-item animated"><nav class=site-state><div class="site-state-item site-state-posts"><a href=/archives/><span class=site-state-item-count>0</span>
+<span class=site-state-item-name>日志</span></a></div><div class="site-state-item site-state-categories"><a href=/categories/><span class=site-state-item-count>51</span>
+<span class=site-state-item-name>分类</span></a></div><div class="site-state-item site-state-tags"><a href=/tags/><span class=site-state-item-count>149</span>
+<span class=site-state-item-name>标签</span></a></div></nav></div><div class="links-of-social site-overview-item animated"><span class=links-of-social-item><a href=qq%e5%8f%b7 title="QQ → qq号" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-qq fa-fw hvr-icon"></i>
+QQ
+</a></span><span class=links-of-social-item><a href=https://www.zhihu.com/people/lisenhui title="知乎 → https://www.zhihu.com/people/lisenhui" rel=noopener class=hvr-icon-pulse target=_blank><i class="fa fa-book fa-fw hvr-icon"></i>
+知乎
+</a></span><span class=links-of-social-item><a href=qq@qq.com title="E-Mail → qq@qq.com" rel=noopener class=hvr-icon-pulse target=_blank><i class="fa fa-envelope fa-fw hvr-icon"></i>
+E-Mail
+</a></span><span class=links-of-social-item><a href=https://weibo.com/yourname title="Weibo → https://weibo.com/yourname" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-weibo fa-fw hvr-icon"></i>
+Weibo
+</a></span><span class=links-of-social-item><a href="https://www.youtube.com/watch?v=RgKAFK5djSk" title="Youtube → https://www.youtube.com/watch?v=RgKAFK5djSk" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-youtube fa-fw hvr-icon"></i>
+Youtube
+</a></span><span class=links-of-social-item><a href=https://github.com/elkan1788 title="Github → https://github.com/elkan1788" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-github fa-fw hvr-icon"></i>
+Github</a></span></div><div class="cc-license animated" itemprop=license><a href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh class=cc-opacity rel=noopener target=_blank title=共享知识><img src=/imgs/img-lazy-loading.gif data-src=/imgs/cc/big/by_nc_sa.svg alt=共享知识></a></div><div class="links-of-blogroll site-overview-item animated"><div class=links-of-blogroll-title><i class="fa fa-globe fa-fw"></i>
+友情链接</div><ul class=links-of-blogroll-list><li class=links-of-blogroll-item><a href=https://gitee.com/hugo-next/hugo-theme-next title=https://gitee.com/hugo-next/hugo-theme-next target=_blank>Hugo-NexT</a></li><li class=links-of-blogroll-item><a href=https://lisenhui.cn title=https://lisenhui.cn target=_blank>凡梦星尘空间站</a></li></ul></div></div></div></div><div id=siteinfo-card-widget class=sidebar-card-widget><div class=item-headline><i class="fas fa-chart-line"></i>
+<span>网站资讯</span></div><div class=siteinfo><div class=siteinfo-item><div class=item-name><i class="fa-solid fa-calendar-check"></i>已运行：</div><div class=item-count id=runTimes data-publishdate></div></div><div class=siteinfo-item><div class=item-name><i class="fas fa fa-user"></i>总访客数：</div><div class=item-count id=busuanzi_value_site_uv><i class="fa fa-sync fa-spin"></i></div></div><div class=siteinfo-item><div class=item-name><i class="fas fa fa-eye"></i>页面浏览：</div><div class=item-count id=busuanzi_value_site_pv><i class="fa fa-sync fa-spin"></i></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-font"></i>总字数：</div><div class=item-count id=wordsCount data-count></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-mug-hot"></i>阅读约：</div><div class=item-count id=readTimes data-times></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-clock-rotate-left"></i>最后更新于：</div><div class=item-count id=last-push-date data-lastpushdate></div></div></div></div></aside><div class=sidebar-dimmer></div></header><div class=tool-buttons><div id=goto-comments class="button goto-comments" title=直达评论><i class="fas fa-comments"></i></div><div id=goto-gtranslate class=button title=多语言翻译><i class="fas fa-globe"></i></div><div id=toggle-theme class=button title=深浅模式切换><i class="fas fa-adjust"></i></div><div class=back-to-top role=button title=返回顶部><i class="fa fa-arrow-up"></i>
+<span>0%</span></div></div><div class=reading-progress-bar></div><a role=button class="book-mark-link book-mark-link-fixed"></a><a href=https://github.com/hugo-next rel="noopener external nofollow noreferrer" target=_blank title="Follow me on GitHub" class="exturl github-corner"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0 0 115 115h15l12 27L250 250V0z"/><path d="M128.3 109C113.8 99.7 119 89.6 119 89.6 122 82.7 120.5 78.6 120.5 78.6 119.2 72 123.4 76.3 123.4 76.3 127.3 80.9 125.5 87.3 125.5 87.3 122.9 97.6 130.6 101.9 134.4 103.2" fill="currentcolor" style="transform-origin:130px 106px" class="octo-arm"/><path d="M115 115C114.9 115.1 118.7 116.5 119.8 115.4l13.9-13.8C136.9 99.2 139.9 98.4 142.2 98.6 133.8 88 127.5 74.4 143.8 58 148.5 53.4 154 51.2 159.7 51 160.3 49.4 163.2 43.6 171.4 40.1 171.4 40.1 176.1 42.5 178.8 56.2 183.1 58.6 187.2 61.8 190.9 65.4 194.5 69 197.7 73.2 200.1 77.6 213.8 80.2 216.3 84.9 216.3 84.9 212.7 93.1 206.9 96 205.4 96.6 205.1 102.4 203 107.8 198.3 112.5 181.9 128.9 168.3 122.5 157.7 114.1 157.9 116.9 156.7 120.9 152.7 124.9L141 136.5C139.8 137.7 141.6 141.9 141.8 141.8z" fill="currentcolor" class="octo-body"/></svg>
+</a><script type=text/javascript src=//sidecar.gitter.im/dist/sidecar.v1.js async></script><script type=text/javascript>((window.gitter={}).chat={}).options={room:"hugo-next/community"}</script><noscript><div class=noscript-warning>Theme NexT works best with JavaScript enabled</div></noscript><div class="main-inner post posts-expand"><div class=post-block><article itemscope itemtype=http://schema.org/Article class=post-content lang><link itemprop=mainEntityOfPage href=https://erge.blog/system/linux/message-queue/configure-rabbitmq/><span hidden itemprop=author itemscope itemtype=http://schema.org/Person><meta itemprop=image content="/imgs/s2-1.jpg"><meta itemprop=name content="二哥"></span><span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization><meta itemprop=name content="二哥"><meta itemprop=description content="The man who has made up his mind to win will never say impossible – Napoleon Bonaparte"></span><span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork><meta itemprop=name content="Configure Rabbitmq"><meta itemprop=description content="Configure-Rabbitmq"></span><header class=post-header><h1 class=post-title itemprop="name headline">Configure Rabbitmq
+<a href=https://github.com/user-name/repo-name/tree/branch-name/subdirectory-name/System/Linux/Message-Queue/Configure-Rabbitmq.md rel="noopener external nofollow noreferrer" target=_blank class="exturl post-edit-link" title=编辑><i class="fa fa-pen-nib"></i></a></h1><div class=post-meta-container><div class=post-meta-items><span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-calendar"></i>
+</span><span class=post-meta-item-text title=发表于>发表于：
+</span><time title="创建时间：2022-07-18 13:45:54 +0800 CST" itemprop="dateCreated datePublished" datetime="2022-07-18 13:45:54 +0800 CST">2022-07-18
+</time></span><span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-calendar-check"></i>
+</span><span class=post-meta-item-text title=更新于>更新于：
+</span><time title=修改时间：2022-11-15T13:45:54+08:00 itemprop=dateModified datetime=2022-11-15T13:45:54+08:00>2022-11-15</time>
+</span><span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-folder-open"></i>
+</span><span class=post-meta-item-text title=分类于>分类于：
+</span><span itemprop=about itemscope itemtype=http://schema.org/Thing><a href=/categories/message-queue itemprop=url rel=index><span itemprop=name>Message Queue</span></a></span></span></div><div class=post-meta-items><span class=post-meta-item title=字数><span class=post-meta-item-icon><i class="far fa-file-word"></i>
+</span><span class=post-meta-item-text>字数：</span>
+<span>4325</span>
+</span><span class=post-meta-item title=阅读><span class=post-meta-item-icon><i class="far fa-clock"></i>
+</span><span class=post-meta-item-text>阅读：&ap;</span>
+<span>9分钟</span>
+</span><span class=post-meta-item title=浏览><span class=post-meta-item-icon><i class="far fa-eye"></i>
+</span><span class=post-meta-item-text>浏览：
+</span><span id=busuanzi_value_page_pv data-path=/system/linux/message-queue/configure-rabbitmq/><i class="fa fa-sync fa-spin"></i>
+</span></span><span class=post-meta-item title><span class=post-meta-item-icon><i class="far fa-comments"></i>
+</span><span class=post-meta-item-text title=评论>评论：
+</span><span id=comments-count class=waline-comment-count data-path=/system/linux/message-queue/configure-rabbitmq/><i class="fa fa-sync fa-spin"></i></span></span></div></div></header><div class="post-body autonumber" itemprop=articleBody><h2 id=rabbitmq添加远程登录账户><code>Rabbitmq</code>添加远程登录账户
+<a class=header-anchor href=#rabbitmq%e6%b7%bb%e5%8a%a0%e8%bf%9c%e7%a8%8b%e7%99%bb%e5%bd%95%e8%b4%a6%e6%88%b7></a></h2><div class="note info"><ul><li><ol><li><font color=red>添加配置文件在</font><code>/etc/rabbitmq/rabbitmq.config</code><font color=red>配置文件下（如果不存在就自行创建）添加</font></li></ol></li></ul><blockquote><ul><li>1.1<code>admin</code><font color=red>就是用户名称</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat /etc/rabbitmq/rabbitmq.config
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>
+</span></span><span style=display:flex><span> <span style=color:#f92672>{</span>rabbit,<span style=color:#f92672>[{</span>tcp_listeners,<span style=color:#f92672>[</span>5672<span style=color:#f92672>]}</span>,<span style=color:#f92672>{</span>loopback_users,<span style=color:#f92672>[</span><span style=color:#e6db74>&#34;admin&#34;</span><span style=color:#f92672>]}]}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>]</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=2><li><font color=red>使用命令添加用户并授权 添加用户</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ rabbitmqctl add_user admin admin
+</span></span></code></pre></div></blockquote><ul><li><ol start=3><li><font color=red>设置</font><code>permissions</code></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ rabbitmqctl set_permissions -p <span style=color:#e6db74>&#34;/&#34;</span> admin <span style=color:#e6db74>&#34;.*&#34;</span> <span style=color:#e6db74>&#34;.*&#34;</span> <span style=color:#e6db74>&#34;.*&#34;</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=4><li><font color=red>设置用户角色</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ rabbitmqctl set_user_tags admin administrator
+</span></span></code></pre></div></blockquote><ul><li><ol start=5><li><font color=red>查看新添加的</font><code>admin</code></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ rabbitmqctl list_users
+</span></span></code></pre></div></blockquote><ul><li><ol start=6><li><font color=red>查看用于的权限</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ ./rabbitmqctl list_permissions -p /
+</span></span></code></pre></div></blockquote></div><h2 id=设置rabbitmq的limits以及rabbitmq无法新建连接问题处理过程记录>设置<code>Rabbitmq</code>的<code>Limits</code>以及<code>RabbitMQ</code>无法新建连接问题处理过程记录
+<a class=header-anchor href=#%e8%ae%be%e7%bd%aerabbitmq%e7%9a%84limits%e4%bb%a5%e5%8f%8arabbitmq%e6%97%a0%e6%b3%95%e6%96%b0%e5%bb%ba%e8%bf%9e%e6%8e%a5%e9%97%ae%e9%a2%98%e5%a4%84%e7%90%86%e8%bf%87%e7%a8%8b%e8%ae%b0%e5%bd%95></a></h2><div class="note info"><ul><li><ol><li><font color=red>症状描述</font>客户反馈无法云平台<code>VNC</code>控制台窗口一直处于<code>loading</code>状态，无法打开</li></ol></li><li><ol start=2><li>定位过程</li></ol></li></ul><blockquote><ul><li>2.1 <font color=red>首先查看</font><code>nova-api</code><font color=red>服务是否正常</font><code>nova list</code><font color=red>正常</font></li><li>2.2 <font color=red>查看</font><code>nova service-list</code><font color=red>输出，所有服务在线</font></li><li>2.3 <font color=red>使用</font><code>nova get-vnc-console</code><font color=red>获取云主机</font><code>vnc</code><font color=red>链接，超时无法获取</font></li></ul></blockquote><ul><li><ol start=3><li>初步找到控制台窗口无法打开的原因，继续分析问题</li></ol></li></ul><blockquote><ul><li>3.1 <font color=red>查看云主机所在节点的</font><code>nova-compute</code><font color=red>服务，一切正常</font></li><li>3.2 <font color=red>查看</font><code>nova-compute</code><font color=red>日志，没有收到创建</font><code>vnc</code><font color=red>链接请求</font><code>vnc</code><font color=red>控制台链接是在云主机所在计算节点生成的，因为要查询云主机</font><code>qemu</code><font color=red>进程创建的</font><code>vnc server</code><font color=red>端口号，创建完成后要把</font><code>token</code><font color=red>和端口号对应关系保存到</font><code>nova-consoleauth</code><font color=red>进程，</font><code>nova-consoleauth</code><font color=red>进程会根据配置项决定把对应关系保存到进程内存还是</font><code>memcache</code><font color=red>服务，之前处理过一次控制节点内存不足导致</font><code>token</code><font color=red>保存失败的问题，这次也先查了下</font><code>nova-consoleauth</code><font color=red>日志，没有发现类似情况</font></li><li>3.3 <font color=red>查看</font><code>nova-api</code><font color=red>节点日志，发现收到了请求但没有返回</font></li><li>3.4 <font color=red>打开</font><code>nova-api</code><font color=red>和</font><code>nova-compute</code><font color=red>的</font><code>debug</code><font color=red>日志继续分析</font></li><li>3.5 <font color=red>发现</font><code>nova-api</code><font color=red>一直在尝试连接到</font><code>RabbitMQ</code><font color=red>，一直卡在</font><code>connecting</code><font color=red>，没有</font><code>connected</code><font color=red>日志</font></li></ul></blockquote><ul><li><ol start=4><li>找到更进一步的问题原因，继续分析问题</li></ol></li></ul><blockquote><ul><li>4.1 <font color=red>首先重启</font><code>nova-api</code><font color=red>服务，试验下能否恢复，发现启动进程时可以连接到</font><code>MQ</code>，<font color=red>但获取</font><code>vnc</code><font color=red>链接时问题仍然存在</font></li><li>4.2 <font color=red>通过</font><code>rabbitmqctl</code><font color=red>命令行查看</font><code>queue</code><font color=red>和</font><code>exchange</code><font color=red>情况，也没发现异常，云主机节点的</font><code>compute</code><font color=red>队列也有</font></li><li>4.3 <font color=red>重启</font><code>MQ</code><font color=red>服务，试验能否恢复，重启后发现</font><code>vnc</code><font color=red>链接获取命令恢复正常，页面打开控制台窗口正常</font></li></ul></blockquote><ul><li><ol start=5><li>问题解决但没找到原因，于是继续观察，等了大概2分钟，再次尝试打开<code>vnc</code>控制台窗口，发现老问题还在，一直<code>loading</code>，继续分析问题，</li></ol></li></ul><blockquote><ul><li>5.1<font color=red>查看</font><code>MQ</code><font color=red>服务器日志，发现异常</font></li><li>5.2 <font color=red>发现问题根本原因，文件句柄数量超出限制，</font><code>google</code><font color=red>搜索这个错误，发现了解决方法</font>
+<a href=https://my.oschina.net/moooofly/blog/678513 title="原创<code>RabbitMQ</code>之<code>file descriptor limit alarm</code>分析" rel="noopener external nofollow noreferrer" target=_blank class=exturl>原创<code>RabbitMQ</code>之<code>file descriptor limit alarm</code>分析
+<i class="fa fa-external-link-alt"></i></a></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-fallback data-lang=fallback><span style=display:flex><span>=WARNING REPORT==== 25-Oct-2017::10:35:48 ===
+</span></span><span style=display:flex><span>file descriptor limit alarm set.
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>********************************************************************
+</span></span><span style=display:flex><span>*** New connections will not be accepted until this alarm clears ***
+</span></span><span style=display:flex><span>********************************************************************
+</span></span></code></pre></div></blockquote><ul><li><ol start=6><li><font color=red>首先修改</font><code>MQ</code><font color=red>节点物理机文件句柄数量配置（增加如下两行）</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat /etc/security/limits.conf  | grep nofile
+</span></span><span style=display:flex><span>* soft nofile <span style=color:#ae81ff>262144</span>
+</span></span><span style=display:flex><span>* hard nofile <span style=color:#ae81ff>262144</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ ulimit -n <span style=color:#ae81ff>65536</span>  	<span style=color:#75715e># 也修改</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=7><li>重启<code>RabbitMQ</code>，<code>rabbitmqctl status</code>命令查看限制，发现不生效：</li></ol></li></ul><blockquote><ul><li>7.1 <font color=red>按照搜索结果中的提示执行：</font><code>rabbitmqctl stop、rabbitmq-server -detached</code><font color=red>再次查看，发现句柄数限制已修改</font></li><li>7.2 <font color=red>尝试</font><code>web</code><font color=red>打开</font><code>vnc</code><font color=red>窗口，发现恢复正常，</font><code>nova-api</code><font color=red>和</font><code>nova-compute</code><font color=red>日志正常</font><code>connected</code><font color=red>到</font><code>MQ</code><font color=red>等待几分钟仍然正常，问题解决</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span> <span style=color:#f92672>{</span>file_descriptors,
+</span></span><span style=display:flex><span>     <span style=color:#f92672>[{</span>total_limit,924<span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>      <span style=color:#f92672>{</span>total_used,525<span style=color:#f92672>}</span>,
+</span></span></code></pre></div></blockquote><ul><li><ol start=8><li>尝试修改安装部署脚本，发现先修改系统句柄数配置再安装<code>MQ</code>，仍然无法修改<code>MQ</code>句柄限制
+继续<code>google</code>，
+<a href=https://www.rabbitmq.com/install-rpm.html title="查看到<code>RabbitMQ</code>官方文档" rel="noopener external nofollow noreferrer" target=_blank class=exturl>查看到<code>RabbitMQ</code>官方文档
+<i class="fa fa-external-link-alt"></i>
+</a>有如下描述：</li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-fallback data-lang=fallback><span style=display:flex><span>控制 Linux 上的系统限制
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>运行生产工作负载的 RabbitMQ 安装可能需要系统限制和内核参数调整，以便处理相当数量的并发连接和队列。需要调整的主要设置是最大打开文件数，也称为ulimit -n。许多操作系统上的默认值对于消息传递代理来说太低了（例如，在几个 Linux 发行版上为 1024）。我们建议在生产环境中为用户 rabbitmq 允许至少 65536 个文件描述符。对于大多数开发工作负载，4096 应该足够了。
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>有两个限制：操作系统内核允许打开文件的最大数量（fs.file-max）和每个用户的限制（ulimit -n）。前者必须高于后者。
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>使用 systemd（最近的 Linux 发行版）
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>在使用 systemd 的发行版上，操作系统限制是通过 /etc/systemd/system/rabbitmq-server.service.d/limits.conf 中的配置文件控制的，例如：
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Service]
+</span></span><span style=display:flex><span>LimitNOFILE=300000
+</span></span></code></pre></div></blockquote><ul><li><ol start=9><li>据此修改正常</li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ mkdir /etc/systemd/system/rabbitmq-server.service.d -p
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ cat  &gt;/etc/systemd/system/rabbitmq-server.service.d/limits.conf<span style=color:#e6db74>&lt;&lt;EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[Service]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>LimitNOFILE=300000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ setenforce <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ sed -i <span style=color:#e6db74>&#34;s#enforcing#disabled#g&#34;</span>  /etc/selinux/config
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ cat &gt;/etc/security/limits.conf<span style=color:#e6db74>&lt;&lt;EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>* soft nofile 204800
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>* hard nofile 204800
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ ulimit -n <span style=color:#ae81ff>204800</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ systemctl daemon-reload
+</span></span><span style=display:flex><span>$ systemctl restart rabbitmq-server.service
+</span></span></code></pre></div></blockquote></div><h2 id=rabbitmq-python监控脚本><code>Rabbitmq-python</code>监控脚本
+<a class=header-anchor href=#rabbitmq-python%e7%9b%91%e6%8e%a7%e8%84%9a%e6%9c%ac></a></h2><div class="note info"><ul><li><ol><li><a href=http://www.lstop.pub/2016/10/10/%E8%87%AA%E5%B7%B1%E5%86%99%E4%B8%80%E4%B8%AA%E7%9B%91%E6%8E%A7RabbitMQ%E7%9A%84%E8%84%9A%E6%9C%AC/ title="<code>Rabbitmq-python</code>监控脚本" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Rabbitmq-python</code>监控脚本
+<i class="fa fa-external-link-alt"></i></a></li></ol></li><li><ol start=2><li><code>RabbitMQ</code>自己已经有一个挺好的管理监控界面，可以看到非常详细的消息队列信息，但是对于运维人员来说，还缺少了很重要的告警功能。 自己写一个脚本也是很有必要的，在网上也有很多参考，主要思路是利用<code>RabbitMQ</code>自带管理模块的<code>RESTful API</code>取值，发送到<code>zabbix</code>，由<code>zabbix</code>负责告警阀值判断和发送告警</li></ol></li><li><ol start=3><li><font color=red><code>RabbitMQ RESTful API</code></font></li></ol></li></ul><blockquote><ul><li>3.1 首先认识<code>RabbitMQ</code>的<code>API</code>，看看能取到什么，推荐看官方<code>help</code></li><li>3.2 <font color=red>查看</font><code>MQ</code><font color=red>总体情况</font></li></ul><blockquote><ul><li>3.2.1 官方解析：<code>/api/overview Various random bits of information that describe the whole system</code></li><li>3.2.2 例子：<code>curl -u guest:guest http://192.168.55.241:15672/api/overview</code> 然后返回d的<code>json</code>格式响应是：</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;management_version&#34;</span>: <span style=color:#e6db74>&#34;3.0.0&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;statistics_level&#34;</span>: <span style=color:#e6db74>&#34;fine&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;exchange_types&#34;</span>: <span style=color:#f92672>[</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;topic&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;description&#34;</span>: <span style=color:#e6db74>&#34;AMQP topic exchange, as per the AMQP specification&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;enabled&#34;</span>: true
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;fanout&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;description&#34;</span>: <span style=color:#e6db74>&#34;AMQP fanout exchange, as per the AMQP specification&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;enabled&#34;</span>: true
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;direct&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;description&#34;</span>: <span style=color:#e6db74>&#34;AMQP direct exchange, as per the AMQP specification&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;enabled&#34;</span>: true
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;headers&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;description&#34;</span>: <span style=color:#e6db74>&#34;AMQP headers exchange, as per the AMQP specification&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;enabled&#34;</span>: true
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>]</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;rabbitmq_version&#34;</span>: <span style=color:#e6db74>&#34;3.0.0&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;erlang_version&#34;</span>: <span style=color:#e6db74>&#34;R15B01&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;message_stats&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;publish&#34;</span>: 1104833,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;publish_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rate&#34;</span>: 12.262779782167032,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;interval&#34;</span>: 298146914019,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068131606</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;ack&#34;</span>: 1177571,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;ack_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rate&#34;</span>: 11.230039450092189,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;interval&#34;</span>: 57927468985,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068130882</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;deliver&#34;</span>: 1177572,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;deliver_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rate&#34;</span>: 11.027518607238914,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;interval&#34;</span>: 57927468985,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068130882</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;deliver_get&#34;</span>: 1207878,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;deliver_get_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rate&#34;</span>: 11.027518607238914,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;interval&#34;</span>: 57927468985,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068130882</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;deliver_no_ack&#34;</span>: 30306,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;deliver_no_ack_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;interval&#34;</span>: 1067361970,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068115093</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;redeliver&#34;</span>: 8,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;redeliver_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;interval&#34;</span>: 115179973,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068099504</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;queue_totals&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;messages&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;messages_ready&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;messages_unacknowledged&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;messages_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;interval&#34;</span>: 255911999,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068131232</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;messages_ready_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;interval&#34;</span>: 255911999,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068131232</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;messages_unacknowledged_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;interval&#34;</span>: 255911999,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068131232</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;object_totals&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;consumers&#34;</span>: 70,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;queues&#34;</span>: 27,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;exchanges&#34;</span>: 13,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;connections&#34;</span>: 176,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;channels&#34;</span>: <span style=color:#ae81ff>236</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;node&#34;</span>: <span style=color:#e6db74>&#34;rabbit@rabbit01&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;statistics_db_node&#34;</span>: <span style=color:#e6db74>&#34;rabbit@rabbit01&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;listeners&#34;</span>: <span style=color:#f92672>[</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;node&#34;</span>: <span style=color:#e6db74>&#34;rabbit@rabbit01&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;protocol&#34;</span>: <span style=color:#e6db74>&#34;amqp&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;ip_address&#34;</span>: <span style=color:#e6db74>&#34;::&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;port&#34;</span>: <span style=color:#ae81ff>5672</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>]</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;contexts&#34;</span>: <span style=color:#f92672>[</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;node&#34;</span>: <span style=color:#e6db74>&#34;rabbit@rabbit01&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;description&#34;</span>: <span style=color:#e6db74>&#34;RabbitMQ Management&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;path&#34;</span>: <span style=color:#e6db74>&#34;/&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;port&#34;</span>: <span style=color:#ae81ff>15672</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;node&#34;</span>: <span style=color:#e6db74>&#34;rabbit@rabbit01&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;description&#34;</span>: <span style=color:#e6db74>&#34;Redirect to port 15672&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;path&#34;</span>: <span style=color:#e6db74>&#34;/&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;port&#34;</span>: 55672,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;ignore_in_use&#34;</span>: true
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span>
+</span></span></code></pre></div></blockquote></blockquote><ul><li><ol start=4><li><font color=red>查看单个队列</font></li></ol></li></ul><blockquote><ul><li>4.1 官方解析：<code>/api/queues/vhost/name An individual queue. To PUT a queue, you will need a body looking something like this: {“auto_delete”:false,”durable”:true,”arguments”:[],”node”:”rabbit@smacmullen”} All keys are optional</code></li><li>4.2 例子：<code>%2F代表vhost为/ curl -u guest:guest http://192.168.55.241:15672/api/queues/%2F/wxq.msgweb.push.wgw.0</code> 然后返回d的<code>json</code>格式响应是：</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;policy&#34;</span>: <span style=color:#e6db74>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;exclusive_consumer_tag&#34;</span>: <span style=color:#e6db74>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;messages_ready&#34;</span>: 0,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;messages_unacknowledged&#34;</span>: 0,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;messages&#34;</span>: 0,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;consumers&#34;</span>: 1,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;active_consumers&#34;</span>: 1,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;memory&#34;</span>: 55680,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;backing_queue_status&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;q1&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;q2&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;delta&#34;</span>: <span style=color:#f92672>[</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;delta&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;undefined&#34;</span>,
+</span></span><span style=display:flex><span>            0,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;undefined&#34;</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>]</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;q3&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;q4&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;len&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;pending_acks&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;target_ram_count&#34;</span>: <span style=color:#e6db74>&#34;infinity&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;ram_msg_count&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;ram_ack_count&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;next_seq_id&#34;</span>: 1,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;persistent_count&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;avg_ingress_rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;avg_egress_rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;avg_ack_ingress_rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;avg_ack_egress_rate&#34;</span>: <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;messages_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;interval&#34;</span>: 10001981,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068574166</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;messages_ready_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;interval&#34;</span>: 10001981,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068574166</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;messages_unacknowledged_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;interval&#34;</span>: 10001981,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068574166</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;incoming&#34;</span>: <span style=color:#f92672>[</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;stats&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;publish&#34;</span>: 763,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;publish_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>                    <span style=color:#e6db74>&#34;rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>                    <span style=color:#e6db74>&#34;interval&#34;</span>: 75305976,
+</span></span><span style=display:flex><span>                    <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068545922</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;exchange&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;wxq_appmsg_exchange&#34;</span>,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;vhost&#34;</span>: <span style=color:#e6db74>&#34;/&#34;</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>]</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;deliveries&#34;</span>: <span style=color:#f92672>[</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;stats&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;deliver_get&#34;</span>: 774,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;deliver_get_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>                    <span style=color:#e6db74>&#34;rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>                    <span style=color:#e6db74>&#34;interval&#34;</span>: 44411017,
+</span></span><span style=display:flex><span>                    <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068470753</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;deliver_no_ack&#34;</span>: 774,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;deliver_no_ack_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>                    <span style=color:#e6db74>&#34;rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>                    <span style=color:#e6db74>&#34;interval&#34;</span>: 44411017,
+</span></span><span style=display:flex><span>                    <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068470753</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;channel_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;192.168.65.158:64326 -&gt; 192.168.55.241:5672 (1)&#34;</span>,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;number&#34;</span>: 1,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;connection_name&#34;</span>: <span style=color:#e6db74>&#34;192.168.65.158:64326 -&gt; 192.168.55.241:5672&#34;</span>,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;peer_port&#34;</span>: 64326,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;peer_host&#34;</span>: <span style=color:#e6db74>&#34;192.168.65.158&#34;</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>]</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;message_stats&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;deliver_get&#34;</span>: 774,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;deliver_get_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;interval&#34;</span>: 44411017,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068470753</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;deliver_no_ack&#34;</span>: 774,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;deliver_no_ack_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;interval&#34;</span>: 44411017,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068470753</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;publish&#34;</span>: 763,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;publish_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rate&#34;</span>: 0,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;interval&#34;</span>: 75305976,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;last_event&#34;</span>: <span style=color:#ae81ff>1476068545922</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;consumer_details&#34;</span>: <span style=color:#f92672>[</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;channel_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;192.168.65.158:64326 -&gt; 192.168.55.241:5672 (1)&#34;</span>,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;number&#34;</span>: 1,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;connection_name&#34;</span>: <span style=color:#e6db74>&#34;192.168.65.158:64326 -&gt; 192.168.55.241:5672&#34;</span>,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;peer_port&#34;</span>: 64326,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;peer_host&#34;</span>: <span style=color:#e6db74>&#34;192.168.65.158&#34;</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;queue_details&#34;</span>: <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;wxq.msgweb.push.wgw.0&#34;</span>,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;vhost&#34;</span>: <span style=color:#e6db74>&#34;/&#34;</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;consumer_tag&#34;</span>: <span style=color:#e6db74>&#34;amq.ctag-jKVWrQSs7dbX9VaFfOZiYA&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;exclusive&#34;</span>: false,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;ack_required&#34;</span>: false
+</span></span><span style=display:flex><span>        <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>]</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;wxq.msgweb.push.wgw.0&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;vhost&#34;</span>: <span style=color:#e6db74>&#34;/&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;durable&#34;</span>: true,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;auto_delete&#34;</span>: false,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;arguments&#34;</span>: <span style=color:#f92672>{}</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;node&#34;</span>: <span style=color:#e6db74>&#34;rabbit@rabbit01&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>}</span>
+</span></span></code></pre></div></blockquote></div><h3 id=font-colorredzabbix-senderfont><font color=red><code>zabbix sender</code></font>
+<a class=header-anchor href=#font-colorredzabbix-senderfont></a></h3><div class="note info"><ul><li><ol><li><code>zabbix sender</code>区别于在<code>zabbix agent</code>添加<code>item</code>，<code>sender</code>可以主动发送<code>item</code>值到<code>zabbix server</code>
+可以先规划好在<code>zabbix server</code>中使用的<code>host</code>和<code>item</code>名字</li></ol></li><li><ol start=2><li><font color=red>例如：</font>这样就可以通过python取值，保存在临时文件中，再<code>send</code>到<code>zabbix server</code></li></ol></li></ul><blockquote><ul><li>2.1 <code>rabbitmq.[rabbit@wx-pro-server01,messages_ready]</code>待处理消息总数</li><li>2.2 <code>rabbitmq.[rabbit@wx-pro-server01,messages_unacknowledged]</code>未收到<code>ack</code>响应消息总数</li><li>2.3 <code>rabbitmq.queues[/,queue_messages_ready,wxq_msg_send] wxq_msg_send</code>队列的待处理消息数</li><li>2.4 <code>rabbitmq.queues[/,queue_active_consumers,wxq_msg_send] wxq_msg_send</code>队列的活动连接数</li></ul></blockquote><ul><li><ol start=3><li><code>zabbix_sender</code><font color=red>使用方法</font></li></ol></li></ul><blockquote><ul><li>3.1 <code>/usr/bin/zabbix_sender -c /etc/zabbix/zabbix_agentd.conf -i /tmp/tmp5ai4uI -s ser01-rabbitmq</code></li></ul><blockquote><ul><li>3.1.1 <code>-c</code>：<code>agent</code><font color=red>配置文件</font></li><li>3.1.2 <code>-i</code> ：<font color=red>临时文件，用于保存多个</font><code>item</code><font color=red>和对应值，每行一个</font><code>item</code></li><li>3.1.3 <code>-s</code>：<font color=red>在</font><code>zabbix server</code><font color=red>上配置的</font><code>host</code><font color=red>名字</font></li></ul></blockquote></blockquote></div><h3 id=pythonfont-colorred代码font><code>python</code><font color=red>代码</font>
+<a class=header-anchor href=#pythonfont-colorred%e4%bb%a3%e7%a0%81font></a></h3><div class="note info"><ul><li><ol><li><a href=https://blog.51cto.com/john88wang/1745824 title="使用<code>Zabbix</code>监控<code>RabbitMQ</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl>使用<code>Zabbix</code>监控<code>RabbitMQ</code>
+<i class="fa fa-external-link-alt"></i></a></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e>#!/usr/bin/python</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># coding=utf-8</span>
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#39;&#39;&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>RabbitMq监控脚本 v1.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>v1.1 监控channel的unacknowledged
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>v1.0 监控overview、queue
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>&#39;&#39;&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> json
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> urllib2
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> os
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> socket
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> tempfile
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> logging
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> subprocess
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> optparse
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> time
+</span></span><span style=display:flex><span>logging<span style=color:#f92672>.</span>basicConfig(filename<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;/var/log/zabbix/rabbitmq_zabbix.log&#39;</span>, level<span style=color:#f92672>=</span>logging<span style=color:#f92672>.</span>WARNNING, format<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;</span><span style=color:#e6db74>%(asctime)s</span><span style=color:#e6db74> </span><span style=color:#e6db74>%(levelname)s</span><span style=color:#e6db74>: </span><span style=color:#e6db74>%(message)s</span><span style=color:#e6db74>&#39;</span>)
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>RabbitMqApi</span>(object):
+</span></span><span style=display:flex><span> <span style=color:#e6db74>&#39;&#39;&#39; 调用RabbitMQ的API类 &#39;&#39;&#39;</span>
+</span></span><span style=display:flex><span> <span style=color:#75715e>######## json.loads()  transfer json data to python data</span>
+</span></span><span style=display:flex><span> <span style=color:#75715e>######## json.dump()   transfer python data to json data</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span> <span style=color:#66d9ef>def</span> __init__(self, user_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;guest&#39;</span>, password<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;guest&#39;</span>, host_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;192.168.55.241&#39;</span>, 
+</span></span><span style=display:flex><span>              protocol<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;http&#39;</span>, port<span style=color:#f92672>=</span><span style=color:#ae81ff>15672</span>, senderhostname<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;ser01-rabbitmq&#39;</span>,
+</span></span><span style=display:flex><span>                          zbconf<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;/etc/zabbix/zabbix_agentd.conf&#39;</span>):
+</span></span><span style=display:flex><span>  self<span style=color:#f92672>.</span>user_name <span style=color:#f92672>=</span> user_name
+</span></span><span style=display:flex><span>  self<span style=color:#f92672>.</span>password <span style=color:#f92672>=</span> password
+</span></span><span style=display:flex><span>  self<span style=color:#f92672>.</span>host_name <span style=color:#f92672>=</span> host_name <span style=color:#f92672>or</span> socket<span style=color:#f92672>.</span>gethostname()
+</span></span><span style=display:flex><span>  self<span style=color:#f92672>.</span>protocol <span style=color:#f92672>=</span> protocol
+</span></span><span style=display:flex><span>  self<span style=color:#f92672>.</span>port <span style=color:#f92672>=</span> port
+</span></span><span style=display:flex><span>  self<span style=color:#f92672>.</span>senderhostname <span style=color:#f92672>=</span> senderhostname <span style=color:#66d9ef>if</span> senderhostname <span style=color:#66d9ef>else</span> host_name
+</span></span><span style=display:flex><span>  self<span style=color:#f92672>.</span>conf <span style=color:#f92672>=</span> zbconf
+</span></span><span style=display:flex><span> <span style=color:#75715e># 调用RabbitMQ的API类取原始数据，json格式</span>
+</span></span><span style=display:flex><span> <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>call_api</span>(self, path):
+</span></span><span style=display:flex><span>  <span style=color:#e6db74>&#39;&#39;&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     All URIs will server only resource of type application/json,and will require HTTP basic authentication. The default username and password is guest/guest.  /</span><span style=color:#e6db74>%s</span><span style=color:#e6db74>f is encoded for the default virtual host &#39;/&#39; 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  &#39;&#39;&#39;</span>
+</span></span><span style=display:flex><span>  url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{0}</span><span style=color:#e6db74>://</span><span style=color:#e6db74>{1}</span><span style=color:#e6db74>:</span><span style=color:#e6db74>{2}</span><span style=color:#e6db74>/api/</span><span style=color:#e6db74>{3}</span><span style=color:#e6db74>&#39;</span><span style=color:#f92672>.</span>format(self<span style=color:#f92672>.</span>protocol, self<span style=color:#f92672>.</span>host_name, self<span style=color:#f92672>.</span>port, path)
+</span></span><span style=display:flex><span>  password_mgr <span style=color:#f92672>=</span> urllib2<span style=color:#f92672>.</span>HTTPPasswordMgrWithDefaultRealm()
+</span></span><span style=display:flex><span>  password_mgr<span style=color:#f92672>.</span>add_password(<span style=color:#66d9ef>None</span>, url, self<span style=color:#f92672>.</span>user_name, self<span style=color:#f92672>.</span>password)
+</span></span><span style=display:flex><span>  handler <span style=color:#f92672>=</span> urllib2<span style=color:#f92672>.</span>HTTPBasicAuthHandler(password_mgr)
+</span></span><span style=display:flex><span>  logging<span style=color:#f92672>.</span>debug(<span style=color:#e6db74>&#39;Issue a rabbit API call to get data on &#39;</span> <span style=color:#f92672>+</span> url)
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> json<span style=color:#f92672>.</span>loads(urllib2<span style=color:#f92672>.</span>build_opener(handler)<span style=color:#f92672>.</span>open(url)<span style=color:#f92672>.</span>read())
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span> <span style=color:#75715e># 调用RabbitMQ的API类取原始数据，json格式</span>
+</span></span><span style=display:flex><span> <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>call_api_queue</span>(self, queue_name):
+</span></span><span style=display:flex><span>  <span style=color:#e6db74>&#39;&#39;&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     get queue detail
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  &#39;&#39;&#39;</span>
+</span></span><span style=display:flex><span>  url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{0}</span><span style=color:#e6db74>://</span><span style=color:#e6db74>{1}</span><span style=color:#e6db74>:</span><span style=color:#e6db74>{2}</span><span style=color:#e6db74>/api/queues/</span><span style=color:#e6db74>%2F</span><span style=color:#e6db74>/</span><span style=color:#e6db74>{3}</span><span style=color:#e6db74>&#39;</span><span style=color:#f92672>.</span>format(self<span style=color:#f92672>.</span>protocol, self<span style=color:#f92672>.</span>host_name, self<span style=color:#f92672>.</span>port, queue_name)
+</span></span><span style=display:flex><span>  password_mgr <span style=color:#f92672>=</span> urllib2<span style=color:#f92672>.</span>HTTPPasswordMgrWithDefaultRealm()
+</span></span><span style=display:flex><span>  password_mgr<span style=color:#f92672>.</span>add_password(<span style=color:#66d9ef>None</span>, url, self<span style=color:#f92672>.</span>user_name, self<span style=color:#f92672>.</span>password)
+</span></span><span style=display:flex><span>  handler <span style=color:#f92672>=</span> urllib2<span style=color:#f92672>.</span>HTTPBasicAuthHandler(password_mgr)
+</span></span><span style=display:flex><span>  logging<span style=color:#f92672>.</span>debug(<span style=color:#e6db74>&#39;Issue a rabbit API call to get data on &#39;</span> <span style=color:#f92672>+</span> url)
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> json<span style=color:#f92672>.</span>loads(urllib2<span style=color:#f92672>.</span>build_opener(handler)<span style=color:#f92672>.</span>open(url)<span style=color:#f92672>.</span>read())
+</span></span><span style=display:flex><span>  
+</span></span><span style=display:flex><span> <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>call_api_channel</span>(self, channel_name):
+</span></span><span style=display:flex><span>  <span style=color:#e6db74>&#39;&#39;&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>     get channel detail
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  &#39;&#39;&#39;</span>
+</span></span><span style=display:flex><span>  url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;</span><span style=color:#e6db74>{0}</span><span style=color:#e6db74>://</span><span style=color:#e6db74>{1}</span><span style=color:#e6db74>:</span><span style=color:#e6db74>{2}</span><span style=color:#e6db74>/api/channels/</span><span style=color:#e6db74>{3}</span><span style=color:#e6db74>&#39;</span><span style=color:#f92672>.</span>format(self<span style=color:#f92672>.</span>protocol, self<span style=color:#f92672>.</span>host_name, self<span style=color:#f92672>.</span>port, urllib2<span style=color:#f92672>.</span>quote(channel_name))
+</span></span><span style=display:flex><span>  password_mgr <span style=color:#f92672>=</span> urllib2<span style=color:#f92672>.</span>HTTPPasswordMgrWithDefaultRealm()
+</span></span><span style=display:flex><span>  password_mgr<span style=color:#f92672>.</span>add_password(<span style=color:#66d9ef>None</span>, url, self<span style=color:#f92672>.</span>user_name, self<span style=color:#f92672>.</span>password)
+</span></span><span style=display:flex><span>  handler <span style=color:#f92672>=</span> urllib2<span style=color:#f92672>.</span>HTTPBasicAuthHandler(password_mgr)
+</span></span><span style=display:flex><span>  logging<span style=color:#f92672>.</span>debug(<span style=color:#e6db74>&#39;Issue a rabbit API call to get data on &#39;</span> <span style=color:#f92672>+</span> url)
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> json<span style=color:#f92672>.</span>loads(urllib2<span style=color:#f92672>.</span>build_opener(handler)<span style=color:#f92672>.</span>open(url)<span style=color:#f92672>.</span>read())
+</span></span><span style=display:flex><span>  
+</span></span><span style=display:flex><span> <span style=color:#75715e># 把数据与item对应写进临时文件</span>
+</span></span><span style=display:flex><span> <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>_get_queue_data</span>(self, queue, tmpfile):
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>for</span> item <span style=color:#f92672>in</span> [ <span style=color:#e6db74>&#39;memory&#39;</span>,<span style=color:#e6db74>&#39;messages&#39;</span>,<span style=color:#e6db74>&#39;messages_ready&#39;</span>,<span style=color:#e6db74>&#39;messages_unacknowledged&#39;</span>,<span style=color:#e6db74>&#39;consumers&#39;</span>,<span style=color:#e6db74>&#39;active_consumers&#39;</span> ]:
+</span></span><span style=display:flex><span>   <span style=color:#75715e>#key = rabbitmq.queues[/,queue_memory,queue.helloWorld]</span>
+</span></span><span style=display:flex><span>   key <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;&#34;rabbitmq.queues[</span><span style=color:#e6db74>{0}</span><span style=color:#e6db74>,queue_</span><span style=color:#e6db74>{1}</span><span style=color:#e6db74>,</span><span style=color:#e6db74>{2}</span><span style=color:#e6db74>]&#34;&#39;</span><span style=color:#f92672>.</span>format(queue[<span style=color:#e6db74>&#39;vhost&#39;</span>], item, queue[<span style=color:#e6db74>&#39;name&#39;</span>])
+</span></span><span style=display:flex><span>   <span style=color:#75715e>### if item is in queue,value=queue[item],else value=0</span>
+</span></span><span style=display:flex><span>   value <span style=color:#f92672>=</span> queue<span style=color:#f92672>.</span>get(item, <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>   logging<span style=color:#f92672>.</span>debug(<span style=color:#e6db74>&#34;SENDER_DATA: - </span><span style=color:#e6db74>%s</span><span style=color:#e6db74> </span><span style=color:#e6db74>%s</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>%</span> (key,value))
+</span></span><span style=display:flex><span>   tmpfile<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;- </span><span style=color:#e6db74>%s</span><span style=color:#e6db74> </span><span style=color:#e6db74>%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>%</span> (key, value))
+</span></span><span style=display:flex><span>  <span style=color:#75715e>##  This is a non standard bit of information added after the standard items</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>for</span> item <span style=color:#f92672>in</span> [<span style=color:#e6db74>&#39;deliver_get&#39;</span>, <span style=color:#e6db74>&#39;publish&#39;</span>]:
+</span></span><span style=display:flex><span>   key <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;&#34;rabbitmq.queues[</span><span style=color:#e6db74>{0}</span><span style=color:#e6db74>,queue_message_stats_</span><span style=color:#e6db74>{1}</span><span style=color:#e6db74>,</span><span style=color:#e6db74>{2}</span><span style=color:#e6db74>]&#34;&#39;</span><span style=color:#f92672>.</span>format(queue[<span style=color:#e6db74>&#39;vhost&#39;</span>], item, queue[<span style=color:#e6db74>&#39;name&#39;</span>])
+</span></span><span style=display:flex><span>   value <span style=color:#f92672>=</span> queue<span style=color:#f92672>.</span>get(<span style=color:#e6db74>&#39;message_stats&#39;</span>, {})<span style=color:#f92672>.</span>get(item, <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>   logging<span style=color:#f92672>.</span>debug(<span style=color:#e6db74>&#34;SENDER_DATA: - </span><span style=color:#e6db74>%s</span><span style=color:#e6db74> </span><span style=color:#e6db74>%s</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>%</span> (key,value))
+</span></span><span style=display:flex><span>   tmpfile<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;- </span><span style=color:#e6db74>%s</span><span style=color:#e6db74> </span><span style=color:#e6db74>%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>%</span> (key, value))
+</span></span><span style=display:flex><span> <span style=color:#75715e># 使用zabbix_sender把item发送到zabbix server</span>
+</span></span><span style=display:flex><span> <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>_send_queue_data</span>(self, tmpfile):
+</span></span><span style=display:flex><span>  <span style=color:#e6db74>&#39;&#39;&#39;Send the queue data to Zabbix.&#39;&#39;&#39;</span>
+</span></span><span style=display:flex><span>  <span style=color:#e6db74>&#39;&#39;&#39;Get key value from temp file. &#39;&#39;&#39;</span>
+</span></span><span style=display:flex><span>  args <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;/usr/bin/zabbix_sender -c </span><span style=color:#e6db74>{0}</span><span style=color:#e6db74> -i </span><span style=color:#e6db74>{1}</span><span style=color:#e6db74>&#39;</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> self<span style=color:#f92672>.</span>senderhostname:
+</span></span><span style=display:flex><span>   args <span style=color:#f92672>=</span> args <span style=color:#f92672>+</span> <span style=color:#e6db74>&#34; -s &#34;</span> <span style=color:#f92672>+</span> self<span style=color:#f92672>.</span>senderhostname
+</span></span><span style=display:flex><span>  return_code <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>  process <span style=color:#f92672>=</span> subprocess<span style=color:#f92672>.</span>Popen(args<span style=color:#f92672>.</span>format(self<span style=color:#f92672>.</span>conf, tmpfile<span style=color:#f92672>.</span>name),
+</span></span><span style=display:flex><span>                                     shell<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>, stdout<span style=color:#f92672>=</span>subprocess<span style=color:#f92672>.</span>PIPE,
+</span></span><span style=display:flex><span>                                     stderr<span style=color:#f92672>=</span>subprocess<span style=color:#f92672>.</span>PIPE)
+</span></span><span style=display:flex><span>  out, err <span style=color:#f92672>=</span> process<span style=color:#f92672>.</span>communicate()
+</span></span><span style=display:flex><span>  logging<span style=color:#f92672>.</span>debug(<span style=color:#e6db74>&#34;Finished sending data&#34;</span>)
+</span></span><span style=display:flex><span>  return_code <span style=color:#f92672>=</span> process<span style=color:#f92672>.</span>wait()
+</span></span><span style=display:flex><span>  logging<span style=color:#f92672>.</span>info(<span style=color:#e6db74>&#34;Found return code of &#34;</span> <span style=color:#f92672>+</span> str(return_code))
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> return_code <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span>:
+</span></span><span style=display:flex><span>   logging<span style=color:#f92672>.</span>warning(out)
+</span></span><span style=display:flex><span>   logging<span style=color:#f92672>.</span>warning(err)
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>else</span>:
+</span></span><span style=display:flex><span>   logging<span style=color:#f92672>.</span>debug(err)
+</span></span><span style=display:flex><span>   logging<span style=color:#f92672>.</span>debug(out)
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> return_code
+</span></span><span style=display:flex><span>          	  
+</span></span><span style=display:flex><span> <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>check_queue</span>(self, queueName):
+</span></span><span style=display:flex><span>  rdatafile <span style=color:#f92672>=</span> tempfile<span style=color:#f92672>.</span>NamedTemporaryFile(delete<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>)
+</span></span><span style=display:flex><span>  return_code <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>  queue <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>call_api_queue(queueName)
+</span></span><span style=display:flex><span>  self<span style=color:#f92672>.</span>_get_queue_data(queue, rdatafile)
+</span></span><span style=display:flex><span>  self<span style=color:#f92672>.</span>_get_channel_data(queue, rdatafile)
+</span></span><span style=display:flex><span>  rdatafile<span style=color:#f92672>.</span>close()
+</span></span><span style=display:flex><span>  return_code <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>_send_queue_data(rdatafile)
+</span></span><span style=display:flex><span>  os<span style=color:#f92672>.</span>unlink(rdatafile<span style=color:#f92672>.</span>name)
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> return_code
+</span></span><span style=display:flex><span> <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>check_overview</span>(self):
+</span></span><span style=display:flex><span>  return_code <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>  rdatafile <span style=color:#f92672>=</span> tempfile<span style=color:#f92672>.</span>NamedTemporaryFile(delete<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>)
+</span></span><span style=display:flex><span>  queue <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>call_api(<span style=color:#e6db74>&#39;overview&#39;</span>)
+</span></span><span style=display:flex><span>  self<span style=color:#f92672>.</span>_get_overview_data(queue, rdatafile)
+</span></span><span style=display:flex><span>  rdatafile<span style=color:#f92672>.</span>close()
+</span></span><span style=display:flex><span>  return_code <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>_send_queue_data(rdatafile)
+</span></span><span style=display:flex><span>  os<span style=color:#f92672>.</span>unlink(rdatafile<span style=color:#f92672>.</span>name)
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> return_code
+</span></span><span style=display:flex><span>  
+</span></span><span style=display:flex><span> <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>_get_overview_data</span>(self, queue, tmpfile):
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>for</span> item <span style=color:#f92672>in</span> [<span style=color:#e6db74>&#39;publish_details&#39;</span>, <span style=color:#e6db74>&#39;ack_details&#39;</span>, <span style=color:#e6db74>&#39;deliver_get_details&#39;</span>]:
+</span></span><span style=display:flex><span>   key <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;rabbitmq.[</span><span style=color:#e6db74>{0}</span><span style=color:#e6db74>,</span><span style=color:#e6db74>{1}</span><span style=color:#e6db74>_rate]&#34;</span><span style=color:#f92672>.</span>format(queue[<span style=color:#e6db74>&#39;node&#39;</span>], item)
+</span></span><span style=display:flex><span>   value <span style=color:#f92672>=</span> queue<span style=color:#f92672>.</span>get(<span style=color:#e6db74>&#39;message_stats&#39;</span>)<span style=color:#f92672>.</span>get(item)<span style=color:#f92672>.</span>get(<span style=color:#e6db74>&#39;rate&#39;</span>, <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>   logging<span style=color:#f92672>.</span>debug(<span style=color:#e6db74>&#34;SENDER_DATA: - </span><span style=color:#e6db74>{0}</span><span style=color:#e6db74> </span><span style=color:#e6db74>{1:.2f}</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span><span style=color:#f92672>.</span>format(key, value))
+</span></span><span style=display:flex><span>   tmpfile<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;- </span><span style=color:#e6db74>{0}</span><span style=color:#e6db74> </span><span style=color:#e6db74>{1:.2f}</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span><span style=color:#f92672>.</span>format(key, value))
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>for</span> item <span style=color:#f92672>in</span> [<span style=color:#e6db74>&#39;messages&#39;</span>,<span style=color:#e6db74>&#39;messages_ready&#39;</span>,<span style=color:#e6db74>&#39;messages_unacknowledged&#39;</span>]:
+</span></span><span style=display:flex><span>   key <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;rabbitmq.[</span><span style=color:#e6db74>{0}</span><span style=color:#e6db74>,</span><span style=color:#e6db74>{1}</span><span style=color:#e6db74>]&#34;</span><span style=color:#f92672>.</span>format(queue[<span style=color:#e6db74>&#39;node&#39;</span>], item)
+</span></span><span style=display:flex><span>   value <span style=color:#f92672>=</span> queue<span style=color:#f92672>.</span>get(<span style=color:#e6db74>&#39;queue_totals&#39;</span>)<span style=color:#f92672>.</span>get(item,<span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>   logging<span style=color:#f92672>.</span>debug(<span style=color:#e6db74>&#34;SENDER_DATA: - </span><span style=color:#e6db74>%s</span><span style=color:#e6db74> </span><span style=color:#e6db74>%s</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>%</span> (key,value))
+</span></span><span style=display:flex><span>   tmpfile<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;- </span><span style=color:#e6db74>%s</span><span style=color:#e6db74> </span><span style=color:#e6db74>%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>%</span> (key, value))
+</span></span><span style=display:flex><span>   
+</span></span><span style=display:flex><span> <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>_get_channel_data</span>(self, queue, tmpfile): 
+</span></span><span style=display:flex><span>  <span style=color:#e6db74>&#39;&#39;&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  从queue获取queue name和channel name，组装zabbix的k-v并写进临时文件
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  &#39;&#39;&#39;</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>for</span> ch_detail <span style=color:#f92672>in</span> queue[<span style=color:#e6db74>&#39;consumer_details&#39;</span>]:
+</span></span><span style=display:flex><span>   key <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;rabbitmq.[</span><span style=color:#e6db74>{}</span><span style=color:#e6db74>,</span><span style=color:#e6db74>{}</span><span style=color:#e6db74>]&#34;</span><span style=color:#f92672>.</span>format(queue[<span style=color:#e6db74>&#39;name&#39;</span>], ch_detail<span style=color:#f92672>.</span>get(<span style=color:#e6db74>&#39;channel_details&#39;</span>)<span style=color:#f92672>.</span>get(<span style=color:#e6db74>&#39;name&#39;</span>,<span style=color:#e6db74>&#39;no_name&#39;</span>))
+</span></span><span style=display:flex><span>   value <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>_get_channel_ack(ch_detail<span style=color:#f92672>.</span>get(<span style=color:#e6db74>&#39;channel_details&#39;</span>)<span style=color:#f92672>.</span>get(<span style=color:#e6db74>&#39;name&#39;</span>,<span style=color:#e6db74>&#39;no_name&#39;</span>))
+</span></span><span style=display:flex><span>   logging<span style=color:#f92672>.</span>debug(<span style=color:#e6db74>&#34;SENDER_DATA: - </span><span style=color:#e6db74>%s</span><span style=color:#e6db74> </span><span style=color:#e6db74>%s</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>%</span> (key,value))
+</span></span><span style=display:flex><span>   tmpfile<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;- </span><span style=color:#e6db74>%s</span><span style=color:#e6db74> </span><span style=color:#e6db74>%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>%</span> (key, value))
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span> <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>_get_channel_ack</span>(self, channel_name):
+</span></span><span style=display:flex><span>  <span style=color:#e6db74>&#39;&#39;&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  使用api获取messages_unacknowledged值
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  &#39;&#39;&#39;</span>
+</span></span><span style=display:flex><span>  d <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>call_api_channel(channel_name)
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> d[<span style=color:#e6db74>&#39;messages_unacknowledged&#39;</span>]
+</span></span><span style=display:flex><span>  
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>main</span>():
+</span></span><span style=display:flex><span> <span style=color:#e6db74>&#39;&#39;&#39;Command-line parameters and decoding for Zabbix use/consumption.&#39;&#39;&#39;</span>
+</span></span><span style=display:flex><span> <span style=color:#75715e>#testapi = RabbitMqApi()</span>
+</span></span><span style=display:flex><span> <span style=color:#75715e>#testapi.check_queue(&#39;wxq_msg_send&#39;)</span>
+</span></span><span style=display:flex><span> parser <span style=color:#f92672>=</span> optparse<span style=color:#f92672>.</span>OptionParser()
+</span></span><span style=display:flex><span> parser<span style=color:#f92672>.</span>add_option(<span style=color:#e6db74>&#39;-u&#39;</span>, <span style=color:#e6db74>&#39;--username&#39;</span>, help<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;RabbitMQ API username,default=guest&#39;</span>,default<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;guest&#39;</span>)
+</span></span><span style=display:flex><span> parser<span style=color:#f92672>.</span>add_option(<span style=color:#e6db74>&#39;-p&#39;</span>, <span style=color:#e6db74>&#39;--password&#39;</span>, help<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;RabbitMQ API password,default=guest&#39;</span>,default<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;guest&#39;</span>)
+</span></span><span style=display:flex><span> parser<span style=color:#f92672>.</span>add_option(<span style=color:#e6db74>&#39;--mqhost&#39;</span>, help<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;RabbitMQ API hostname,default=hostname&#39;</span>,default<span style=color:#f92672>=</span>socket<span style=color:#f92672>.</span>gethostname())
+</span></span><span style=display:flex><span> parser<span style=color:#f92672>.</span>add_option(<span style=color:#e6db74>&#39;--protocol&#39;</span>, help<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;RabbitMQ API protocol,default=http&#39;</span>,default<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;http&#39;</span>)
+</span></span><span style=display:flex><span> parser<span style=color:#f92672>.</span>add_option(<span style=color:#e6db74>&#39;--port&#39;</span>, help<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;RabbitMQ API port,default=15672&#39;</span>,default<span style=color:#f92672>=</span><span style=color:#ae81ff>15672</span>)
+</span></span><span style=display:flex><span> parser<span style=color:#f92672>.</span>add_option(<span style=color:#e6db74>&#39;--host&#39;</span>, help<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;Zabbix Host name which the item belongs to,no default&#39;</span>)
+</span></span><span style=display:flex><span> parser<span style=color:#f92672>.</span>add_option(<span style=color:#e6db74>&#39;--conf&#39;</span>, help<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;Zabbix agent configure file,default=/etc/zabbix/zabbix_agentd.conf&#39;</span>,default<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;/etc/zabbix/zabbix_agentd.conf&#39;</span>)
+</span></span><span style=display:flex><span> parser<span style=color:#f92672>.</span>add_option(<span style=color:#e6db74>&#39;--queue&#39;</span>, help<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;RabbitMQ queue which you want to check,no default&#39;</span>)
+</span></span><span style=display:flex><span> parser<span style=color:#f92672>.</span>add_option(<span style=color:#e6db74>&#39;-o&#39;</span>,<span style=color:#e6db74>&#39;--overview&#39;</span>, help<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;check RabbitMQ overview&#39;</span>,action<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;store_true&#34;</span>)
+</span></span><span style=display:flex><span> parser<span style=color:#f92672>.</span>add_option(<span style=color:#e6db74>&#39;-c&#39;</span>,<span style=color:#e6db74>&#39;--count&#39;</span>, help<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;How many times to execute command&#39;</span>, type<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;int&#39;</span>, default<span style=color:#f92672>=</span><span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span> parser<span style=color:#f92672>.</span>add_option(<span style=color:#e6db74>&#39;-i&#39;</span>,<span style=color:#e6db74>&#39;--interval&#39;</span>, help<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;Command execute interval&#39;</span>, type<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;int&#39;</span>, default<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span> (options, args) <span style=color:#f92672>=</span> parser<span style=color:#f92672>.</span>parse_args()
+</span></span><span style=display:flex><span> <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> options<span style=color:#f92672>.</span>host:
+</span></span><span style=display:flex><span>  parser<span style=color:#f92672>.</span>error(<span style=color:#e6db74>&#34;请输入zabbix里定义的hostname&#34;</span>)
+</span></span><span style=display:flex><span> <span style=color:#66d9ef>elif</span> (<span style=color:#f92672>not</span> options<span style=color:#f92672>.</span>queue <span style=color:#f92672>and</span> <span style=color:#f92672>not</span> options<span style=color:#f92672>.</span>overview):
+</span></span><span style=display:flex><span>  parser<span style=color:#f92672>.</span>error(<span style=color:#e6db74>&#34;请指定-o或者--queue，选择检查mq总体指标或者某个队列指标&#34;</span>)
+</span></span><span style=display:flex><span> logging<span style=color:#f92672>.</span>debug(<span style=color:#e6db74>&#34;Started trying to process data&#34;</span>)
+</span></span><span style=display:flex><span> api <span style=color:#f92672>=</span> RabbitMqApi(user_name<span style=color:#f92672>=</span>options<span style=color:#f92672>.</span>username, password<span style=color:#f92672>=</span>options<span style=color:#f92672>.</span>password, host_name<span style=color:#f92672>=</span>options<span style=color:#f92672>.</span>mqhost, 
+</span></span><span style=display:flex><span>                  protocol<span style=color:#f92672>=</span>options<span style=color:#f92672>.</span>protocol, port<span style=color:#f92672>=</span>options<span style=color:#f92672>.</span>port, senderhostname<span style=color:#f92672>=</span>options<span style=color:#f92672>.</span>host,
+</span></span><span style=display:flex><span>                  zbconf<span style=color:#f92672>=</span>options<span style=color:#f92672>.</span>conf)
+</span></span><span style=display:flex><span> cnt <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span> <span style=color:#66d9ef>while</span> cnt <span style=color:#f92672>&lt;</span> options<span style=color:#f92672>.</span>count:                                               
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> options<span style=color:#f92672>.</span>overview:
+</span></span><span style=display:flex><span>   api<span style=color:#f92672>.</span>check_overview()
+</span></span><span style=display:flex><span>   time<span style=color:#f92672>.</span>sleep(options<span style=color:#f92672>.</span>interval)
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>elif</span> options<span style=color:#f92672>.</span>queue:
+</span></span><span style=display:flex><span>   api<span style=color:#f92672>.</span>check_queue(options<span style=color:#f92672>.</span>queue)
+</span></span><span style=display:flex><span>   time<span style=color:#f92672>.</span>sleep(options<span style=color:#f92672>.</span>interval)
+</span></span><span style=display:flex><span>  cnt <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#66d9ef>if</span> __name__ <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;__main__&#39;</span>:
+</span></span><span style=display:flex><span>    main()
+</span></span></code></pre></div></blockquote><ul><li><ol start=2><li><font color=red>脚本使用方式</font></li></ol></li></ul><blockquote><ul><li>2.1 <font color=red>监控<code>mq</code>总体情况：</font><code>mqMon.py -o –mqhost 192.168.55.241 –host ser01-rabbitmq -c 5 -i 12</code></li><li>2.2 <font color=red>监控队列情况：</font><code>mqMon.py –queue wxq_msg_send –mqhost 192.168.55.241 –host ser01-rabbitmq -c 5 -i 12</code></li></ul><blockquote><ul><li>2.2.1 <code>--mqhost</code>：<code>RabbitMQ</code><font color=red>服务器</font><code>ip</code></li><li>2.2.2 <code>--host</code>：<code>zabbix server</code><font color=red>上配置的</font><code>host</code><font color=red>名字</font></li><li>2.2.3 <code>--queue</code>：<font color=red>队列名字</font></li><li>2.2.4 <code>-o</code>：<font color=red>获取</font><code>overview</code><font color=red>数据</font></li><li>2.2.5 <code>-c</code>：<font color=red>执行<code>5</code>次</font></li><li>2.2.6 <code>-i</code>：<font color=red>间隔<code>12</code>秒</font></li><li>2.2.7 <code>--help</code>：<font color=red>查看帮助，有其他参数可选</font></li></ul></blockquote></blockquote></div></div><footer class=post-footer><div class=post-tags><a href=/tags/message-queue>Message Queue
+</a><a href=/tags/rabbitmq>RabbitMQ</a></div><div class=addthis_inline_share_toolbox style=text-align:center></div><hr><div class=reward-container><div><i class="fa-solid fa-mug-hot"></i>请我喝杯咖啡吧 ヾ(^▽^*)))</div><button>
+赞赏</button><div class=post-reward><div class=post-reward-item><img src=/imgs/img-lazy-loading.gif data-src=/imgs/ali-pay.png alt="二哥 - 支付宝">
+<span>支付宝</span></div><div class=post-reward-item><img src=/imgs/img-lazy-loading.gif data-src=/imgs/wechat-pay.png alt="二哥 - 微信">
+<span>微信</span></div></div></div><div class=post-copyright><img src=/imgs/cc/cc.svg width=75 height=75 align=right alt=共享知识><ul><li class=post-copyright-title><strong>文章标题：</strong>
+Configure Rabbitmq</li><li class=post-copyright-author><strong>本文作者： </strong>二哥</li><li class=post-copyright-link><strong>本文链接：</strong>
+<a id=post-cr-link href=https://erge.blog/system/linux/message-queue/configure-rabbitmq/ title="Configure Rabbitmq">https://erge.blog/system/linux/message-queue/configure-rabbitmq/</a></li><li class=post-copyright-license><strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <i class="fab fa-fw fa-creative-commons"></i><a target=_blank href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh>BY-NC-SA</a> 许可协议。转载请注明出处！</li></ul></div><div class=followme><span>欢迎关注我的其它发布渠道</span><div class=social-list><div class=social-item><a target=_blank class=social-link href=/images/wechat_channel.jpg><span class=icon><i class="fab fa-weixin"></i>
+</span><span class=label>WeChat</span></a></div><div class=social-item><a target=_blank class=social-link href=/atom.xml><span class=icon><i class="fa fa-rss"></i>
+</span><span class=label>RSS</span></a></div></div></div><div class=post-nav><div class="post-nav-next post-nav-item"><a href=/system/linux/message-queue/install-kafka/ rel=next title="Install Kafka"><i class="fa fa-chevron-left"></i> Install Kafka</a></div><div class="post-nav-prev post-nav-item"><a href=/system/linux/daemon/install-supervisord/ rel=prev title="Install Supervisord">Install Supervisord
+<i class="fa fa-chevron-right"></i></a></div></div></footer></article></div><div id=comments class=post-comments><div class=comment-head><div class=comment-headline><i class="fas fa-comments fa-fw"></i>
+<span>评论交流</span></div><div class=comment-switch><span class=first-comment>Giscus</span>
+<span class=switch-btn></span>
+<span class=second-comment>Waline</span></div></div><div class=comment-wrap><div><div class=comment-loading><i class="fa fa-sync fa-spin"></i></div><div class=giscus-container></div></div><div><div class=comment-loading><i class="fa fa-sync fa-spin"></i></div><div class=waline-container></div></div></div></div></div></main><footer class=footer><div class=footer-inner><div id=gtranslate class=google-translate><i class="fa fa-language"></i><div id=google_translate_element></div></div><div class=copyright>&copy;
+<span itemprop=copyrightYear>2010 - 2024
+</span><span class=with-love><i class="fa fa-heart"></i>
+</span><span class=author itemprop=copyrightHolder>二哥</span></div><div class=powered-by>由 <a href=https://gohugo.io title=0.125.4 target=_blank>Hugo</a> & <a href=https://github.com/hugo-next/hugo-theme-next title=4.5.3 target=_blank>Hugo NexT.Gemini</a> 强力驱动</div><div class=beian><a href=https://beian.miit.gov.cn target=_blank>粤ICP备 18047355-1 号</a>
+<img src=/imgs/gongan.png alt=沪公网安备>
+<a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31011402009770" target=_blank>沪公网安备 31011402009770 号</a></div><div class=vendors-list><a target=_blank href=https://vercel.com title=Vercel><img src=/imgs/img-lazy-loading.gif data-src=/imgs/vendors/vercel.svg alt=Vercel>
+</a><a target=_blank href=https://upyun.com title=又拍云><img src=/imgs/img-lazy-loading.gif data-src=/imgs/vendors/upyun.png alt=又拍云>
+</a><a target=_blank href=https://webify.cloudbase.net title=Webify>Webify
+</a><span>提供CDN/云资源支持</span></div></div></footer><script type=text/javascript src=https://cdn.staticfile.org/animejs/3.2.1/anime.min.js defer></script><script type=text/javascript src=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.js defer></script><script class=next-config data-name=main type=application/json>{"bookmark":{"color":"#222","enable":true,"save":"manual"},"copybtn":true,"darkmode":false,"giscus":{"cfg":{"category":"Comments","categoryid":null,"emit":false,"inputposition":"top","mapping":"title","reactions":false,"repo":"username/repo-name","repoid":null,"theme":"preferred_color_scheme"},"js":"https://giscus.app/client.js"},"hostname":"https://erge.blog/","i18n":{"ds_day":" 天前","ds_days":" 天 ","ds_hour":" 小时前","ds_hours":" 小时 ","ds_just":"刚刚","ds_min":" 分钟前","ds_mins":" 分钟","ds_month":" 个月前","ds_years":" 年 ","empty":"没有找到任何搜索结果：${query}","hits":"找到 ${hits} 个搜索结果","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","placeholder":"搜索..."},"lang":"zh-CN","lazyload":false,"localSearch":{"enable":true,"limit":1e3,"path":"/searchindexes.xml","preload":false,"topnperarticle":-1,"trigger":"auto","unescape":false},"motion":{"async":true,"enable":true,"transition":{"collheader":"fadeInLeft","postblock":"fadeIn","postbody":"fadeInDown","postheader":"fadeInDown","sidebar":"fadeInUp"}},"postmeta":{"comments":{"enable":true,"plugin":"waline"},"views":{"enable":true,"plugin":"busuanzi"}},"root":"/","scheme":"Gemini","sidebar":{"display":"post","offset":12,"padding":18,"position":"left","width":256},"vendor":{"plugins":"qiniu","router":"https://cdn.staticfile.org"},"version":"4.5.3","waline":{"cfg":{"emoji":false,"imguploader":false,"placeholder":"请文明发言哟 ヾ(≧▽≦*)o","reaction":true,"reactiontext":["点赞","踩一下","得意","不屑","尴尬","睡觉"],"reactiontitle":"你认为这篇文章怎么样？","requiredmeta":["nick","mail"],"serverurl":null,"sofa":"快来发表你的意见吧 (≧∀≦)ゞ","wordlimit":200},"css":{"alias":"waline","file":"dist/waline.css","name":"@waline/client","version":"2.13.0"},"js":{"alias":"waline","file":"dist/waline.js","name":"@waline/client","version":"2.13.0"}}}</script><script type=text/javascript src=/js/main.min.b0c78e5a4df586ee46d02716ffa91a4a322e56763e04e91eb2ba052c9469ed02.js defer></script></body></html>

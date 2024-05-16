@@ -1,0 +1,523 @@
+<!doctype html><html lang=zh-CN data-theme=light><head><meta charset=UTF-8><meta name=viewport content="width=device-width"><meta name=theme-color content="#222" media="(prefers-color-scheme: light)"><meta name=generator content="Hugo 0.125.4"><link rel="shortcut icon" type=image/x-icon href=/imgs/icons/favicon.ico><link rel=icon type=image/x-icon href=/imgs/icons/favicon.ico><link rel=icon type=image/png sizes=16x16 href=/imgs/icons/favicon_16x16_next.png><link rel=icon type=image/png sizes=32x32 href=/imgs/icons/favicon_32_32_next.png><link rel=apple-touch-icon sizes=180x180 href=/imgs/icons/apple_touch_icon_next.png><meta itemprop=name content="Install Ydb"><meta itemprop=description content="Install-Ydb"><meta itemprop=datePublished zgotmplz><meta itemprop=dateModified zgotmplz><meta itemprop=image content="https://erge.blog/imgs/s2-1.jpg"><meta itemprop=keywords content="Databases,Mysql"><meta property="og:type" content="article"><meta property="og:title" content="Install Ydb"><meta property="og:description" content="Install-Ydb"><meta property="og:image" content="/imgs/s2-1.jpg"><meta property="og:image:width" content="312"><meta property="og:image:height" content="312"><meta property="og:image:type" content="image/jpeg/png/svg/jpg"><meta property="og:url" content="https://erge.blog/system/linux/databases/install-ydb/"><meta property="og:site_name" content="二哥"><meta property="og:locale" content="zh-CN"><meta property="article:author" content="二哥"><meta property="article:published_time" content="2023-01-28 15:50:59 +0800 CST"><meta property="article:modified_time" content="2023-01-28 15:50:59 +0800 CST"><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/font-awesome/6.1.2/css/all.min.css><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/animate.css/3.1.1/animate.min.css><link type=text/css rel=stylesheet href=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.css><link rel=stylesheet href=/css/main.min.0d420b6f564e6674edd4354ea71c0458a83f95ad464a75114b23d72515b1456c.css><script type=text/javascript>(function(){localDB={set:function(e,t,n){if(n===0)return;const s=new Date,o=n*864e5,i={value:t,expiry:s.getTime()+o};localStorage.setItem(e,JSON.stringify(i))},get:function(e){const t=localStorage.getItem(e);if(!t)return void 0;const n=JSON.parse(t),s=new Date;return s.getTime()>n.expiry?(localStorage.removeItem(e),void 0):n.value}},theme={active:function(){const e=localDB.get("theme");if(e==null)return;theme.toggle(e),window.matchMedia("(prefers-color-scheme: dark)").addListener(function(e){theme.toggle(e.matches?"dark":"light")})},toggle:function(e){document.documentElement.setAttribute("data-theme",e),localDB.set("theme",e,2);const t=document.querySelector("iframe.giscus-frame");if(t){const n={setConfig:{theme:e}};t.contentWindow.postMessage({giscus:n},"https://giscus.app")}}},theme.active()})(window)</script><script class=next-config data-name=page type=application/json>{"comments":false,"isHome":false,"isPage":true,"path":"install-ydb","permalink":"https://erge.blog/system/linux/databases/install-ydb/","title":"Install Ydb","waline":{"js":[{"alias":"waline","alias_name":"@waline/client","file":"dist/pageview.js","name":"pageview","version":"2.13.0"},{"alias":"waline","alias_name":"@waline/client","file":"dist/comment.js","name":"comment","version":"2.13.0"}]}}</script><script type=text/javascript>document.addEventListener("DOMContentLoaded",()=>{var e=document.createElement("script");e.charset="UTF-8",e.src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js",e.async=!1,e.defer=!0,document.head.appendChild(e),e.onload=function(){NexT.utils.fmtBusuanzi()}})</script><title>Install Ydb - 二哥</title><noscript><link rel=stylesheet href=/css/noscript.css></noscript></head><body itemscope itemtype=http://schema.org/WebPage class=use-motion><div class=headband></div><main class=main><header class=header itemscope itemtype=http://schema.org/WPHeader><div class=header-inner><div class=site-brand-container><div class=site-nav-toggle><div class=toggle aria-label role=button><span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span></div></div><div class=site-meta><a href=/ class=brand rel=start><i class=logo-line></i><h1 class=site-title>二哥</h1><i class=logo-line></i></a><p class=site-subtitle itemprop=description>Linux、Kubernetes、Docker、Python、CI/CD、Jenkins、Mysql、Nginx、Gitlab、Ansible、Zabbix</p></div><div class=site-nav-right><div class="toggle popup-trigger"><i class="fa fa-search fa-fw fa-lg"></i></div></div></div><nav class=site-nav><ul class="main-menu menu"><li class="menu-item menu-item-Home"><a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-home hvr-icon"></i>首页</a></li><li class="menu-item menu-item-categories"><a href=/categories/ class=hvr-icon-pulse rel=section><i class="fa fa-th hvr-icon"></i>分类</a></li><li class="menu-item menu-item-archives"><a href=/archives/ class=hvr-icon-pulse rel=section><i class="fa fa-archive hvr-icon"></i>归档
+<span class=badge>0</span></a></li><li class="menu-item menu-item-tags"><a href=/tags/ class=hvr-icon-pulse rel=section><i class="fa fa-tags hvr-icon"></i>标签</a></li><li class="menu-item menu-item-tools"><a href=/ class=hvr-icon-pulse rel=section><i class="fa fa-tools hvr-icon"></i>工具</a></li><li class="menu-item menu-item-flinks"><a href=/flinks.html class=hvr-icon-pulse rel=section><i class="fa fa-thumbs-up hvr-icon"></i>站点示例</a></li><li class="menu-item menu-item-about"><a href=/about.html class=hvr-icon-pulse rel=section><i class="fa fa-user hvr-icon"></i>关于</a></li><li class="menu-item menu-item-Commonweal"><a href=/404.html class=hvr-icon-pulse rel=section><i class="fa fa-heartbeat hvr-icon"></i>公益 404</a></li><li class="menu-item menu-item-search"><a role=button class="popup-trigger hvr-icon-pulse"><i class="fa fa-search fa-fw hvr-icon"></i>搜索</a></li></ul></nav><div class=search-pop-overlay><div class="popup search-popup"><div class=search-header><span class=search-icon><i class="fa fa-search"></i></span><div class=search-input-container><input autocomplete=off autocapitalize=off maxlength=80 placeholder=搜索... spellcheck=false type=search class=search-input></div><span class=popup-btn-close role=button><i class="fa fa-times-circle"></i></span></div><div class="search-result-container no-result"><div class=search-result-icon><i class="fa fa-spinner fa-pulse fa-5x"></i></div></div></div></div></div><div class="toggle sidebar-toggle" role=button><span class=toggle-line></span>
+<span class=toggle-line></span>
+<span class=toggle-line></span></div><aside class=sidebar><div class="sidebar-inner sidebar-nav-active sidebar-toc-active"><ul class=sidebar-nav><li class=sidebar-nav-toc>文章目录</li><li class=sidebar-nav-overview>站点概览</li></ul><div class=sidebar-panel-container><div class="post-toc-wrap sidebar-panel"><div class="post-toc animated"><nav id=TableOfContents><ul><li><a href=#部署ydb单节点数据库>部署<code>Ydb</code>单节点数据库</a></li><li><a href=#部署集群模式>部署集群模式</a><ul><li><a href=#安装前准备>安装前准备</a></li><li><a href=#准备证书使用保护模式>准备证书使用保护模式</a></li><li><a href=#为ydb准备集群配置文件>为<code>YDB</code>准备集群配置文件</a></li><li><a href=#启动数据库静态节点>启动数据库静态节点</a><ul><li><a href=#手动方式启动>手动方式启动</a></li><li><a href=#使用systemd方式启动>使用<code>systemd</code>方式启动</a></li></ul></li><li><a href=#初始化集群>初始化集群</a><ul><li><a href=#不使用身份验证方式初始化集群>不使用身份验证方式初始化集群</a></li><li><a href=#使用身份验证方式初始化集群>使用身份验证方式初始化集群</a></li></ul></li><li><a href=#创建数据库>创建数据库</a></li><li><a href=#启动数据库动态节点>启动数据库动态节点</a><ul><li><a href=#手动方式启动-1>手动方式启动</a></li><li><a href=#使用systemd方式启动-1>使用<code>Systemd</code>方式启动</a></li></ul></li><li><a href=#初始帐户设置>初始帐户设置</a></li><li><a href=#测试创建的数据库>测试创建的数据库</a></li></ul></li></ul></nav></div></div><div class="site-overview-wrap sidebar-panel"><div class="site-author site-overview-item animated" itemprop=author itemscope itemtype=http://schema.org/Person><img class=site-author-image itemprop=image alt=二哥 src=/imgs/img-lazy-loading.gif data-src=/imgs/s2-1.jpg><p class=site-author-name itemprop=name>二哥</p><div class=site-description itemprop=description>The man who has made up his mind to win will never say impossible – Napoleon Bonaparte</div></div><div class="site-state-wrap site-overview-item animated"><nav class=site-state><div class="site-state-item site-state-posts"><a href=/archives/><span class=site-state-item-count>0</span>
+<span class=site-state-item-name>日志</span></a></div><div class="site-state-item site-state-categories"><a href=/categories/><span class=site-state-item-count>51</span>
+<span class=site-state-item-name>分类</span></a></div><div class="site-state-item site-state-tags"><a href=/tags/><span class=site-state-item-count>149</span>
+<span class=site-state-item-name>标签</span></a></div></nav></div><div class="links-of-social site-overview-item animated"><span class=links-of-social-item><a href=qq%e5%8f%b7 title="QQ → qq号" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-qq fa-fw hvr-icon"></i>
+QQ
+</a></span><span class=links-of-social-item><a href=https://www.zhihu.com/people/lisenhui title="知乎 → https://www.zhihu.com/people/lisenhui" rel=noopener class=hvr-icon-pulse target=_blank><i class="fa fa-book fa-fw hvr-icon"></i>
+知乎
+</a></span><span class=links-of-social-item><a href=qq@qq.com title="E-Mail → qq@qq.com" rel=noopener class=hvr-icon-pulse target=_blank><i class="fa fa-envelope fa-fw hvr-icon"></i>
+E-Mail
+</a></span><span class=links-of-social-item><a href=https://weibo.com/yourname title="Weibo → https://weibo.com/yourname" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-weibo fa-fw hvr-icon"></i>
+Weibo
+</a></span><span class=links-of-social-item><a href="https://www.youtube.com/watch?v=RgKAFK5djSk" title="Youtube → https://www.youtube.com/watch?v=RgKAFK5djSk" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-youtube fa-fw hvr-icon"></i>
+Youtube
+</a></span><span class=links-of-social-item><a href=https://github.com/elkan1788 title="Github → https://github.com/elkan1788" rel=noopener class=hvr-icon-pulse target=_blank><i class="fab fa-github fa-fw hvr-icon"></i>
+Github</a></span></div><div class="cc-license animated" itemprop=license><a href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh class=cc-opacity rel=noopener target=_blank title=共享知识><img src=/imgs/img-lazy-loading.gif data-src=/imgs/cc/big/by_nc_sa.svg alt=共享知识></a></div><div class="links-of-blogroll site-overview-item animated"><div class=links-of-blogroll-title><i class="fa fa-globe fa-fw"></i>
+友情链接</div><ul class=links-of-blogroll-list><li class=links-of-blogroll-item><a href=https://gitee.com/hugo-next/hugo-theme-next title=https://gitee.com/hugo-next/hugo-theme-next target=_blank>Hugo-NexT</a></li><li class=links-of-blogroll-item><a href=https://lisenhui.cn title=https://lisenhui.cn target=_blank>凡梦星尘空间站</a></li></ul></div></div></div></div><div id=siteinfo-card-widget class=sidebar-card-widget><div class=item-headline><i class="fas fa-chart-line"></i>
+<span>网站资讯</span></div><div class=siteinfo><div class=siteinfo-item><div class=item-name><i class="fa-solid fa-calendar-check"></i>已运行：</div><div class=item-count id=runTimes data-publishdate></div></div><div class=siteinfo-item><div class=item-name><i class="fas fa fa-user"></i>总访客数：</div><div class=item-count id=busuanzi_value_site_uv><i class="fa fa-sync fa-spin"></i></div></div><div class=siteinfo-item><div class=item-name><i class="fas fa fa-eye"></i>页面浏览：</div><div class=item-count id=busuanzi_value_site_pv><i class="fa fa-sync fa-spin"></i></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-font"></i>总字数：</div><div class=item-count id=wordsCount data-count></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-mug-hot"></i>阅读约：</div><div class=item-count id=readTimes data-times></div></div><div class=siteinfo-item><div class=item-name><i class="fa fa-clock-rotate-left"></i>最后更新于：</div><div class=item-count id=last-push-date data-lastpushdate></div></div></div></div></aside><div class=sidebar-dimmer></div></header><div class=tool-buttons><div id=goto-gtranslate class=button title=多语言翻译><i class="fas fa-globe"></i></div><div id=toggle-theme class=button title=深浅模式切换><i class="fas fa-adjust"></i></div><div class=back-to-top role=button title=返回顶部><i class="fa fa-arrow-up"></i>
+<span>0%</span></div></div><div class=reading-progress-bar></div><a role=button class="book-mark-link book-mark-link-fixed"></a><a href=https://github.com/hugo-next rel="noopener external nofollow noreferrer" target=_blank title="Follow me on GitHub" class="exturl github-corner"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0 0 115 115h15l12 27L250 250V0z"/><path d="M128.3 109C113.8 99.7 119 89.6 119 89.6 122 82.7 120.5 78.6 120.5 78.6 119.2 72 123.4 76.3 123.4 76.3 127.3 80.9 125.5 87.3 125.5 87.3 122.9 97.6 130.6 101.9 134.4 103.2" fill="currentcolor" style="transform-origin:130px 106px" class="octo-arm"/><path d="M115 115C114.9 115.1 118.7 116.5 119.8 115.4l13.9-13.8C136.9 99.2 139.9 98.4 142.2 98.6 133.8 88 127.5 74.4 143.8 58 148.5 53.4 154 51.2 159.7 51 160.3 49.4 163.2 43.6 171.4 40.1 171.4 40.1 176.1 42.5 178.8 56.2 183.1 58.6 187.2 61.8 190.9 65.4 194.5 69 197.7 73.2 200.1 77.6 213.8 80.2 216.3 84.9 216.3 84.9 212.7 93.1 206.9 96 205.4 96.6 205.1 102.4 203 107.8 198.3 112.5 181.9 128.9 168.3 122.5 157.7 114.1 157.9 116.9 156.7 120.9 152.7 124.9L141 136.5C139.8 137.7 141.6 141.9 141.8 141.8z" fill="currentcolor" class="octo-body"/></svg>
+</a><script type=text/javascript src=//sidecar.gitter.im/dist/sidecar.v1.js async></script><script type=text/javascript>((window.gitter={}).chat={}).options={room:"hugo-next/community"}</script><noscript><div class=noscript-warning>Theme NexT works best with JavaScript enabled</div></noscript><div class="main-inner post posts-expand"><div class=post-block><article itemscope itemtype=http://schema.org/Article class=post-content lang><link itemprop=mainEntityOfPage href=https://erge.blog/system/linux/databases/install-ydb/><span hidden itemprop=author itemscope itemtype=http://schema.org/Person><meta itemprop=image content="/imgs/s2-1.jpg"><meta itemprop=name content="二哥"></span><span hidden itemprop=publisher itemscope itemtype=http://schema.org/Organization><meta itemprop=name content="二哥"><meta itemprop=description content="The man who has made up his mind to win will never say impossible – Napoleon Bonaparte"></span><span hidden itemprop=post itemscope itemtype=http://schema.org/CreativeWork><meta itemprop=name content="Install Ydb"><meta itemprop=description content="Install-Ydb"></span><header class=post-header><h1 class=post-title itemprop="name headline">Install Ydb
+<a href=https://github.com/user-name/repo-name/tree/branch-name/subdirectory-name/System/Linux/Databases/Install-Ydb.md rel="noopener external nofollow noreferrer" target=_blank class="exturl post-edit-link" title=编辑><i class="fa fa-pen-nib"></i></a></h1><div class=post-meta-container><div class=post-meta-items><span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-calendar"></i>
+</span><span class=post-meta-item-text title=发表于>发表于：
+</span><time title="创建时间：2023-01-28 15:50:59 +0800 CST" itemprop="dateCreated datePublished" datetime="2023-01-28 15:50:59 +0800 CST">2023-01-28
+</time></span><span class=post-meta-item><span class=post-meta-item-icon><i class="far fa-folder-open"></i>
+</span><span class=post-meta-item-text title=分类于>分类于：
+</span><span itemprop=about itemscope itemtype=http://schema.org/Thing><a href=/categories/databases itemprop=url rel=index><span itemprop=name>Databases</span></a></span></span></div><div class=post-meta-items><span class=post-meta-item title=字数><span class=post-meta-item-icon><i class="far fa-file-word"></i>
+</span><span class=post-meta-item-text>字数：</span>
+<span>4202</span>
+</span><span class=post-meta-item title=阅读><span class=post-meta-item-icon><i class="far fa-clock"></i>
+</span><span class=post-meta-item-text>阅读：&ap;</span>
+<span>9分钟</span>
+</span><span class=post-meta-item title=浏览><span class=post-meta-item-icon><i class="far fa-eye"></i>
+</span><span class=post-meta-item-text>浏览：
+</span><span id=busuanzi_value_page_pv data-path=/system/linux/databases/install-ydb/><i class="fa fa-sync fa-spin"></i></span></span></div></div></header><div class="post-body autonumber" itemprop=articleBody><h2 id=部署ydb单节点数据库>部署<code>Ydb</code>单节点数据库
+<a class=header-anchor href=#%e9%83%a8%e7%bd%b2ydb%e5%8d%95%e8%8a%82%e7%82%b9%e6%95%b0%e6%8d%ae%e5%ba%93></a></h2><div class="note infot"><blockquote><ol><li><code>Ydb</code><font color=red>使用端口</font></li></ol><table><thead><tr><th>端口</th><th>协议</th><th>描述</th></tr></thead><tbody><tr><td>2135~2136</td><td><code>TCP</code></td><td>用于客户端-集群交互的<code>GRPC</code></td></tr><tr><td>19001~19002</td><td><code>TCP</code></td><td>集群内节点交互互连</td></tr><tr><td>8765~8766</td><td><code>TCP</code></td><td>集群监控的<code>HTTP</code>接口</td></tr></tbody></table></blockquote><ul><li><ol><li><a href=https://ydb.tech/ title="<code>Ydb</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Ydb</code>
+<i class="fa fa-external-link-alt"></i>
+</a>数据库、
+<a href=https://github.com/ydb-platform/ydb title="<code>Github-Ydb</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Github-Ydb</code>
+<i class="fa fa-external-link-alt"></i></a></li></ol></li></ul><blockquote><ul><li>1.1 <font color=red>系统要求</font><code>Ubuntu 20.04、Debian 11、Fedora34</code><font color=red>等以上版本系统</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ mkdir -p /opt/<span style=color:#f92672>{</span>ydb,ydb-cli<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>$ cd /opt/ydb/
+</span></span><span style=display:flex><span>$ curl https://binaries.ydb.tech/local_scripts/install.sh | bash
+</span></span></code></pre></div><ul><li>1.2 <font color=red>启动、停止</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># 磁盘启动使用，磁盘最少不能低于 80G</span>
+</span></span><span style=display:flex><span>$ ./start.sh disk
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 内存启动，内存启动服务器重启数据丢失</span>
+</span></span><span style=display:flex><span>$ ./start.sh ram
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 停止</span>
+</span></span><span style=display:flex><span>$ ./stop.sh
+</span></span></code></pre></div><ul><li>1.3 <font color=red>部署</font><code>Ydb-cli</code></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ curl -sSL https://storage.yandexcloud.net/yandexcloud-ydb/install.sh | bash
+</span></span><span style=display:flex><span>$ source /root/.bashrc
+</span></span></code></pre></div><ul><li>1.4 <font color=red>使用</font><code>Ydb-cli</code>查询</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ ydb -e grpc://localhost:2136 -d /Root/test scheme ls
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ ydb -e grpc://nodeip:2136 -d /Root/testdb workload stock init
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 启动YDB Web页面</span>
+</span></span><span style=display:flex><span>$ ydb -e grpc://nodeip:2136 -d /Root/testdb workload stock run add-rand-order -s <span style=color:#ae81ff>600</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ ydb -e grpc://192.168.88.112:2136 -d /Root/testdb topic read orders/updates -c ilnaz --wait --format<span style=color:#f92672>=</span>newline-delimited
+</span></span></code></pre></div></blockquote></div><h2 id=部署集群模式>部署集群模式
+<a class=header-anchor href=#%e9%83%a8%e7%bd%b2%e9%9b%86%e7%be%a4%e6%a8%a1%e5%bc%8f></a></h2><h3 id=安装前准备>安装前准备
+<a class=header-anchor href=#%e5%ae%89%e8%a3%85%e5%89%8d%e5%87%86%e5%a4%87></a></h3><div class="note info"><blockquote><ol><li><a href=https://ydb.tech/en/docs/deploy/manual/deploy-ydb-on-premises title="在虚拟或裸机服务器上部署<code>YDB</code>集群" rel="noopener external nofollow noreferrer" target=_blank class=exturl>在虚拟或裸机服务器上部署<code>YDB</code>集群
+<i class="fa fa-external-link-alt"></i></a></li></ol></blockquote><ul><li><ol><li><font color=red>虚拟机系统安装好后，重新添加</font><code>NVMe(v)</code>类型磁盘</li></ol></li></ul><blockquote><ul><li>1.1 <font color=red>准备环境、用户</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ sudo groupadd ydb
+</span></span><span style=display:flex><span>$ sudo useradd ydb -g ydb
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ sudo usermod -aG disk ydb  	<span style=color:#75715e># 为了确保YDB可以访问块磁盘来运行，您需要将进程所有者添加到disk组中</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ apt install sudo  	<span style=color:#75715e># 使用root用户安装sudo</span>
+</span></span><span style=display:flex><span>$ echo <span style=color:#e6db74>&#34;name  ALL=(ALL:ALL) ALL&#34;</span> &gt;&gt;/etc/sudoers
+</span></span><span style=display:flex><span>$ sudo apt install curl parted
+</span></span></code></pre></div></blockquote><ul><li><ol start=2><li><font color=red>在所选磁盘上创建分区</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ sudo parted /dev/nvme0n1 mklabel gpt -s
+</span></span><span style=display:flex><span>$ sudo parted -a optimal /dev/nvme0n1 mkpart primary 0% 100%
+</span></span><span style=display:flex><span>$ sudo parted /dev/nvme0n1 name <span style=color:#ae81ff>1</span> ydb_disk_ssd_01
+</span></span><span style=display:flex><span>$ sudo partx --u /dev/nvme0n1
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ sudo parted /dev/nvme0n2 mklabel gpt -s
+</span></span><span style=display:flex><span>$ sudo parted -a optimal /dev/nvme0n2 mkpart primary 0% 100%
+</span></span><span style=display:flex><span>$ sudo parted /dev/nvme0n2 name <span style=color:#ae81ff>1</span> ydb_disk_ssd_02
+</span></span><span style=display:flex><span>$ sudo partx --u /dev/nvme0n2
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ sudo parted /dev/nvme0n3 mklabel gpt -s
+</span></span><span style=display:flex><span>$ sudo parted -a optimal /dev/nvme0n3 mkpart primary 0% 100%
+</span></span><span style=display:flex><span>$ sudo parted /dev/nvme0n3 name <span style=color:#ae81ff>1</span> ydb_disk_ssd_03
+</span></span><span style=display:flex><span>$ sudo partx --u /dev/nvme0n3
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 系统上将出现一个标有磁盘的磁盘 </span>
+</span></span><span style=display:flex><span>$ ll /dev/disk/by-partlabel/
+</span></span></code></pre></div></blockquote><ul><li><ol start=3><li><font color=red>下载并解压包含<code>ydbd</code>可执行文件和<code>YDB</code>运行所需库的存档</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ sudo chown -R ydb:ydb /opt
+</span></span><span style=display:flex><span>$ mkdir -p /opt/<span style=color:#f92672>{</span>ydb/<span style=color:#f92672>{</span>cfg,secure,certs,log<span style=color:#f92672>}</span>,ydbd-stable-linux-amd64<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ curl -L https://binaries.ydb.tech/ydbd-stable-linux-amd64.tar.gz | tar -xz --strip-component<span style=color:#f92672>=</span><span style=color:#ae81ff>1</span> -C /opt/ydbd-stable-linux-amd64
+</span></span></code></pre></div><ul><li>3.1 <font color=red>将可执行文件和库复制到适当的目录</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ sudo cp -iR /opt/ydbd-stable-linux-amd64/bin /opt/ydb/
+</span></span><span style=display:flex><span>$ sudo cp -iR /opt/ydbd-stable-linux-amd64/lib /opt/ydb/
+</span></span></code></pre></div></blockquote><ul><li><ol start=4><li><font color=red>使用以下内置命令格式化磁盘</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ sudo LD_LIBRARY_PATH<span style=color:#f92672>=</span>/opt/ydb/lib /opt/ydb/bin/ydbd admin bs disk obliterate /dev/disk/by-partlabel/ydb_disk_ssd_01
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ sudo LD_LIBRARY_PATH<span style=color:#f92672>=</span>/opt/ydb/lib /opt/ydb/bin/ydbd admin bs disk obliterate /dev/disk/by-partlabel/ydb_disk_ssd_02
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ sudo LD_LIBRARY_PATH<span style=color:#f92672>=</span>/opt/ydb/lib /opt/ydb/bin/ydbd admin bs disk obliterate /dev/disk/by-partlabel/ydb_disk_ssd_03
+</span></span></code></pre></div></blockquote></div><h3 id=准备证书使用保护模式>准备证书使用保护模式
+<a class=header-anchor href=#%e5%87%86%e5%a4%87%e8%af%81%e4%b9%a6%e4%bd%bf%e7%94%a8%e4%bf%9d%e6%8a%a4%e6%a8%a1%e5%bc%8f></a></h3><div class="note info"><ul><li><ol><li><font color=red>准备<code>CA</code>文件</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/opt/ydb/cfg/ca.cnf<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[ ca ]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>default_ca = CA_default
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[ CA_default ]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>default_days = 365
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>database = /opt/ydb/secure/index.txt
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>serial = /opt/ydb/secure/serial.txt
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>default_md = sha256
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>copy_extensions = copy
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>unique_subject = no
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[ req ]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>prompt=no
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>distinguished_name = distinguished_name
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>x509_extensions = extensions
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[ distinguished_name ]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>organizationName = YDB
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>commonName = YDB CA
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[ extensions ]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>keyUsage = critical,digitalSignature,nonRepudiation,keyEncipherment,keyCertSign
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>basicConstraints = critical,CA:true,pathlen:1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[ signing_policy ]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>organizationName = supplied
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>commonName = optional
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[ signing_node_req ]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>keyUsage = critical,digitalSignature,keyEncipherment
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>extendedKeyUsage = serverAuth,clientAuth
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># Used to sign client certificates. 用于签署客户端证书
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[ signing_client_req ]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>keyUsage = critical,digitalSignature,keyEncipherment
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>extendedKeyUsage = clientAuth
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=2><li><font color=red>创建<code>CA</code>密钥</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ openssl genrsa -out /opt/ydb/certs/ca.key <span style=color:#ae81ff>2048</span>
+</span></span></code></pre></div><ul><li>2.1 <font color=red>创建私有证书颁发机构<code>CA</code>证书</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ openssl req -new -x509 -config /opt/ydb/cfg/ca.cnf -key /opt/ydb/certs/ca.key -out /opt/ydb/certs/ca.crt -days <span style=color:#ae81ff>1830</span> -batch
+</span></span></code></pre></div></blockquote><ul><li><ol start=3><li><font color=red>创建文本数据库和<code>OpenSSL</code>证书索引文件</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ touch /opt/ydb/secure/index.txt
+</span></span><span style=display:flex><span>$ echo <span style=color:#ae81ff>01</span> &gt;/opt/ydb/secure/serial.txt
+</span></span></code></pre></div></blockquote><ul><li><ol start=4><li><font color=red>创建<code>node.cnf</code>具有以下内容的配置文件</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/opt/ydb/cfg/node.cnf<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># OpenSSL node configuration file
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[ req ]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>prompt = no
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>distinguished_name = distinguished_name
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>req_extensions = extensions
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[ distinguished_name ]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>organizationName = YDB
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[ extensions ]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>subjectAltName = DNS:&lt;node&gt;.&lt;domain&gt;  	# 节点IP或者域名
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><ul><li>4.1 <font color=red>创建证书密钥</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ openssl genrsa -out /opt/ydb/certs/node.key <span style=color:#ae81ff>2048</span>
+</span></span></code></pre></div><ul><li>4.2 <font color=red>创建证书签名请求<code>CSR</code></font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ openssl req -new -sha256 -config /opt/ydb/cfg/node.cnf -key /opt/ydb/certs/node.key -out /opt/ydb/secure/node.csr -batch
+</span></span></code></pre></div><ul><li>4.3 <font color=red>创建节点证书</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ openssl ca -config /opt/ydb/cfg/ca.cnf <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span> -keyfile /opt/ydb/certs/ca.key <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span> -cert /opt/ydb/certs/ca.crt <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span> -policy signing_policy <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span> -extensions signing_node_req <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span> -out /opt/ydb/certs/node.crt <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span> -outdir /opt/ydb/certs/ <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span> -in /opt/ydb/secure/node.csr -batch
+</span></span></code></pre></div></blockquote><ul><li><ol start=5><li><font color=red>将证书和节点密钥复制到安装文件夹</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ sudo -u ydb cp certs/ca.crt certs/node.crt certs/node.key /opt/ydb/certs/
+</span></span></code></pre></div></blockquote></div><h3 id=为ydb准备集群配置文件>为<code>YDB</code>准备集群配置文件
+<a class=header-anchor href=#%e4%b8%baydb%e5%87%86%e5%a4%87%e9%9b%86%e7%be%a4%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6></a></h3><div class="note infot"><blockquote><ol><li><a href=https://ydb.tech/en/docs/deploy/configuration/config title=集群配置 rel="noopener external nofollow noreferrer" target=_blank class=exturl>集群配置
+<i class="fa fa-external-link-alt"></i></a></li></ol></blockquote><ul><li><ol><li><font color=red>集群类型、在集群每个节点中添加</font><code>/opt/ydb/cfg/config.yaml</code>保存<code>YDB</code> 配置文件</li></ol></li></ul><blockquote><ul><li>1.1
+<a href=https://github.com/ydb-platform/ydb/blob/main/ydb/deploy/yaml_config_examples/block-4-2.yaml title="<code>block-4-2</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>block-4-2</code>
+<i class="fa fa-external-link-alt"></i>
+</a><font color=red>用于单数据中心集群</font></li><li>1.2
+<a href=https://github.com/ydb-platform/ydb/blob/main/ydb/deploy/yaml_config_examples/mirror-3dc-9-nodes.yaml title="<code>mirror-3dc</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>mirror-3dc</code>
+<i class="fa fa-external-link-alt"></i>
+</a><font color=red>用于由 9 个节点组成的跨数据中心集群</font></li><li>1.3
+<a href=https://github.com/ydb-platform/ydb/blob/main/ydb/deploy/yaml_config_examples/mirror-3dc-3-nodes.yaml title="<code>mirror-3dc-3nodes</code>" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>mirror-3dc-3nodes</code>
+<i class="fa fa-external-link-alt"></i>
+</a><font color=red>用于由 3 个节点组成的跨数据中心集群</font></li></ul></blockquote><ul><li><ol start=2><li><font color=red>在<code>host_configs</code>部分中，指定每个群集节点上所有磁盘类型</font></li></ol></li></ul><blockquote><ul><li>2.1 <font color=red>可用磁盘种类：固态硬盘：<code>SSD</code>、<code>NVME</code>、<code>HDD</code></font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>host_configs</span>:
+</span></span><span style=display:flex><span>- <span style=color:#f92672>drive</span>:
+</span></span><span style=display:flex><span>  - <span style=color:#f92672>path</span>: <span style=color:#ae81ff>/dev/disk/by-partlabel/ydb_disk_ssd_01</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>type</span>: <span style=color:#ae81ff>SSD  	# 可用磁盘种类：SSD、NVME、HDD</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>host_config_id</span>: <span style=color:#ae81ff>1</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=3><li><font color=red>在该<code>hosts</code>部分中，指定每个节点的<code>FQDN</code>、它们的配置和在<code>data_center</code>或中的位置<code>rack</code></font></li></ol></li></ul><blockquote><ul><li>3.1 <font color=red>在</font><code>/etc/hosts</code><font color=red>文件下做映射：</font><code>IP:hostname</code><mark>避免不必要麻烦所有主机名必须都是小写字母</mark></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>hosts</span>:
+</span></span><span style=display:flex><span>- <span style=color:#f92672>host</span>: <span style=color:#ae81ff>node1.ydb.tech</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>host_config_id</span>: <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>walle_location</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>body</span>: <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>data_center</span>: <span style=color:#e6db74>&#39;zone-a&#39;</span>  	<span style=color:#75715e># 填写 hostname</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>rack</span>: <span style=color:#e6db74>&#39;1&#39;</span>
+</span></span><span style=display:flex><span>- <span style=color:#f92672>host</span>: <span style=color:#ae81ff>node2.ydb.tech</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>host_config_id</span>: <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>walle_location</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>body</span>: <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>data_center</span>: <span style=color:#e6db74>&#39;zone-b&#39;</span>  	<span style=color:#75715e># 填写 hostname</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>rack</span>: <span style=color:#e6db74>&#39;1&#39;</span>
+</span></span><span style=display:flex><span>- <span style=color:#f92672>host</span>: <span style=color:#ae81ff>node3.ydb.tech</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>host_config_id</span>: <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>walle_location</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>body</span>: <span style=color:#ae81ff>3</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>data_center</span>: <span style=color:#e6db74>&#39;zone-c&#39;</span>  	<span style=color:#75715e># 填写 hostname</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>rack</span>: <span style=color:#e6db74>&#39;1&#39;</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=4><li><font color=red>启用用户身份验证</font></li></ol></li></ul><blockquote><ul><li>4.1 <font color=red>在<code>YDB</code>集群中启用认证和用户访问差异化特性，在<code>domains_config</code>部分添加以下参数</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>domains_config</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>security_config</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>enforce_user_token_requirement</span>: <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>monitoring_allowed_sids</span>:
+</span></span><span style=display:flex><span>    - <span style=color:#e6db74>&#34;root&#34;</span>
+</span></span><span style=display:flex><span>    - <span style=color:#e6db74>&#34;ADMINS&#34;</span>
+</span></span><span style=display:flex><span>    - <span style=color:#e6db74>&#34;DATABASE-ADMINS&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>administration_allowed_sids</span>:
+</span></span><span style=display:flex><span>    - <span style=color:#e6db74>&#34;root&#34;</span>
+</span></span><span style=display:flex><span>    - <span style=color:#e6db74>&#34;ADMINS&#34;</span>
+</span></span><span style=display:flex><span>    - <span style=color:#e6db74>&#34;DATABASE-ADMINS&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>viewer_allowed_sids</span>:
+</span></span><span style=display:flex><span>    - <span style=color:#e6db74>&#34;root&#34;</span>
+</span></span><span style=display:flex><span>    - <span style=color:#e6db74>&#34;ADMINS&#34;</span>
+</span></span><span style=display:flex><span>    - <span style=color:#e6db74>&#34;DATABASE-ADMINS&#34;</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=5><li><font color=red>在<code>YDB</code>配置文件中启用流量加密模式</font></li></ol></li></ul><blockquote><ul><li>5.1 <font color=red>在<code>interconnect_config</code>和<code>grpc_config</code>部分中，指定证书、密钥和<code>CA</code>证书的路径</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>interconnect_config</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>start_tcp</span>: <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>encryption_mode</span>: <span style=color:#ae81ff>OPTIONAL</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>path_to_certificate_file</span>: <span style=color:#e6db74>&#34;/opt/ydb/certs/node.crt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>path_to_private_key_file</span>: <span style=color:#e6db74>&#34;/opt/ydb/certs/node.key&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>path_to_ca_file</span>: <span style=color:#e6db74>&#34;/opt/ydb/certs/ca.crt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>grpc_config</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>cert</span>: <span style=color:#e6db74>&#34;/opt/ydb/certs/node.crt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>key</span>: <span style=color:#e6db74>&#34;/opt/ydb/certs/node.key&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>ca</span>: <span style=color:#e6db74>&#34;/opt/ydb/certs/ca.crt&#34;</span>
+</span></span></code></pre></div></blockquote><ul><li><ol start=6><li><font color=red>完整</font><code>block-4-2</code>配置<mark>避免不必要麻烦所有主机名必须都是小写字母</mark></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/opt/ydb/cfg/config.yaml<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># YDB configuration options and their values
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># are described in documentaion https://ydb.tech/en/docs/deploy/configuration/config
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># static erasure is the parameter that
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># describes the fault tolerance mode of the
+</span></span></span><span style=display:flex><span><span style=color:#e6db74># cluster. See docs for more details https://ydb.tech/en/docs/deploy/configuration/config#domains-blob
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>static_erasure: mirror-3-dc
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>host_configs: # the list of available host configurations in the cluster.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>- drive:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - path: /dev/disk/by-partlabel/ydb_disk_ssd_01    # path of the first disk in the host configration.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: NVME                                       # kind of the disk: available kinds are SSD, NVME, HDD
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - path: /dev/disk/by-partlabel/ydb_disk_ssd_02
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: NVME
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - path: /dev/disk/by-partlabel/ydb_disk_ssd_03
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: NVME
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  host_config_id: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>hosts:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>- host: debian-1-88-110       # storage node DNS name
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  host_config_id: 1                 # numeric host configuration template identifier
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  walle_location:                   # this parameter describes where host is located.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    body: 1                         # string representing a host serial number.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    data_center: &#39;debian-1-88-110&#39;           # string representing the datacenter / availability zone where the host is located.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>                                    # if cluster is deployed using mirror-3-dc fault tolerance mode, all hosts must be distributed
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>                                    # across 3 datacenters.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    rack: &#39;1&#39;                       # string representing a rack identifier where the host is located.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>                                    # if cluster is deployed using block-4-2 erasure, all hosts should be distrubited
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>                                    # accross at least 8 racks.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>- host: ubuntu-1-88-111
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  host_config_id: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  walle_location:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    body: 2
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    data_center: &#39;ubuntu-1-88-111&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    rack: &#39;2&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>- host: ubuntu-2-88-112
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  host_config_id: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  walle_location:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    body: 3
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    data_center: &#39;ubuntu-2-88-112&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    rack: &#39;3&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>domains_config:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  # There can be only one root domain in a cluster. Domain name prefixes all scheme objects names, e.g. full name of a table table1 in database db1.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  # in a cluster with domains_config.domain.name parameter set to Root would be equal to /Root/db1/table1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  domain:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: Root
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    storage_pool_types:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    - kind: nvme
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      pool_config:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        box_id: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        # fault tolerance mode name - none, block-4-2, or mirror-3-dc..
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        # See docs for more details https://ydb.tech/en/docs/deploy/configuration/config#domains-blob
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        erasure_species: mirror-3-dc
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        kind: nvme
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        geometry:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          realm_level_begin: 10
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          realm_level_end: 20
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          domain_level_begin: 10
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          domain_level_end: 256
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        pdisk_filter:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        - property:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          - type: NVME  # device type to match host_configs.drive.type
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        vdisk_kind: Default
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  state_storage:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - ring:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      node: [1, 2, 3]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      nto_select: 3
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    ssid: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>table_service_config:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  sql_version: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>actor_system_config:          # the configuration of the actor system which descibes how cores of the instance are distributed
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  executor:                   # accross different types of workloads in the instance.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: System              # system executor of the actor system. in this executor YDB launches system type of workloads, like system tablets
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>                              # and reads from storage.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    threads: 2                # the number of threads allocated to system executor.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: BASIC
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: User                # user executor of the actor system. In this executor YDB launches user workloads, like datashard activities,
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>                              # queries and rpc calls.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    threads: 3                # the number of threads allocated to user executor.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: BASIC
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: Batch               # user executor of the actor system. In this executor YDB launches batch operations, like scan queries, table
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>                              # compactions, background compactions.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    threads: 2                # the number of threads allocated to the batch executor.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: BASIC
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: IO                  # the io executor. In this executor launches sync operations and writes logs.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    threads: 1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    time_per_mailbox_micro_secs: 100
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: IO
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - name: IC                  # the interconnect executor which YDB uses for network communications accross different nodes of the cluster.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    spin_threshold: 10
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    threads: 1                # the number of threads allocated to the interconnect executor.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    time_per_mailbox_micro_secs: 100
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    type: BASIC
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  scheduler:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    progress_threshold: 10000
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    resolution: 256
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    spin_threshold: 0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>blob_storage_config:         # configuration of static blobstorage group.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>                             # YDB uses this group to store system tablets&#39; data, like SchemeShard
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  service_set:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    groups:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    - erasure_species: mirror-3-dc # fault tolerance mode name for the static group
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      rings:          # in mirror-3-dc must have exactly 3 rings or availability zones
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - fail_domains:  # first record: fail domains of the static group describe where each vdisk of the static group should be located.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        - vdisk_locations:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          - node_id: debian-1-88-110
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            pdisk_category: NVME
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            path: /dev/disk/by-partlabel/ydb_disk_ssd_01
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        - vdisk_locations:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          - node_id: debian-1-88-110
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            pdisk_category: NVME
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            path: /dev/disk/by-partlabel/ydb_disk_ssd_02
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        - vdisk_locations:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          - node_id: debian-1-88-110
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            pdisk_category: NVME
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            path: /dev/disk/by-partlabel/ydb_disk_ssd_03
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - fail_domains: # second ring: fail domains of the static group describe where each vdisk of the static group should be located.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        - vdisk_locations:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          - node_id: ubuntu-1-88-111
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            pdisk_category: NVME
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            path: /dev/disk/by-partlabel/ydb_disk_ssd_01
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        - vdisk_locations:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          - node_id: ubuntu-1-88-111
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            pdisk_category: NVME
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            path: /dev/disk/by-partlabel/ydb_disk_ssd_02
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        - vdisk_locations:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          - node_id: ubuntu-1-88-111
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            pdisk_category: NVME
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            path: /dev/disk/by-partlabel/ydb_disk_ssd_03
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      - fail_domains: # third ring: fail domains of the static group describe where each vdisk of the static group should be located.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        - vdisk_locations:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          - node_id: ubuntu-2-88-112
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            pdisk_category: NVME
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            path: /dev/disk/by-partlabel/ydb_disk_ssd_01
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        - vdisk_locations:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          - node_id: ubuntu-2-88-112
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            pdisk_category: NVME
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            path: /dev/disk/by-partlabel/ydb_disk_ssd_02
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        - vdisk_locations:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          - node_id: ubuntu-2-88-112
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            pdisk_category: NVME
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            path: /dev/disk/by-partlabel/ydb_disk_ssd_03
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>channel_profile_config:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  profile:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  - channel:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    - erasure_species: mirror-3-dc
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      pdisk_category: 0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      storage_pool_kind: nvme
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    - erasure_species: mirror-3-dc
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      pdisk_category: 0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      storage_pool_kind: nvme
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    - erasure_species: mirror-3-dc
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      pdisk_category: 0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      storage_pool_kind: nvme
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    profile_id: 0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>interconnect_config:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    start_tcp: true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    encryption_mode: OPTIONAL
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    path_to_certificate_file: &#34;/opt/ydb/certs/node.crt&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    path_to_private_key_file: &#34;/opt/ydb/certs/node.key&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    path_to_ca_file: &#34;/opt/ydb/certs/ca.crt&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>grpc_config:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    cert: &#34;/opt/ydb/certs/node.crt&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    key: &#34;/opt/ydb/certs/node.key&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    ca: &#34;/opt/ydb/certs/ca.crt&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div></blockquote></div><h3 id=启动数据库静态节点>启动数据库静态节点
+<a class=header-anchor href=#%e5%90%af%e5%8a%a8%e6%95%b0%e6%8d%ae%e5%ba%93%e9%9d%99%e6%80%81%e8%8a%82%e7%82%b9></a></h3><h4 id=手动方式启动>手动方式启动
+<a class=header-anchor href=#%e6%89%8b%e5%8a%a8%e6%96%b9%e5%bc%8f%e5%90%af%e5%8a%a8></a></h4><div class="note info"><ul><li><ol><li><font color=red>启动<code>/Root/testdb</code>数据库的<code>YDB</code>动态节点</font></li></ol></li></ul><blockquote><ul><li>1.1 <code>&lt;nodeN.ydb.tech></code><font color=red>运行静态节点的服务器的<code>FQDN</code>在哪里</font></li><li>1.2 <font color=red>在其他服务器上运行额外的动态节点以确保数据库可用性</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ sudo su - ydb
+</span></span><span style=display:flex><span>$ cd /opt/ydb
+</span></span><span style=display:flex><span>$ export LD_LIBRARY_PATH<span style=color:#f92672>=</span>/opt/ydb/lib
+</span></span><span style=display:flex><span>/opt/ydb/bin/ydbd server --log-level <span style=color:#ae81ff>3</span> --tcp --yaml-config /opt/ydb/cfg/config.yaml --grpc-port <span style=color:#ae81ff>2135</span> --ic-port <span style=color:#ae81ff>19001</span> --mon-port <span style=color:#ae81ff>8765</span> --node static &gt;/opt/ydb/log/static-node.out 2&gt;/opt/ydb/log/static-node.err &amp;&gt;
+</span></span></code></pre></div></blockquote></div><h4 id=使用systemd方式启动>使用<code>systemd</code>方式启动
+<a class=header-anchor href=#%e4%bd%bf%e7%94%a8systemd%e6%96%b9%e5%bc%8f%e5%90%af%e5%8a%a8></a></h4><div class="note info"><ul><li><ol><li><font color=red>编写启动文件</font></li></ol></li></ul><blockquote><ul><li>1.1 <code>/etc/systemd/system/ydbd-storage.service</code></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/etc/systemd/system/ydbd-storage.service<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[Unit]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Description=YDB storage node
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>After=network-online.target rc-local.service
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Wants=network-online.target
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>StartLimitInterval=10
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>StartLimitBurst=15
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[Service]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Restart=always
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>RestartSec=1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>User=ydb  	# 根据用户修改
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>PermissionsStartOnly=true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>StandardOutput=/var/log/ydb.log
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>StandardError=/var/log/ydb.log
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>SyslogIdentifier=ydbd
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>SyslogFacility=daemon
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>SyslogLevel=err
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Environment=LD_LIBRARY_PATH=/opt/ydb/lib
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>ExecStart=/opt/ydb/bin/ydbd server --log-level 3 --syslog --tcp --yaml-config  /opt/ydb/cfg/config.yaml --grpc-port 2135 --ic-port 19001 --mon-port 8765 --node static
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>LimitNOFILE=65536
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>LimitCORE=0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>LimitMEMLOCK=3221225472
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[Install]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>WantedBy=multi-user.target
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><ul><li>1.1 <font color=red>启动服务器、查看状态</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ sudo systemctl start ydbd-storage
+</span></span><span style=display:flex><span>$ sudo systemctl status ydbd-storage
+</span></span></code></pre></div></blockquote></div><h3 id=初始化集群>初始化集群
+<a class=header-anchor href=#%e5%88%9d%e5%a7%8b%e5%8c%96%e9%9b%86%e7%be%a4></a></h3><h4 id=不使用身份验证方式初始化集群>不使用身份验证方式初始化集群
+<a class=header-anchor href=#%e4%b8%8d%e4%bd%bf%e7%94%a8%e8%ba%ab%e4%bb%bd%e9%aa%8c%e8%af%81%e6%96%b9%e5%bc%8f%e5%88%9d%e5%a7%8b%e5%8c%96%e9%9b%86%e7%be%a4></a></h4><div class="note info"><ul><li><ol><li><font color=red>在其中一个集群节点上，运行命令</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ export LD_LIBRARY_PATH<span style=color:#f92672>=</span>/opt/ydb/lib
+</span></span><span style=display:flex><span>/opt/ydb/bin/ydbd admin blobstorage config init --yaml-file  /opt/ydb/cfg/config.yaml
+</span></span><span style=display:flex><span>$ echo $?
+</span></span></code></pre></div></blockquote></div><h4 id=使用身份验证方式初始化集群>使用身份验证方式初始化集群
+<a class=header-anchor href=#%e4%bd%bf%e7%94%a8%e8%ba%ab%e4%bb%bd%e9%aa%8c%e8%af%81%e6%96%b9%e5%bc%8f%e5%88%9d%e5%a7%8b%e5%8c%96%e9%9b%86%e7%be%a4></a></h4><div class="note info"><blockquote><p>要在启用用户认证模式的集群中执行管理命令（包括集群初始化、数据库创建、磁盘管理等），您必须首先使用<code>YDB CLI</code>客户端<code>2.0.0</code>或更高版本获取认证令牌。
+<a href=https://ydb.tech/en/docs/reference/ydb-cli/install title=您必须按照安装说明 rel="noopener external nofollow noreferrer" target=_blank class=exturl>您必须按照安装说明
+<i class="fa fa-external-link-alt"></i>
+</a>将<code>YDB CLI</code>客户端安装在任何可以通过网络访问集群节点的计算机上（例如，在其中一个集群节点上）。</p></blockquote><ul><li><ol><li><font color=red>第一次安装集群时，它只有一个<code>root</code>密码为空的帐户，因此获取令牌的命令</font></li></ol></li></ul><blockquote><ul><li>1.1 <font color=red>任何集群服务器都可以指定为连接服务器（<code>-e</code>或<code>--endpoint</code>参数）</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ ydb -e grpc://&lt;node1.ydb.tech&gt;:2135 -d /Root --user root --no-password auth get-token --force &gt;token-file
+</span></span></code></pre></div><ul><li>1.2 <font color=red>如果启用了<code>TLS</code>流量保护，请使用受保护的<code>grpcs</code>协议而不是<code>grpc</code>上面命令中的协议，并在参数中额外指定<code>CA</code>证书的路径<code>--ca-file</code></font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ ydb -e grpcs://&lt;node1.ydb.tech&gt;:2135 -d /Root --ca-file /opt/ydb/certs/ca.crt --user root --no-password auth get-token --force &gt;token-file
+</span></span></code></pre></div></blockquote><ul><li><ol start=2><li><font color=red>如果命令执行成功，身份验证令牌将被写入<code>token-file</code>. 只需要将此文件复制到稍后要运行集群初始化和数据库创建命令的集群节点。接下来，在此集群节点上运行命令</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ export LD_LIBRARY_PATH<span style=color:#f92672>=</span>/opt/ydb/lib
+</span></span><span style=display:flex><span>/opt/ydb/bin/ydbd -f token-file admin blobstorage config init --yaml-file  /opt/ydb/cfg/config.yaml
+</span></span><span style=display:flex><span>$ echo $?
+</span></span></code></pre></div></blockquote></div><h3 id=创建数据库>创建数据库
+<a class=header-anchor href=#%e5%88%9b%e5%bb%ba%e6%95%b0%e6%8d%ae%e5%ba%93></a></h3><div class="note info"><ul><li><ol><li><font color=red>要使用表，您需要至少创建一个数据库并运行一个进程来为该数据库提供服务（动态节点）不使用令牌</font></li></ol></li></ul><blockquote><ul><li>1.1 <code>/Root</code><font color=red>: 根域的名称，必须与</font><code>domains_config</code>. <code>domain</code>. <code>name</code><font color=red>在集群配置文件中设置</font></li><li>1.2 <code>testdb</code><font color=red>: 创建的数据库名称</font></li><li>1.3 <code>ssd:1</code><font color=red>：存储池的名称和池中块的编号。池名称通常表示数据存储设备的类型，并且必须与</font><code>storage_pool_types</code>. <code>kind</code><font color=red>里面的设置</font><code>domains_config</code>。<code>domain</code><font color=red>配置文件的元素</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ LD_LIBRARY_PATH<span style=color:#f92672>=</span>/opt/ydb/lib /opt/ydb/bin/ydbd admin database /Root/testdb create ssd:1
+</span></span></code></pre></div><ul><li><p>1.4 <font color=red>使用令牌文件的数据库创建命令</font></p><p>如果在集群中启用了用户认证模式，则必须将认证令牌传递给数据库创建命令。
+<a href=https://ydb.tech/en/docs/deploy/manual/deploy-ydb-on-premises#initialize-cluster title=集群初始化 rel="noopener external nofollow noreferrer" target=_blank class=exturl>集群初始化
+<i class="fa fa-external-link-alt"></i>
+</a>部分描述了获取令牌的过程</p></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ LD_LIBRARY_PATH<span style=color:#f92672>=</span>/opt/ydb/lib /opt/ydb/bin/ydbd -f token-file admin database /Root/testdb create ssd:1
+</span></span></code></pre></div></blockquote></div><h3 id=启动数据库动态节点>启动数据库动态节点
+<a class=header-anchor href=#%e5%90%af%e5%8a%a8%e6%95%b0%e6%8d%ae%e5%ba%93%e5%8a%a8%e6%80%81%e8%8a%82%e7%82%b9></a></h3><h4 id=手动方式启动-1>手动方式启动
+<a class=header-anchor href=#%e6%89%8b%e5%8a%a8%e6%96%b9%e5%bc%8f%e5%90%af%e5%8a%a8-1></a></h4><div class="note info"><ul><li><ol><li>启动<code>/Root/testdb</code><font color=red>数据库的<code>YDB</code>动态节点</font></li></ol></li></ul><blockquote><ul><li>1.1 <code>&lt;nodeN.ydb.tech></code><font color=red>运行静态节点的服务器的<code>FQDN</code>在哪里</font></li><li>1.2 <font color=red>在其他服务器上运行额外的动态节点以确保数据库可用性</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ sudo su - ydb
+</span></span><span style=display:flex><span>$ cd /opt/ydb
+</span></span><span style=display:flex><span>$ export LD_LIBRARY_PATH<span style=color:#f92672>=</span>/opt/ydb/lib
+</span></span><span style=display:flex><span>/opt/ydb/bin/ydbd server --grpc-port <span style=color:#ae81ff>2136</span> --ic-port <span style=color:#ae81ff>19002</span> --mon-port <span style=color:#ae81ff>8766</span> --yaml-config  /opt/ydb/cfg/config.yaml --tenant /Root/testdb --node-broker &lt;node1.ydb.tech&gt;:2135 --node-broker &lt;node2.ydb.tech&gt;:2135 --node-broker &lt;node3.ydb.tech&gt;:2135
+</span></span></code></pre></div></blockquote></div><h4 id=使用systemd方式启动-1>使用<code>Systemd</code>方式启动
+<a class=header-anchor href=#%e4%bd%bf%e7%94%a8systemd%e6%96%b9%e5%bc%8f%e5%90%af%e5%8a%a8-1></a></h4><div class="note info"><ul><li><ol><li><font color=red>编写启动文件</font></li></ol></li></ul><blockquote><ul><li>1.1 <font color=red>创建一个名为</font><code>/etc/systemd/system/ydbd-testdb.service</code><font color=red>以下内容的配置文件</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;/etc/systemd/system/ydbd-testdb.service<span style=color:#e6db74>&lt;&lt;-EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[Unit]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Description=YDB testdb dynamic node
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>After=network-online.target rc-local.service
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Wants=network-online.target
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>StartLimitInterval=10
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>StartLimitBurst=15
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[Service]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Restart=always
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>RestartSec=1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>User=ydb
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>PermissionsStartOnly=true
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>StandardOutput=syslog
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>StandardError=syslog
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>SyslogIdentifier=ydbd
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>SyslogFacility=daemon
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>SyslogLevel=err
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Environment=LD_LIBRARY_PATH=/opt/ydb/lib
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>ExecStart=/opt/ydb/bin/ydbd server --grpc-port 2136 --ic-port 19002 --mon-port 8766 --yaml-config  /opt/ydb/cfg/config.yaml --tenant /Root/testdb --node-broker &lt;node1.ydb.tech&gt;:2135 --node-broker &lt;node2.ydb.tech&gt;:2135 --node-broker &lt;node3.ydb.tech&gt;:2135
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>LimitNOFILE=65536
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>LimitCORE=0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>LimitMEMLOCK=32212254720
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[Install]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>WantedBy=multi-user.target
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><ul><li>1.2 启动<code>/Root/testdb</code><font color=red>数据库的<code>YDB</code>动态节点</font><mark>在其他服务器上运行额外的动态节点以确保数据库可用性</mark></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ sudo systemctl start ydbd-testdb
+</span></span></code></pre></div></blockquote></div><h3 id=初始帐户设置>初始帐户设置
+<a class=header-anchor href=#%e5%88%9d%e5%a7%8b%e5%b8%90%e6%88%b7%e8%ae%be%e7%bd%ae></a></h3><div class="note info"><ul><li><ol><li><font color=red>在集群配置文件中启用了身份验证模式，则必须在使用<code>YDB</code>集群之前完成初始帐户设置</font></li></ol></li></ul><blockquote><ul><li><p>1.1 <code>YDB</code>集群的初始安装会自动创建一个<code>root</code>密码为空的帐户，以及
+<a href=https://ydb.tech/en/docs/cluster/access title=访问管理 rel="noopener external nofollow noreferrer" target=_blank class=exturl>访问管理
+<i class="fa fa-external-link-alt"></i>
+</a>部分中描述的一组标准用户组</p></li><li><p>1.2 要在创建的<code>YDB</code>集群中执行初始帐户设置，
+<a href=https://ydb.tech/en/docs/reference/ydb-cli/install title=按照文档 rel="noopener external nofollow noreferrer" target=_blank class=exturl>按照文档
+<i class="fa fa-external-link-alt"></i>
+</a>中的描述安装<code>YDB CLI</code></p></li><li><p>1.3 <code>&lt;node.ydb.tech></code>是运行支持<code>/Root/testdb</code>数据库的动态节点的服务器的<code>FQDN</code></p></li><li><p>1.4 在运行帐户创建和组分配命令时，<code>YDB CLI</code>客户端将请求<code>root</code>用户密码。
+<a href=https://ydb.tech/en/docs/reference/ydb-cli/profile/ title="您可以按照<code>YDB CLI</code>文档" rel="noopener external nofollow noreferrer" target=_blank class=exturl>您可以按照<code>YDB CLI</code>文档
+<i class="fa fa-external-link-alt"></i>
+</a>中的说明创建连接配置文件，从而避免输入多个密码</p></li><li><p>1.5 如果集群中启用了<code>TLS</code>流量保护，请使用受保护的<code>grpcs</code>协议而不是<code>grpc</code>上面命令中的协议，并在参数中指定<code>CA</code>证书的路径<code>--ca-file</code>（或将其保存在连接配置文件中）</p></li><li><p>1.6 <font color=red><code>root</code>为账户设置密码</font></p></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ ydb -e grpc://&lt;node.ydb.tech&gt;:2136 -d /Root/testdb --user root --no-password yql -s <span style=color:#e6db74>&#39;ALTER USER root PASSWORD &#34;passw0rd&#34;&#39;</span>  	<span style=color:#75715e># 将passw0rd值替换为自己定义密码  </span>
+</span></span></code></pre></div><ul><li>1.7 <font color=red>创建其他帐户</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ ydb -e grpc://&lt;node.ydb.tech&gt;:2136 -d /Root/testdb --user root yql -s <span style=color:#e6db74>&#39;CREATE USER user1 PASSWORD &#34;passw0rd&#34;&#39;</span>
+</span></span></code></pre></div><ul><li>1.8 <font color=red>通过将它们包含在集成组中来设置帐户权限</font></li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ ydb -e grpc://&lt;node.ydb.tech&gt;:2136 -d /Root/testdb --user root yql -s <span style=color:#e6db74>&#39;ALTER GROUP `ADMINS` ADD USER user1&#39;</span>
+</span></span></code></pre></div></blockquote></div><h3 id=测试创建的数据库>测试创建的数据库
+<a class=header-anchor href=#%e6%b5%8b%e8%af%95%e5%88%9b%e5%bb%ba%e7%9a%84%e6%95%b0%e6%8d%ae%e5%ba%93></a></h3><div class="note info"><ul><li><ol><li><a href=https://ydb.tech/en/docs/reference/ydb-cli/install title=按照文档 rel="noopener external nofollow noreferrer" target=_blank class=exturl>按照文档
+<i class="fa fa-external-link-alt"></i>
+</a>中的描述安装<code>YDB CLI</code>，创建一个<code>test_table</code></li></ol></li></ul><blockquote><ul><li>1.1 <code>&lt;node.ydb.tech></code>运行支持<code>/Root/testdb</code>数据库的动态节点的服务器的<code>FQDN</code>在哪里</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ ydb -e grpc://&lt;node.ydb.tech&gt;:2136 -d /Root/testdb scripting yql --script <span style=color:#e6db74>&#39;CREATE TABLE `testdir/test_table` (id Uint64, title Utf8, PRIMARY KEY (id));&#39;</span>
+</span></span></code></pre></div><ul><li>1.2 集群开启了<code>TLS</code>流量保护或用户认证方式</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ ydb -e grpcs://&lt;node.ydb.tech&gt;:2136 -d /Root/testdb --ca-file ydb-ca.crt --user root scripting yql --script <span style=color:#e6db74>&#39;CREATE TABLE `testdir/test_table` (id Uint64, title Utf8, PRIMARY KEY (id));&#39;</span>
+</span></span></code></pre></div></blockquote></div></div><footer class=post-footer><div class=post-tags><a href=/tags/databases>Databases
+</a><a href=/tags/mysql>Mysql</a></div><div class=addthis_inline_share_toolbox style=text-align:center></div><hr><div class=reward-container><div><i class="fa-solid fa-mug-hot"></i>请我喝杯咖啡吧 ヾ(^▽^*)))</div><button>
+赞赏</button><div class=post-reward><div class=post-reward-item><img src=/imgs/img-lazy-loading.gif data-src=/imgs/ali-pay.png alt="二哥 - 支付宝">
+<span>支付宝</span></div><div class=post-reward-item><img src=/imgs/img-lazy-loading.gif data-src=/imgs/wechat-pay.png alt="二哥 - 微信">
+<span>微信</span></div></div></div><div class=post-copyright><img src=/imgs/cc/cc.svg width=75 height=75 align=right alt=共享知识><ul><li class=post-copyright-title><strong>文章标题：</strong>
+Install Ydb</li><li class=post-copyright-author><strong>本文作者： </strong>二哥</li><li class=post-copyright-link><strong>本文链接：</strong>
+<a id=post-cr-link href=https://erge.blog/system/linux/databases/install-ydb/ title="Install Ydb">https://erge.blog/system/linux/databases/install-ydb/</a></li><li class=post-copyright-license><strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <i class="fab fa-fw fa-creative-commons"></i><a target=_blank href=https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh>BY-NC-SA</a> 许可协议。转载请注明出处！</li></ul></div><div class=followme><span>欢迎关注我的其它发布渠道</span><div class=social-list><div class=social-item><a target=_blank class=social-link href=/images/wechat_channel.jpg><span class=icon><i class="fab fa-weixin"></i>
+</span><span class=label>WeChat</span></a></div><div class=social-item><a target=_blank class=social-link href=/atom.xml><span class=icon><i class="fa fa-rss"></i>
+</span><span class=label>RSS</span></a></div></div></div><div class=post-nav><div class="post-nav-next post-nav-item"><a href=/system/linux/databases/configure-ydb/ rel=next title="Configure Ydb"><i class="fa fa-chevron-left"></i> Configure Ydb</a></div><div class="post-nav-prev post-nav-item"><a href=/system/linux/ldap/config-openldap/ rel=prev title="Config OpenLDAP">Config OpenLDAP
+<i class="fa fa-chevron-right"></i></a></div></div></footer></article></div></div></main><footer class=footer><div class=footer-inner><div id=gtranslate class=google-translate><i class="fa fa-language"></i><div id=google_translate_element></div></div><div class=copyright>&copy;
+<span itemprop=copyrightYear>2010 - 2024
+</span><span class=with-love><i class="fa fa-heart"></i>
+</span><span class=author itemprop=copyrightHolder>二哥</span></div><div class=powered-by>由 <a href=https://gohugo.io title=0.125.4 target=_blank>Hugo</a> & <a href=https://github.com/hugo-next/hugo-theme-next title=4.5.3 target=_blank>Hugo NexT.Gemini</a> 强力驱动</div><div class=beian><a href=https://beian.miit.gov.cn target=_blank>粤ICP备 18047355-1 号</a>
+<img src=/imgs/gongan.png alt=沪公网安备>
+<a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31011402009770" target=_blank>沪公网安备 31011402009770 号</a></div><div class=vendors-list><a target=_blank href=https://vercel.com title=Vercel><img src=/imgs/img-lazy-loading.gif data-src=/imgs/vendors/vercel.svg alt=Vercel>
+</a><a target=_blank href=https://upyun.com title=又拍云><img src=/imgs/img-lazy-loading.gif data-src=/imgs/vendors/upyun.png alt=又拍云>
+</a><a target=_blank href=https://webify.cloudbase.net title=Webify>Webify
+</a><span>提供CDN/云资源支持</span></div></div></footer><script type=text/javascript src=https://cdn.staticfile.org/animejs/3.2.1/anime.min.js defer></script><script type=text/javascript src=https://cdn.staticfile.org/viewerjs/1.11.0/viewer.min.js defer></script><script class=next-config data-name=main type=application/json>{"bookmark":{"color":"#222","enable":true,"save":"manual"},"copybtn":true,"darkmode":false,"giscus":{"cfg":{"category":"Comments","categoryid":null,"emit":false,"inputposition":"top","mapping":"title","reactions":false,"repo":"username/repo-name","repoid":null,"theme":"preferred_color_scheme"},"js":"https://giscus.app/client.js"},"hostname":"https://erge.blog/","i18n":{"ds_day":" 天前","ds_days":" 天 ","ds_hour":" 小时前","ds_hours":" 小时 ","ds_just":"刚刚","ds_min":" 分钟前","ds_mins":" 分钟","ds_month":" 个月前","ds_years":" 年 ","empty":"没有找到任何搜索结果：${query}","hits":"找到 ${hits} 个搜索结果","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","placeholder":"搜索..."},"lang":"zh-CN","lazyload":false,"localSearch":{"enable":true,"limit":1e3,"path":"/searchindexes.xml","preload":false,"topnperarticle":-1,"trigger":"auto","unescape":false},"motion":{"async":true,"enable":true,"transition":{"collheader":"fadeInLeft","postblock":"fadeIn","postbody":"fadeInDown","postheader":"fadeInDown","sidebar":"fadeInUp"}},"postmeta":{"comments":{"enable":true,"plugin":"waline"},"views":{"enable":true,"plugin":"busuanzi"}},"root":"/","scheme":"Gemini","sidebar":{"display":"post","offset":12,"padding":18,"position":"left","width":256},"vendor":{"plugins":"qiniu","router":"https://cdn.staticfile.org"},"version":"4.5.3","waline":{"cfg":{"emoji":false,"imguploader":false,"placeholder":"请文明发言哟 ヾ(≧▽≦*)o","reaction":true,"reactiontext":["点赞","踩一下","得意","不屑","尴尬","睡觉"],"reactiontitle":"你认为这篇文章怎么样？","requiredmeta":["nick","mail"],"serverurl":null,"sofa":"快来发表你的意见吧 (≧∀≦)ゞ","wordlimit":200},"css":{"alias":"waline","file":"dist/waline.css","name":"@waline/client","version":"2.13.0"},"js":{"alias":"waline","file":"dist/waline.js","name":"@waline/client","version":"2.13.0"}}}</script><script type=text/javascript src=/js/main.min.b0c78e5a4df586ee46d02716ffa91a4a322e56763e04e91eb2ba052c9469ed02.js defer></script></body></html>
