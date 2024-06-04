@@ -32,7 +32,7 @@ Github</a></span></div><div class="cc-license animated" itemprop=license><a href
 </span><span class=post-meta-item-text title=分类于>分类于：
 </span><span itemprop=about itemscope itemtype=http://schema.org/Thing><a href=/categories/web itemprop=url rel=index><span itemprop=name>Web</span></a></span></span></div><div class=post-meta-items><span class=post-meta-item title=字数><span class=post-meta-item-icon><i class="far fa-file-word"></i>
 </span><span class=post-meta-item-text>字数：</span>
-<span>8216</span>
+<span>8317</span>
 </span><span class=post-meta-item title=阅读><span class=post-meta-item-icon><i class="far fa-clock"></i>
 </span><span class=post-meta-item-text>阅读：&ap;</span>
 <span>17分钟</span>
@@ -106,6 +106,9 @@ Github</a></span></div><div class="cc-license animated" itemprop=license><a href
 </span></span><span style=display:flex><span>$ sed -n <span style=color:#e6db74>&#39;/01\/Oct\/2021/,/01\/Oct\/2021p&#39;</span> access.log &gt;/tmp/access.log
 </span></span><span style=display:flex><span>$ sed -n ‘/2010-11-17 09:25:55/,/2010-11-17 09:25:55/p’
 </span></span><span style=display:flex><span>$ tail -n1000  /opt/lucky/logs/nginx/web_access.log |awk <span style=color:#e6db74>&#39;{print $1}&#39;</span>  |sort -rn |uniq -c |sort -rn |head
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 命令行跨域测试 -i：被允许跨域域名，-H：访问跨域域名</span>
+</span></span><span style=display:flex><span>$ curl -i https://baidu.com/text.txt -H <span style=color:#e6db74>&#34;Origin: http://www.example.com&#34;</span>
 </span></span></code></pre></div></blockquote></div><h3 id=nginx子配置conf配置文件><code>Nginx</code>子配置<code>conf</code>配置文件
 <a class=header-anchor href=#nginx%e5%ad%90%e9%85%8d%e7%bd%aeconf%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6></a></h3><div class="note info"><blockquote><table><thead><tr><th>名称地址</th><th>描述</th></tr></thead><tbody><tr><td><a href=http://zyan.cc/nginx_php_v5 title="<code>Nginx</code>主配置文件参考资料" rel="noopener external nofollow noreferrer" target=_blank class=exturl><code>Nginx</code>主配置文件参考资料
 <i class="fa fa-external-link-alt"></i></a></td><td></td></tr><tr><td></td><td></td></tr></tbody></table></blockquote><ul><li><ol><li><code>Java</code><font color=red>配置文件</font></li></ol></li></ul><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>$ cat &gt;ht.domain.conf<span style=color:#e6db74>&lt;&lt;EOF
@@ -120,19 +123,19 @@ Github</a></span></div><div class="cc-license animated" itemprop=license><a href
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	ssl on;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	server_name  ht.domain.app;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	root        /data/web/red;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>	
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	# http强跳443， 或使用 $host 字段
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	if ( $scheme = http ){ 
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		return 301 https://$server_name$request_uri; 
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	}
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>		
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	ssl_certificate	cert/ht.domain.app/ht.domain.app.pem;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	ssl_certificate_key	cert/ht.domain.app/ht.domain.app.key;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	ssl_session_timeout 5m;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4:!DH:!DHE;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	ssl_prefer_server_ciphers on;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>		
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	location / {
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		index  index.html index.htm;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		proxy_set_header Host $host;
@@ -147,7 +150,7 @@ Github</a></span></div><div class="cc-license animated" itemprop=license><a href
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>			return 444;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		}
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	}
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>	
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	location ^~ /images/ {
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		proxy_pass http://127.0.0.1:8082;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		proxy_redirect default;
@@ -165,7 +168,7 @@ Github</a></span></div><div class="cc-license animated" itemprop=license><a href
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		add_header Nginx-Cache “$upstream_cache_status”;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		expires 30d;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	}
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>	
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	location ^~ /css/ {
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		proxy_pass http://127.0.0.1:8082;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		proxy_redirect default;
@@ -178,11 +181,12 @@ Github</a></span></div><div class="cc-license animated" itemprop=license><a href
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	location ^~ /websocket {
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		proxy_pass http://XHD/websocket;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		proxy_http_version 1.1;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>		proxy_set_header Upgrade $http_upgrade;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>		proxy_set_header Connection &#34;upgrade&#34;;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		proxy_connect_timeout 15s;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		proxy_read_timeout 600s;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>		proxy_send_timeout 60s;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>		# 启用支持websocket连接
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>		proxy_set_header Upgrade $http_upgrade;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>		proxy_set_header Connection &#34;upgrade&#34;;
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	}
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>	location ~ .*\.(gif|jpg|jpeg|png|bmp|swf)$ {
@@ -546,36 +550,45 @@ Github</a></span></div><div class="cc-license animated" itemprop=license><a href
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
 </span></span></code></pre></div></blockquote></div><h3 id=配置nginx代理gitlab>配置<code>Nginx</code>代理<code>Gitlab</code>
 <a class=header-anchor href=#%e9%85%8d%e7%bd%aenginx%e4%bb%a3%e7%90%86gitlab></a></h3><div class="note info"><blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span>server<span style=color:#f92672>{</span>
-</span></span><span style=display:flex><span>       listen 80;
-</span></span><span style=display:flex><span>       listen <span style=color:#ae81ff>443</span> ssl;
-</span></span><span style=display:flex><span>       listen <span style=color:#ae81ff>8081</span> ssl default_server;
-</span></span><span style=display:flex><span>       <span style=color:#75715e># 此域名是提供给最终用户的访问地址</span>
-</span></span><span style=display:flex><span>       server_name gitlab.com;
+</span></span><span style=display:flex><span>    listen 80;
+</span></span><span style=display:flex><span>    listen <span style=color:#ae81ff>443</span> ssl;
+</span></span><span style=display:flex><span>    listen <span style=color:#ae81ff>8081</span> ssl default_server;
+</span></span><span style=display:flex><span>    <span style=color:#75715e># 此域名是提供给最终用户的访问地址</span>
+</span></span><span style=display:flex><span>    server_name gitlab.com;
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>       location / <span style=color:#f92672>{</span>
-</span></span><span style=display:flex><span>           <span style=color:#75715e># 这个非常重要，如果git库里有大文件，设置太小，文件push会失败，根据情况调整</span>
-</span></span><span style=display:flex><span>           client_max_body_size 50m;
+</span></span><span style=display:flex><span>    <span style=color:#75715e># 解决vue刷新404问题</span>
+</span></span><span style=display:flex><span>    try_files $uri $uri/ /index.html;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>   <span style=color:#75715e># 主页面不允许缓存（避免项目升级 空白页的问题）</span>
+</span></span><span style=display:flex><span>   location /index.html <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>			add_header Expires -1;
+</span></span><span style=display:flex><span>			add_header Cache-Control no-cache;
+</span></span><span style=display:flex><span>		<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    location / <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 这个非常重要，如果git库里有大文件，设置太小，文件push会失败，根据情况调整</span>
+</span></span><span style=display:flex><span>        client_max_body_size 50m;
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>           proxy_redirect off;
-</span></span><span style=display:flex><span>           <span style=color:#75715e># 以下确保 gitlab中项目的 url 是域名而不是 http://git，不可缺少</span>
-</span></span><span style=display:flex><span>           proxy_set_header Host $host;
-</span></span><span style=display:flex><span>           proxy_set_header X-Real-IP $remote_addr;
-</span></span><span style=display:flex><span>           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-</span></span><span style=display:flex><span>           <span style=color:#75715e># 升级协议头 websocket</span>
-</span></span><span style=display:flex><span>           proxy_http_version 1.1;
-</span></span><span style=display:flex><span>           proxy_set_header Upgrade $http_upgrade;
-</span></span><span style=display:flex><span>           proxy_set_header Connection <span style=color:#e6db74>&#34;upgrade&#34;</span>;
-</span></span><span style=display:flex><span>           <span style=color:#75715e># 升级协议头为https</span>
-</span></span><span style=display:flex><span>           proxy_set_header Upgrade-Insecure-Requests 1;   
-</span></span><span style=display:flex><span>           proxy_set_header X-Forwarded-Proto https;
-</span></span><span style=display:flex><span>           add_header Content-Security-Policy upgrade-insecure-requests;
-</span></span><span style=display:flex><span>           <span style=color:#75715e># nginx 反向代理到 gitlab 容器暴露的端口</span>
-</span></span><span style=display:flex><span>           proxy_pass http://127.0.0.1:8080;
-</span></span><span style=display:flex><span>           index index.html index.htm;
-</span></span><span style=display:flex><span>       <span style=color:#f92672>}</span>
-</span></span><span style=display:flex><span>       error_page <span style=color:#ae81ff>404</span> http://gitlab.com;
-</span></span><span style=display:flex><span>       access_log  /usr/local/nginx/logs/gitlab.access.log  main;
-</span></span><span style=display:flex><span>       error_log   /usr/local/nginx/logs/gitlab.error.log  info;
+</span></span><span style=display:flex><span>        proxy_redirect off;
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 以下确保 gitlab中项目的 url 是域名而不是 http://git，不可缺少</span>
+</span></span><span style=display:flex><span>        proxy_set_header Host $host;
+</span></span><span style=display:flex><span>        proxy_set_header X-Real-IP $remote_addr;
+</span></span><span style=display:flex><span>        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 升级协议头 websocket</span>
+</span></span><span style=display:flex><span>        proxy_http_version 1.1;
+</span></span><span style=display:flex><span>        proxy_set_header Upgrade $http_upgrade;
+</span></span><span style=display:flex><span>        proxy_set_header Connection <span style=color:#e6db74>&#34;upgrade&#34;</span>;
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 升级协议头为https</span>
+</span></span><span style=display:flex><span>        proxy_set_header Upgrade-Insecure-Requests 1;   
+</span></span><span style=display:flex><span>        proxy_set_header X-Forwarded-Proto https;
+</span></span><span style=display:flex><span>        add_header Content-Security-Policy upgrade-insecure-requests;
+</span></span><span style=display:flex><span>        <span style=color:#75715e># nginx 反向代理到 gitlab 容器暴露的端口</span>
+</span></span><span style=display:flex><span>        proxy_pass http://127.0.0.1:8080;
+</span></span><span style=display:flex><span>        index index.html index.htm;
+</span></span><span style=display:flex><span>    <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>    error_page <span style=color:#ae81ff>404</span> http://gitlab.com;
+</span></span><span style=display:flex><span>    access_log  /usr/local/nginx/logs/gitlab.access.log  main;
+</span></span><span style=display:flex><span>    error_log   /usr/local/nginx/logs/gitlab.error.log  info;
 </span></span><span style=display:flex><span><span style=color:#f92672>}</span>
 </span></span></code></pre></div></blockquote></div><h3 id=nginx集群反向代理><code>nginx</code>集群，反向代理
 <a class=header-anchor href=#nginx%e9%9b%86%e7%be%a4%e5%8f%8d%e5%90%91%e4%bb%a3%e7%90%86></a></h3><div class="note info"><ul><li><ol><li><font color=red>集群介绍</font></li></ol></li></ul><blockquote><ul><li>1.1 集群就是一组相互独立的计算机，利用高速相同的通信网络组成一个较大的计算机服务系统，每个集群节点都可以各自运行服务，并且能彼此通信，协同向客户提供服务。统一管理的模式。用户请求集群系统时，集群系统给用户的感受是一个单独的服务器，实际上用户请求的是一组集群服务器</li><li>1.2 打开谷歌、百度的页面，看到起来是好简单、也许你觉得几分钟可以制作出类似的网页，而实际上，这个页面背后是由成千上万台服务器协同工作的结果。那么多台服务器维护和管理，以及相互协调工作就是读者未来的工作职责</li><li>1.3 一般是指在集群中任意一个节点失效的情况下，该节点上的所有任务会自动转移到其他正常的节点上。此过程并不影响整个集群的运行</li><li>1.4 当集群中的一个节点系统发生故障时，运行着的集群服务会迅速做出反应，将该系统的服务分配到集群中其他正在工作的系统上运行。考虑到计算机硬件和软件的容错性，高可用性集群的主要目的是使集群的整体服务尽可能可用。如果高可用性集群中的主节点发生了故障，那么这段时间内将由备节点代替它。备节点通常是主节点的镜像。当它代替主节点时，它可以完全接管主节点（包括<code>IP</code>地址及其他资源）提供服务，因此，使集群系统环境对于用户来说是一致的，即不会影响用户的访问。高可用性集群使服务器系统的运行速度和响应速度会尽可能的快。它们经常利用在多台机器上运行的冗余节点和服务来相互跟踪。如果某个节点失败，它的替补者将在几秒钟或更短时间内接管它的职责。因此，对于用户而言，集群里的任意一台机器宕机，业务都不会受影响</li><li>1.5 高性能计算集群也称并行计算。通常，高性能计算集群涉及为集群开发的并行应用程序，以解决复杂的科学问题（天气预报、石油勘探、核反应模拟等）。高性能计算集群对外就好像一个超级计算机，这种超级计算机内部由数十至上万个独立服务器组成，并且在公共消息传递层上进行通信以运行并行应用程序。在老男孩的工作中实际是把任务切成蛋糕，然后下发到集群节点计算，计算后返回结果，然后继续领新任务计算，如此往复</li></ul></blockquote><ul><li><ol start=2><li><font color=red>集群的优势特点</font></li></ol></li></ul><blockquote><ul><li>2.1 <font color=red>高性能</font></li><li>2.2 <font color=red>廉价性</font></li><li>2.3 <font color=red>可伸缩性</font></li><li>2.4 <font color=red>高可用性</font></li><li>2.5 <font color=red>透明性</font></li><li>2.6 <font color=red>可管理性</font></li><li>2.7 <font color=red>可编程性</font></li></ul></blockquote><ul><li><ol start=3><li><font color=red>集群分类</font></li></ol></li></ul><blockquote><ul><li>3.1 <font color=red>负载均衡集群</font>(<code>Load balancing clusters</code>)简称<code>LBC</code>或者<code>LB</code></li><li>3.2 <font color=red>高可用性集群</font>(<code>High-availavlability (HA) clusters</code>)简称<code>HAC</code></li><li>3.3 <font color=red>高性能计算集群</font>(<code>Hight-perfomance (HPC) clusters</code>)简称<code>HPC</code></li><li>3.4 <font color=red>网格计算</font>(<code>Grid computing</code>)</li></ul></blockquote><ul><li><ol start=4><li><font color=red>负载均衡集群</font></li></ol></li></ul><blockquote><ul><li>4.1 负载均衡集群为了强企业提供更为实用、性价比更高的系统架构解决方案。负载均衡集群可以将很多客户集中访问负载压力尽可能地平均分摊在计算机集群中处理。客户访问请求负载包括应用程序处理负载和网络流量负载。这样使同一组应用程序为大量用户提供服务的模式，每个节点都可以承担一定的访问求负载压力并且可以实现访问请求在各节点之间动态分配，以实现负载均衡</li><li>4.2 负载均衡（<code>LoadBalance</code>）集群提供了一种廉价、有效、透明的方法，来扩展网络设备和服务器的负载、带宽和吞吐量，同时加强了网络数据处理能力，提高了网络的灵活性和可用性</li><li>4.3 把单台计算机无法承受的大规模并发访问或数据流量分担到多台节点设备上，分别进行处理，减少用户等待响应的时间，提升用户体验</li><li>4.4 单个重负载的运算分担到多台节点设备上做并行处理，每个节点设备处理结束后，将结果汇总，返回给用户，系统处理能力得到大幅度提高</li><li>4.5 <code>7×24</code>小时的服务保证，任意一个或多个有限后面节点设备宕机，不能影响业务</li><li>4.6 在负载均衡集群中，同组集群的所有计算机节点都应该提供相同的服务。集群负载均衡器会截获所有对该服务的入站请求。然后将这些请求尽可能地平均地分配在所有集群节点上</li></ul></blockquote><ul><li><ol start=5><li><font color=red>负载均衡集群的作用</font></li></ol></li></ul><blockquote><ul><li>5.1 <font color=red>分担用户访问请求及数据流量（负载均衡） - 保持业务连续性，即</font><code>7×24</code><font color=red>小时服务（高可用性）</font></li><li>5.2 于<code>Web</code><font color=red>业务及数据库从库等服务器的业务</font></li><li>5.3 <font color=red>负载均衡集群典型的开源软件包括</font><code>LVS</code>、<code>Nginx</code>、<code>Haproxy</code>等</li><li>5.4 <font color=red>高可用性集群的作用</font></li></ul><blockquote><ul><li>5.4.1 <font color=red>当一台机器宕机时，另外一台机器接管宕机的机器的</font><code>IP</code><font color=red>资源和服务资源，提供服务</font></li><li>5.4.2 <font color=red>常用于不易实现负载均衡的应用，比如负载均衡器，主数据库、主存储对之间</font></li><li>5.4.3 <font color=red>高可用性集群常用的开源软件包括</font><code>Keepalived</code>、<code>Heartbeat</code>等</li></ul></blockquote><ul><li>5.5 <font color=red>运维中常见的集群软硬件产品</font></li></ul><blockquote><ul><li>5.5.1 互联网企业常用的开源集群软件有：<code>Nginx</code>、<code>LVS</code>、<code>Haproxy</code>、<code>Keepalived</code>、<code>Heartbeat</code>。互联网企业常用的商业集群硬件有：<code>F5</code>、<code>Netscaler</code>、<code>Rad-ware</code>、<code>A10</code>等，工作模式相当于<code>Haproxy</code>的工作模式。淘宝、赶集网、新浪等公司曾使用过<code>Netscaler</code>负载均衡产品。集群硬件<code>Netscaler</code>的产品</li></ul></blockquote><ul><li>5.6 <font color=red>集群软硬件产品如何选型</font></li></ul><blockquote><ul><li>5.6.1 当企业业务重要，技术力量又薄弱，并且希望出钱购买产品及获取更好的服务时，可以选择硬件负载均衡产品，如<code>F5</code>、<code>Netscaler</code>、<code>Radware</code>等，此类公司多为传统的大型非互联网企业，如银行、证券、金融业及宝马、奔驰公司等</li><li>5.6.2 对于门户网站来说，大多会并用软件及硬件产品来分担单一产品的风险，如淘宝、腾讯、新浪等。融资了的企业会购买硬件产品，如赶集等网站</li><li>5.6.3 中小型互联网企业，由于起步阶段无利润可赚或者利润很低，会希望通过使用开源免费的方案来解决问题，因此会雇佣专门的运维人员进行维护。例如：<code>51CTO</code>等</li></ul></blockquote><p>相比较而言，商业的负载均衡产品成本高，性能好，更稳定，缺点是不能二次开发，开源的负载均衡软件对运维人员的能力要求较高，如果运维及开发能力强，那么开源的负载均衡软件是不错的选择，目前的互联网行业更倾向于使用开源的负载均衡软件</p><ul><li>5.7 <font color=red>如何选择开源集群软件产品</font></li></ul><blockquote><ul><li>5.7.1 中小企业互联网公司网站在并发访问和总访问量不是很大的情况下，建议首选<code>Nginx</code>负载均衡，理由是<code>Nginx</code>负载均衡配置简单、使用方便、安全稳定、社区活跃，使用的人逐渐增多，成为流行趋势，另外一个实现负载均衡的类似产品为<code>Haproxy</code>（支持<code>L4</code>和<code>L7</code>负载，同样优秀，但社区不如<code>Nginx</code>活跃）</li><li>5.7.2 如果要考虑<code>Nginx</code>负载均衡的高可用功能，建议首选<code>Keepalived</code>软件，理由是安装和配置简单，使用方便，安全稳定，与<code>Keepalived</code>服务类似的高可用软件还有<code>Heartbeat</code>（使用比较复杂，不建议初学者使用）</li><li>5.7.3 如果是大型企业互联网公司，负载均衡产品可以使用<code>LVS</code>+<code>Keepalived</code>在前端做四层转发（一般是主备或主主，如果需要扩展可以使用<code>DNS</code>或前端使用<code>OSPF</code>），后端使用<code>Nginx</code>或者<code>Haproxy</code>做<code>7</code>层转发（可以扩展到百台），再后面是应用服务器，如果是数据库与存储的负载均衡和高可用，建议选择<code>LVS</code>+<code>Heart-beat</code>，<code>LVS</code>支持<code>TCP</code>转发且<code>DR</code>模式效率很高，<code>Heartbeat</code>可以配合<code>drbd</code>，不但可以进行<code>VIP</code>的切换，还可以支持块设备级别的数据同步（<code>drbd</code>），以及资源服务的管理</li></ul></blockquote></blockquote><ul><li><ol start=6><li><font color=red>反向代理与负载均衡概念</font></li></ol></li></ul><blockquote><ul><li>6.1 严格地说，<code>Nginx</code>仅仅是作为<code>Nginx Proxy</code>反向代理使用的，因为这个反向代理功能表现的效果是负载均衡集群的效果，所以本文称之为<code>Nginx</code>负载均衡。那么，反向代理和负载均衡有什么区别呢？</li><li>6.2 普通负载均衡软件，例如大名鼎鼎的<code>LVS</code>，其实现的功能只是对请求数据包的转发（也可能会改写数据包）、传递，其中<code>DR</code>模式明显的特征是从负载均衡下面的节点服务器来看，接收到的请求还是来自访问负载均衡器的客户端的真实用户，而反向代理就不一样了，反向代理接收访问用户的请求后，会代理用户重新发起请求代理下的节点服务器，最后把数据返回给客户端用户，在节点服务器看来，访问的节点服务器的客户端用户就是反向代理服务器了，而非真实的网站访问用户</li><li>6.3 一句话，<code>LVS</code>等的负载均衡是转发用户请求的数据包，而<code>Nginx</code>反向代理是接收用户的请求然后重新发起请求去请求其后面的节点。2. 实现<code>Nginx</code>负载均衡的组件说明实现<code>Nginx</code>负载均衡的组件主要有两个</li><li>6.4 <font color=red>实现负载均衡组件说明</font></li></ul><table><thead><tr><th><code>Nginx http</code>功能模块</th><th>模块说明</th></tr></thead><tbody><tr><td><code>ngx_http_proxy_module</code></td><td><code>proxy</code>代理模块，用户把请求抛给节点服务器或<code>upstream</code>服务池</td></tr><tr><td><code>ngx_http_upstream_module</code></td><td>负载均衡模块，可以实现网站负载均衡功能及节点健康检查</td></tr></tbody></table><ul><li>6.5 <code>nginx upstream</code><font color=red>模块</font></li></ul><blockquote><ul><li>6.5.1 <code>Nginx</code>的负载均衡基于<code>ngx_http_upstream_module</code>所支持的代理方式包括<code>proxy_pass</code>、<code>fastcgi_pass</code>、<code>memcached_pass</code>等</li><li>6.5.2 <code>rr</code><font color=red>：轮询（性能相近，业务一样）</font></li><li>6.5.3 <code>wrr</code><font color=red>：权重轮询</font></li><li>6.5.4 <code>ip_hash;</code><font color=red>：每个请求按访问</font><code>IP</code><font color=red>的</font><code>hash</code><font color=red>结果分配、同一个</font><code>IP</code><font color=red>固定访问同一个后端服务器</font></li><li>6.5.5 <code>hash $request_uri;</code><font color=red>：每个请求按访问</font><code>IP</code>的<code>hash</code><font color=red>结果分配、同一个</font><code>IP</code><font color=red>固定访问同一个后端服务器</font>，<code>$cookie_jsessionid;</code><font color=red>按照后端分配</font><code>JSESSIONID</code><font color=red>进行负载</font></li><li>6.5.6 <code>least_conn;</code><font color=red>：最少连接数、分配给连接数最少的后端服务器</font></li><li>6.5.7 <code>server IP:port xxx;</code><font color=red>：字段</font></li></ul><blockquote><ul><li>6.5.7.1 <code>down;</code><font color=red>： 当前</font><code>server</code><font color=red>暂时不参与负载均衡</font></li><li>6.5.7.2 <code>backup;</code><font color=red>：预留备份服务器，只有主参与节点</font><code>down</code>掉才启用</li><li>6.5.7.3 <code>weigh=3;</code><font color=red>：加权轮询、值越大分配到访问几率越高</font></li><li>6.5.7.4 <code>check=3</code><font color=red>：开启对该服务器健康检查</font></li><li>6.5.7.5 <code>inter</code><font color=red>：设置连续两次健康检查的间隔时间，单位毫秒，默认值</font><code>2000</code></li><li>6.5.7.6 <code>rise</code><font color=red>：指定多少次连续成功健康检查后，即可认定服务器可用状态</font></li><li>6.5.7.7 <code>max_fails=3</code><font color=red>：指定多少次不成功后，即认为宕机状态，默认值</font><code>1</code></li><li>6.5.7.8 <code>fail_timeout=10 </code><font color=red>：经过</font><code>max_fails</code><font color=red>失败后，在</font><code>fail_timeout</code><font color=red>时间内不再去请求它，</font><code>fail_timeout</code><font color=red>默认是</font><code>10s</code></li><li>6.5.7.9 <code>maxconn：</code>：</li></ul></blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:2;-o-tab-size:2;tab-size:2><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># 负载均衡UDP转发</span>
