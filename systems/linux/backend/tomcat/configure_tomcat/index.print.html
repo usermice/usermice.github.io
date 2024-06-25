@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="配置Tomcat 清理Tomcat日志 清理超过七天以上的日 $ echo &#34;#!/bin/bash/ tomdate=&#34;$(date &#43;&#34;%Y%m%d%s&#34;)&#34; tomlog=&#39;/opt/logs/tomcat*&#39; echo $tomdate # echo $tomlog find $tomlog/*.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Configure_Tomcat :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="配置Tomcat 清理Tomcat日志 清理超过七天以上的日 $ echo &#34;#!/bin/bash/ tomdate=&#34;$(date &#43;&#34;%Y%m%d%s&#34;)&#34; tomlog=&#39;/opt/logs/tomcat*&#39; echo $tomdate # echo $tomlog find $tomlog/*.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/backend/tomcat/configure_tomcat/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Configure_Tomcat :: Hugo Relearn Theme">
+    <meta property="og:description" content="配置Tomcat 清理Tomcat日志 清理超过七天以上的日 $ echo &#34;#!/bin/bash/ tomdate=&#34;$(date &#43;&#34;%Y%m%d%s&#34;)&#34; tomlog=&#39;/opt/logs/tomcat*&#39; echo $tomdate # echo $tomlog find $tomlog/*.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-17T19:05:52+08:00">
+    <meta property="article:modified_time" content="2024-06-17T19:05:52+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Configure_Tomcat :: Hugo Relearn Theme">
+    <meta itemprop="description" content="配置Tomcat 清理Tomcat日志 清理超过七天以上的日 $ echo &#34;#!/bin/bash/ tomdate=&#34;$(date &#43;&#34;%Y%m%d%s&#34;)&#34; tomlog=&#39;/opt/logs/tomcat*&#39; echo $tomdate # echo $tomlog find $tomlog/*.">
+    <meta itemprop="datePublished" content="2024-06-17T19:05:52+08:00">
+    <meta itemprop="dateModified" content="2024-06-17T19:05:52+08:00">
+    <meta itemprop="wordCount" content="290">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Configure_Tomcat :: Hugo Relearn Theme</title>
+    <link href="../../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../../systems/linux/backend/tomcat/configure_tomcat/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../../systems/linux/backend/"><span itemprop="name">Backend</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../../systems/linux/backend/tomcat/"><span itemprop="name">Tomcat</span></a><meta itemprop="position" content="4">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Configure_Tomcat</span><meta itemprop="position" content="5"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../../systems/linux/backend/tomcat/" title="Tomcat (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../../systems/linux/backend/tomcat/install_tomcat/" title="Install_Tomcat (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="configure_tomcat">Configure_Tomcat</h1>
+
+<h2 id="配置tomcat">配置<code>Tomcat</code></h2>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->清理<!-- raw HTML omitted --><code>Tomcat</code><!-- raw HTML omitted -->日志<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->清理超过七天以上的日<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;#!/bin/bash/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">tomdate=&#34;</span><span style="color:#66d9ef">$(</span>date +<span style="color:#e6db74">&#34;%Y%m%d%s&#34;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">tomlog=&#39;/opt/logs/tomcat*&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">echo </span>$tomdate<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># echo </span>$tomlog<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">find </span>$tomlog<span style="color:#e6db74">/*.log  -type f -ctime +7 -exec  rm  -f  {}  \;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">find </span>$tomlog<span style="color:#e6db74">/*.txt  -type f -ctime +7 -exec  rm  -f  {}  \; &#34;</span>&gt;/opt/scripts/DEL_TOMLOG.sh</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->清理日志脚本添加到计划任务<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;### tomcat超過七天log刪除
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">1 0 * * * /bin/bash /opt/scripts/DEL_TOMLOG.sh &gt;&gt; ~/del_tom.log 2&gt;&amp;1&#34;</span> &gt;&gt; /var/spool/cron/myadmin</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->日志做每日切割<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;/opt/data/logs/tomcat/catalina.out{
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">copytruncate
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">daily
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rotate 7
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">missingok
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">compress
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">size 100k
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">su root root
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">} &#34;</span>&gt;&gt; /etc/logrotate.d/tomcat  </span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->安全设置规范<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>  telnet</code><!-- raw HTML omitted -->管理端口保护（强制）<!-- raw HTML omitted --></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>配置内容及说明</th>
+<th>标准配置</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>telnet</code>管理端口保护</td>
+<td>1.修改默认的<code>8005</code>管理端口为不易猜测的端口（大于1024）；  <!-- raw HTML omitted -->2.修改<code>SHUTDOWN</code>指令为其他字符串；</td>
+<td><!-- raw HTML omitted --></td>
+<td>1.以上配置项的配置内容只是建议配置，可以按照服务实际情况进行合理配置，但要求端口配置在<strong>8000~8999</strong>之间；</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>ajp</code><!-- raw HTML omitted -->连接端口保护（推荐）<!-- raw HTML omitted --></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>配置内容及说明</th>
+<th>标准配置</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ajp  连接端口保护</td>
+<td>1.修改默认的<code>ajp 8009</code>端口为不易冲突的大于1024端口；  2.通过<code>iptables</code>规则限制<code>ajp</code>端口访问的权限仅为线上机器；</td>
+<td><!-- raw HTML omitted --></td>
+<td>以上配置项的配置内容仅为建议配置，请按照服务实际情况进行合理配置，但要求端口配置在<strong>8000~8999</strong>之间；；  保护此端口的目的在于防止线下的测试流量被<code>mod_jk</code>转发至线上<code>tomcat</code>服务器；</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><!-- raw HTML omitted -->禁用管理端（强制）<!-- raw HTML omitted --></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>配置内容及说明</th>
+<th>标准配置</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>禁用管理端</td>
+<td>1. 删除默认的{<code>Tomcat</code>安装目录}<code>/conf/tomcat-users.xml</code>文件，重启<code>tomcat</code>后将会自动生成新的文件；  2. 删除{<code>Tomcat</code>安装目录}<code>/webapps</code>下默认的所有目录和文件；  3.将<code>tomcat</code>应用根目录配置为<code>tomcat</code>安装目录以外的目录；</td>
+<td><!-- raw HTML omitted --></td>
+<td>对于前段<code>web</code>模块，<code>Tomcat</code>管理端属于<code>tomcat</code>的高危安全隐患，一旦被攻破，黑客通过上传<code>web shell</code>的方式将会直接取得服务器的控制权，后果极其严重；</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><!-- raw HTML omitted -->降权启动（强制）<!-- raw HTML omitted --></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>配置内容及说明</th>
+<th>标准配置</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>降权启动</td>
+<td>1.<code>tomcat</code>启动用户权限必须为非<code>root</code>权限，尽量降低<code>tomcat</code>启动用户的目录访问权限； <!-- raw HTML omitted --> 2.如需直接对外使用<code>80</code>端口，可通过普通账号启动后，配置<code>iptables</code>规则进行转发；</td>
+<td>-</td>
+<td>避免一旦<code>tomcat</code>服务被入侵，黑客直接获取高级用户权限危害整个<code>server</code>的安全；</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><!-- raw HTML omitted --> 文件列表访问控制（强制）<!-- raw HTML omitted --></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>配置内容及说明</th>
+<th>标准配置</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>文件列表访问控制</td>
+<td>1.<code>conf/web.xml</code>文件中<code>default</code>部分<code>listings</code>的配置必须为<code>false</code>；</td>
+<td><!-- raw HTML omitted -->  <!-- raw HTML omitted --><strong>listings</strong><!-- raw HTML omitted -->  <!-- raw HTML omitted --><strong>false</strong><!-- raw HTML omitted -->  <!-- raw HTML omitted --></td>
+<td><code>false</code>为不列出目录文件，<code>true</code>为允许列出，默认为<code>false</code>；</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><!-- raw HTML omitted -->版本信息隐藏（强制）<!-- raw HTML omitted --></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>配置内容及说明</th>
+<th>标准配置</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>版本信息隐藏</td>
+<td>1.修改<code>conf/web.xml</code>，重定向<code>403</code>、<code>404</code>以及<code>500</code>等错误到指定的错误页面；  2.也可以通过修改应用程序目录下的<code>WEB-INF/web.xml</code>下的配置进行错误页面的重定向；</td>
+<td><!-- raw HTML omitted -->  <!-- raw HTML omitted --><strong>403</strong><!-- raw HTML omitted -->  <!-- raw HTML omitted --><strong>/forbidden.jsp</strong><!-- raw HTML omitted -->  <!-- raw HTML omitted -->  <!-- raw HTML omitted -->  <!-- raw HTML omitted --><strong>404</strong><!-- raw HTML omitted -->  <!-- raw HTML omitted --><strong>/notfound.jsp</strong><!-- raw HTML omitted -->  <!-- raw HTML omitted -->  <!-- raw HTML omitted -->  <!-- raw HTML omitted --><strong>500</strong><!-- raw HTML omitted -->  <!-- raw HTML omitted --><strong>/systembusy.jsp</strong><!-- raw HTML omitted -->  <!-- raw HTML omitted --></td>
+<td>在配置中对一些常见错误进行重定向，避免当出现错误时tomcat默认显示的错误页面暴露服务器和版本信息；  必须确保程序根目录下的错误页面已经存在；</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>2.7 <!-- raw HTML omitted --><code>  Server header</code>重写（推荐）<!-- raw HTML omitted --></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>配置内容及说明</th>
+<th>标准配置</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Server header</code>重写</td>
+<td>在<code>HTTP Connector</code>配置中加入<code>server</code>的配置；</td>
+<td>server=&quot;<strong>webserver</strong>&quot;</td>
+<td>当<code>tomcat HTTP</code>端口直接提供<code>web</code>服务时此配置生效，加入此配置，将会替换<code>http</code> 响应<code>Server header</code>部分的默认配置，默认是<code>Apache-Coyote/1.1</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><!-- raw HTML omitted --> 访问限制（可选）<!-- raw HTML omitted --></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>配置内容及说明</th>
+<th>标准配置或操作</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>访问限制</td>
+<td>通过配置，限定访问的<code>ip</code>来源</td>
+<td><!-- raw HTML omitted -->  &lt;Valve  className=&ldquo;org.apache.catalina.valves.RemoteAddrValve&rdquo; <strong>allow=&ldquo;61.148.18.138,61.135.165.*&rdquo;  deny=&quot;*.*.*.*&quot;</strong>/&gt;  <!-- raw HTML omitted --></td>
+<td>通过配置信任<code>ip</code>的白名单，拒绝非白名单<code>ip</code>的访问，此配置主要是针对高保密级别的系统，一般产品线不需要；</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><!-- raw HTML omitted -->起停脚本权限回收（推荐）<!-- raw HTML omitted --></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>配置内容及说明</th>
+<th>标准配置或操作</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>起停脚本权限回收</td>
+<td>去除其他用户对<code>Tomcat</code>的<code>bin</code>目录下<code>shutdown.sh</code>、<code>startup.sh</code>、<code>catalina.sh</code>的可执行权限；</td>
+<td>chmod -R 744 tomcat/bin/*</td>
+<td>防止其他用户有起停线上<code>Tomcat</code>的权限；</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><!-- raw HTML omitted -->访问日志格式规范（推荐）<!-- raw HTML omitted --></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>配置内容及说明</th>
+<th>标准配置或操作</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>访问日志格式规范</td>
+<td>开启<code>Tomcat</code>默认访问日志中的<code>Referer</code>和<code>User-Agent</code>记录</td>
+<td><!-- raw HTML omitted --></td>
+<td>开启<code>Referer</code>和<code>User-Agent</code>是为了一旦出现安全问题能够更好的根据日志进行问题排查；</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->建议配置及标准执行方案<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->配置部分<!-- raw HTML omitted --><code>${CATALINA_HOME}conf/server.xml</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;<span style="color:#e6db74">${</span>CATALINA_HOME<span style="color:#e6db74">}</span>conf/server.xml<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;Server port=&#34;8527&#34; shutdown=&#34; dangerous&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;!-- Define a non-SSL HTTP/1.1 Connector on port 8080 --&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;Connector port=&#34;8080&#34; server=&#34;webserver&#34;/&gt; 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;!-- Define an AJP 1.3 Connector on port 8528 --&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;!--Define an accesslog --&gt; 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;Valve className=&#34;org.apache.catalina.valves.AccessLogValve&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                 directory=&#34;logs&#34;  prefix=&#34;localhost_access_log.&#34; suffix=&#34;.txt&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                 pattern=&#34;%h %l %u %t %r %s %b %{Referer}i %{User-Agent}i %D&#34; resolveHosts=&#34;false&#34;/&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &lt;Connector port=&#34;8528&#34; protocol=&#34;AJP/1.3&#34; /&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;Context path=&#34;&#34; docBase=&#34;/home/work/local/tomcat_webapps&#34; debug=&#34;0&#34; reloadable=&#34;false&#34; crossContext=&#34;true&#34;/&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->配置部分<!-- raw HTML omitted --><code>${CATALINA_HOME}conf/web.xml</code><!-- raw HTML omitted -->或者<!-- raw HTML omitted --><code>WEB-INF/web.xml</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;<span style="color:#e6db74">${</span>CATALINA_HOME<span style="color:#e6db74">}</span>conf/web.xml或者WEB-INF/web.xml<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;init-param&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	&lt;param-name&gt;listings&lt;/param-name&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	&lt;param-value&gt;false&lt;/param-value&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;/init-param&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;error-page&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	&lt;error-code&gt;403&lt;/error-code&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	&lt;location&gt;/forbidden.jsp&lt;/location&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;/error-page&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;error-page&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	&lt;error-code&gt;404&lt;/error-code&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	&lt;location&gt;/notfound.jsp&lt;/location&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;/error-page&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;error-page&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	&lt;error-code&gt;500&lt;/error-code&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	&lt;location&gt;/systembusy.jsp&lt;/location&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;/error-page&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->删除如下<code>tomcat</code>的默认目录和默认文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ rm -rf tomcat/webapps/*
+</span></span><span style="display:flex;"><span>$ rm -rf tomcat/conf/tomcat-user.xml</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->去除其他用户对<code>tomcat</code>起停脚本的执行权限<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ chmod <span style="color:#ae81ff">744</span> –R tomcat/bin/*</span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

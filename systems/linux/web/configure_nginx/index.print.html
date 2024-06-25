@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="配置Nginx 名称地址 描述 免费域名申请 Vercel CDN 工信部备案查询 查找便宜服务器 随笔分类 - Nginx fly.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Configure_Nginx :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="配置Nginx 名称地址 描述 免费域名申请 Vercel CDN 工信部备案查询 查找便宜服务器 随笔分类 - Nginx fly.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/web/configure_nginx/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Configure_Nginx :: Hugo Relearn Theme">
+    <meta property="og:description" content="配置Nginx 名称地址 描述 免费域名申请 Vercel CDN 工信部备案查询 查找便宜服务器 随笔分类 - Nginx fly.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-25T00:41:02+08:00">
+    <meta property="article:modified_time" content="2024-06-25T00:41:02+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Configure_Nginx :: Hugo Relearn Theme">
+    <meta itemprop="description" content="配置Nginx 名称地址 描述 免费域名申请 Vercel CDN 工信部备案查询 查找便宜服务器 随笔分类 - Nginx fly.">
+    <meta itemprop="datePublished" content="2024-06-25T00:41:02+08:00">
+    <meta itemprop="dateModified" content="2024-06-25T00:41:02+08:00">
+    <meta itemprop="wordCount" content="2187">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Configure_Nginx :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/web/configure_nginx/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/web/"><span itemprop="name">Web</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Configure_Nginx</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/web/install_nginx_third_party_modules/" title="Install_Nginx_Third_Party_Modules (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/storage/" title="Storage (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="configure_nginx">Configure_Nginx</h1>
+
+<h2 id="配置nginx">配置<code>Nginx</code></h2>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.freenom.com/zh/index.html?lang=zh" rel="external" target="_self">免费域名申请</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://vercel.com/" rel="external" target="_self"><code>Vercel CDN</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://beian.miit.gov.cn/#/Integrated/index" rel="external" target="_self">工信部备案查询</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.serverhunter.com/" rel="external" target="_self">查找便宜服务器</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.cnblogs.com/zhongyehai/category/1406152.html?page=1" rel="external" target="_self">随笔分类 - <code>Nginx</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://fly.io/" rel="external" target="_self"><code>fly.io</code>边缘服务器</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://porkbun.com/" rel="external" target="_self"><code>Porkbun</code>域名购买商</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.domcomp.com/" rel="external" target="_self"><code>Domcomp</code>域名价格对比网站</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://tld-list.com/" rel="external" target="_self"><code>TLD List</code>域名价格对比网站</a></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li><code>ab</code><!-- raw HTML omitted -->压力测试工具<!-- raw HTML omitted -->，<a href="https://www.charlesproxy.com/" rel="external" target="_self"><code>Charles</code>抓包工具</a></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y install httpd-tools
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ ab -n <span style="color:#ae81ff">50</span> -c <span style="color:#ae81ff">20</span> http://127.0.0.1/index.html  	<span style="color:#75715e"># -n：总共发起的请求数，这里设置为50、</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#75715e"># -c：同时并发的请求，这里设置为20个、</span>
+</span></span><span style="display:flex;"><span>								<span style="color:#75715e"># -k：是否开启长连接</span></span></span></code></pre></div><ul>
+<li>1.1 <code>ab</code><!-- raw HTML omitted -->探测到性能指标<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>1.1.1 <code>Concurrency Level</code><!-- raw HTML omitted -->：设定的并发数<!-- raw HTML omitted --></li>
+<li>1.1.2 <code>Time taken for tests</code><!-- raw HTML omitted -->：压测总共花费的时间<!-- raw HTML omitted --></li>
+<li>1.1.3 <code>Complete requests</code><!-- raw HTML omitted -->：总请求数<!-- raw HTML omitted --></li>
+<li>1.1.4 <code>Failed requests</code><!-- raw HTML omitted -->：失败的个数<!-- raw HTML omitted --></li>
+<li>1.1.5 <code>Requests per second</code><!-- raw HTML omitted -->：每秒请求数<!-- raw HTML omitted --><code>TPS</code></li>
+<li>1.1.6 <code>Time per request</code><!-- raw HTML omitted -->：从客户端来看，一个请求需要用到的时间<!-- raw HTML omitted --></li>
+<li>1.1.7 <code>Time per request</code><!-- raw HTML omitted -->：从服务端来看，处理一个请求要花费的时间<!-- raw HTML omitted --></li>
+<li>1.1.8 <code>Transfer rate</code><!-- raw HTML omitted -->：传输的速率<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+</blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><code>Nginx</code><!-- raw HTML omitted -->基于<!-- raw HTML omitted --><code>Lua</code><!-- raw HTML omitted -->做<!-- raw HTML omitted --><code>Waf</code><!-- raw HTML omitted -->规则过滤<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>2.1 <a href="https://github.com/loveshell/ngx_lua_waf" rel="external" target="_self"><code>ngx_lua_waf</code></a></li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="man-logrotatefont-colorred查看fontlogrodatefont-colorred使用详情font"><code>man logrotate</code><!-- raw HTML omitted -->查看<!-- raw HTML omitted --><code>logrodate</code><!-- raw HTML omitted -->使用详情<!-- raw HTML omitted --></h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 新增nginx log 每日切割</span>
+</span></span><span style="display:flex;"><span>$ grep <span style="color:#e6db74">&#34;nginx&#34;</span> /etc/logrotate.d/nginx  &amp;&gt; /dev/null  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ vim /etc/logrotate.d/nginx
+</span></span><span style="display:flex;"><span>/opt/apps/nginx/logs/*.log<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>copytruncate  	<span style="color:#75715e"># 用于还在打开中的日志文件，把当前日志备份并截断</span>
+</span></span><span style="display:flex;"><span>daily  	<span style="color:#75715e"># 安日期轮转日志：daily(天)、weekly(月)、monthly(月)、yearly(年)。</span>
+</span></span><span style="display:flex;"><span>dateext  	<span style="color:#75715e"># 文件后缀是日期格式,也就是切割后文件是:xxx.log-20150828.gz</span>
+</span></span><span style="display:flex;"><span>rotate <span style="color:#ae81ff">7</span>  	<span style="color:#75715e"># 指定日志文件删除之前转储的次数，0指没有备份，7指保留7个备份</span>
+</span></span><span style="display:flex;"><span>missingok  	<span style="color:#75715e"># 如果日志不存在则忽略该警告信息</span>
+</span></span><span style="display:flex;"><span>compress  	<span style="color:#75715e"># 通过gzip压缩转储以后的日志（gzip -d xxx.gz解压）</span>
+</span></span><span style="display:flex;"><span>notifempty  	<span style="color:#75715e"># 如果是空文件的话，不转储</span>
+</span></span><span style="display:flex;"><span>size 100k	<span style="color:#75715e"># 在日志大小大于 logsize（例如 100K，4M）时轮换</span>
+</span></span><span style="display:flex;"><span>su root root
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span> 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 手动调试验证：-d</span>
+</span></span><span style="display:flex;"><span>$ /usr/sbin/logrotate -d /etc/logrotate.d/nginx
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 手动强制执行：-f</span>
+</span></span><span style="display:flex;"><span>$ /usr/sbin/logrotate -f /etc/logrotate.d/nginx
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 新增刪除7天以前log定時腳本  </span>
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;###nginx超過七天log刪除
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">1 0 * * * /bin/bash /opt/scripts/DEL_NGINX.sh &gt;&gt; ~/del_tom.log 2&gt;&amp;1&#34;</span> &gt;&gt; /var/spool/cron/admin</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="系统排查">系统排查</h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># URL解码、编码</span>
+</span></span><span style="display:flex;"><span>$ yum -y install gridsite-clients
+</span></span><span style="display:flex;"><span>$ tail -n10 nginx.logs | awk -F <span style="color:#e6db74">&#39;[:]&#39;</span> <span style="color:#e6db74">&#39;{print $24}&#39;</span> | xargs urlencode -d decode
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 后台加白</span>
+</span></span><span style="display:flex;"><span>$ sed -Ei <span style="color:#e6db74">&#34;s@((([0-9]{1,3}\.?){4})+)@\1|{{ ip }}@&#34;</span> /usr/local/nginx/conf/vhosts/ white_list.ini
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 删除加白</span>
+</span></span><span style="display:flex;"><span>$ sed -Ei <span style="color:#e6db74">&#34;s@((\|?){{ ip }}\|?)@\2@&#34;</span> /usr/local/nginx/conf/vhosts/ white_list.ini
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 排查系统中内存占用前 5 的进程</span>
+</span></span><span style="display:flex;"><span>$ ps -eo pid,ppid,cmd,%mem,%cpu --sort<span style="color:#f92672">=</span>-%mem |head -5
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># nginx</span>
+</span></span><span style="display:flex;"><span>$ netstat -ntu|awk <span style="color:#e6db74">&#39;{print $5}&#39;</span>|cut -d: -f1|wc -l  	<span style="color:#75715e"># 查看文件打开数量</span>
+</span></span><span style="display:flex;"><span>$ netstat -n | awk <span style="color:#e6db74">&#39;/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}&#39;</span>  	<span style="color:#75715e"># 查看服务器网络负载</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sed -n <span style="color:#e6db74">&#39;/01\/Oct\/2021/,/01\/Oct\/2021p&#39;</span> access.log &gt;/tmp/access.log
+</span></span><span style="display:flex;"><span>$ sed -n ‘/2010-11-17 09:25:55/,/2010-11-17 09:25:55/p’
+</span></span><span style="display:flex;"><span>$ tail -n1000  /opt/lucky/logs/nginx/web_access.log |awk <span style="color:#e6db74">&#39;{print $1}&#39;</span>  |sort -rn |uniq -c |sort -rn |head
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 命令行跨域测试 -i：被允许跨域域名，-H：访问跨域域名</span>
+</span></span><span style="display:flex;"><span>$ curl -i https://baidu.com/text.txt -H <span style="color:#e6db74">&#34;Origin: http://www.example.com&#34;</span></span></span></code></pre></div><ul>
+<li>打开浏览器按<code>F12</code>然后访问跨域域名，查看是否显示有：<code>access-control-allow-origin: *</code>跨域参数</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="nginx子配置conf配置文件"><code>Nginx</code>子配置<code>conf</code>配置文件</h3>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="http://zyan.cc/nginx_php_v5" rel="external" target="_self"><code>Nginx</code>主配置文件参考资料</a></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li><code>Java</code><!-- raw HTML omitted -->配置文件<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;ht.domain.conf<span style="color:#e6db74">&lt;&lt;EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 后台
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	add_header Access-Control-Allow-Origin *;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	add_header Access-Control-Allow-Headers X-Requested-With;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	add_header Access-Control-Allow-Methods GET,POST,OPTIONS;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	listen 80;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	listen 443 ssl;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	listen 8443 ssl proxy_protocol;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl on;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	server_name  ht.domain.app;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	root        /data/web/red;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# http强跳443， 或使用 $host 字段
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	if ( $scheme = http ){ 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		return 301 https://$server_name$request_uri; 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_certificate	cert/ht.domain.app/ht.domain.app.pem;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_certificate_key	cert/ht.domain.app/ht.domain.app.key;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_session_timeout 5m;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4:!DH:!DHE;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_prefer_server_ciphers on;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	location / {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		index  index.html index.htm;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_set_header Host $host;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_pass http://127.0.0.1:8082;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_http_version 1.1;  	# 设置http版本为1.1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_set_header Connection &#34;&#34;;  	# 设置Connection为长连接（默认为no）
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_set_header X-Real-IP $remote_addr;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_set_header X-Real-Port $remote_port;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		# 过滤只允许GET，HEAD和POST方法请求
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		if ($request_method !~ ^(GET|HEAD|POST)$ ) {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			return 444;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	location ^~ /images/ {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_pass http://127.0.0.1:8082;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_redirect default;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_set_header Host $host;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_set_header X-Forwarded-For $remote_addr;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		add_header Nginx-Cache “$upstream_cache_status”;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		expires 30d;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	location ^~ /js/ {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_pass http://127.0.0.1:8082;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_redirect default;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_set_header Host $host;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_set_header X-Forwarded-For $remote_addr;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		add_header Nginx-Cache “$upstream_cache_status”;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		expires 30d;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	location ^~ /css/ {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_pass http://127.0.0.1:8082;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_redirect default;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_set_header Host $host;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_set_header X-Forwarded-For $remote_addr;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		add_header Nginx-Cache “$upstream_cache_status”;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		expires 30d;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	location ^~ /websocket {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_pass http://XHD/websocket;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_http_version 1.1;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_connect_timeout 15s;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_read_timeout 600s;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_send_timeout 60s;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		# 启用支持websocket连接
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_set_header Upgrade $http_upgrade;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		proxy_set_header Connection &#34;upgrade&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	location ~ .*\.(gif|jpg|jpeg|png|bmp|swf)$ {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		expires 30d;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	location ~ /\. {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		deny all;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	### 过滤只允许GET，HEAD和POST方法请求
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	if ($request_method !~ ^(GET|HEAD|POST)$ ) {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		return 444;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	### 阻止User-Agents,如扫描器，机器人以及滥用你服务器的垃圾邮件发送者。
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	if ($http_user_agent ~* LWP::Simple|BBBike|wget) {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		return 405;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	if ( $http_user_agent ~* &#34;Windows 5.1&#34; ) {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		return 445;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	if ($time_iso8601 ~ &#34;^(\d{4})-(\d{2})-(\d{2})&#34;) {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		set $year $1;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		set $month $2;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		set $day $3;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	access_log	logs/domain.access_$year-$month-$day.log  main;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	error_log	logs/domain.error.log  info;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted --><!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;my.domain<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	add_header Strict-Transport-Security &#34;max-age=31536000&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	listen 80;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	listen 443 ssl;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	server_name  my.domain.com domain.com;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	root  /data/web/comprehensive/dist/;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_certificate	/cert/domain/domain.com.pem;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_certificate_key	cert/domain/domain.com.key;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_session_timeout 5m;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4:!DH:!DHE;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_prefer_server_ciphers on;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# http强跳443
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#	if ( $scheme = http ){
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#        	return 301 https://$server_name$request_uri;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# 强跳主域名
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	if ( $host != &#39;domain.com&#39; ) {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		rewrite ^(.*)$ https://domain.com/$1 permanent;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}	
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	location / {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		index  index.php index.html index.htm;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		location ^~ /api {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			rewrite ^/api/(.*)$ /$1 break;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			proxy_pass http://swofit/;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			proxy_set_header X-Real-IP $remote_addr;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			proxy_set_header X-Real-Port $remote_port;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}       
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	location ~ .*\.(gif|jpg|jpeg|png|bmp|swf)$ {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		expires 30d;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	location ~ .*\.(js|css)?$ {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		expires 12h;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	location ~ /\. {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		deny all;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	if ($time_iso8601 ~ &#34;^(\d{4})-(\d{2})-(\d{2})&#34;) {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		set $year $1;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		set $month $2;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		set $day $3;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	error_page 404 http://domain.com;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	access_log  /home/logs/nginx/domain.access_$year-$month-$day.log  main;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	error_log   /home/logs/nginx/domain.error.log  info;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="配置nginx根据访问终端跳转web还是h5">配置<code>Nginx</code>根据访问终端跳转<code>Web</code>还是<code>H5</code></h3>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://blog.csdn.net/weixin_43890705/article/details/112391597?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-3.vipsorttest&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-3.vipsorttest" rel="external" target="_self"><code>Nginx</code>区分手机端和<code>PC</code>段跳转不同目录</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://blog.csdn.net/weixin_34128501/article/details/91370181?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-4.vipsorttest&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-4.vipsorttest" rel="external" target="_self"><code>nginx</code>配置手机端<code>PC</code>端访问不同的项目</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://blog.csdn.net/weixin_37008947/article/details/105725236" rel="external" target="_self"><code>nginx</code>根据<code>PC</code>端还是手机端设置不同的网站根目录</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<blockquote>
+<ul>
+<li>
+<ol>
+<li>
+<p><code>location</code><!-- raw HTML omitted -->匹配规则以及优先级<!-- raw HTML omitted --></p>
+<p><!-- raw HTML omitted -->精确匹配<!-- raw HTML omitted -->和<!-- raw HTML omitted -->前缀匹配<!-- raw HTML omitted -->优先级是最高的，一旦匹配到一个就直接走此<code>location</code>，则不会再往下匹配。
+<!-- raw HTML omitted -->正则匹配<!-- raw HTML omitted -->就算匹配到一个<code>location</code>，也还是会接着匹配，看时候还有比当前<code>location</code>更完整，更匹配的<code>location</code>存在，后面没有了，才匹配本身</p>
+</li>
+</ol>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>正则符号</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~</code></td>
+<td>表示开始正则匹配</td>
+</tr>
+<tr>
+<td><code>~*</code></td>
+<td>表示正则匹配<!-- raw HTML omitted -->不区分大小写<!-- raw HTML omitted --></td>
+</tr>
+<tr>
+<td><code>=</code></td>
+<td>进行普通字符精确匹配，也就是完全匹配</td>
+</tr>
+<tr>
+<td><code>^~</code></td>
+<td>表示普通字符匹配，使用前缀匹配</td>
+</tr>
+<tr>
+<td><code>~ \~*</code></td>
+<td>表示执行一个正则匹配（）</td>
+</tr>
+<tr>
+<td>`/(xxx</td>
+<td>xxx</td>
+</tr>
+<tr>
+<td><code>$</code></td>
+<td>表示<!-- raw HTML omitted -->正则结束符<!-- raw HTML omitted -->号</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;domain.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# add_header Strict-Transport-Security &#34;max-age=63072000; includeSubdomains; preload&#34;;  	# 没有证书直接拒绝访问
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	add_header Strict-Transport-Security &#34;max-age=31536000&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	listen 80;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	listen 80 default_server;  	# 泛解析配置， 可以不用配置：server_name的域名字段
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	server_name www.web.com ~^m\..*\.8862y\.com$ .domain.comf;  	# .domail.com 代表主域名和www，*.domail.com
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	root  /data/web/comprehensive/dist/;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# 配置证书部分
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_certificate      certs/domain/domain.com.crt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_certificate_key  certs/domain/domain.com.key;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_trusted_certificate certs/domain/domain-bundle.crt;  	# 根级证书公钥，用于验证各个二级client
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_verify_client on;  	# 开启
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_dhparam certs/domain/dhparam.pem;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_session_cache    shared:SSL:10m;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_session_timeout  30m;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_protocols    TLSv1 TLSv1.1 TLSv1.2;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_ciphers &#39;ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS&#39;;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_prefer_server_ciphers on;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	resolver 8.8.8.8 valid=300;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	resolver_timeout 10s;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_stapling on;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ssl_stapling_verify on;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# 配置http强跳443
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#	if ( $scheme = http ){
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#        	return 301 https://$server_name$request_uri;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    # 配置强跳主域名
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	if ( $host != &#39;c277yy.com&#39; ) {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		rewrite ^(.*)$ https://c277yy.com/$1 permanent;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	location / {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		root /var/www/web/pc;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		index  index.php index.html index.htm;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		location ^~ /api {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			rewrite ^/api/(.*)$ /$1 break;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			proxy_pass http://swofit/;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			proxy_set_header X-Real-IP $remote_addr;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			proxy_set_header X-Real-Port $remote_port;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		# 如果是手机移动端访问内容
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		if ( $http_user_agent ~* &#34;(MIDP)|(WAP)|(UP.Browser)|(Smartphone)|(Obigo)|(Mobile)|(AU.Browser)|(wxd.Mms)|(WxdB.Browser)|(CLDC)|(UP.Link)|(KM.Browser)|(UCWEB)|(SEMC-Browser)|(Mini)|(Symbian)|(Palm)|(Nokia)|(Panasonic)|(MOT-)|(SonyEricsson)|(NEC-)|(Alcatel)|(Ericsson)|(BENQ)|(BenQ)|(Amoisonic)|(Amoi-)|(Capitel)|(PHILIPS)|(SAMSUNG)|(Lenovo)|(Mitsu)|(Motorola)|(SHARP)|(WAPPER)|(LG-)|(LG/)|(EG900)|(CECT)|(Compal)|(kejian)|(Bird)|(BIRD)|(G900/V1.0)|(Arima)|(CTL)|(TDG)|(Daxian)|(DAXIAN)|(DBTEL)|(Eastcom)|(EASTCOM)|(PANTECH)|(Dopod)|(Haier)|(HAIER)|(KONKA)|(KEJIAN)|(LENOVO)|(Soutec)|(SOUTEC)|(SAGEM)|(SEC-)|(SED-)|(EMOL-)|(INNO55)|(ZTE)|(iPhone)|(ipad)|(Android)|(Windows CE)|(Wget)|(Java)|(curl)|(Opera)|(htc)|(blackberry)&#34; ) {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			root /var/www/web/mobile;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		index index.html index.htm;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		try_files $uri $uri/ @router;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		location ~ .*\.(gif|jpg|jpeg|png|bmp|swf)$ {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			expires      30d;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		location ~ .*\.(js|css)?$ {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			expires      12h;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		location ~ /\. {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			deny all;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		if ($time_iso8601 ~ &#34;^(\d{4})-(\d{2})-(\d{2})&#34;) {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			set $year $1;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			set $month $2;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			set $day $3;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		error_page 404 http://domian.com;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		access_log  /home/logs/nginx/domain.access_$year-$month-$day.log  main;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		error_log   /home/logs/nginx/domain.error.log  info;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# 或者使用下面方法、try_files用于按顺序检测文件是否存在，如果存在就返回文件内容，如果不存在，则进行配的对应规则
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	location / {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		root /opt/www/cms-web;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		index  index.html index.htm;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		try_files $uri $uri/ /index.html;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	location /m/ {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		alias /opt/www/cms-web/m/;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		index  index.html index.htm;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		try_files $uri $uri/ /m/index.html;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="nginx代理转发mysql"><code>Nginx</code>代理转发<code>Mysql</code></h3>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->添加<!-- raw HTML omitted --><code>--with-stream</code><!-- raw HTML omitted -->模块支持<!-- raw HTML omitted --><code>TCP/UDP</code><!-- raw HTML omitted -->协议<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>1.1 <a href="https://cloud.tencent.com/developer/article/1768431" rel="external" target="_self"><code>Nginx</code>代理转发<code>Mysql</code></a></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ nginx -V
+</span></span><span style="display:flex;"><span>configure arguments: --prefix<span style="color:#f92672">=</span>/usr/local/nginx --with-stream</span></span></code></pre></div><ul>
+<li>1.2 <!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>Nginx</code><!-- raw HTML omitted -->的<!-- raw HTML omitted --><code>conf</code><!-- raw HTML omitted -->文件中<!-- raw HTML omitted --><code>server</code><!-- raw HTML omitted -->字段<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>stream <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    upstream cloudsocket <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        hash $remote_addr consistent;
+</span></span><span style="display:flex;"><span>        server 192.168.182.155:3306 weight<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> max_fails<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> fail_timeout<span style="color:#f92672">=</span>30s;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    server <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        listen 3306;     <span style="color:#75715e"># 数据库服务器监听端口</span>
+</span></span><span style="display:flex;"><span>        proxy_connect_timeout 10s;
+</span></span><span style="display:flex;"><span>        proxy_timeout 300s;      <span style="color:#75715e"># 设置客户端和代理服务之间的超时时间，如果5分钟内没操作将自动断开。</span>
+</span></span><span style="display:flex;"><span>        proxy_pass cloudsocket;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 负载均衡UDP转发</span>
+</span></span><span style="display:flex;"><span>stream <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    upstream dns <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        ip_hash;  	<span style="color:#75715e"># 每个请求按访问IP的hash结果分配、同一个IP固定访问同一个后端服务器</span>
+</span></span><span style="display:flex;"><span>        hash $request_uri;  	<span style="color:#75715e"># 按照访问URL的hash结果分配请求、每个URL定向到同一个后端服务器</span>
+</span></span><span style="display:flex;"><span>        least_conn;  	<span style="color:#75715e"># 最少连接数、分配给连接数最少的后端服务器</span>
+</span></span><span style="display:flex;"><span>        server 192.168.111.99:10086 down;  	<span style="color:#75715e"># 当前server暂时不参与负载均衡</span>
+</span></span><span style="display:flex;"><span>        server 192.168.111.100:10086 backup;  	<span style="color:#75715e"># 预留备份服务器，只有主参与节点down掉才启用</span>
+</span></span><span style="display:flex;"><span>        server 192.168.111.100:10086 weigh<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> max_fails<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> fail_timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span> max_conns<span style="color:#f92672">=</span>128;  	<span style="color:#75715e"># weigh：加权轮询、值越大分配到访问几率越高，max_fails：允许请求失败次数，fail_timeout：经过max_fails失败后，服务暂定时间、mac_conns：限制最大连接数</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    server <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        listen 192.168.111.98:10086 udp;
+</span></span><span style="display:flex;"><span>        proxy_responses 1;
+</span></span><span style="display:flex;"><span>        proxy_timeout 20s;
+</span></span><span style="display:flex;"><span>        proxy_bind $server_addr:$remote_port;
+</span></span><span style="display:flex;"><span>        proxy_pass dns;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="nginxconf中使用lua脚本"><code>Nginx.conf</code>中使用<code>Lua</code>脚本</h3>
+<blockquote>
+<ul>
+<li><code>set_by_lua</code><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>Nginx</code><!-- raw HTML omitted -->变量<!-- raw HTML omitted --></li>
+<li><code>loa_by_lua</code><!-- raw HTML omitted -->日志<!-- raw HTML omitted --></li>
+<li><code>access_by_lua</code><!-- raw HTML omitted -->访问控制<!-- raw HTML omitted --></li>
+<li><code>rewrite_by_lua</code><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>uri</code></li>
+<li><code>boy_filter_by_lua</code><!-- raw HTML omitted -->修改响应体<!-- raw HTML omitted --></li>
+<li><code>header_filter_by_lua</code><!-- raw HTML omitted -->修改响应头<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-nginx" data-lang="nginx"><span style="display:flex;"><span><span style="color:#66d9ef">server</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">listen</span> <span style="color:#ae81ff">80</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">server_name</span> <span style="color:#e6db74">lua.erge.com</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">location</span> <span style="color:#e6db74">/lua</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">default_type</span> <span style="color:#e6db74">text/html</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 直接使用lua语言方式
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#f92672">content_by_lua</span> <span style="color:#e6db74">&#39;ngx_say(&#34;&lt;p&gt;Hello</span> <span style="color:#e6db74">World!!!&lt;/p&gt;&#34;)&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 引用lua脚本方式
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#f92672">content_by_lua_file</span> <span style="color:#e6db74">conf/lua/hello.lua</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><ul>
+<li><code>lua</code><!-- raw HTML omitted -->脚本<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;conf/lua/hello.lua<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ngx_say(&#34;&lt;p&gt;Hello World!!!&lt;/p&gt;&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->获取<!-- raw HTML omitted --><code>Nginx</code><!-- raw HTML omitted -->请求头信息<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;conf/lua/headers.lua<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">local headers = ngx_req.get_headers()
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ngx.say(&#34;Host : &#34;, headers[&#34;Host&#34;], &#34;&lt;br/&gt;&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ngx.say(&#34;user-agent : &#34;, headers[&#34;user-agent&#34;], &#34;&lt;br/&gt;&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ngx.say(&#34;user-agent : &#34;, headers.user_agent, &#34;&lt;br/&gt;&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">for key, values in pairs(headers)do
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   if type(values) == &#39;table&#39; then
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       ngx.say(key, &#34; : &#34;, table.concat(values, &#34;,&#34;), &#34;&lt;br/&gt;&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   else
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       ngx.say(key, &#34; : &#34;, values, &#34;&lt;br/&gt;&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   end
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">end
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->获取<!-- raw HTML omitted --><code>Post</code><!-- raw HTML omitted -->请求参数<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;conf/lua/post.lua<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ngx.req.read_body()
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ngx.say(&#34;Post Args Begin&#34;, &#34;&lt;br/&gt;&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">local post_args = ngx.req.get_post_args()
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">for key,values in pairs(post_args) do
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    if type(values) == &#34;table&#34; then
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        ngx.say(key, &#34; : &#34;, table.concat(values, &#34;, &#34;), &#34;&lt;br/&gt;&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    else
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        ngx.say(key, &#34; : &#34;, values, &#34;&lt;br/&gt;&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    end
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">end
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->获取<!-- raw HTML omitted --><code>Nginx</code><!-- raw HTML omitted -->版本<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;conf/lua/nginx_version.lua<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ngx.say(&#34;http_version : &#34;, ngx.req.http_version(), &#34;&lt;br/&gt;&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->获取请求方法<!-- raw HTML omitted --><code>GET、POST、PUT</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;conf/lua/method.lua<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ngx.say(&#34;get_method : &#34;, ngx.req.get_method(), &#34;&lt;br/&gt;&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->原始的请求内容<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;conf/lua/original.lua<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ngx.say(&#34;raw_hader : &#34;, ngx.req.raw_header(), &#34;&lt;br/&gt;&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><code>body</code><!-- raw HTML omitted -->内容体<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;conf/lua/body.lua<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ngx.say(&#34;get_body_date() : &#34;, ngx.req.get_body_data(), &#34;&lt;br/&gt;&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><code>Nginx</code><!-- raw HTML omitted -->全局内存缓存<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;conf/lua/shared.lua<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">local shared_data = ngx.shared.shared_data  	# 获取缓存
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">local key = shared_data:get(&#34;key&#34;)  	# 缓存里面取值
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">if not key then
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    key = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    shared_data:set(&#34;key&#34;, key)  	# 调用set 方法
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    ngx.say(&#34;lazy set key &#34;, key, &#34;&lt;br/&gt;&#34;)  	# 等于什么
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">end
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">key = shared_data:incr(&#34;key&#34;, 1)  	# 自增加一
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ngx.say(&#34;key=&#34;, key, &#34;&lt;br/&gt;&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><a href="https://github.com/openresty/lua-resty-lrucache" rel="external" target="_self"><code>lua-resty-lrucache</code></a><!-- raw HTML omitted -->缓存<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;conf/vhosts/server.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    listen 80;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    server_name lua.erge.com;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    location /lua {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        default_type text/html;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        # 直接使用lua语言方式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        content_by_lua &#39;ngx_say(&#34;&lt;p&gt;Hello World!!!&lt;/p&gt;&#34;)&#39;;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        # 引用lua脚本方式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        content_by_lua_file conf/lua/hello.lua;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        content_by_lua_block {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            require(&#34;my/cache&#34;).go()
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="配置nginx禁止ip访问">配置<code>Nginx</code>禁止<code>IP</code>访问</h3>
+<ul>
+<li>
+<ol>
+<li><a href="https://developer.aliyun.com/article/548497" rel="external" target="_self"><code>Nginx</code>禁止<code>IP</code>访问 只允许域名访问</a></li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->方式一<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 在server段里插入如下正则： </span>
+</span></span><span style="display:flex;"><span>$ cat &gt;domain.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	listen 80;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	server_name www.yuyangblog.net;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	if ($host != &#39;www.yuyangblog.net&#39;){ return 403; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->方式二<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>3.1 <!-- raw HTML omitted -->添加一个<!-- raw HTML omitted --><code>server</code>，<!-- raw HTML omitted -->新加的<!-- raw HTML omitted --><code>server</code><!-- raw HTML omitted -->（注意是新增，并不是在原有的<!-- raw HTML omitted --><code>server</code><!-- raw HTML omitted -->基础上修改） <!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p>3.1.1 <code>rewrite</code><!-- raw HTML omitted -->重定向<!-- raw HTML omitted --></p>
+<table>
+<thead>
+<tr>
+<th>开始字符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.</code></td>
+<td>匹配除换行符以外的任意字符</td>
+</tr>
+<tr>
+<td><code>?</code></td>
+<td>重复0次或1次</td>
+</tr>
+<tr>
+<td><code>+</code></td>
+<td>重复1次或多次</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>最少连接数、那个机器连接数少就分发</td>
+</tr>
+<tr>
+<td><code>\d</code></td>
+<td>匹配数字</td>
+</tr>
+<tr>
+<td><code>^</code></td>
+<td>匹配字符串的开始</td>
+</tr>
+<tr>
+<td><code>$</code></td>
+<td>匹配字符串的结束</td>
+</tr>
+<tr>
+<td><code>{n}</code></td>
+<td>重复<code>n</code>此</td>
+</tr>
+<tr>
+<td><code>{n,}</code></td>
+<td>重复<code>n</code>或更多次</td>
+</tr>
+<tr>
+<td><code>[c]</code></td>
+<td>匹配单个字符<code>c</code></td>
+</tr>
+<tr>
+<td><code>[a-z]</code>，<code>[A-Z]</code></td>
+<td>匹配<code>a-z</code>小写字母的任意一个，<code>[^a-z]</code>表示取反，匹配<code>A-z</code>大写字母中任意一个，<code>[^A-Z]</code>表示取反</td>
+</tr>
+<tr>
+<td><code>[0-9]</code></td>
+<td>匹配<code>0-9</code>数字的任意一个，<code>[^0-9]</code>表示取反</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>结尾定义字符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>last</code></td>
+<td>匹配完成后，继续向下匹配新的<code>location URL</code>规则</td>
+</tr>
+<tr>
+<td><code>break</code></td>
+<td>匹配完成即停止向下匹配</td>
+</tr>
+<tr>
+<td><code>redirect</code></td>
+<td>返回302临时重定向、地址栏会显示跳转后地址</td>
+</tr>
+<tr>
+<td><code>permanent</code></td>
+<td>返回301永久重定向、地址栏会显示跳转后地址</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;domain.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">listen 80 dufault;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server_name _;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">return 403;  	# 直接返回一个403
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rewrite ^(.*) http://domain.com permanent;  	# 或者跳转到其他域名
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 禁止IP访问 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server { 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">listen 80 default;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server_name _;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server_name  xcn.cn;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">return 500;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h3 id="配置nginx用于下载查看日志">配置<code>Nginx</code>用于下载查看日志</h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;download.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server{
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    add_header Strict-Transport-Security &#34;max-age=31536000&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    listen 80;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    listen 443 ssl;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    server_name my.domain.com;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    root  /data/web/app_download/;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    ssl_certificate		cert/my.domain.com/my.domain.com.pem;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    ssl_certificate_key	cert/my.domain.com/my.domain.com.key;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    ssl_session_timeout 5m; 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4:!DH:!DHE;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    ssl_prefer_server_ciphers on;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    autoindex on;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    autoindex_exact_size off;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    autoindex_localtime on;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    location ~ {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="配置nginx代理gitlab">配置<code>Nginx</code>代理<code>Gitlab</code></h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>server<span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span> listen 80;
+</span></span><span style="display:flex;"><span> listen <span style="color:#ae81ff">443</span> ssl;
+</span></span><span style="display:flex;"><span> listen <span style="color:#ae81ff">8081</span> ssl default_server;
+</span></span><span style="display:flex;"><span> <span style="color:#75715e"># 此域名是提供给最终用户的访问地址</span>
+</span></span><span style="display:flex;"><span> server_name gitlab.com;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span> <span style="color:#75715e"># 解决vue刷新404问题</span>
+</span></span><span style="display:flex;"><span> try_files $uri $uri/ /index.html;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 主页面不允许缓存（避免项目升级 空白页的问题）</span>
+</span></span><span style="display:flex;"><span>location /index.html <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>			add_header Expires -1;
+</span></span><span style="display:flex;"><span>			add_header Cache-Control no-cache;
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span> location / <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e"># 这个非常重要，如果git库里有大文件，设置太小，文件push会失败，根据情况调整</span>
+</span></span><span style="display:flex;"><span>     client_max_body_size 50m;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>     proxy_redirect off;
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e"># 以下确保 gitlab中项目的 url 是域名而不是 http://git，不可缺少</span>
+</span></span><span style="display:flex;"><span>     proxy_set_header Host $host;
+</span></span><span style="display:flex;"><span>     proxy_set_header X-Real-IP $remote_addr;
+</span></span><span style="display:flex;"><span>     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e"># 升级协议头 websocket</span>
+</span></span><span style="display:flex;"><span>     proxy_http_version 1.1;
+</span></span><span style="display:flex;"><span>     proxy_set_header Upgrade $http_upgrade;
+</span></span><span style="display:flex;"><span>     proxy_set_header Connection <span style="color:#e6db74">&#34;upgrade&#34;</span>;
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e"># 升级协议头为https</span>
+</span></span><span style="display:flex;"><span>     proxy_set_header Upgrade-Insecure-Requests 1;   
+</span></span><span style="display:flex;"><span>     proxy_set_header X-Forwarded-Proto https;
+</span></span><span style="display:flex;"><span>     add_header Content-Security-Policy upgrade-insecure-requests;
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e"># nginx 反向代理到 gitlab 容器暴露的端口</span>
+</span></span><span style="display:flex;"><span>     proxy_pass http://127.0.0.1:8080;
+</span></span><span style="display:flex;"><span>     index index.html index.htm;
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span> error_page <span style="color:#ae81ff">404</span> http://gitlab.com;
+</span></span><span style="display:flex;"><span> access_log  /usr/local/nginx/logs/gitlab.access.log  main;
+</span></span><span style="display:flex;"><span> error_log   /usr/local/nginx/logs/gitlab.error.log  info;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="nginx集群反向代理"><code>nginx</code>集群，反向代理</h3>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->集群介绍<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>1.1 集群就是一组相互独立的计算机，利用高速相同的通信网络组成一个较大的计算机服务系统，每个集群节点都可以各自运行服务，并且能彼此通信，协同向客户提供服务。统一管理的模式。用户请求集群系统时，集群系统给用户的感受是一个单独的服务器，实际上用户请求的是一组集群服务器</li>
+<li>1.2 打开谷歌、百度的页面，看到起来是好简单、也许你觉得几分钟可以制作出类似的网页，而实际上，这个页面背后是由成千上万台服务器协同工作的结果。那么多台服务器维护和管理，以及相互协调工作就是读者未来的工作职责</li>
+<li>1.3 一般是指在集群中任意一个节点失效的情况下，该节点上的所有任务会自动转移到其他正常的节点上。此过程并不影响整个集群的运行</li>
+<li>1.4 当集群中的一个节点系统发生故障时，运行着的集群服务会迅速做出反应，将该系统的服务分配到集群中其他正在工作的系统上运行。考虑到计算机硬件和软件的容错性，高可用性集群的主要目的是使集群的整体服务尽可能可用。如果高可用性集群中的主节点发生了故障，那么这段时间内将由备节点代替它。备节点通常是主节点的镜像。当它代替主节点时，它可以完全接管主节点（包括<code>IP</code>地址及其他资源）提供服务，因此，使集群系统环境对于用户来说是一致的，即不会影响用户的访问。高可用性集群使服务器系统的运行速度和响应速度会尽可能的快。它们经常利用在多台机器上运行的冗余节点和服务来相互跟踪。如果某个节点失败，它的替补者将在几秒钟或更短时间内接管它的职责。因此，对于用户而言，集群里的任意一台机器宕机，业务都不会受影响</li>
+<li>1.5 高性能计算集群也称并行计算。通常，高性能计算集群涉及为集群开发的并行应用程序，以解决复杂的科学问题（天气预报、石油勘探、核反应模拟等）。高性能计算集群对外就好像一个超级计算机，这种超级计算机内部由数十至上万个独立服务器组成，并且在公共消息传递层上进行通信以运行并行应用程序。在老男孩的工作中实际是把任务切成蛋糕，然后下发到集群节点计算，计算后返回结果，然后继续领新任务计算，如此往复</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->集群的优势特点<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>2.1 <!-- raw HTML omitted -->高性能<!-- raw HTML omitted --></li>
+<li>2.2 <!-- raw HTML omitted -->廉价性<!-- raw HTML omitted --></li>
+<li>2.3 <!-- raw HTML omitted -->可伸缩性<!-- raw HTML omitted --></li>
+<li>2.4 <!-- raw HTML omitted -->高可用性<!-- raw HTML omitted --></li>
+<li>2.5 <!-- raw HTML omitted -->透明性<!-- raw HTML omitted --></li>
+<li>2.6 <!-- raw HTML omitted -->可管理性<!-- raw HTML omitted --></li>
+<li>2.7 <!-- raw HTML omitted -->可编程性<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->集群分类<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>3.1 <!-- raw HTML omitted -->负载均衡集群<!-- raw HTML omitted -->(<code>Load balancing clusters</code>)简称<code>LBC</code>或者<code>LB</code></li>
+<li>3.2 <!-- raw HTML omitted -->高可用性集群<!-- raw HTML omitted -->(<code>High-availavlability (HA) clusters</code>)简称<code>HAC</code></li>
+<li>3.3 <!-- raw HTML omitted -->高性能计算集群<!-- raw HTML omitted -->(<code>Hight-perfomance (HPC) clusters</code>)简称<code>HPC</code></li>
+<li>3.4 <!-- raw HTML omitted -->网格计算<!-- raw HTML omitted -->(<code>Grid computing</code>)</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->负载均衡集群<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>4.1 负载均衡集群为了强企业提供更为实用、性价比更高的系统架构解决方案。负载均衡集群可以将很多客户集中访问负载压力尽可能地平均分摊在计算机集群中处理。客户访问请求负载包括应用程序处理负载和网络流量负载。这样使同一组应用程序为大量用户提供服务的模式，每个节点都可以承担一定的访问求负载压力并且可以实现访问请求在各节点之间动态分配，以实现负载均衡</li>
+<li>4.2 负载均衡（<code>LoadBalance</code>）集群提供了一种廉价、有效、透明的方法，来扩展网络设备和服务器的负载、带宽和吞吐量，同时加强了网络数据处理能力，提高了网络的灵活性和可用性</li>
+<li>4.3 把单台计算机无法承受的大规模并发访问或数据流量分担到多台节点设备上，分别进行处理，减少用户等待响应的时间，提升用户体验</li>
+<li>4.4 单个重负载的运算分担到多台节点设备上做并行处理，每个节点设备处理结束后，将结果汇总，返回给用户，系统处理能力得到大幅度提高</li>
+<li>4.5 <code>7×24</code>小时的服务保证，任意一个或多个有限后面节点设备宕机，不能影响业务</li>
+<li>4.6 在负载均衡集群中，同组集群的所有计算机节点都应该提供相同的服务。集群负载均衡器会截获所有对该服务的入站请求。然后将这些请求尽可能地平均地分配在所有集群节点上</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->负载均衡集群的作用 <!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>5.1 <!-- raw HTML omitted -->分担用户访问请求及数据流量（负载均衡） - 保持业务连续性，即<!-- raw HTML omitted --><code>7×24</code><!-- raw HTML omitted -->小时服务（高可用性）<!-- raw HTML omitted --></li>
+<li>5.2 于<code>Web</code><!-- raw HTML omitted -->业务及数据库从库等服务器的业务<!-- raw HTML omitted --></li>
+<li>5.3 <!-- raw HTML omitted -->负载均衡集群典型的开源软件包括<!-- raw HTML omitted --><code>LVS</code>、<code>Nginx</code>、<code>Haproxy</code>等</li>
+<li>5.4 <!-- raw HTML omitted -->高可用性集群的作用 <!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>5.4.1 <!-- raw HTML omitted -->当一台机器宕机时，另外一台机器接管宕机的机器的<!-- raw HTML omitted --><code>IP</code><!-- raw HTML omitted -->资源和服务资源，提供服务<!-- raw HTML omitted --></li>
+<li>5.4.2 <!-- raw HTML omitted -->常用于不易实现负载均衡的应用，比如负载均衡器，主数据库、主存储对之间<!-- raw HTML omitted --></li>
+<li>5.4.3 <!-- raw HTML omitted -->高可用性集群常用的开源软件包括<!-- raw HTML omitted --><code>Keepalived</code>、<code>Heartbeat</code>等</li>
+</ul>
+</blockquote>
+<ul>
+<li>5.5 <!-- raw HTML omitted -->运维中常见的集群软硬件产品<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>5.5.1 互联网企业常用的开源集群软件有：<code>Nginx</code>、<code>LVS</code>、<code>Haproxy</code>、<code>Keepalived</code>、<code>Heartbeat</code>。互联网企业常用的商业集群硬件有：<code>F5</code>、<code>Netscaler</code>、<code>Rad-ware</code>、<code>A10</code>等，工作模式相当于<code>Haproxy</code>的工作模式。淘宝、赶集网、新浪等公司曾使用过<code>Netscaler</code>负载均衡产品。集群硬件<code>Netscaler</code>的产品</li>
+</ul>
+</blockquote>
+<ul>
+<li>5.6 <!-- raw HTML omitted -->集群软硬件产品如何选型<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>5.6.1 当企业业务重要，技术力量又薄弱，并且希望出钱购买产品及获取更好的服务时，可以选择硬件负载均衡产品，如<code>F5</code>、<code>Netscaler</code>、<code>Radware</code>等，此类公司多为传统的大型非互联网企业，如银行、证券、金融业及宝马、奔驰公司等</li>
+<li>5.6.2 对于门户网站来说，大多会并用软件及硬件产品来分担单一产品的风险，如淘宝、腾讯、新浪等。融资了的企业会购买硬件产品，如赶集等网站</li>
+<li>5.6.3 中小型互联网企业，由于起步阶段无利润可赚或者利润很低，会希望通过使用开源免费的方案来解决问题，因此会雇佣专门的运维人员进行维护。例如：<code>51CTO</code>等</li>
+</ul>
+</blockquote>
+<p>相比较而言，商业的负载均衡产品成本高，性能好，更稳定，缺点是不能二次开发，开源的负载均衡软件对运维人员的能力要求较高，如果运维及开发能力强，那么开源的负载均衡软件是不错的选择，目前的互联网行业更倾向于使用开源的负载均衡软件</p>
+<ul>
+<li>5.7 <!-- raw HTML omitted -->如何选择开源集群软件产品<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>5.7.1 中小企业互联网公司网站在并发访问和总访问量不是很大的情况下，建议首选<code>Nginx</code>负载均衡，理由是<code>Nginx</code>负载均衡配置简单、使用方便、安全稳定、社区活跃，使用的人逐渐增多，成为流行趋势，另外一个实现负载均衡的类似产品为<code>Haproxy</code>（支持<code>L4</code>和<code>L7</code>负载，同样优秀，但社区不如<code>Nginx</code>活跃）</li>
+<li>5.7.2 如果要考虑<code>Nginx</code>负载均衡的高可用功能，建议首选<code>Keepalived</code>软件，理由是安装和配置简单，使用方便，安全稳定，与<code>Keepalived</code>服务类似的高可用软件还有<code>Heartbeat</code>（使用比较复杂，不建议初学者使用）</li>
+<li>5.7.3 如果是大型企业互联网公司，负载均衡产品可以使用<code>LVS</code>+<code>Keepalived</code>在前端做四层转发（一般是主备或主主，如果需要扩展可以使用<code>DNS</code>或前端使用<code>OSPF</code>），后端使用<code>Nginx</code>或者<code>Haproxy</code>做<code>7</code>层转发（可以扩展到百台），再后面是应用服务器，如果是数据库与存储的负载均衡和高可用，建议选择<code>LVS</code>+<code>Heart-beat</code>，<code>LVS</code>支持<code>TCP</code>转发且<code>DR</code>模式效率很高，<code>Heartbeat</code>可以配合<code>drbd</code>，不但可以进行<code>VIP</code>的切换，还可以支持块设备级别的数据同步（<code>drbd</code>），以及资源服务的管理</li>
+</ul>
+</blockquote>
+</blockquote>
+<ul>
+<li>
+<ol start="6">
+<li><!-- raw HTML omitted -->反向代理与负载均衡概念<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>6.1 严格地说，<code>Nginx</code>仅仅是作为<code>Nginx Proxy</code>反向代理使用的，因为这个反向代理功能表现的效果是负载均衡集群的效果，所以本文称之为<code>Nginx</code>负载均衡。那么，反向代理和负载均衡有什么区别呢？</li>
+<li>6.2 普通负载均衡软件，例如大名鼎鼎的<code>LVS</code>，其实现的功能只是对请求数据包的转发（也可能会改写数据包）、传递，其中<code>DR</code>模式明显的特征是从负载均衡下面的节点服务器来看，接收到的请求还是来自访问负载均衡器的客户端的真实用户，而反向代理就不一样了，反向代理接收访问用户的请求后，会代理用户重新发起请求代理下的节点服务器，最后把数据返回给客户端用户，在节点服务器看来，访问的节点服务器的客户端用户就是反向代理服务器了，而非真实的网站访问用户</li>
+<li>6.3 一句话，<code>LVS</code>等的负载均衡是转发用户请求的数据包，而<code>Nginx</code>反向代理是接收用户的请求然后重新发起请求去请求其后面的节点。2. 实现<code>Nginx</code>负载均衡的组件说明实现<code>Nginx</code>负载均衡的组件主要有两个</li>
+<li>6.4 <!-- raw HTML omitted -->实现负载均衡组件说明<!-- raw HTML omitted --></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><code>Nginx http</code>功能模块</th>
+<th>模块说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ngx_http_proxy_module</code></td>
+<td><code>proxy</code>代理模块，用户把请求抛给节点服务器或<code>upstream</code>服务池</td>
+</tr>
+<tr>
+<td><code>ngx_http_upstream_module</code></td>
+<td>负载均衡模块，可以实现网站负载均衡功能及节点健康检查</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>6.5 <code>nginx upstream</code><!-- raw HTML omitted -->模块<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>6.5.1 <code>Nginx</code>的负载均衡基于<code>ngx_http_upstream_module</code>所支持的代理方式包括<code>proxy_pass</code>、<code>fastcgi_pass</code>、<code>memcached_pass</code>等</li>
+<li>6.5.2 <code>rr</code><!-- raw HTML omitted -->：轮询（性能相近，业务一样）<!-- raw HTML omitted --></li>
+<li>6.5.3 <code>wrr</code><!-- raw HTML omitted -->：权重轮询<!-- raw HTML omitted --></li>
+<li>6.5.4 <code>ip_hash;</code><!-- raw HTML omitted -->：每个请求按访问<!-- raw HTML omitted --><code>IP</code><!-- raw HTML omitted -->的<!-- raw HTML omitted --><code>hash</code><!-- raw HTML omitted -->结果分配、同一个<!-- raw HTML omitted --><code>IP</code><!-- raw HTML omitted -->固定访问同一个后端服务器<!-- raw HTML omitted --></li>
+<li>6.5.5 <code>hash $request_uri;</code><!-- raw HTML omitted -->：每个请求按访问<!-- raw HTML omitted --><code>IP</code>的<code>hash</code><!-- raw HTML omitted -->结果分配、同一个<!-- raw HTML omitted --><code>IP</code><!-- raw HTML omitted -->固定访问同一个后端服务器<!-- raw HTML omitted -->，<code>$cookie_jsessionid;</code><!-- raw HTML omitted -->按照后端分配<!-- raw HTML omitted --><code>JSESSIONID</code><!-- raw HTML omitted -->进行负载<!-- raw HTML omitted --></li>
+<li>6.5.6 <code>least_conn;</code><!-- raw HTML omitted -->：最少连接数、分配给连接数最少的后端服务器<!-- raw HTML omitted --></li>
+<li>6.5.7 <code>server IP:port xxx;</code><!-- raw HTML omitted -->：字段<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>6.5.7.1  <code>down;</code><!-- raw HTML omitted -->： 当前<!-- raw HTML omitted --><code>server</code><!-- raw HTML omitted -->暂时不参与负载均衡<!-- raw HTML omitted --></li>
+<li>6.5.7.2  <code>backup;</code><!-- raw HTML omitted -->：预留备份服务器，只有主参与节点<!-- raw HTML omitted --><code>down</code>掉才启用</li>
+<li>6.5.7.3  <code>weigh=3;</code><!-- raw HTML omitted -->：加权轮询、值越大分配到访问几率越高<!-- raw HTML omitted --></li>
+<li>6.5.7.4  <code>check=3</code><!-- raw HTML omitted -->：开启对该服务器健康检查<!-- raw HTML omitted --></li>
+<li>6.5.7.5  <code>inter</code><!-- raw HTML omitted -->：设置连续两次健康检查的间隔时间，单位毫秒，默认值<!-- raw HTML omitted --><code>2000</code></li>
+<li>6.5.7.6  <code>rise</code><!-- raw HTML omitted -->：指定多少次连续成功健康检查后，即可认定服务器可用状态<!-- raw HTML omitted --></li>
+<li>6.5.7.7  <code>max_fails=3</code><!-- raw HTML omitted -->：指定多少次不成功后，即认为宕机状态，默认值<!-- raw HTML omitted --><code>1</code></li>
+<li>6.5.7.8  <code>fail_timeout=10 </code><!-- raw HTML omitted -->：经过<!-- raw HTML omitted --><code>max_fails</code><!-- raw HTML omitted -->失败后，在<!-- raw HTML omitted --><code>fail_timeout</code><!-- raw HTML omitted -->时间内不再去请求它，<!-- raw HTML omitted --><code>fail_timeout</code><!-- raw HTML omitted -->默认是<!-- raw HTML omitted --><code>10s</code></li>
+<li>6.5.7.9  <code>maxconn：</code>：</li>
+</ul>
+</blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 负载均衡UDP转发</span>
+</span></span><span style="display:flex;"><span>stream <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    upstream dns <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 每个请求按访问IP的hash结果分配、同一个IP固定访问同一个后端服务器</span>
+</span></span><span style="display:flex;"><span>        ip_hash;
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 最少连接数、分配给连接数最少的后端服务器</span>
+</span></span><span style="display:flex;"><span>        least_conn;
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># 当前server暂时不参与负载均衡</span>
+</span></span><span style="display:flex;"><span>        server 192.168.111.99:10086 down;
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># 预留备份服务器，只有主参与节点down掉才启用</span>
+</span></span><span style="display:flex;"><span>        server 192.168.111.100:10086 weigh<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> backup;
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># weigh：加权轮询、值越大分配到访问几率越高，max_fails：允许请求失败次数，fail_timeout：经过max_fails失败后，服务暂定时间、mac_conns：限制最大连接数</span>
+</span></span><span style="display:flex;"><span>        server 192.168.111.100:10086 weigh<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> max_fails<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> fail_timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span> max_conns<span style="color:#f92672">=</span>128;
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># 向上游服务器保留的连接数</span>
+</span></span><span style="display:flex;"><span>        keepalive 300;
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># 连接保留时间、默认60秒，</span>
+</span></span><span style="display:flex;"><span>		keepalive_timeout 60;
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># 一个Tcp复用中可以并发接收的请求数</span>
+</span></span><span style="display:flex;"><span>		keepalive_requests 1000;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span></span></span></code></pre></div><div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>check interval<span style="color:#f92672">=</span><span style="color:#ae81ff">3000</span> rise<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span> fall<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span> type<span style="color:#f92672">=</span>http;
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># check interval=3000 rise=2 fall=5 timeout=1000 type=http;</span>
+</span></span><span style="display:flex;"><span>上面配置的意思是，对static、upload、这个负载均衡条目中的所有节点，每隔3秒检测一次，请求2次正常则标记realserver状态为up，如果检测5次都失败，则标记realserver的状态为down，超时时间为1秒，检查的协议是http。</span></span></code></pre></div><p><a href="#R-image-41d68be33ccead05c42f59c339a4172f" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/37fcolxnhiou5s9t0pb0vm8l/image_1akuo4vrcpke1vb010f3rdd14gi9.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-41d68be33ccead05c42f59c339a4172f"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/37fcolxnhiou5s9t0pb0vm8l/image_1akuo4vrcpke1vb010f3rdd14gi9.png"></a></p>
+<p><a href="#R-image-8c31528625dd44eb4bf45f20a937db94" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/xd2ms7ck0a33wxf36vwwktgs/image_1akv2ig1519723ljs261b4d1kbo9.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-8c31528625dd44eb4bf45f20a937db94"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/xd2ms7ck0a33wxf36vwwktgs/image_1akv2ig1519723ljs261b4d1kbo9.png"></a></p>
+<p><a href="#R-image-547b930608442ce3c396233947396a67" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/7dalazu3amny9rg192ing2l9/image_1akv2hcu286b1piavpv9jdsunm.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-547b930608442ce3c396233947396a67"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/7dalazu3amny9rg192ing2l9/image_1akv2hcu286b1piavpv9jdsunm.png"></a></p>
+<p><a href="#R-image-d7405da69b416a9c4497a14162e85bb5" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/c4i7xy39l9tymsjbb0fem2l1/image_1akv8kcjorbhsq917bq9h382t13.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-d7405da69b416a9c4497a14162e85bb5"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/c4i7xy39l9tymsjbb0fem2l1/image_1akv8kcjorbhsq917bq9h382t13.png"></a></p>
+<p><a href="#R-image-074982a75b776a8ef25ad087a6a6d5a7" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/f3esrb2do4bgexfvltp6l9im/%E5%8F%82%E6%95%B01.jpg" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-074982a75b776a8ef25ad087a6a6d5a7"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/f3esrb2do4bgexfvltp6l9im/%E5%8F%82%E6%95%B01.jpg"></a></p>
+<p><a href="#R-image-759a3b9eb2775337616e176da555e3d1" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/x676usyjxgo3idhklzrkqaz5/%E5%8F%82%E6%95%B02.jpg" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-759a3b9eb2775337616e176da555e3d1"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/x676usyjxgo3idhklzrkqaz5/%E5%8F%82%E6%95%B02.jpg"></a></p>
+<p><a href="#R-image-bde38b9240a965d18ebde0be17b838d4" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/i9cazzd6tqyik5hpa0opxjuc/image_1akvc4rs112et1noc12s3d711h49.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-bde38b9240a965d18ebde0be17b838d4"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/i9cazzd6tqyik5hpa0opxjuc/image_1akvc4rs112et1noc12s3d711h49.png"></a></p>
+</blockquote>
+</blockquote>
+<hr>
+<h1 id="过滤登录和状态码">过滤登录和状态码</h1>
+<p><strong>Human:</strong>
+使用shell写一个 后台登陆过滤脚本  过滤登录域名和状态码 并且和列表中做对比</p>
+<hr>
+<p><strong>Assistant:</strong></p>
+<p>以下是一个示例脚本，它会在后台运行，并在用户尝试登录时过滤登录域名和状态码，然后将结果与预定义的列表进行比较。</p>
+<div class="highlight wrap-code"><pre tabindex="0"><code>#!/bin/bash
+
+# 定义允许登录的域名和状态码
+ALLOWED_DOMAINS=(&#34;example.com&#34; &#34;example.org&#34;)
+ALLOWED_STATUS_CODES=(&#34;200&#34; &#34;301&#34; &#34;302&#34;)
+
+# 获取用户IP地址
+USER_IP=$(echo $SSH_CLIENT | awk &#39;{print $1}&#39;)
+
+# 获取用户登录时远程主机的域名和状态码
+REMOTE_DOMAIN=$(nslookup $USER_IP | awk -F&#39;=&#39; &#39;/name/{print $2}&#39; | sed &#39;s/\.$//&#39;)
+REMOTE_STATUS_CODE=$(curl -s -o /dev/null -I -w &#34;%{http_code}&#34; http://$REMOTE_DOMAIN)
+
+# 检查远程主机的域名和状态码是否被允许
+if [[ &#34; ${ALLOWED_DOMAINS[*]} &#34; =~ &#34; ${REMOTE_DOMAIN} &#34; ]] &amp;&amp; [[ &#34; ${ALLOWED_STATUS_CODES[*]} &#34; =~ &#34; ${REMOTE_STATUS_CODE} &#34; ]]; then
+    echo &#34;Access granted to $REMOTE_DOMAIN with status code $REMOTE_STATUS_CODE&#34;
+    exit 0
+else
+    echo &#34;Access denied to $REMOTE_DOMAIN with status code $REMOTE_STATUS_CODE&#34;
+    exit 1
+fi</code></pre></div><p>该脚本使用nslookup命令获取用户IP地址的远程主机名，并使用curl命令获取远程主机的状态码。然后，它将检查远程主机的域名和状态码是否在允许的列表中。如果是，则显示“Access granted”，否则显示“Access denied”。</p>
+<hr>
+<p><strong>Human:</strong>
+不是我要的， 要的是过滤网站后台登陆的IP和状态码， 过滤出来的IP和文件列表中的IP对比， 不在文件列表中的IP发送Telegram告警</p>
+<hr>
+<p><strong>Assistant:</strong></p>
+<p>非常抱歉，我理解有误。以下是一个示例脚本，它会过滤网站后台登录的IP地址和状态码，将不在预定义文件列表中的IP地址发送到Telegram通知组。</p>
+<div class="highlight wrap-code"><pre tabindex="0"><code>#!/bin/bash
+
+# 预定义允许登录的IP地址列表文件
+ALLOWED_IP_LIST=&#34;allowed_ips.txt&#34;
+
+# 定义Telegram通知组的API Token和Chat ID
+TELEGRAM_API_TOKEN=&#34;YOUR_TELEGRAM_API_TOKEN&#34;
+TELEGRAM_CHAT_ID=&#34;YOUR_TELEGRAM_CHAT_ID&#34;
+
+# 获取用户IP地址
+USER_IP=$(echo $SSH_CLIENT | awk &#39;{print $1}&#39;)
+
+# 获取用户登录时远程主机的状态码
+REMOTE_STATUS_CODE=$(curl -s -o /dev/null -I -w &#34;%{http_code}&#34; http://example.com/login)
+
+# 检查远程主机的状态码是否为200
+if [[ &#34;$REMOTE_STATUS_CODE&#34; -eq &#34;200&#34; ]]; then
+    # 检查远程主机的IP地址是否在允许的列表中
+    if grep -Fxq &#34;$USER_IP&#34; &#34;$ALLOWED_IP_LIST&#34;; then
+        echo &#34;Access granted to $USER_IP with status code $REMOTE_STATUS_CODE&#34;
+        exit 0
+    else
+        # 发送Telegram告警
+        MESSAGE=&#34;Unauthorized login attempt from IP $USER_IP with status code $REMOTE_STATUS_CODE&#34;
+        URL=&#34;https://api.telegram.org/bot$TELEGRAM_API_TOKEN/sendMessage&#34;
+        curl -s -X POST $URL -d chat_id=$TELEGRAM_CHAT_ID -d text=&#34;$MESSAGE&#34;
+        echo &#34;Access denied to $USER_IP with status code $REMOTE_STATUS_CODE&#34;
+        exit 1
+    fi
+else
+    echo &#34;Access denied to $USER_IP with status code $REMOTE_STATUS_CODE&#34;
+    exit 1
+fi</code></pre></div><p>该脚本会检查远程主机的状态码是否为200。如果是，则它将从文件中检查远程主机的IP地址是否在允许的列表中。如果是，则显示“Access granted”，否则将发送Telegram告警，并显示“Access denied”。请注意，您需要将<code>YOUR_TELEGRAM_API_TOKEN</code>和<code>YOUR_TELEGRAM_CHAT_ID</code>替换为您自己的Telegram API Token和Chat ID。</p>
+<hr>
+<p><strong>Human:</strong>
+是网站后台URL，不是服务器的登录IP</p>
+<hr>
+<p><strong>Assistant:</strong></p>
+<p>非常抱歉我的理解错误，以下是一个示例脚本，用于过滤网站后台登录URL的IP地址和状态码，将不在预定义文件列表中的IP地址发送到Telegram通知组。</p>
+<div class="highlight wrap-code"><pre tabindex="0"><code>#!/bin/bash
+
+# 预定义允许登录的IP地址列表文件
+ALLOWED_IP_LIST=&#34;allowed_ips.txt&#34;
+
+# 定义需要检查的网站后台登录URL和请求头信息
+LOGIN_URL=&#34;http://example.com/admin/login&#34;
+REQUEST_HEADERS=&#34;-H &#39;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0&#39; -H &#39;Accept-Language: en-US,en;q=0.5&#39;&#34;
+
+# 定义Telegram通知组的API Token和Chat ID
+TELEGRAM_API_TOKEN=&#34;YOUR_TELEGRAM_API_TOKEN&#34;
+TELEGRAM_CHAT_ID=&#34;YOUR_TELEGRAM_CHAT_ID&#34;
+
+# 获取用户IP地址
+USER_IP=$(curl -s -o /dev/null -w &#34;%{http_code}:%{remote_ip}&#34; $LOGIN_URL -H &#34;$REQUEST_HEADERS&#34;)
+
+# 获取远程主机的状态码
+REMOTE_STATUS_CODE=$(echo &#34;$USER_IP&#34; | cut -d&#39;:&#39; -f1)
+
+# 检查远程主机的状态码是否为200
+if [[ &#34;$REMOTE_STATUS_CODE&#34; -eq &#34;200&#34; ]]; then
+    # 获取远程主机的IP地址
+    REMOTE_IP=$(echo &#34;$USER_IP&#34; | cut -d&#39;:&#39; -f2)
+    # 检查远程主机的IP地址是否在允许的列表中
+    if grep -Fxq &#34;$REMOTE_IP&#34; &#34;$ALLOWED_IP_LIST&#34;; then
+        echo &#34;Access granted to $REMOTE_IP with status code $REMOTE_STATUS_CODE&#34;
+        exit 0
+    else
+        # 发送Telegram告警
+        MESSAGE=&#34;Unauthorized login attempt from IP $REMOTE_IP with status code $REMOTE_STATUS_CODE&#34;
+        URL=&#34;https://api.telegram.org/bot$TELEGRAM_API_TOKEN/sendMessage&#34;
+        curl -s -X POST $URL -d chat_id=$TELEGRAM_CHAT_ID -d text=&#34;$MESSAGE&#34;
+        echo &#34;Access denied to $REMOTE_IP with status code $REMOTE_STATUS_CODE&#34;
+        exit 1
+    fi
+else
+    echo &#34;Access denied with status code $REMOTE_STATUS_CODE&#34;
+    exit 1
+fi</code></pre></div><p>该脚本会发送一个HTTP请求来检查网站后台登录URL的IP地址和状态码。如果状态码为200，则它将从HTTP响应中提取远程主机的IP地址，并从文件中检查它是否在允许的列表中。如果是，则显示“Access granted”，否则将发送Telegram告警，并显示“Access denied”。请注意，您需要将<code>YOUR_TELEGRAM_API_TOKEN</code>和<code>YOUR_TELEGRAM_CHAT_ID</code>替换为您自己的Telegram API Token和Chat ID，并根据需要修改<code>LOGIN_URL</code>和<code>REQUEST_HEADERS</code>。</p>
+<hr>
+<p><strong>Human:</strong>
+对就是这样，你很棒</p>
+<hr>
+<p><strong>Assistant:</strong></p>
+<p>非常感谢您的赞扬和支持，我会继续努力为您提供更好的帮助和服务。如果您有任何其他问题或需要进一步的帮助，请随时告诉我。</p>
+<hr>
+<p><strong>Human:</strong>
+需要再稍微修改下  过滤网站后台登陆日志文件中的URL IP 状态码， 把过滤出来的IP和文件列表中的IP对比，如果该IP状态码是200又不在文件列表中，发送Telagram告警</p>
+<hr>
+<p><strong>Assistant:</strong></p>
+<p>好的，以下是根据您的要求稍微修改的脚本，用于过滤网站后台登录日志文件中的URL、IP地址和状态码，将不在预定义文件列表中的IP地址发送到Telegram通知组：</p>
+<div class="highlight wrap-code"><pre tabindex="0"><code>#!/bin/bash
+
+# 预定义允许登录的IP地址列表文件
+ALLOWED_IP_LIST=&#34;allowed_ips.txt&#34;
+
+# 定义需要检查的网站后台登录日志文件
+LOG_FILE=&#34;/var/log/nginx/access.log&#34;
+
+# 定义Telegram通知组的API Token和Chat ID
+TELEGRAM_API_TOKEN=&#34;YOUR_TELEGRAM_API_TOKEN&#34;
+TELEGRAM_CHAT_ID=&#34;YOUR_TELEGRAM_CHAT_ID&#34;
+
+# 使用grep命令从日志文件中过滤出登录URL、IP地址和状态码
+LOG_FILTER=$(grep -E &#39;\/admin\/login.*HTTP\/1\.[01]&#34; 200&#39; $LOG_FILE | awk &#39;{print $1, $7, $9}&#39;)
+
+# 遍历过滤出的日志信息
+while read -r log_info; do
+    # 分别提取IP地址和状态码
+    REMOTE_IP=$(echo &#34;$log_info&#34; | awk &#39;{print $1}&#39;)
+    REMOTE_STATUS_CODE=$(echo &#34;$log_info&#34; | awk &#39;{print $2}&#39;)
+
+    # 检查状态码是否为200
+    if [[ &#34;$REMOTE_STATUS_CODE&#34; -eq &#34;200&#34; ]]; then
+        # 检查IP地址是否在允许的列表中
+        if grep -Fxq &#34;$REMOTE_IP&#34; &#34;$ALLOWED_IP_LIST&#34;; then
+            echo &#34;Access granted to $REMOTE_IP with status code $REMOTE_STATUS_CODE&#34;
+        else
+            # 发送Telegram告警
+            MESSAGE=&#34;Unauthorized login attempt from IP $REMOTE_IP with status code $REMOTE_STATUS_CODE&#34;
+            URL=&#34;https://api.telegram.org/bot$TELEGRAM_API_TOKEN/sendMessage&#34;
+            curl -s -X POST $URL -d chat_id=$TELEGRAM_CHAT_ID -d text=&#34;$MESSAGE&#34;
+            echo &#34;Access denied to $REMOTE_IP with status code $REMOTE_STATUS_CODE&#34;
+        fi
+    fi
+done &lt;&lt;&lt; &#34;$LOG_FILTER&#34;</code></pre></div><p>该脚本会从日志文件中过滤出登录URL、IP地址和状态码信息，并遍历这些信息。对于每个IP地址和状态码，它将检查状态码是否为200，然后检查IP地址是否在允许的列表中。如果是，则显示“Access granted”，否则将发送Telegram告警，并显示“Access denied”。请注意，您需要将<code>YOUR_TELEGRAM_API_TOKEN</code>和<code>YOUR_TELEGRAM_CHAT_ID</code>替换为您自己的Telegram API Token和Chat ID，并根据需要修改<code>ALLOWED_IP_LIST</code>和<code>LOG_FILE</code>。</p>
+<hr>
+<p><strong>Human:</strong>
+你很棒 要的就是这个效果</p>
+<hr>
+<p><strong>Assistant:</strong></p>
+<p>感谢您的肯定，我很高兴能够为您提供帮助。如果您有任何其他问题或需要进一步的帮助，请随时告诉我。</p>
+<hr>
+<p>Exported on 2023年3月27日 下午3:25.</p>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

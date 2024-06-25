@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="配置Jenkins 升级Jenkins 定位jenkins.war包所在目录 Jenkins实践文档 $ ps -ef|grep jenkins # 定位jenkins.war包所在目录 root 1773 1 1 09:06 ?">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Use_Jenkins :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="配置Jenkins 升级Jenkins 定位jenkins.war包所在目录 Jenkins实践文档 $ ps -ef|grep jenkins # 定位jenkins.war包所在目录 root 1773 1 1 09:06 ?">
+    <meta property="og:url" content="https://erge.blog/systems/linux/jenkins/use_jenkins/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Use_Jenkins :: Hugo Relearn Theme">
+    <meta property="og:description" content="配置Jenkins 升级Jenkins 定位jenkins.war包所在目录 Jenkins实践文档 $ ps -ef|grep jenkins # 定位jenkins.war包所在目录 root 1773 1 1 09:06 ?">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-19T13:54:38+08:00">
+    <meta property="article:modified_time" content="2024-06-19T13:54:38+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Use_Jenkins :: Hugo Relearn Theme">
+    <meta itemprop="description" content="配置Jenkins 升级Jenkins 定位jenkins.war包所在目录 Jenkins实践文档 $ ps -ef|grep jenkins # 定位jenkins.war包所在目录 root 1773 1 1 09:06 ?">
+    <meta itemprop="datePublished" content="2024-06-19T13:54:38+08:00">
+    <meta itemprop="dateModified" content="2024-06-19T13:54:38+08:00">
+    <meta itemprop="wordCount" content="248">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Use_Jenkins :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/jenkins/use_jenkins/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/jenkins/"><span itemprop="name">Jenkins</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Use_Jenkins</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/jenkins/" title="Jenkins (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/jenkins/install_jenkins/" title="Install_Jenkins (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="use_jenkins">Use_Jenkins</h1>
+
+<h2 id="配置jenkins">配置<code>Jenkins</code></h2>
+<h3 id="升级jenkins">升级<code>Jenkins</code></h3>
+<blockquote>
+<ul>
+<li>定位<code>jenkins.war</code>包所在目录</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://zeyangli.github.io/" rel="external" target="_self"><code>Jenkins</code>实践文档</a></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ps -ef|grep jenkins  	<span style="color:#75715e"># 定位jenkins.war包所在目录</span>
+</span></span><span style="display:flex;"><span>root       <span style="color:#ae81ff">1773</span>      <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">1</span> 09:06 ?        00:03:00 /usr/local/jdk1.8.0_221/bin/java -Djava.awt.headless<span style="color:#f92672">=</span>true -DJENKINS_HOME<span style="color:#f92672">=</span>/var/lib/jenkins -jar /usr/lib/jenkins/jenkins.war --logfile<span style="color:#f92672">=</span>/var/log/jenkins/jenkins.log --webroot<span style="color:#f92672">=</span>/var/cache/jenkins/war --httpPort<span style="color:#f92672">=</span><span style="color:#ae81ff">8080</span> --debug<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> --handlerCountMax<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span> --handlerCountMaxIdle<span style="color:#f92672">=</span><span style="color:#ae81ff">20</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cd /usr/lib/jenkins/
+</span></span><span style="display:flex;"><span>$ systemctl stop jenkins  	<span style="color:#75715e"># 停止Jenkins</span>
+</span></span><span style="display:flex;"><span>$ mv jenkins.war jenkins.war.bak  	<span style="color:#75715e"># 备份</span>
+</span></span><span style="display:flex;"><span>$ wget -P /usr/lib/jenkins/ http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+</span></span><span style="display:flex;"><span>$ systemctl start jenkins</span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h3 id="汉化jenkins">汉化<code>Jenkins</code></h3>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->登录<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->页面选择：<!-- raw HTML omitted --><code>Manage Jenkins</code>→<code>Manage Plugins</code></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-511c8759b1af1b5427bed544b96b3f9c" class="lightbox-link"><img alt="选择插件" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_18-55-47.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-511c8759b1af1b5427bed544b96b3f9c"><img alt="选择插件" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_18-55-47.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->在搜索框搜索：<!-- raw HTML omitted --><code>Locale</code><!-- raw HTML omitted -->选择安装并重启<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->页面<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->设置<!-- raw HTML omitted --><code>Local</code>：<code>Configure System</code><!-- raw HTML omitted -->(系统设置)→<!-- raw HTML omitted --><code> Locale</code><!-- raw HTML omitted -->(语言设置)→<!-- raw HTML omitted --><code>en_US</code><!-- raw HTML omitted -->(英文)、<!-- raw HTML omitted --><code>zh_CN</code><!-- raw HTML omitted -->(中文)<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-b10a1263faad5dc159e6575a294fb7e7" class="lightbox-link"><img alt="安装汉化插件" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_18-57-40.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-b10a1263faad5dc159e6575a294fb7e7"><img alt="安装汉化插件" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_18-57-40.png"></a></p>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="配置域名">配置域名</h3>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>Nginx</code><!-- raw HTML omitted -->配置文件方便使用域名访问<!-- raw HTML omitted --><code>Jenkins</code></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/usr/local/nginx/conf/vhosts/jenkins.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> listen       80;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> server_name  jenkins.ken.io; #监听的域名
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> access_log  /var/log/nginx/jenkins.access.log main;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> error_log  /var/log/nginx/jenkins.error.log error;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> location / {  	# 转发或处理
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     proxy_pass http://127.0.0.1:8080; 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> error_page   500 502 503 504  /50x.html;  	# 错误页
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> location = /50x.html {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     root   /usr/share/nginx/html;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h3 id="权限管理">权限管理</h3>
+<blockquote>
+<ul>
+<li><a href="https://blog.51cto.com/wzlinux/2160778" rel="external" target="_self">持续集成之<code>Jenkins</code>配置基于角色的项目权限管理(五)</a></li>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->权限管理<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Jenkins</code><!-- raw HTML omitted -->全局安装配置<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->系统管理→插件管理→安装插件:<!-- raw HTML omitted --><code>Role-based Authorization Strategy</code></li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Role-based Authorization Strategy</code></li>
+<li><code>Matrix Authorization Strategy</code></li>
+<li><code>Authorize Project</code></li>
+</ul>
+<p><a href="#R-image-361224896cc395ee0ddcda49b503c154" class="lightbox-link"><img alt="搜索Role-based Authorization Strategy" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-18-26.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-361224896cc395ee0ddcda49b503c154"><img alt="搜索Role-based Authorization Strategy" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-18-26.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->系统管理→全局安全配置勾选:<!-- raw HTML omitted --><code>Role-Based Strategy</code></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-1b08cb18dd1331941212199d255eec80" class="lightbox-link"><img alt="选择全局安装配置" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-22-20.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-1b08cb18dd1331941212199d255eec80"><img alt="选择全局安装配置" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-22-20.png"></a></p>
+<p><a href="#R-image-6e18afb6edac484656827ba02a454426" class="lightbox-link"><img alt="选择：Role-Based Strategy" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-24-08.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-6e18afb6edac484656827ba02a454426"><img alt="选择：Role-Based Strategy" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-24-08.png"></a></p>
+</blockquote>
+</blockquote>
+<ul>
+<li><code>Jenkisn</code><!-- raw HTML omitted -->角色分配权限<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->系统管理→管理和分配角色：<!-- raw HTML omitted --><code>Manage and Assign Roles</code></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-f05107cd3b8e38cf1faa6fb74ece70e3" class="lightbox-link"><img alt="配置Manage and Assign Roles" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-29-36.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f05107cd3b8e38cf1faa6fb74ece70e3"><img alt="配置Manage and Assign Roles" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-29-36.png"></a></p>
+<p><a href="#R-image-4e26f52ca94af13e3496240237d74bfa" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-31-29.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-4e26f52ca94af13e3496240237d74bfa"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-31-29.png"></a></p>
+</blockquote>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->先配置： 管理角色<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-f1e3591414aa378d2ebadff84b283773" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-34-09.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f1e3591414aa378d2ebadff84b283773"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-34-09.png"></a></p>
+<ul>
+<li><!-- raw HTML omitted -->添加<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->全局项目角色<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-0bdb86dd667820971153650e22f941a5" class="lightbox-link"><img alt="全局角色" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-38-52.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-0bdb86dd667820971153650e22f941a5"><img alt="全局角色" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-38-52.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->添加<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->项目角色<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><code>Role</code><!-- raw HTML omitted -->代表视图<!-- raw HTML omitted --></p>
+</li>
+<li>
+<p><code>Pattern</code><!-- raw HTML omitted -->代表视图下<!-- raw HTML omitted --><code>test*</code><!-- raw HTML omitted -->的任务名称<!-- raw HTML omitted --></p>
+</li>
+</ul>
+<p><a href="#R-image-9ddc693a8e2aea1610ef6d5afeb69e3a" class="lightbox-link"><img alt="项目角色" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-46-24.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-9ddc693a8e2aea1610ef6d5afeb69e3a"><img alt="项目角色" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-46-24.png"></a></p>
+</blockquote>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->给<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->角色分配执行权限<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-1805fe4c9314b03fa8c1bdb6ac712061" class="lightbox-link"><img alt="角色分配" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-54-57.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-1805fe4c9314b03fa8c1bdb6ac712061"><img alt="角色分配" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-54-57.png"></a></p>
+<ul>
+<li><code>Jenkins</code><!-- raw HTML omitted -->全局角色<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-da0d8c57c6a8c8f98eac7dd6229a2e2b" class="lightbox-link"><img alt="分配全局角色" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-58-06.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-da0d8c57c6a8c8f98eac7dd6229a2e2b"><img alt="分配全局角色" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-58-06.png"></a></p>
+</blockquote>
+<ul>
+<li><code>Jenkins</code><!-- raw HTML omitted -->项目角色<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-1eaec0e00625e6b3f26a09ced86d8715" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_20-02-46.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-1eaec0e00625e6b3f26a09ced86d8715"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_20-02-46.png"></a></p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="jenkins配置邮箱"><code>Jenkins</code>配置邮箱</h3>
+<blockquote>
+<ul>
+<li><a href="#R-image-da75ccd2e2a52809fa4c11743d99dac3" class="lightbox-link"><img alt="配置Jenkins邮箱" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_22-57-50.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-da75ccd2e2a52809fa4c11743d99dac3"><img alt="配置Jenkins邮箱" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_22-57-50.png"></a></li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="jenkins服务器配置"><code>Jenkins</code>服务器配置</h3>
+<h4 id="配置ssh管理服务器">配置<code>ssh</code>管理服务器</h4>
+<blockquote>
+<ul>
+<li><code>Jenkins</code><!-- raw HTML omitted -->使用<!-- raw HTML omitted --><code>ssh</code><!-- raw HTML omitted -->管理服务器<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->搜索<!-- raw HTML omitted --><code>ssh</code><!-- raw HTML omitted -->插件：系统管理→插件管理→搜索：<!-- raw HTML omitted --><code>Publish Over SSH</code></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-df66fb04c8cb5a3702325d0ddc0c5d44" class="lightbox-link"><img alt="搜索ssh插件" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-03-45.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-df66fb04c8cb5a3702325d0ddc0c5d44"><img alt="搜索ssh插件" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-03-45.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>ssh</code><!-- raw HTML omitted -->插件：系统管理→系统配置→<!-- raw HTML omitted --><code>Publish over SSH</code>→<code>SSH Servers</code></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-75735943fe46cf31a729a6600d5636e6" class="lightbox-link"><img alt="配置Publish over SSH插件" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-32-37.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-75735943fe46cf31a729a6600d5636e6"><img alt="配置Publish over SSH插件" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-32-37.png"></a></p>
+</blockquote>
+</blockquote>
+</blockquote>
+<hr>
+<h4 id="配置ansible管理服务器">配置<code>ansible</code>管理服务器</h4>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>ansible</code><!-- raw HTML omitted -->实现免密登录以便<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->批量处理<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->生成密钥对，拷贝公钥到目部主机<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /usr/bin/sed -i <span style="color:#e6db74">&#34;/host_key_checking/a\\host_key_checking = false&#34;</span> /etc/ansible/ansible.cfg  	<span style="color:#75715e"># 关闭主机密钥检查</span>
+</span></span><span style="display:flex;"><span>$ sudo su -s /bin/bash jenkins  	<span style="color:#75715e"># 如果Jenkins用户不是root需要切换用户  </span>
+</span></span><span style="display:flex;"><span>$ ssh-keygen  	<span style="color:#75715e"># 生成密钥对  </span>
+</span></span><span style="display:flex;"><span>$ ssh-copy-id root@<span style="color:#e6db74">&#34;目标IP&#34;</span>  	<span style="color:#75715e"># 拷贝公钥到目标主机  </span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>Ansible</code><!-- raw HTML omitted -->的<!-- raw HTML omitted --><code>hosts</code><!-- raw HTML omitted -->文件<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/etc/ansible/hosts<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">console # 自定义名称，  ansible_ssh_user=root # 用户， ansible_ssh_pass=&#34;a&#34; # 密码，ansible_ssh_port=22 # 端口， ansible_ssh_host=192.168.1.1 # 目部主机IP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->登录<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->页面，到插件管理界面搜索安装<!-- raw HTML omitted --><code>Ansible</code><!-- raw HTML omitted -->插件<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-5c994f665f04dbb9a02ca3ca0fcfa51e" class="lightbox-link"><img alt="搜索安装<code>ansible</code>插件" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-06-12.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-5c994f665f04dbb9a02ca3ca0fcfa51e"><img alt="搜索安装<code>ansible</code>插件" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-06-12.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->安装好<!-- raw HTML omitted --><code>Ansible</code><!-- raw HTML omitted -->插件后重启<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->页面<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-125acffa6be9a9203f6c7188ffe7854b" class="lightbox-link"><img alt="安装好后重启页面" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-08-30.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-125acffa6be9a9203f6c7188ffe7854b"><img alt="安装好后重启页面" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-08-30.png"></a></p>
+</blockquote>
+<ul>
+<li>使用<code>Gitlab+Ansible</code>构建项目验证<code>Ansible</code>是否可用</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->选择：新建任务→输入任务名称：→选择：构建一个自由风格的软件项目→点击：确认<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-072f27a2caf7181cb7e5a3c90a3e4012" class="lightbox-link"><img alt="创建任务" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-54-08.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-072f27a2caf7181cb7e5a3c90a3e4012"><img alt="创建任务" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-54-08.png"></a></p>
+<ul>
+<li>添加<code>Ansible</code>构建</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-a45dd760ef211297c64ab5d29280e236" class="lightbox-link"><img alt="添加构建Ansible" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-56-00.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-a45dd760ef211297c64ab5d29280e236"><img alt="添加构建Ansible" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-56-00.png"></a></p>
+</blockquote>
+<ul>
+<li>配置<code>Ansible</code>构建</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-557fb0da4b01583b5c15f9b576c727e6" class="lightbox-link"><img alt="配置Jenkins的ansible" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_22-09-30.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-557fb0da4b01583b5c15f9b576c727e6"><img alt="配置Jenkins的ansible" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_22-09-30.png"></a></p>
+</blockquote>
+<ul>
+<li>测试<code>Ansible</code>构建</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-0f715486152a089eeb5319330c15d7f6" class="lightbox-link"><img alt="测试Ansible构建" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_22-13-24.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-0f715486152a089eeb5319330c15d7f6"><img alt="测试Ansible构建" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_22-13-24.png"></a></p>
+</blockquote>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="jenkins部署插件"><code>Jenkins</code>部署插件</h3>
+<blockquote>
+<ul>
+<li><a href="https://plugins.jenkins.io/" rel="external" target="_self">部署插件</a></li>
+<li><code>General</code><!-- raw HTML omitted -->→<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/gogs-webhook/" rel="external" target="_self"><code>Gogs</code></a></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->允许用户使用<!-- raw HTML omitted --><code>Gogs Webhook</code></li>
+</ul>
+<p><a href="#R-image-f615f84bd8444f91eb601de3c9863612" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-04-17.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f615f84bd8444f91eb601de3c9863612"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-04-17.png"></a></p>
+</blockquote>
+<ul>
+<li><code>General</code><!-- raw HTML omitted -->→<!-- raw HTML omitted --><code>This project is parameterized</code><!-- raw HTML omitted -->(参数化构建过程)→<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/git-parameter/" rel="external" target="_self"><code>Git Parameter</code></a></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->该插件允许您在构建中分配<!-- raw HTML omitted --><code>Git</code><!-- raw HTML omitted -->分支、标签、拉取请求或修订号作为参数<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-2149b6fe4871fd7d727c92c37d54c382" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-09-44.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-2149b6fe4871fd7d727c92c37d54c382"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-09-44.png"></a></p>
+</blockquote>
+<ul>
+<li><code>Build Triggers</code><!-- raw HTML omitted -->(构建触发器)→安装<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/gitlab-plugin/" rel="external" target="_self"><code>GitLab Plugin</code></a><!-- raw HTML omitted -->或<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/generic-webhook-trigger/" rel="external" target="_self"><code>Generic Webhook Trigger</code></a><!-- raw HTML omitted -->自动部署插件<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->此插件允许<!-- raw HTML omitted --><code>GitLab</code><!-- raw HTML omitted -->在提交代码或打开/更新合并请求时触发<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->中的构建。它还可以将构建状态发送回<!-- raw HTML omitted --><code>GitLab</code></li>
+</ul>
+<p><a href="#R-image-262c058cd061cc66a082d89f343eed42" class="lightbox-link"><img alt="GitLab webhook Plugin" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-25_15-36-23.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-262c058cd061cc66a082d89f343eed42"><img alt="GitLab webhook Plugin" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-25_15-36-23.png"></a></p>
+</blockquote>
+<ul>
+<li><code>Build Environment</code><!-- raw HTML omitted -->(构建环境)→<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/ansicolor/" rel="external" target="_self"><code>AnsiColor</code></a></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->这个插件增加了对标准<!-- raw HTML omitted --><code>ANSI</code><!-- raw HTML omitted -->转义序列的支持，包括颜色，到控制台输出。 该插件可<!-- raw HTML omitted --><a href="http://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/ansicolor/" rel="external" target="_self">在此处</a><!-- raw HTML omitted -->获得，并且在<!-- raw HTML omitted --><code>Jenkins Wiki</code><!-- raw HTML omitted -->上有<!-- raw HTML omitted --><a href="https://wiki.jenkins-ci.org/display/JENKINS/AnsiColor+Plugin" rel="external" target="_self">一个页面</a></li>
+</ul>
+<p><a href="#R-image-44c5132b64ee1cae4b3530d9286d76d5" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-16-21.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-44c5132b64ee1cae4b3530d9286d76d5"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-16-21.png"></a></p>
+</blockquote>
+<ul>
+<li><code>Build Environment</code><!-- raw HTML omitted -->(构建环境)→<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/build-user-vars-plugin/" rel="external" target="_self"><code>Set jenkins user build variables</code></a></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->描述启动构建的用户的一组<strong>环境变量</strong><!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-337d033ac4fd92a63949eb4517aab20a" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-24-17.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-337d033ac4fd92a63949eb4517aab20a"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-24-17.png"></a></p>
+</blockquote>
+<ul>
+<li><code>Post-build Actions</code><!-- raw HTML omitted -->(构建后操作)→<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/postbuild-task/" rel="external" target="_self"><code>Post build task</code></a></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->此功能允许用户关联<!-- raw HTML omitted --><code>shell</code><!-- raw HTML omitted -->或批处理脚本，这些脚本根据构建日志输出在<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->上执行某些任务。如果日志文本在构建日志文件中的某个位置匹配，则脚本将执行并且构建后日志将附加到项目构建日志中。允许使用<!-- raw HTML omitted --><code>Java</code><!-- raw HTML omitted -->正则表达式<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-a814a8c4ee8e0eccd258b7d2791d274b" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-46-20.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-a814a8c4ee8e0eccd258b7d2791d274b"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-46-20.png"></a></p>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="jenkins回滚插件"><code>Jenkins</code>回滚插件</h3>
+<blockquote>
+<ul>
+<li><code>General</code><!-- raw HTML omitted -->→<!-- raw HTML omitted --><code>This project is parameterized</code><!-- raw HTML omitted -->(参数化构建过程)→<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/uno-choice/" rel="external" target="_self"><code>Active Choices</code></a></li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Active Choices</code><!-- raw HTML omitted -->插件用于参数化的自由式<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->作业，以创建<strong>脚本化、动态和交互式作业参数</strong>。<!-- raw HTML omitted --><code>Active Choices</code><!-- raw HTML omitted --><strong>参数</strong>可以<strong>动态更新</strong>，并且可以<strong>呈现为组合框、复选框、单选按钮或丰富的<code>HTML UI</code>小部件</strong>。<!-- raw HTML omitted --><code>Active Choices</code>参数使用<code>Groovy</code>或（可选）<code>Scriptler Groovy</code>脚本编写脚本。这些自定义脚本支持使用<code>Jenkins Java API</code><!-- raw HTML omitted -->、系统环境变量、全局节点属性以及潜在的外部<code>Java</code>和<code>Javascript</code>库<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-6e37de955dfe135b741e5d78c6c08ab3" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_15-17-51.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-6e37de955dfe135b741e5d78c6c08ab3"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_15-17-51.png"></a></p>
+</blockquote>
+</blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

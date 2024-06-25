@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="Elasticsearch部署 Elasticsearch简介官方文档 Elasticsearch常用插件集合 ELK基于ElastAlert实现日志的微信报警 Elasticsearch是一个基于Lucene的弹性数据存储、搜索、开源分布式搜索服务，它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口，在elasticsearch中，所有节点的数据是均等的。 特点：分布式，零配置，自动发现，索引自动分片，索引副本机制，restful风格接口，多数据源， 自动搜索负载等。 Elasticsearch是用Java开发的，并作为Apache许可条款下的开放源码发布，是第二流行的企业搜索引擎。设计用于云计算中，能够达到实时搜索，稳定，可靠，快速，安装使用方便。 下载elasticsearch-8.1 $ wget https://artifacts.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_ELK :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="Elasticsearch部署 Elasticsearch简介官方文档 Elasticsearch常用插件集合 ELK基于ElastAlert实现日志的微信报警 Elasticsearch是一个基于Lucene的弹性数据存储、搜索、开源分布式搜索服务，它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口，在elasticsearch中，所有节点的数据是均等的。 特点：分布式，零配置，自动发现，索引自动分片，索引副本机制，restful风格接口，多数据源， 自动搜索负载等。 Elasticsearch是用Java开发的，并作为Apache许可条款下的开放源码发布，是第二流行的企业搜索引擎。设计用于云计算中，能够达到实时搜索，稳定，可靠，快速，安装使用方便。 下载elasticsearch-8.1 $ wget https://artifacts.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/logs/install_elk/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_ELK :: Hugo Relearn Theme">
+    <meta property="og:description" content="Elasticsearch部署 Elasticsearch简介官方文档 Elasticsearch常用插件集合 ELK基于ElastAlert实现日志的微信报警 Elasticsearch是一个基于Lucene的弹性数据存储、搜索、开源分布式搜索服务，它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口，在elasticsearch中，所有节点的数据是均等的。 特点：分布式，零配置，自动发现，索引自动分片，索引副本机制，restful风格接口，多数据源， 自动搜索负载等。 Elasticsearch是用Java开发的，并作为Apache许可条款下的开放源码发布，是第二流行的企业搜索引擎。设计用于云计算中，能够达到实时搜索，稳定，可靠，快速，安装使用方便。 下载elasticsearch-8.1 $ wget https://artifacts.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-20T18:24:54+08:00">
+    <meta property="article:modified_time" content="2024-06-20T18:24:54+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_ELK :: Hugo Relearn Theme">
+    <meta itemprop="description" content="Elasticsearch部署 Elasticsearch简介官方文档 Elasticsearch常用插件集合 ELK基于ElastAlert实现日志的微信报警 Elasticsearch是一个基于Lucene的弹性数据存储、搜索、开源分布式搜索服务，它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口，在elasticsearch中，所有节点的数据是均等的。 特点：分布式，零配置，自动发现，索引自动分片，索引副本机制，restful风格接口，多数据源， 自动搜索负载等。 Elasticsearch是用Java开发的，并作为Apache许可条款下的开放源码发布，是第二流行的企业搜索引擎。设计用于云计算中，能够达到实时搜索，稳定，可靠，快速，安装使用方便。 下载elasticsearch-8.1 $ wget https://artifacts.">
+    <meta itemprop="datePublished" content="2024-06-20T18:24:54+08:00">
+    <meta itemprop="dateModified" content="2024-06-20T18:24:54+08:00">
+    <meta itemprop="wordCount" content="1120">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_ELK :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/logs/install_elk/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/logs/"><span itemprop="name">Logs</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_ELK</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/logs/install_es_head/" title="Install_Es_Head (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/logs/configure_elk/" title="Configure_ELK (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_elk">Install_ELK</h1>
+
+<h2 id="elasticsearch部署"><code>Elasticsearch</code>部署</h2>
+<blockquote>
+<ul>
+<li><code>Elasticsearch</code><!-- raw HTML omitted -->简介<!-- raw HTML omitted --><a href="https://www.elastic.co/guide/index.html" rel="external" target="_self">官方文档</a></li>
+<li><a href="https://blog.csdn.net/u012332735/article/details/54946355" rel="external" target="_self"><code>Elasticsearch</code>常用插件集合</a></li>
+<li><a href="https://www.cnblogs.com/hahaha111122222/p/13139809.html" rel="external" target="_self"><code>ELK</code>基于<code>ElastAlert</code>实现日志的微信报警</a></li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Elasticsearch</code>是一个基于<code>Lucene</code>的弹性数据存储、搜索、开源分布式搜索服务，它提供了一个分布式多用户能力的全文搜索引擎，基于<code>RESTful web</code>接口，在<code>elasticsearch</code>中，所有节点的数据是均等的。</li>
+<li>特点：分布式，零配置，自动发现，索引自动分片，索引副本机制，<code>restful</code>风格接口，多数据源， 自动搜索负载等。</li>
+<li><code>Elasticsearch</code>是用<code>Java</code>开发的，并作为<code>Apache</code>许可条款下的开放源码发布，是第二流行的企业搜索引擎。设计用于云计算中，能够达到实时搜索，稳定，可靠，快速，安装使用方便。</li>
+</ul>
+</blockquote>
+<ul>
+<li><a href="https://www.elastic.co/cn/downloads/elasticsearch" rel="external" target="_self">下载<code>elasticsearch-8.1</code></a></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.1.3-linux-x86_64.tar.gz
+</span></span><span style="display:flex;"><span>$ wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.1.3-linux-x86_64.tar.gz.sha512
+</span></span><span style="display:flex;"><span>$ sha512sum -c elasticsearch-8.1.3-linux-x86_64.tar.gz.sha512
+</span></span><span style="display:flex;"><span>$ tar -xzf elasticsearch-8.1.3-linux-x86_64.tar.gz
+</span></span><span style="display:flex;"><span>$ cd elasticsearch-8.1.3/ </span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>Elasticsearch</code><!-- raw HTML omitted -->配置文件<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>Elasticsearch</code><!-- raw HTML omitted -->主配置文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd /opt/elasticsearch/config
+</span></span><span style="display:flex;"><span>$ cp elasticsearch.yml<span style="color:#f92672">{</span>,.bak<span style="color:#f92672">}</span>  	<span style="color:#75715e"># 提前给配置文件做个备份</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 17行、组名(同一个组，组名必须一致)</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;/cluster.name:/a\\cluster.name: cluster-1&#34;</span> elasticsearch.yml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 23行、节点名称，建议和主机名一致</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;/node.name:/a\\node.name: server-1&#34;</span> elasticsearch.yml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 33行、数据存放的路径</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;/path.data:/a\\path.data: /opt/elasticsearch/data&#34;</span> elasticsearch.yml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 37行、日志存放的路径</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;/path.logs:/a\\path.logs: /opt/elasticsearch/logs&#34;</span> elasticsearch.yml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 43行、 锁住内存，不被使用到交换分区去(通常在内部不足时，休眠的程序内存信息会交换到交换分区)</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;/bootstrap.memory_lock:/a\\bootstrap.memory_lock: false&#34;</span> elasticsearch.yml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 56行、网络设置，建议填写本机IP或者0.0.0.0</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;/network.host:/a\\network.host: 0.0.0.0&#34;</span> elasticsearch.yml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 61行、开启端口</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;/http.port:/a\\http.port: 9200&#34;</span> elasticsearch.yml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 74行、和节点名称一致</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;/cluster.initial_master_nodes:/a\\cluster.initial_master_nodes: [&#34;</span>server_1<span style="color:#e6db74">&#34;]&#34;</span> elasticsearch.yml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;http.cors.enabled: true  	# 支持跨域
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">xpack.security.enabled: true  	# 启用安全性检查
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">xpack.security.transport.ssl.enabled: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># discovery.zen.ping.multicast.enabled: false  	# 集群模式，从节点关闭多播
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># discovery.zen.ping.unicast.hosts: [&#34;</span>10.18.41.31<span style="color:#e6db74">&#34;,&#34;</span>10.18.41.137<span style="color:#e6db74">&#34;  	# 集群模式，从节点配置主服务器和自己的地址
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">http.cors.allow-origin: &#34;</span>*<span style="color:#e6db74">&#34;  	# 范围  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">http.cors.allow-headers: Authorization,X-Requested-With,Content-Length,Content-Type
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 手动创建系统索引
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">action.auto_create_index: .monitoring*,.watches,.triggered_watches,.watcher-history*,.ml* &#34;</span> &gt;&gt;elasticsearch.yml</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>Elasticsearch</code><!-- raw HTML omitted -->资源限制配置文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 调整jvm.options文件的32、和33行</span>
+</span></span><span style="display:flex;"><span>$ cd /opt/elasticsearch/config
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;/## -Xms4g/a\\-Xms512m&#34;</span> jvm.options
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;/## -Xmx4g/a\\-Xmx512m&#34;</span> jvm.options</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->启动服务并开启<!-- raw HTML omitted -->防火墙：9200<!-- raw HTML omitted -->端口<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>Ulimit</code><!-- raw HTML omitted -->调整进程的最大文件描述符<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ulimit -n <span style="color:#ae81ff">65535</span>
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;* soft nofile 65536
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">* hard nofile 65536
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">* soft nproc 32000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">* hard nproc 32000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">* hard memlock unlimited
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">* soft memlock unlimited &#34;</span>&gt;&gt;/etc/security/limits.conf</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>vm.max_map_count</code><!-- raw HTML omitted -->最大虚拟内存区域<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;vm.max_map_count=655360&#34;</span> &gt;&gt;/etc/sysctl.conf</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->修改权限启动服务开放防火墙<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><!-- raw HTML omitted --><strong>9200端口</strong>：<!-- raw HTML omitted -->用于所有通过<code>HTTP</code>协议进行的<code>API</code>调用。包括搜索、聚合、监控、以及其他任何使用<code>HTTP</code>协议的请求。所有的客户端库都会使用该端口与<code>ElasticSearch</code>进行交互。</p>
+</li>
+<li>
+<p><!-- raw HTML omitted --><strong>9300端口</strong>：<!-- raw HTML omitted -->是一个自定义的二进制协议，用于集群中各节点之间的通信。用于诸如集群变更、主节点选举、节点加入/离开、分片分配等事项。</p>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ chown -R user:user /opt/elasticsearch  	<span style="color:#75715e"># 普通用户启动</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cd /opt/elasticsearch/
+</span></span><span style="display:flex;"><span>$ ./bin/elasticsearch-setup-passwords interactive  	<span style="color:#75715e"># 设置密码，修改密码也是一样。</span>
+</span></span><span style="display:flex;"><span>$ ./bin/elasticsearch
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 此命令来判断是init启动还是systemctl启动</span>
+</span></span><span style="display:flex;"><span>$ ps -p <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 当systemd启用了日志记录，日志信息使用可用journalctl的命令</span>
+</span></span><span style="display:flex;"><span>$ journalctl - f
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 列出elasticsearch服务的日记帐分录</span>
+</span></span><span style="display:flex;"><span>$ journalctl - unit elasticsearch
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 要从给定时间开始列出elasticsearch服务的日记帐分录：</span>
+</span></span><span style="display:flex;"><span>$ journalctl --unit elasticsearch --since  <span style="color:#e6db74">&#34;2016-10-30 18:17:16&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 检查Elasticsearch</span>
+</span></span><span style="display:flex;"><span>$  curl -i -XGET http://127.0.0.1:9200</span></span></code></pre></div></li>
+</ul>
+</blockquote>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="elasticsearch-head插件安装"><code>elasticsearch-head</code>插件安装</h3>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->下载启动<!-- raw HTML omitted --><code>elasticsearch-head</code><!-- raw HTML omitted -->防火墙开放：9100<!-- raw HTML omitted --><!-- raw HTML omitted -->端口<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd /opt/
+</span></span><span style="display:flex;"><span>$ git clone git://github.com/mobz/elasticsearch-head.git
+</span></span><span style="display:flex;"><span>$ cd elasticsearch-head
+</span></span><span style="display:flex;"><span>$ npm install
+</span></span><span style="display:flex;"><span>$ npm run start
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#  grunt server  	# 或者使用  grunt 启动</span>
+</span></span><span style="display:flex;"><span>$ curl http://localhost:9100/  	<span style="color:#75715e"># 登录浏览器输入地址访问</span></span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="logstash部署"><code>Logstash</code>部署</h2>
+<blockquote>
+<ul>
+<li><code>Logstash</code><!-- raw HTML omitted -->简介<!-- raw HTML omitted -->、<a href="https://www.elastic.co/guide/en/logstash/master/index.html" rel="external" target="_self">官方文档</a></li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Logstash</code>是一个完全开源工具，可以对你的日志进行收集、过滤、分析，并将其存储供以后使用（如，搜索），<code>logstash</code>带有一个<code>web</code>界面，搜索和展示所有日志。</li>
+</ul>
+</blockquote>
+<ul>
+<li><a href="https://www.elastic.co/cn/downloads/logstash" rel="external" target="_self">下载、解压<code>Logstash</code></a></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ wget https://artifacts.elastic.co/downloads/logstash/logstash-8.3.3-linux-x86_64.tar.gz
+</span></span><span style="display:flex;"><span>$ tar zxvf logstash-8.3.3-linux-x86_64.tar.gz</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>Logstash</code><!-- raw HTML omitted -->的<!-- raw HTML omitted --><code>conf</code><!-- raw HTML omitted -->文件收集<!-- raw HTML omitted --><code>Nginx</code><!-- raw HTML omitted -->日志<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.elastic.co/guide/en/logstash/current/configuration.html" rel="external" target="_self">参考官网标准输入输出</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.elastic.co/guide/en/logstash/current/configuration-file-structure.html" rel="external" target="_self">参考官网函数输入输出</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-elasticsearch.html" rel="external" target="_self">参考官网收集系统日志</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.elastic.co/guide/en/logstash/current/event-dependent-configuration.html" rel="external" target="_self">参考官网收集<code>Java</code>日志</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.elastic.co/guide/en/logstash/current/plugins-codecs-multiline.html" rel="external" target="_self">参考官网使用<code>multiline</code>多行模式</a></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>input{}</code>：<code>logstash</code><!-- raw HTML omitted -->从日志文件中调用函数输入<!-- raw HTML omitted --></li>
+<li><code>output{}</code>：<code>logstash</code><!-- raw HTML omitted -->从日志文件中调用函数输出<!-- raw HTML omitted --></li>
+<li><code>stdin{}</code>：<code>logstash</code><!-- raw HTML omitted -->从标准输入中收集日志<!-- raw HTML omitted --></li>
+<li><code>stdout{} </code>：<code>logstash</code><!-- raw HTML omitted -->从标准输出日志<!-- raw HTML omitted --></li>
+<li><code>syslog</code>：<code>logstash</code><!-- raw HTML omitted -->从系统日志程序中收集日志<!-- raw HTML omitted --></li>
+<li><code>tcp</code>：<code>logstash</code><!-- raw HTML omitted -->从<!-- raw HTML omitted --><code>TCP</code><!-- raw HTML omitted -->程序端口中收集日志<!-- raw HTML omitted --></li>
+<li><code>udp</code>：<code>logstash</code><!-- raw HTML omitted -->从<!-- raw HTML omitted --><code>UDP</code><!-- raw HTML omitted -->程序端口中收集日志<!-- raw HTML omitted --></li>
+<li><code>rubuydebug</code>：<!-- raw HTML omitted -->通过<!-- raw HTML omitted --><code>rubuy</code><!-- raw HTML omitted -->库进行收集<!-- raw HTML omitted --></li>
+<li><code>multiline</code>：<!-- raw HTML omitted -->多行模块<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;Settings: Default filter workers: 4
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Logstash startup completed
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">input {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">file {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">type =&gt; &#34;</span>nginx-error-log<span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">path =&gt; &#34;</span>/usr/local/nginx/logs/*error*.log<span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">start_position =&gt; &#34;</span>beginning<span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}file {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">type =&gt; &#34;</span>nginx-access-log<span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">path =&gt; &#34;</span>/usr/local/nginx/logs/*access*.log<span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">start_position =&gt; &#34;</span>beginning<span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">codec =&gt; json
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">output {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">if [type] =~ &#34;</span>nginx-error-log<span style="color:#e6db74">&#34; {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">elasticsearch {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">hosts =&gt; [&#34;</span>elasticsearch服务所在IP:9200<span style="color:#e6db74">&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">index =&gt; &#34;</span>mayi-nginx-error--%<span style="color:#f92672">{</span>+YYYY.MM.dd<span style="color:#f92672">}</span><span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}else if [type] =~ &#34;</span>nginx-access-log<span style="color:#e6db74">&#34; {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">elasticsearch {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">hosts =&gt; [&#34;</span>elasticsearch服务所在IP:9200<span style="color:#e6db74">&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">index =&gt; &#34;</span>mayi-nginx-access-%<span style="color:#f92672">{</span>+YYYY.MM.dd<span style="color:#f92672">}</span><span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">} &#34;</span> &gt;&gt;/opt/elk/logstash/data/nginx-log.conf
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#######  </span>
+</span></span><span style="display:flex;"><span>$ cat &gt;logstash.yml<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">input {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> redis {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     host =&gt; &#34;Redis 服务所在IP&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     port =&gt; &#34;6379&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     password =&gt; &#34;password&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     data_type =&gt; &#34;list&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     key =&gt; &#34;filebeat&#34; #从redis中导入的key，与filebeat输出对应
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     type =&gt; &#34;redis-input&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     db =&gt; 0 #导入key的数据库，默认为0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">filter {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # 判断redis字符串在不在自己定义的新字段中，用于区分日志类型，做对应的处理
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> if &#39;redis&#39; in [app] {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     # 聚合redis日志
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     grok {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		   # 自定义匹配日志内容，默认一条日志从上到下只会匹配一次对的。且只会匹配一个字段，如需要匹配多个字段，需进行严格匹配
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		   patterns_dir =&gt; [&#34;/opt/elk/patterns_time&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		   # grok提供很多自带的正则，可供使用
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        match =&gt; { &#34;message&#34; =&gt; &#34;%{LOGTIME</span>:log_time<span style="color:#f92672">}</span><span style="color:#e6db74">&#34; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		   # （?&lt;自定义的&gt;要匹配的内容）
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        match =&gt; { &#34;</span>message<span style="color:#e6db74">&#34; =&gt; &#34;</span><span style="color:#f92672">(</span>?&lt;log_time&gt;%<span style="color:#f92672">{</span>TIMESTAMP_ISO8601<span style="color:#f92672">})</span>.*session <span style="color:#f92672">(</span>?&lt;session&gt;.*<span style="color:#ae81ff">\S</span>$<span style="color:#f92672">)</span><span style="color:#e6db74">&#34;}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     date {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		    # 修改采集时间为日志里的时间
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">         match =&gt; [&#34;</span>log_time<span style="color:#e6db74">&#34;, &#34;</span>yyyy-MM-dd HH:mm<span style="color:#e6db74">&#34;,&#34;</span>dd MMM yyyy HH:mm:ss.SSS<span style="color:#e6db74">&#34; ]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">         locale =&gt; &#34;</span>en<span style="color:#e6db74">&#34;}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     ruby {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">         code =&gt; &#34;</span>event.set<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;timestamp&#39;</span>, event.get<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;@timestamp&#39;</span><span style="color:#f92672">)</span>.time.localtime - 8*60*60<span style="color:#f92672">)</span><span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     ruby {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">         code =&gt; &#34;</span>event.set<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;@timestamp&#39;</span>,event.get<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;timestamp&#39;</span><span style="color:#f92672">))</span><span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     mutate {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		      # 转换字段类型，用于聚合操作
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">           convert =&gt; { &#34;</span>session<span style="color:#e6db74">&#34; =&gt; &#34;</span>string<span style="color:#e6db74">&#34; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			  # 删除无用字段
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">           remove_field =&gt; [&#34;</span>log_time<span style="color:#e6db74">&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">         }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	 # 将logstash时间转化中国时间,logstash默认为utc时间，比中国时间慢8个小时（修改的是采集时间，对日志时间没有影响）
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  ruby {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     code =&gt; &#34;</span>event.set<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;timestamp&#39;</span>, event.get<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;@timestamp&#39;</span><span style="color:#f92672">)</span>.time.localtime + 8*60*60<span style="color:#f92672">)</span><span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  ruby {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     code =&gt; &#34;</span>event.set<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;@timestamp&#39;</span>,event.get<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;timestamp&#39;</span><span style="color:#f92672">))</span><span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  mutate {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     remove_field =&gt; [&#34;</span>timestamp<span style="color:#e6db74">&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">output {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # 用于调试
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # stdout{ codec =&gt; rubydebug }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> #####  创建线上环境索引  ######
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">if &#39;online_82&#39; in [app] {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     elasticsearch {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       action =&gt; &#34;</span>index<span style="color:#e6db74">&#34; #The operation on ES
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       hosts =&gt; &#34;</span>127.0.0.1:9200<span style="color:#e6db74">&#34; # ElasticSearch host, can be array.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		  # 输出到es中的索引
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       index =&gt; &#34;</span>online_82_%<span style="color:#f92672">{</span>+YYYY.MM.dd<span style="color:#f92672">}</span><span style="color:#e6db74">&#34; #The index to write data to.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       user =&gt; &#34;</span>elastic<span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       password =&gt; &#34;</span>dtyn!@<span style="color:#e6db74">$&#34; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		 # 对应filebeat中[tags],用对应索引进行判断
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   if [tags][0] == &#39;count&#39; {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     elasticsearch {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       action =&gt; &#34;</span>index<span style="color:#e6db74">&#34; #The operation on ES
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       hosts =&gt; &#34;</span>127.0.0.1:9200<span style="color:#e6db74">&#34; #ElasticSearch host, can be array.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       index =&gt; &#34;</span>online_82_redis_count<span style="color:#e6db74">&#34; #The index to write data to.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       user =&gt; &#34;</span>elastic<span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       password =&gt; &#34;</span>dtyn!@$<span style="color:#e6db74">&#34; }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->检查配置、启动服务<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 添加&#34;--configtest&#34;或者&#34;-t&#34;参数检查配置语法是否有误</span>
+</span></span><span style="display:flex;"><span>$ /usr/share/logstash/bin/logstash -f /etc/logstash/conf.d/nginx.conf --config.test_and_exit
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 启动程序后台运行&#34;&amp;&#34;</span>
+</span></span><span style="display:flex;"><span>$ nohup /usr/share/logstash/bin/logstash -f /etc/logstash/conf.d/nginx.conf &amp;
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># &#34;screen&#34; 启动另一个终端 </span>
+</span></span><span style="display:flex;"><span>$ /usr/share/logstash/bin/logstash -f /etc/logstash/conf.d/nginx.conf
+</span></span><span style="display:flex;"><span>$ screen -ls
+</span></span><span style="display:flex;"><span>$ screen -r <span style="color:#ae81ff">16582</span></span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h2 id="beats部署"><code>Beats</code>部署</h2>
+<blockquote>
+<ul>
+<li><code>Beats</code>是由<code>Elastic</code>公司开发和维护的一组开源数据采集器。它们设计用于从各种数据源收集数据，然后将数据发送到<code>Elasticsearch</code>或者<code>Logstash</code>等后端存储和分析系统中</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.elastic.co/guide/en/beats/libbeat/current/index.html" rel="external" target="_self">官方文档</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.elastic.co/cn/downloads/beats/" rel="external" target="_self">选择一个<code>Beat</code>任何<code>Beat</code>皆可</a></td>
+<td>-</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<hr>
+<h3 id="filebeat部署"><code>Filebeat</code>部署</h3>
+<blockquote>
+<ul>
+<li><code>Filebeat</code>用于轻量级日志和文件数据收集。<code>Filebeat</code>可以监控指定的日志文件或位置，收集日志数据，并将其发送到<code>Elasticsearch</code>或<code>Logstash</code>进行存储和分析</li>
+<li><a href="https://www.elastic.co/cn/downloads/beats/filebeat" rel="external" target="_self">下载安装<code>Filebeat</code></a></li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-installation-configuration.html" rel="external" target="_self"><code>Filebeat</code>安装配置编辑</a></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.3.3-linux-x86_64.tar.gz
+</span></span><span style="display:flex;"><span>$ tar xzvf filebeat-8.3.3-linux-x86_64.tar.gz</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>Filebeat</code></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># elasticsearch</span>
+</span></span><span style="display:flex;"><span>output.elasticsearch:
+</span></span><span style="display:flex;"><span>hosts: <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;https://myEShost:9200&#34;</span><span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>username: <span style="color:#e6db74">&#34;filebeat_internal&#34;</span>
+</span></span><span style="display:flex;"><span>password: <span style="color:#e6db74">&#34;YOUR_PASSWORD&#34;</span> 
+</span></span><span style="display:flex;"><span>ssl:
+</span></span><span style="display:flex;"><span>enabled: true
+</span></span><span style="display:flex;"><span>ca_trusted_fingerprint: <span style="color:#e6db74">&#34;b9a10bbe64ee9826abeda6546fc988c8bf798b41957c33d05db736716513dc9c&#34;</span> 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># kibana</span>
+</span></span><span style="display:flex;"><span>setup.kibana:
+</span></span><span style="display:flex;"><span>host: <span style="color:#e6db74">&#34;mykibanahost:5601&#34;</span> 
+</span></span><span style="display:flex;"><span>username: <span style="color:#e6db74">&#34;my_kibana_user&#34;</span>  
+</span></span><span style="display:flex;"><span>password: <span style="color:#e6db74">&#34;{pwd}&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat &gt;filebeat.yml<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">filebeat.inputs:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- type: log
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  enabled: True # True表示收集
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  # pasths配置收集日志的路径，支持配置多条路径，及多目录
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  paths:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - /opt/app/nacos-1.3.2/nacos/bin/logs/*.log
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  # tags 标记;可以用来区分日志,这是一个列表可以写多个标记
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tags: [&#34;nacos&#34;] 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  # fileds创建新的字段，默认是二级字段，可以自定义多个key: value
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  fields:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    app: test_71_nacos-1.3.2
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  # 让新建的字段变成顶级字段，减少不必要的资源开销
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  fields_under_root: true 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  # 让filebeat采集最新的日志变化，忽略掉之前旧日志
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  tail_files: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  # 下边这几项可以不用
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  # filebeat依靠文件描述符识别文件，当发生重命名或移动，filebeat依然采集的原文件。
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  close_renamed: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  # 等待再次检查文件的时间，默认是10s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  max_backoff: 1s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  # 此选项指定等待时间的增加速度,1表示禁用回算算法
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  backoff_factor: 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># ====== Outputs ======
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># --------- reids output ------------
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">output.redis:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: [&#34;Redis服务所在IP:6379&#34;] # 输出到redis的ip端口号
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  password: &#34;password&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  key: &#34;filebeat&#34; # 输出到redis中的key，这个key是一个列表，llen key查看长度  lrange key 0 -1 查看列表所有的值
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  timeout: 30 # 连接redis超时时间，默认为5s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">output.elasticsearch:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> hosts: [&#34;&lt;节点01的IP&gt;:9200&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> template.name: &#34;filebeat&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> template.path: &#34;filebeat.template.json&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> template.overwrite: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> username: &#34;elastic&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> password: &#34;changeme&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 拓展
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">filbeat也可以采集jar堆栈日志
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 堆栈日志的格式：多行日志内容为一条日志
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- type: log
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  enabled: True
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  paths:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - /opt/app/nacos-1.3.2/nacos/bin/logs/*.log
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  multiline:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    # 自定义每条日志的开头
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    pattern: &#39;\# Time: \d{4}-\d{2}-\d{2}&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# 定义模式是否被否定,默认值为false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	negate: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# 与模式不匹配的连续行将追加到匹配的上一行
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	match: after
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat &gt;filebeat.yml<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">filebeat.config.inputs:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  enabled: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  path: /etc/filebeat/input.d/*.yml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  reload.enabled: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  reload.period: 10s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">filebeat.config.modules:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  path: ${path.config}/modules.d/*.yml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  reload.enabled: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">setup.template.settings:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  index.number_of_shards: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">processors:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  - drop_fields:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      fields: [&#34;agent.ephemeral_id&#34;, &#34;agent.hostname&#34;, &#34;agent.id&#34;, &#34;agent.name&#34;, &#34;agent.type&#34;, &#34;agent.version&#34;, &#34;headers&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  - rename:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      fields:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - from: &#34;url&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          to: &#34;url_host&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      ignore_missing: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      fail_on_error: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">output.elasticsearch:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: [&#34;&#34;&lt;节点01的IP&gt;:9200&#34;&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  api_key: &#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  index: &#34;nginx-%{[fields.application]}-%{+yyyy.MM.dd}&#34;  # fields.application参数修改
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  indices:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    when.equals:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      fields.application: [&#39;app-docker-nginx_access&#39;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">setup.ilm.enabled: false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 自定义模板格式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">setup.template.name: &#34;nginx&#34;  	# 模板名称
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">setup.template.pattern: &#34;nginx-*&#34;  	# 匹配模板类型
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">setup.template.enabled: false  	# false：不使用默认模板，true：使用默认模板
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">setup.template.overwrite: true  	# 是否覆盖原来模板
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat &gt;/etc/filebeat/input.d/app-docker-nginx_access.yml<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">filebeat.inputs:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">- type: log
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  enabled: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  paths:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - /usr/local/nginx/logs/gitlab.log
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  fields:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    application: app-docker-nginx_access
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  # 开启 json日志格式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  json.keys_under_root: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  json.overwrite_keys: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  json.message_key: message
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  json.add_error_key: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 输出位置
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">output.elasticsearch:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  hosts: [&#34;192.168.1.1:9200&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->列出以及使用模块<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ./filebeat modules list
+</span></span><span style="display:flex;"><span>$ ./filebeat modules enable nginx
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>- module: nginx
+</span></span><span style="display:flex;"><span>  access:
+</span></span><span style="display:flex;"><span>    enabled: true
+</span></span><span style="display:flex;"><span>    var.paths: <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;/var/log/nginx/access.log*&#34;</span><span style="color:#f92672">]</span> </span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->检测启动<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ./filebeat setup -e
+</span></span><span style="display:flex;"><span>$ chown root filebeat.yml 
+</span></span><span style="display:flex;"><span>$ chown root modules.d/nginx.yml 
+</span></span><span style="display:flex;"><span>$ ./filebeat -e</span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h3 id="metricbeat部署"><code>Metricbeat</code>部署</h3>
+<blockquote>
+<ul>
+<li><code>Metricbeat</code>用于定时收集系统和服务的指标数据。<code>Metricbeat</code>支持收集各种服务（如<code>Redis</code>、<code>Apache</code>、<code>MySQL</code>等）的性能指标，并将这些数据发送到<code>Elasticsearch</code>或者其他数据存储和可视化工具中</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="packetbeat部署"><code>Packetbeat</code>部署</h3>
+<blockquote>
+<ul>
+<li><code>Packetbeat</code>用于实时网络数据分析。<code>Packetbeat</code>可以监控网络流量，捕获和分析应用层协议（如<code>HTTP</code>、MySQL<code>、</code>DNS`等）的数据，帮助识别问题和优化网络性能</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="heartbeat部署"><code>Heartbeat</code>部署</h3>
+<blockquote>
+<ul>
+<li><code>Heartbeat</code>用于监控服务的可用性。<code>Heartbeat</code>可以定期检查服务、网站或者主机的可访问性，并记录响应时间和状态，以帮助运维人员快速发现和解决故障。</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="auditbeat部署"><code>Auditbeat</code>部署</h3>
+<blockquote>
+<ul>
+<li><code>Auditbeat</code>用于收集系统审计日志。<code>Auditbeat</code>监控操作系统和文件系统的活动，包括文件访问、用户登录等安全相关事件，并将这些事件发送到中心化的日志管理系统</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="kibana部署"><code>Kibana</code>部署</h2>
+<blockquote>
+<ul>
+<li>
+<p><a href="https://www.elastic.co/guide/en/kibana/current/index.html" rel="external" target="_self">部署<code>Kibana</code>图形化展示官方文档</a></p>
+</li>
+<li>
+<p><code>Kibana</code>是由<code>Elastic</code>公司开发的开源数据可视化工具，用于对<code>Elasticsearch</code>索引中的数据进行搜索、分析和可视化。它是<code>Elastic Stack</code>（也称为<code>ELK Stack</code>）中的一个重要组件，与<code>Elasticsearch</code>、<code>Logstash</code>和<code>Beats</code>一起构成了一个强大的数据分析平台</p>
+</li>
+<li>
+<p>是一个基于浏览器页面的<code>Elasticsearch</code>前端展示工具，也是一个开源和免费的工具，<code>Kibana</code>可以为<code>Logstash</code>和<code>ElasticSearch</code>提供的日志分析友好的<code>Web</code>界面，可以帮你汇总、分析和搜索重要数据日志</p>
+</li>
+<li>
+<p><strong>主要功能和特点：</strong></p>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><strong>数据查询和搜索</strong>：</p>
+<p><code>Kibana</code>提供了一个直观的搜索和查询界面，允许用户在<code>Elasticsearch</code>索引中执行复杂的搜索操作。用户可以使用<code>Lucene</code>&gt; 查询语法或者结构化的查询构建器来筛选和查找数据。</p>
+</li>
+<li>
+<p><strong>数据可视化</strong>：</p>
+<p><code>Kibana</code>允许用户将<code>Elasticsearch</code>&gt; 中的数据通过各种图表（如折线图、柱状图、饼图等）和图形化展示方式进行可视化。这些图表可以帮助用户直观地理解数据的趋势、关系和模式</p>
+</li>
+<li>
+<p><strong>仪表盘和视图</strong>：</p>
+<p>用户可以通过创建仪表盘<code>Dashboard</code>&gt; 来集成多个数据可视化组件，形成一个全面的数据展示和监控面板。仪表盘可以包含多个图表、指标和数据表格，为用户提供全面的数据洞察力</p>
+</li>
+<li>
+<p><strong>实时数据分析</strong>：</p>
+<p><code>Kibana</code>支持实时数据分析和实时查询，用户可以即时查看和分析数据的变化和趋势。这对于监控和操作实时系统特别有用</p>
+</li>
+<li>
+<p><strong>用户权限和安全性</strong>：</p>
+<p><code>Kibana</code>提供了灵活的用户权限管理和安全功能，允许管理员定义和控制用户对不同数据和功能的访问权限。这对于多用户和多团队协作使用的环境非常重要。</p>
+</li>
+<li>
+<p><strong>插件和扩展性</strong>：</p>
+<p><code>Kibana</code>提供了丰富的插件和可扩展的<code>API</code>，使得用户可以根据自己的需求和场景定制和扩展<code>Kibana</code>的功能。社区和第三方开发者可以通过插件扩展<code>Kibana</code>的功能，增加新的数据处理和可视化能力。</p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li><strong>使用场景：</strong></li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><strong>日志分析和监控</strong>：</p>
+<p>通过结合<code>Elasticsearch</code>和<code>Beats</code>，<code>Kibana</code>可以实时分析和监控日志数据，帮助用户快速发现和解决系统问题。</p>
+</li>
+<li>
+<p><strong>应用性能监控</strong>：</p>
+<p>通过集成<code>Metricbeat</code>和<code>Elasticsearch</code>，<code>Kibana</code>可以实时展示和分析应用程序的性能指标，帮助开发团队优化应用性能。</p>
+</li>
+<li>
+<p><strong>安全事件分析</strong>：</p>
+<p>结合<code>Auditbeat</code>和<code>Elasticsearch</code>，<code>Kibana</code>可以监控和分析系统和应用的安全事件，帮助安全团队及时响应和调查安全事件。</p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li><a href="https://elastic.co/cn/downloads/kibana" rel="external" target="_self">下载、解压<code>Kibana</code>图形化展示工具</a></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ curl -O https://artifacts.elastic.co/downloads/kibana/kibana-8.3.3-linux-x86_64.tar.gz
+</span></span><span style="display:flex;"><span>$ curl https://artifacts.elastic.co/downloads/kibana/kibana-8.3.3-linux-x86_64.tar.gz.sha512 | sha512sum -c - 
+</span></span><span style="display:flex;"><span>$ tar -zxvf kibana-8.3.3-linux-x86_64.tar.gz
+</span></span><span style="display:flex;"><span>$ cd kibana-8.3.3/ </span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->修改配置文件<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd /usr/local/src/kibana-8.3.3/config
+</span></span><span style="display:flex;"><span>$ cp kibana.yml<span style="color:#f92672">{</span>,.bak<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 6行左右、去掉注释</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;/server.port:/a\\server.port: 5601&#34;</span> kibana.yml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 11行左右、去掉注释，修改为本机IP</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/server.host:/a\\server.host: &#34;Kibana服务所在IP&#34;&#39;</span> kibana.yml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 43行左右、去掉注释，修改为elssticsearch的IP地址和端口</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/elasticsearch.host:/a\\elasticsearch.host: [&#34;http://elssticsearch服务所在IP:9200&#34;]&#39;</span> kibana.yml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 49行左右、设置访问用户名密码</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/#elasticsearch.username:/a\\elasticsearch.username: &#34;username&#34;&#39;</span> kibana.yml
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/#elasticsearch.password:/a\\elasticsearch.password: &#34;password&#34;&#39;</span> kibana.yml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># sed -i &#39;/kibana.index:/a\\kibana.index: &#34;.kibana&#34;&#39; kibana.yml  	# 新版不存在此参数</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->启动服务、处理不能删除索引问题<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->防火墙开放：5601<!-- raw HTML omitted --><!-- raw HTML omitted -->端口<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 检测启动方式  </span>
+</span></span><span style="display:flex;"><span>$ ps -p <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ ./bin/kibana
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 命令行执行</span>
+</span></span><span style="display:flex;"><span>$ curl -XPUT -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> http://localhost:9200/_all/_settings -d <span style="color:#e6db74">&#39;{&#34;index.blocks.read_only_allow_delete&#34;:null}&#39;</span> 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 浏览器</span>
+</span></span><span style="display:flex;"><span>PUT _settings
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;index&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;blocks&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;read_only_allow_delete&#34;</span>: <span style="color:#e6db74">&#34;false&#34;</span>
+</span></span><span style="display:flex;"><span>           <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>       <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat &gt;delete-es-index.sh<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">date=`date -d &#34;7 days ago&#34; +%Y.%m.%d`
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">curl -XDELETE -u &#39;elastic:dtyn!@$&#39; http://localhost:9200/*{$date}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="安装Harbor私有镜像库 默认用户名：admin 默认密码：Harbor12345 必须先安装docker Harbor依赖docker-compose 安装docker-compose $ curl -L https://get.daocloud.io/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` &gt; /usr/local/bin/docker-compose # 给予执行权限 $ chmod &#43;x /usr/local/bin/docker-compose # 安装Compose命令补全工具 $ curl -L https://raw.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_K8s_Harbor :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="安装Harbor私有镜像库 默认用户名：admin 默认密码：Harbor12345 必须先安装docker Harbor依赖docker-compose 安装docker-compose $ curl -L https://get.daocloud.io/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` &gt; /usr/local/bin/docker-compose # 给予执行权限 $ chmod &#43;x /usr/local/bin/docker-compose # 安装Compose命令补全工具 $ curl -L https://raw.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/kubernetes/install_k8s_harbor/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_K8s_Harbor :: Hugo Relearn Theme">
+    <meta property="og:description" content="安装Harbor私有镜像库 默认用户名：admin 默认密码：Harbor12345 必须先安装docker Harbor依赖docker-compose 安装docker-compose $ curl -L https://get.daocloud.io/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` &gt; /usr/local/bin/docker-compose # 给予执行权限 $ chmod &#43;x /usr/local/bin/docker-compose # 安装Compose命令补全工具 $ curl -L https://raw.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-25T02:01:28+08:00">
+    <meta property="article:modified_time" content="2024-06-25T02:01:28+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_K8s_Harbor :: Hugo Relearn Theme">
+    <meta itemprop="description" content="安装Harbor私有镜像库 默认用户名：admin 默认密码：Harbor12345 必须先安装docker Harbor依赖docker-compose 安装docker-compose $ curl -L https://get.daocloud.io/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` &gt; /usr/local/bin/docker-compose # 给予执行权限 $ chmod &#43;x /usr/local/bin/docker-compose # 安装Compose命令补全工具 $ curl -L https://raw.">
+    <meta itemprop="datePublished" content="2024-06-25T02:01:28+08:00">
+    <meta itemprop="dateModified" content="2024-06-25T02:01:28+08:00">
+    <meta itemprop="wordCount" content="437">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_K8s_Harbor :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/kubernetes/install_k8s_harbor/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/kubernetes/"><span itemprop="name">Kubernetes</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_K8s_Harbor</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/kubernetes/install_k8s_kubesphere/" title="Install_K8s_KubeSphere (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/kubernetes/install_k8s_dashboard/" title="Install_K8s_Dashboard (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_k8s_harbor">Install_K8s_Harbor</h1>
+
+<h2 id="安装harbor私有镜像库">安装<code>Harbor</code>私有镜像库</h2>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted --><strong>默认用户名：</strong><!-- raw HTML omitted --><code>admin </code></li>
+<li><!-- raw HTML omitted --><strong>默认密码：</strong><!-- raw HTML omitted --><code>Harbor12345</code></li>
+<li><!-- raw HTML omitted --><strong>必须先安装</strong><!-- raw HTML omitted --><code>docker</code></li>
+<li><code>Harbor</code><!-- raw HTML omitted --><strong>依赖</strong><!-- raw HTML omitted --><code>docker-compose</code></li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="安装docker-compose">安装<code>docker-compose</code></h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ curl -L https://get.daocloud.io/docker/compose/releases/download/1.21.2/docker-compose-<span style="color:#e6db74">`</span>uname -s<span style="color:#e6db74">`</span>-<span style="color:#e6db74">`</span>uname -m<span style="color:#e6db74">`</span> &gt; /usr/local/bin/docker-compose
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 给予执行权限</span>
+</span></span><span style="display:flex;"><span>$ chmod +x /usr/local/bin/docker-compose
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 安装Compose命令补全工具</span>
+</span></span><span style="display:flex;"><span>$ curl -L https://raw.githubusercontent.com/docker/compose/<span style="color:#66d9ef">$(</span>docker-compose version --short<span style="color:#66d9ef">)</span>/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose
+</span></span><span style="display:flex;"><span>$ systemctl daemon-reload <span style="color:#f92672">&amp;&amp;</span> systemctl restart docker</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="安装harbor">安装<code>Harbor</code></h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ wget https://github.com/goharbor/harbor/releases/download/v2.10.0/harbor-offline-installer-v2.10.0.tgz
+</span></span><span style="display:flex;"><span>$ tar -zxvf harbor-offline-installer-v2.10.0.tgz
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ vim harbor/harbor.yml
+</span></span><span style="display:flex;"><span>hostname: reg.mydomain.com  	<span style="color:#75715e"># 修改主机名： my.harbor.com</span>
+</span></span><span style="display:flex;"><span>port: <span style="color:#ae81ff">80</span>  	<span style="color:#75715e"># 修改http默认端口：8080</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># port: 443  	# 注释https协议端口</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ ./install.sh</span></span></code></pre></div><ul>
+<li><a href="https://goharbor.io/docs/2.0.0/install-config/configure-https/" rel="external" target="_self">配置对<code>Harbor</code>的<code>HTTPS</code>访问</a></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 生成 CA 证书私钥</span>
+</span></span><span style="display:flex;"><span>$ openssl genrsa -out ca.key <span style="color:#ae81ff">4096</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 生成 CA 证书</span>
+</span></span><span style="display:flex;"><span>$ openssl req -x509 -new -nodes -sha512 -days <span style="color:#ae81ff">3650</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> -subj <span style="color:#e6db74">&#34;/C=CN/ST=Beijing/L=Beijing/O=example/OU=Personal/CN=yourdomain.com&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> -key ca.key <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> -out ca.crt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 生成私钥</span>
+</span></span><span style="display:flex;"><span>$ openssl genrsa -out yourdomain.com.key <span style="color:#ae81ff">4096</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 生成证书签名请求 (CSR)</span>
+</span></span><span style="display:flex;"><span>$ openssl req -sha512 -new <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -subj <span style="color:#e6db74">&#34;/C=CN/ST=Beijing/L=Beijing/O=example/OU=Personal/CN=yourdomain.com&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -key yourdomain.com.key <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -out yourdomain.com.csr
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 生成 x509 v3 扩展文件</span>
+</span></span><span style="display:flex;"><span>$ cat &gt; v3.ext <span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">authorityKeyIdentifier=keyid,issuer
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">basicConstraints=CA:FALSE
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">extendedKeyUsage = serverAuth
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">subjectAltName = @alt_names
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[alt_names]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">DNS.1=yourdomain.com
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">DNS.2=yourdomain
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">DNS.3=hostname
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 使用该v3.ext文件为您的 Harbor 主机生成证书</span>
+</span></span><span style="display:flex;"><span>$ openssl x509 -req -sha512 -days <span style="color:#ae81ff">3650</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -extfile v3.ext <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -CA ca.crt -CAkey ca.key -CAcreateserial <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -in yourdomain.com.csr <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -out yourdomain.com.crt</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol>
+<li><code>docker</code><!-- raw HTML omitted -->登录<!-- raw HTML omitted --><code>Harbor</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ docker login http://192.168.80.225:8080</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->如果报错：<!-- raw HTML omitted --><code>Error response from daemon: Get  http: server gave HTTP response to HTTPS client</code></li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->修改配置文件(指定私有仓库，可忽略跳过)<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ tee /etc/docker/daemon.json <span style="color:#e6db74">&lt;&lt;-&#39;EOF&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">{
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   &#34;storage-driver&#34;: &#34;overlay2&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   &#34;registry-mirrors&#34;:[&#34;https://r2hd8p9u.mirror.aliyuncs.com&#34;],
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   &#34;insecure-registries&#34;:[&#34;*.*.*.*:5000&#34;,&#34;192.168.4.126&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ vim /etc/docker/daemon.json
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span> <span style="color:#e6db74">&#34;insecure-registries&#34;</span>: <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;harbor服务器IP:端口&#34;</span><span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>$ systemctl daemon-reload <span style="color:#f92672">&amp;&amp;</span> systemctl restart docker</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->报错：<!-- raw HTML omitted --><code>request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers) (Client.Timeout exceeded while awaiting headers)</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ vim /etc/hosts  	<span style="color:#75715e"># 修改hosts解析</span>
+</span></span><span style="display:flex;"><span>本机服务IP my.harbodomain.com</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="推送镜像到harbor仓库">推送镜像到<code>Harbor</code>仓库</h3>
+<blockquote>
+<ul>
+<li><code>SOURCE_IMAGE[:TAG]</code><!-- raw HTML omitted -->：原镜像名字和<!-- raw HTML omitted --><code>tag</code></li>
+<li><code>test</code><!-- raw HTML omitted -->：<code>Harbor</code>项目名称<!-- raw HTML omitted --></li>
+<li><code>IMAGE[:TAG]</code><!-- raw HTML omitted -->：自定义命名，以及版本标签<!-- raw HTML omitted --></li>
+</ul>
+<p>示例：</p>
+<div class="highlight wrap-code"><pre tabindex="0"><code class="language-she" data-lang="she"># 在项目中标记镜像
+$ docker tag SOURCE_IMAGE[:TAG] 192.168.35.128:9527/test/IMAGE[:TAG]
+
+# 推送镜像到当前项目
+$ docker push 192.168.35.128:9527/test/IMAGE[:TAG]</code></pre></div></blockquote>
+<hr>
+<h3 id="font-colorred其他服务器拉取fontharborfont-colorred仓库镜像font"><!-- raw HTML omitted -->其他服务器拉取<!-- raw HTML omitted --><code>Harbor</code><!-- raw HTML omitted -->仓库镜像<!-- raw HTML omitted --></h3>
+<ul>
+<li>
+<ol>
+<li><code>/etc/hosts</code><!-- raw HTML omitted -->做好解析<!-- raw HTML omitted --></li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><code>daemon.json</code><!-- raw HTML omitted -->文件中添加私人仓库参数<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat /etc/docker/daemon.json
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;insecure-registries&#34;</span>:<span style="color:#f92672">[</span><span style="color:#e6db74">&#34;192.168.80.210:8080&#34;</span><span style="color:#f92672">]</span>,</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->拉取私人仓库镜像，前提仓库是公开类型，然后获取拉取命令<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-a09adead2861b563913c8cfa11819937" class="lightbox-link"><img alt="拉取私人仓库命令" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Harbor/Snipaste_2022-06-07_21-19-25.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-a09adead2861b563913c8cfa11819937"><img alt="拉取私人仓库命令" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Harbor/Snipaste_2022-06-07_21-19-25.png"></a></p>
+</blockquote>
+<hr>
+<h3 id="配置k8s使用harbor镜像仓库">配置<code>K8S</code>使用<code>Harbor</code>镜像仓库</h3>
+<blockquote>
+<ul>
+<li><code>docker-harbor</code>：<code>secret</code><!-- raw HTML omitted -->名称自定义<!-- raw HTML omitted --></li>
+<li><code>--docker-server</code>：<code>Harbor</code><!-- raw HTML omitted -->仓库地址<!-- raw HTML omitted --></li>
+<li><code>--docker-username</code>：<code>Harbor</code><!-- raw HTML omitted -->登录用户名<!-- raw HTML omitted --></li>
+<li><code>--docker-password</code>：<code>Harbor</code><!-- raw HTML omitted -->仓库登录密码<!-- raw HTML omitted --></li>
+<li><code>--docker-email</code><!-- raw HTML omitted -->：邮箱地址<!-- raw HTML omitted --></li>
+<li><code>--namespace</code><!-- raw HTML omitted -->：指定命名空间，不指定默认为：<!-- raw HTML omitted --><code>default</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl create secret docker-registry docker-harbor --docker-server<span style="color:#f92672">=</span>192.168.80.210:8080 --docker-username<span style="color:#f92672">=</span>admin --docker-password<span style="color:#f92672">=</span>Harbor12345 --docker-email<span style="color:#f92672">=</span>xxx@xxx.com --namespace<span style="color:#f92672">=</span>harbor</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->将机密数据转换为可读格式<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get secret docker-harbor --output<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;jsonpath={.data.\.dockerconfigjson}&#34;</span> | base64 --decode
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 输入以下内容</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span><span style="color:#e6db74">&#34;auths&#34;</span>:<span style="color:#f92672">{</span><span style="color:#e6db74">&#34;192.168.80.210:8080&#34;</span>:<span style="color:#f92672">{</span><span style="color:#e6db74">&#34;username&#34;</span>:<span style="color:#e6db74">&#34;admin&#34;</span>,<span style="color:#e6db74">&#34;password&#34;</span>:<span style="color:#e6db74">&#34;Harbor12345&#34;</span>,<span style="color:#e6db74">&#34;email&#34;</span>:<span style="color:#e6db74">&#34;xxx@xxx.com&#34;</span>,<span style="color:#e6db74">&#34;auth&#34;</span>:<span style="color:#e6db74">&#34;YWRtaW46SGFyYm9yMTIzNDU=&#34;</span><span style="color:#f92672">}}}</span></span></span></code></pre></div><ul>
+<li>将<code>base64</code><!-- raw HTML omitted -->编码的数据转换为可读格式<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;YWRtaW46SGFyYm9yMTIzNDU=&#34;</span> | base64 --decode
+</span></span><span style="display:flex;"><span>admin:Harbor12345  	<span style="color:#75715e"># 输出结果</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->生成<!-- raw HTML omitted --><code>yaml</code><!-- raw HTML omitted -->文件，并在<!-- raw HTML omitted --><code>spec.containers</code><!-- raw HTML omitted -->字段中修改私人镜像参数<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>生成<code>Deployment</code>的<code>yaml</code>文件并应用</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl create deployment java-demo --image<span style="color:#f92672">=</span>192.168.80.210:8080/test/tomcat-demo:v1 --dry-run<span style="color:#f92672">=</span>client -o yaml &gt;/tmp/deploy.yaml</span></span></code></pre></div><ul>
+<li><code>192.168.80.210:8080</code><!-- raw HTML omitted -->：指定使用私人仓库地址，域名或者IP地址加端口号<!-- raw HTML omitted --></li>
+<li><code>test</code><!-- raw HTML omitted -->：私人仓库库房名称<!-- raw HTML omitted --></li>
+<li><code>tomcat-demo</code><!-- raw HTML omitted -->：使用私人仓库的镜像<!-- raw HTML omitted --></li>
+<li><code>v1</code><!-- raw HTML omitted -->：必须指定要使用私人仓库镜像的版本号<!-- raw HTML omitted --></li>
+<li><code>name: tomcat-demo</code><!-- raw HTML omitted -->：指定使用的镜像名字<!-- raw HTML omitted --></li>
+<li><code>imagePullSecrets:</code><!-- raw HTML omitted -->：指定使用其他镜像地址<!-- raw HTML omitted --></li>
+<li><code>- name: docker-harbor</code><!-- raw HTML omitted -->：指定定义的私人仓库名字<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">app</span>: <span style="color:#ae81ff">java-demo</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">name</span>: <span style="color:#ae81ff">java-demo</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">app</span>: <span style="color:#ae81ff">java-demo</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">app</span>: <span style="color:#ae81ff">java-demo</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>                - <span style="color:#f92672">image</span>: <span style="color:#ae81ff">192.168.80.210</span>:<span style="color:#ae81ff">8080</span><span style="color:#ae81ff">/test/tomcat-demo:v1 </span> <span style="color:#75715e"># 需修改处</span>
+</span></span><span style="display:flex;"><span>                  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">tomcat-demo  	# 默认生成</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">imagePullSecrets</span>:  	<span style="color:#75715e"># 手动添加字段</span>
+</span></span><span style="display:flex;"><span>                - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">docker-harbor  	# 指定使用的secret库房名称</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->创建<!-- raw HTML omitted --><code>Service</code><!-- raw HTML omitted -->的<!-- raw HTML omitted --><code>yaml</code><!-- raw HTML omitted -->文件，应用并访问<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl expose deployment java-demo --port<span style="color:#f92672">=</span><span style="color:#ae81ff">80</span> --target-port<span style="color:#f92672">=</span><span style="color:#ae81ff">8080</span> --type<span style="color:#f92672">=</span>NodePort --dry-run<span style="color:#f92672">=</span>client -o yaml &gt;/opt/yaml/java-demo-svc.yaml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat &gt;&gt;/opt/yaml/java-demo-svc.yaml<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: Service
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  app: java-demo
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">name: java-demo
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">spec:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ports:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - port: 8080  	# Service 集群端口
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          protocol: TCP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          targetPort: 8080  	# Pod 本身服务端口，比如Nginx：80，Tomcat：8080
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          nodePort: 30001  	# 外网访问端口
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        selector:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            app: java-demo
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        type: NodePort
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ kubectl create -f java-demo-svc.yaml
+</span></span><span style="display:flex;"><span>$ kubectl get service
+</span></span><span style="display:flex;"><span>$ http://192.168.80.210:30001/  	<span style="color:#75715e"># 浏览器访问地址</span></span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

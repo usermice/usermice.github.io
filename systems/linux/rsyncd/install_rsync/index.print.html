@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="Rsync部署 注意：两台服务器都需要安装Rsync服务， 只启动源服务器上的Rsync 选项 描述 -a 包含：-rtplgoD 等选项 -r 同步目录选项 -v 显示同步的目录文件信息 -l 保留软连接 -L 同步软链接时把源文件也给同步 -p 保持文件权限属性 -o 保持文件属主 -g 保持文件属组 -D 保持设备文件信息 -t 保持文件时间属性 -delete 删除目标服务器目录中源服务器没有的文件 -exclude 忽略不需要同步的目录文件 -P 显示同步过程，速率等，比-v更加详细 -u 如果目标服务器比源服务器目录文件新则不同步 -z 同步时压缩目录文件 源服务器 $ echo &#34;username:password&#34; &gt;&gt;/etc/rsyncd.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_Rsync :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="Rsync部署 注意：两台服务器都需要安装Rsync服务， 只启动源服务器上的Rsync 选项 描述 -a 包含：-rtplgoD 等选项 -r 同步目录选项 -v 显示同步的目录文件信息 -l 保留软连接 -L 同步软链接时把源文件也给同步 -p 保持文件权限属性 -o 保持文件属主 -g 保持文件属组 -D 保持设备文件信息 -t 保持文件时间属性 -delete 删除目标服务器目录中源服务器没有的文件 -exclude 忽略不需要同步的目录文件 -P 显示同步过程，速率等，比-v更加详细 -u 如果目标服务器比源服务器目录文件新则不同步 -z 同步时压缩目录文件 源服务器 $ echo &#34;username:password&#34; &gt;&gt;/etc/rsyncd.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/rsyncd/install_rsync/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_Rsync :: Hugo Relearn Theme">
+    <meta property="og:description" content="Rsync部署 注意：两台服务器都需要安装Rsync服务， 只启动源服务器上的Rsync 选项 描述 -a 包含：-rtplgoD 等选项 -r 同步目录选项 -v 显示同步的目录文件信息 -l 保留软连接 -L 同步软链接时把源文件也给同步 -p 保持文件权限属性 -o 保持文件属主 -g 保持文件属组 -D 保持设备文件信息 -t 保持文件时间属性 -delete 删除目标服务器目录中源服务器没有的文件 -exclude 忽略不需要同步的目录文件 -P 显示同步过程，速率等，比-v更加详细 -u 如果目标服务器比源服务器目录文件新则不同步 -z 同步时压缩目录文件 源服务器 $ echo &#34;username:password&#34; &gt;&gt;/etc/rsyncd.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-21T20:19:50+08:00">
+    <meta property="article:modified_time" content="2024-06-21T20:19:50+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_Rsync :: Hugo Relearn Theme">
+    <meta itemprop="description" content="Rsync部署 注意：两台服务器都需要安装Rsync服务， 只启动源服务器上的Rsync 选项 描述 -a 包含：-rtplgoD 等选项 -r 同步目录选项 -v 显示同步的目录文件信息 -l 保留软连接 -L 同步软链接时把源文件也给同步 -p 保持文件权限属性 -o 保持文件属主 -g 保持文件属组 -D 保持设备文件信息 -t 保持文件时间属性 -delete 删除目标服务器目录中源服务器没有的文件 -exclude 忽略不需要同步的目录文件 -P 显示同步过程，速率等，比-v更加详细 -u 如果目标服务器比源服务器目录文件新则不同步 -z 同步时压缩目录文件 源服务器 $ echo &#34;username:password&#34; &gt;&gt;/etc/rsyncd.">
+    <meta itemprop="datePublished" content="2024-06-21T20:19:50+08:00">
+    <meta itemprop="dateModified" content="2024-06-21T20:19:50+08:00">
+    <meta itemprop="wordCount" content="389">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_Rsync :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/rsyncd/install_rsync/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/rsyncd/"><span itemprop="name">Rsyncd</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_Rsync</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/rsyncd/install_timesyncd/" title="Install_TimeSyncd (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/rsyncd/install_lsyncd/" title="Install_Lsyncd (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_rsync">Install_Rsync</h1>
+
+<h2 id="rsync部署"><code>Rsync</code>部署</h2>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->注意：<!-- raw HTML omitted -->两台服务器<!-- raw HTML omitted -->都需要安装<!-- raw HTML omitted --><code>Rsync</code><!-- raw HTML omitted -->服务， 只启动源服务器上的<!-- raw HTML omitted --><code>Rsync</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-a</code></td>
+<td>包含：<code>-rtplgoD</code> 等选项</td>
+</tr>
+<tr>
+<td><code>-r</code></td>
+<td>同步目录选项</td>
+</tr>
+<tr>
+<td><code>-v</code></td>
+<td>显示同步的目录文件信息</td>
+</tr>
+<tr>
+<td><code>-l</code></td>
+<td>保留软连接</td>
+</tr>
+<tr>
+<td><code>-L</code></td>
+<td>同步软链接时把源文件也给同步</td>
+</tr>
+<tr>
+<td><code>-p</code></td>
+<td>保持文件权限属性</td>
+</tr>
+<tr>
+<td><code>-o</code></td>
+<td>保持文件属主</td>
+</tr>
+<tr>
+<td><code>-g</code></td>
+<td>保持文件属组</td>
+</tr>
+<tr>
+<td><code>-D</code></td>
+<td>保持设备文件信息</td>
+</tr>
+<tr>
+<td><code>-t</code></td>
+<td>保持文件时间属性</td>
+</tr>
+<tr>
+<td><code>-delete</code></td>
+<td>删除<!-- raw HTML omitted -->目标服务器<!-- raw HTML omitted -->目录中<!-- raw HTML omitted -->源服务器<!-- raw HTML omitted -->没有的文件</td>
+</tr>
+<tr>
+<td><code>-exclude</code></td>
+<td>忽略不需要同步的目录文件</td>
+</tr>
+<tr>
+<td><code>-P</code></td>
+<td>显示同步过程，速率等，比<code>-v</code>更加详细</td>
+</tr>
+<tr>
+<td><code>-u</code></td>
+<td>如果<!-- raw HTML omitted -->目标服务器<!-- raw HTML omitted -->比<!-- raw HTML omitted -->源服务器<!-- raw HTML omitted -->目录文件新<!-- raw HTML omitted -->则不同步<!-- raw HTML omitted --></td>
+</tr>
+<tr>
+<td><code>-z</code></td>
+<td>同步时压缩目录文件</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<hr>
+<h3 id="源服务器">源服务器</h3>
+<blockquote>
+<ul>
+<li></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;username:password&#34;</span> &gt;&gt;/etc/rsyncd.namelist  	<span style="color:#75715e"># 创建一个虚拟用户密码</span>
+</span></span><span style="display:flex;"><span>$ cat &gt;/etc/rsyncd.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># sample rsyncd.conf configuration file
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># GLOBAL OPTIONS 全局配置
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># motd file=/etc/motd
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># log file=/var/log/rsyncd
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># for pid file, do not use /var/run/rsync.pid if
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># you are going to run rsync out of the init.d script.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># The init.d script does its own pid file handling,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># so omit the &#34;pid file&#34; line completely in that case.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># pid file=/var/run/rsyncd.pid
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># syslog facility=daemon
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># socket options=
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># MODULE OPTIONS 按组配置选项
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[ftp]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	comment = public archive
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# 要同步的目录
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	path = /var/www/pub
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	use chroot = yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    # max connections=10
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	lock file = /var/lock/rsyncd
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    # 默认只读，如果源要推送目录文件到目标服务器， 目标服务器上需要修改为：
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	read only = yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	list = yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	uid = nobody
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	gid = nogroup
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# exclude = 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# exclude from = 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# include =
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# include from =
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# 授权访问的用户名
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# auth users = username
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# 授权访问的用户的密码文件
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# secrets file = /etc/rsyncd.secrets
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	strict modes = yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# hosts allow =
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# hosts deny =
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ignore errors = no
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ignore nonreadable = yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	transfer logging = no
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# log format = %t: host %h (%a) %o %f (%l bytes). Total %b bytes.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	timeout = 600
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	refuse options = checksum dry-run
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	dont compress = *.gz *.tgz *.zip *.z *.rpm *.deb *.iso *.bz2 *.tbz
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 权限一定要限制为最小，</span>
+</span></span><span style="display:flex;"><span>$ chmod <span style="color:#ae81ff">600</span> /etc/rsyncd.namelist
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># kill进程重启</span>
+</span></span><span style="display:flex;"><span>$ kill -9 rsync
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 依后台运行方式启动</span>
+</span></span><span style="display:flex;"><span>$ rsync --daemon</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="目标服务器">目标服务器</h3>
+<blockquote>
+<ul>
+<li>查看源服务器下目录资源</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ rsync --list-only 源服务器IP::ftp/  	<span style="color:#75715e"># ftp 为组名</span></span></span></code></pre></div><ul>
+<li>同步源目录下资源</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ rsync -avz 源服务器IP::ftp/ /usr/local/nginx/html</span></span></code></pre></div><ul>
+<li>使用用户密码方式查看源服务器资源</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ rsync --list-only username@源服务器IP::ftp/  	<span style="color:#75715e"># ftp 为组名</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 客户端保存密码</span>
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;password&#34;</span> &gt;&gt;/etc/rsyncd.passwordlist 
+</span></span><span style="display:flex;"><span>$ chmod <span style="color:#ae81ff">600</span> /etc/rsyncd.passwordlist 
+</span></span><span style="display:flex;"><span>$ rsync --list-only --password-file<span style="color:#f92672">=</span>/etc/rsyncd.passwordlist username@源服务器IP::ftp/  	<span style="color:#75715e"># ftp 为组名</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="安装配置inotify时时检测服务">安装配置<code>Inotify</code>时时检测服务</h3>
+<blockquote>
+<ul>
+<li>
+<ol>
+<li>安装以及配置监控目录</li>
+</ol>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>完整参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-r</code></td>
+<td><code>--recursive</code></td>
+<td>递归查询目录</td>
+</tr>
+<tr>
+<td><code>-q</code></td>
+<td><code>--qulet</code></td>
+<td>只打印监控事件信息</td>
+</tr>
+<tr>
+<td><code>-m</code></td>
+<td><code>--monitor</code></td>
+<td>始终保持监控状态</td>
+</tr>
+<tr>
+<td><code>--excludel</code></td>
+<td></td>
+<td>排除文件或目录，不区分大小写</td>
+</tr>
+<tr>
+<td><code>--timefmt</code></td>
+<td></td>
+<td>指定事件输出格式</td>
+</tr>
+<tr>
+<td><code>--format</code></td>
+<td></td>
+<td>使用指定的输出类似字符串格式</td>
+</tr>
+<tr>
+<td><code>-e</code></td>
+<td>`&ndash;event[-e</td>
+<td>&ndash;event &hellip;]accessmodifyattrb`</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ wget https://github.com/inotify-tools/inotify-tools/releases/download/3.20.2.2/inotify-tools-3.20.2.2.tar.gz
+</span></span><span style="display:flex;"><span>$ tar zxvf inotify-tools-3.20.2.2.tar.gz
+</span></span><span style="display:flex;"><span>$ cd inotify-tools-3.20.2.2/
+</span></span><span style="display:flex;"><span>$ ./configure --prefix<span style="color:#f92672">=</span>/usr/local/inotify
+</span></span><span style="display:flex;"><span>$ make <span style="color:#f92672">&amp;&amp;</span> make install
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 监控目录</span>
+</span></span><span style="display:flex;"><span>$ inotifywait -mrq --timefmt <span style="color:#e6db74">&#39;%Y-%m-%d %H:%M:%S&#39;</span> --format <span style="color:#e6db74">&#39;%T %w%f %e&#39;</span> -e close_write,modify,delete,create,attrib,move //usr/local/nginx/html/</span></span></code></pre></div><ul>
+<li>使用脚本监控</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;inotifywait_rsync.sh<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 监控目录， 有变化推送到目标服务器
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">inotifywait -mrq --timefmt &#39;%Y-%m-%d %H:%M:%S&#39; --format &#39;%T %w%f %e&#39; -e close_write,modify,delete,create,attrib,move //usr/local/nginx/html/ | while read file
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">do
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     rsync -az --delete --password-file=/etc/rsyncd.passwordlist /usr/local/nginx/html username@源服务器IP::ftp/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">done
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

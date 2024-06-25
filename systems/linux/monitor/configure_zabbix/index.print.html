@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="配置Zabbix Job Zabbix-Agen测试服务端、Zabbix监控配置 abbix_get：-s：客户端地址，-p：客户端端口，-k：键值 $ bin/zabbix_get -s &#34;zabbix_agent IP&#34; -k agent.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Configure_Zabbix :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="配置Zabbix Job Zabbix-Agen测试服务端、Zabbix监控配置 abbix_get：-s：客户端地址，-p：客户端端口，-k：键值 $ bin/zabbix_get -s &#34;zabbix_agent IP&#34; -k agent.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/monitor/configure_zabbix/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Configure_Zabbix :: Hugo Relearn Theme">
+    <meta property="og:description" content="配置Zabbix Job Zabbix-Agen测试服务端、Zabbix监控配置 abbix_get：-s：客户端地址，-p：客户端端口，-k：键值 $ bin/zabbix_get -s &#34;zabbix_agent IP&#34; -k agent.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-21T14:00:23+08:00">
+    <meta property="article:modified_time" content="2024-06-21T14:00:23+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Configure_Zabbix :: Hugo Relearn Theme">
+    <meta itemprop="description" content="配置Zabbix Job Zabbix-Agen测试服务端、Zabbix监控配置 abbix_get：-s：客户端地址，-p：客户端端口，-k：键值 $ bin/zabbix_get -s &#34;zabbix_agent IP&#34; -k agent.">
+    <meta itemprop="datePublished" content="2024-06-21T14:00:23+08:00">
+    <meta itemprop="dateModified" content="2024-06-21T14:00:23+08:00">
+    <meta itemprop="wordCount" content="109">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Configure_Zabbix :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/monitor/configure_zabbix/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/monitor/"><span itemprop="name">Monitor</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Configure_Zabbix</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/monitor/install_grafana/" title="Install_Grafana (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/monitor/configure_zabbix_grafana/" title="Configure_Zabbix_Grafana (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="configure_zabbix">Configure_Zabbix</h1>
+
+<h2 id="配置zabbix-job">配置<code>Zabbix Job</code></h2>
+<ul>
+<li>
+<ol>
+<li><code>Zabbix-Agen</code><!-- raw HTML omitted -->测试服务端<!-- raw HTML omitted -->、<a href="https://www.cnblogs.com/zhuochong/p/10361947.html" rel="external" target="_self"><code>Zabbix</code>监控配置</a></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted --><code>abbix_get</code>：<code>-s</code>：客户端地址，<code>-p</code>：客户端端口，<code>-k</code>：键值<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ bin/zabbix_get -s <span style="color:#e6db74">&#34;zabbix_agent IP&#34;</span> -k agent.ping -p <span style="color:#ae81ff">10050</span> <span style="color:#75715e"># get value</span>
+</span></span><span style="display:flex;"><span>$ cp /usr/share/fonts/wqy-microhei/wqy-microhei.ttc nginx/html/zabbix/fonts/DejaVuSans.ttf</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->压力测试<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ab -c <span style="color:#ae81ff">10</span> -n <span style="color:#ae81ff">1000000</span> http://192.168.56.11:8080/</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="配置zabbix用户">配置<code>Zabbix</code>用户</h3>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->创建配置用户<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-dd2080744d331e52279b261ec647caf7" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-03_18-28-48.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-dd2080744d331e52279b261ec647caf7"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-03_18-28-48.png"></a></p>
+<p><a href="#R-image-81065a528371be3b555340403045bec6" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-03_18-34-55.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-81065a528371be3b555340403045bec6"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-03_18-34-55.png"></a></p>
+</blockquote>
+<hr>
+<h3 id="创建主机或者主机组">创建主机或者主机组</h3>
+<blockquote>
+<p><a href="#R-image-8a7394851c9bff55678f42e751984411" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/host_groups_redis.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-8a7394851c9bff55678f42e751984411"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/host_groups_redis.png"></a></p>
+<p><a href="#R-image-36d6219f636191681fb3862e46c916be" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/host_groups_web.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-36d6219f636191681fb3862e46c916be"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/host_groups_web.png"></a></p>
+<p><a href="#R-image-71d0fc2add557ba64617a041c7d95c57" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-03_18-38-06.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-71d0fc2add557ba64617a041c7d95c57"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-03_18-38-06.png"></a></p>
+<p><a href="#R-image-71fe034469325768c817dc2549016691" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-03_18-43-33.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-71fe034469325768c817dc2549016691"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-03_18-43-33.png"></a></p>
+</blockquote>
+<hr>
+<h3 id="配置zabbix监控端口告警">配置<code>Zabbix</code>监控端口告警</h3>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->监控端口<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->创建、配置监控项<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-0bedceeca03655018904e8cf506ac0aa" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-04_13-26-45.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-0bedceeca03655018904e8cf506ac0aa"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-04_13-26-45.png"></a></p>
+<p><a href="#R-image-e04ffcea92b51d63d1ea4639b1c2f85c" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-04_13-28-55.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-e04ffcea92b51d63d1ea4639b1c2f85c"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-04_13-28-55.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->创建、配置触发器<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-2f9cb2f01782d657b9708b44e703c619" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-04_13-30-18.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-2f9cb2f01782d657b9708b44e703c619"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-04_13-30-18.png"></a></p>
+<p><a href="#R-image-b8f84d0137957cd470ba4a786bc596f9" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-04_13-31-54.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-b8f84d0137957cd470ba4a786bc596f9"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server_Job/Snipaste_2023-04-04_13-31-54.png"></a></p>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="配置linux系统登录告警">配置<code>Linux</code>系统登录告警</h3>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>sshd</code><!-- raw HTML omitted -->登录告警<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ env
+</span></span><span style="display:flex;"><span>$ cat &gt;/etc/ssh/sshrc<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#!/bin/sh
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">a_user=$USER
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">a_ip=`echo $SSH_CLIENT | awk &#39;{print $1}&#39;`
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">a_time=$(date +&#34;%F %H:%M:%S&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">a_server=`/sbin/ifconfig eth0|sed -n &#39;2p&#39; |awk &#39;{print $2}&#39;`
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">msg=&#34;Someone logged in the Machine, please verify the IP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Time: ${a_time}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">User: ${a_user}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Host: ${a_server}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Login ip: ${a_ip}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#####   dash unsupport array   #####
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">TrustIp=&#39;192.168.0.61 192.168.0.37&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">result=$(echo ${TrustIp} | grep &#34;${a_ip}&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">if [ &#34;${result}&#34; != &#34;&#34; ]; then
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">exit
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">else
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">curl -X POST &#34;https://api.telegram.org/botID:KEY/sendMessage&#34; -d &#34;chat_id=GrouID&amp;text=${msg}&#34; &gt; /dev/null
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">fi
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

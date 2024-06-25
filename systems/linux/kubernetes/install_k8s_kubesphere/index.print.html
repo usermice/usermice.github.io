@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="在现有Kubernetes上安装KubeSphere Web管理系统 Kuboard一款免费的Kubernetes管理界面 KubeOperator可视化的Web UI 如需在Kubernetes上安装KubeSphere 3.3.0，您的Kubernetes版本必须为：v1.19.x，v1.20.x，v1.21.x，v1.22.x 或 v1.23.x（实验性支持） 确保您的机器满足最低硬件要求：CPU &gt; 1核、内存 &gt; 2GB 在安装之前，需要配置Kubernetes集群中的默认存储类型，以便实现动态供应 配置NFS的动态供应的默认存储类 $ cat &gt;/opt/k8s/yaml/data-storage.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_K8s_KubeSphere :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="在现有Kubernetes上安装KubeSphere Web管理系统 Kuboard一款免费的Kubernetes管理界面 KubeOperator可视化的Web UI 如需在Kubernetes上安装KubeSphere 3.3.0，您的Kubernetes版本必须为：v1.19.x，v1.20.x，v1.21.x，v1.22.x 或 v1.23.x（实验性支持） 确保您的机器满足最低硬件要求：CPU &gt; 1核、内存 &gt; 2GB 在安装之前，需要配置Kubernetes集群中的默认存储类型，以便实现动态供应 配置NFS的动态供应的默认存储类 $ cat &gt;/opt/k8s/yaml/data-storage.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/kubernetes/install_k8s_kubesphere/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_K8s_KubeSphere :: Hugo Relearn Theme">
+    <meta property="og:description" content="在现有Kubernetes上安装KubeSphere Web管理系统 Kuboard一款免费的Kubernetes管理界面 KubeOperator可视化的Web UI 如需在Kubernetes上安装KubeSphere 3.3.0，您的Kubernetes版本必须为：v1.19.x，v1.20.x，v1.21.x，v1.22.x 或 v1.23.x（实验性支持） 确保您的机器满足最低硬件要求：CPU &gt; 1核、内存 &gt; 2GB 在安装之前，需要配置Kubernetes集群中的默认存储类型，以便实现动态供应 配置NFS的动态供应的默认存储类 $ cat &gt;/opt/k8s/yaml/data-storage.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-25T02:03:57+08:00">
+    <meta property="article:modified_time" content="2024-06-25T02:03:57+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_K8s_KubeSphere :: Hugo Relearn Theme">
+    <meta itemprop="description" content="在现有Kubernetes上安装KubeSphere Web管理系统 Kuboard一款免费的Kubernetes管理界面 KubeOperator可视化的Web UI 如需在Kubernetes上安装KubeSphere 3.3.0，您的Kubernetes版本必须为：v1.19.x，v1.20.x，v1.21.x，v1.22.x 或 v1.23.x（实验性支持） 确保您的机器满足最低硬件要求：CPU &gt; 1核、内存 &gt; 2GB 在安装之前，需要配置Kubernetes集群中的默认存储类型，以便实现动态供应 配置NFS的动态供应的默认存储类 $ cat &gt;/opt/k8s/yaml/data-storage.">
+    <meta itemprop="datePublished" content="2024-06-25T02:03:57+08:00">
+    <meta itemprop="dateModified" content="2024-06-25T02:03:57+08:00">
+    <meta itemprop="wordCount" content="2025">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_K8s_KubeSphere :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/kubernetes/install_k8s_kubesphere/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/kubernetes/"><span itemprop="name">Kubernetes</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_K8s_KubeSphere</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/kubernetes/install_k8s_rancher/" title="Install_K8s_Rancher (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/kubernetes/install_k8s_harbor/" title="Install_K8s_Harbor (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_k8s_kubesphere">Install_K8s_KubeSphere</h1>
+
+<h2 id="在现有kubernetes上安装kubesphere-web管理系统">在现有<code>Kubernetes</code>上安装<code>KubeSphere Web</code>管理系统</h2>
+<!-- raw HTML omitted -->
+<blockquote>
+<ul>
+<li>
+<ol>
+<li><a href="https://kuboard.cn/" rel="external" target="_self"><code>Kuboard</code>一款免费的<code>Kubernetes</code>管理界面</a></li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><a href="https://kubeoperator.io/" rel="external" target="_self"><code>KubeOperator</code>可视化的<code>Web UI</code></a></li>
+</ol>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li>如需在<code>Kubernetes</code>上安装<code>KubeSphere 3.3.0</code>，您的<code>Kubernetes</code>版本必须为：<code>v1.19.x，v1.20.x，v1.21.x，v1.22.x 或 v1.23.x</code>（实验性支持）</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->确保您的机器满足最低硬件要求：<!-- raw HTML omitted --><code>CPU &gt; 1核</code>、<code>内存 &gt; 2GB</code></li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->在安装之前，需要配置<!-- raw HTML omitted --><code>Kubernetes</code><!-- raw HTML omitted -->集群中的<!-- raw HTML omitted --><code>默认</code><!-- raw HTML omitted -->存储类型，以便实现动态供应<!-- raw HTML omitted --></li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>NFS</code><!-- raw HTML omitted -->的动态供应的默认存储类<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/opt/k8s/yaml/data-storage.yaml<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 创建一个存储类
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: storage.k8s.io/v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: StorageClass
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	name: nfs-storage
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	annotations:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		storageclass.kubernetes.io/is-default-class: &#34;true&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">provisioner: k8s-sigs.io/nfs-subdir-external-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">parameters:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	archiveOnDelete: &#34;true&#34;  	# 删除pv的时候，pv的内容是否要备份
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: apps/v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: Deployment
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	name: nfs-client-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		app: nfs-client-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# replace with namespace where provisioner is deployed
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	namespace: default
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">spec:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	replicas: 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	strategy:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		type: Recreate
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	selector:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		matchLabels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			app: nfs-client-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	template:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">				app: nfs-client-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		spec:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			serviceAccountName: nfs-client-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			containers:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">				- name: nfs-client-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">				  image: registry.cn-hangzhou.aliyuncs.com/lfy_k8s_images/nfs-subdir-external-provisioner:v4.0.2
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">				  # resources:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">					  # limits:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">						  # cpu: 10m
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">					  # requests:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">						  # cpu: 10m
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">				  volumeMounts:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">					  - name: nfs-client-root
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">						mountPath: /persistentvolumes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">				  env:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">					  - name: PROVISIONER_NAME
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">						value: k8s-sigs.io/nfs-subdir-external-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">					  - name: NFS_SERVER
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">						value: 192.168.94.110  	# 指定自己nfs服务器地址
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">					  - name: NFS_PATH  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">						value: /opt/data/kubesphere  	# nfs服务器共享的目录
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			volumes:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">				- name: nfs-client-root
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">				  nfs:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">					  server: 192.168.94.110
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">					  path: /opt/data/kubesphere
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: ServiceAccount
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: nfs-client-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    # replace with namespace where provisioner is deployed
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    namespace: default
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: ClusterRole
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: rbac.authorization.k8s.io/v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: nfs-client-provisioner-runner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rules:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - apiGroups: [&#34;&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      resources: [&#34;nodes&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      verbs: [&#34;get&#34;, &#34;list&#34;, &#34;watch&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - apiGroups: [&#34;&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      resources: [&#34;persistentvolumes&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      verbs: [&#34;get&#34;, &#34;list&#34;, &#34;watch&#34;, &#34;create&#34;, &#34;delete&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - apiGroups: [&#34;&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      resources: [&#34;persistentvolumeclaims&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      verbs: [&#34;get&#34;, &#34;list&#34;, &#34;watch&#34;, &#34;update&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - apiGroups: [&#34;storage.k8s.io&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      resources: [&#34;storageclasses&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      verbs: [&#34;get&#34;, &#34;list&#34;, &#34;watch&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - apiGroups: [&#34;&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      resources: [&#34;events&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      verbs: [&#34;create&#34;, &#34;update&#34;, &#34;patch&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: ClusterRoleBinding
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: rbac.authorization.k8s.io/v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: run-nfs-client-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">subjects:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - kind: ServiceAccount
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      name: nfs-client-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      # replace with namespace where provisioner is deployed
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      namespace: default
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">roleRef:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    kind: ClusterRole
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: nfs-client-provisioner-runner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    apiGroup: rbac.authorization.k8s.io
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: Role
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: rbac.authorization.k8s.io/v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: leader-locking-nfs-client-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    # replace with namespace where provisioner is deployed
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    namespace: default
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rules:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - apiGroups: [&#34;&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      resources: [&#34;endpoints&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      verbs: [&#34;get&#34;, &#34;list&#34;, &#34;watch&#34;, &#34;create&#34;, &#34;update&#34;, &#34;patch&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: RoleBinding
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: rbac.authorization.k8s.io/v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: leader-locking-nfs-client-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    # replace with namespace where provisioner is deployed
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    namespace: default
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">subjects:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - kind: ServiceAccount
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      name: nfs-client-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      # replace with namespace where provisioner is deployed
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      namespace: default
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">roleRef:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    kind: Role
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: leader-locking-nfs-client-provisioner
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    apiGroup: rbac.authorization.k8s.io
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->配置集群指标监控组件<!-- raw HTML omitted --><a href="https://github.com/kubernetes-sigs/metrics-server" rel="external" target="_self"><code>Kubernetes</code>指标服务器</a></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>5.1 <code>- --kubelet-insecure-tls</code>：<code>kubelet</code>的<code>10250</code>端口使用的是<code>https</code>协议，连接需要验证<code>tls</code>证书，<code>--kubelet-insecure-tls</code><!-- raw HTML omitted -->不验证客户端证书，仅用于测试目的<!-- raw HTML omitted --></li>
+<li>5.2 <a href="https://github.com/kubernetes/kube-state-metrics" rel="external" target="_self"><code>kube-state-metrics</code></a></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/opt/k8s/yaml/metrics_server.yaml<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: ServiceAccount
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        k8s-app: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    namespace: kube-system
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: rbac.authorization.k8s.io/v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: ClusterRole
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        k8s-app: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        rbac.authorization.k8s.io/aggregate-to-admin: &#34;true&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        rbac.authorization.k8s.io/aggregate-to-edit: &#34;true&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        rbac.authorization.k8s.io/aggregate-to-view: &#34;true&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: system:aggregated-metrics-reader
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rules:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - apiGroups:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - metrics.k8s.io
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      resources:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - pods
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - nodes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      verbs:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - get
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - list
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - watch
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: rbac.authorization.k8s.io/v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: ClusterRole
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        k8s-app: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: system:metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rules:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - apiGroups:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - &#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      resources:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - pods
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - nodes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - nodes/stats
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - namespaces
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - configmaps
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      verbs:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - get
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - list
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      - watch
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: rbac.authorization.k8s.io/v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: RoleBinding
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        k8s-app: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: metrics-server-auth-reader
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    namespace: kube-system
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">roleRef:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    apiGroup: rbac.authorization.k8s.io
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    kind: Role
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: extension-apiserver-authentication-reader
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">subjects:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - kind: ServiceAccount
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      name: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      namespace: kube-system
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: rbac.authorization.k8s.io/v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: ClusterRoleBinding
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        k8s-app: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: metrics-server:system:auth-delegator
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">roleRef:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    apiGroup: rbac.authorization.k8s.io
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    kind: ClusterRole
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: system:auth-delegator
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">subjects:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - kind: ServiceAccount
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      name: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      namespace: kube-system
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: rbac.authorization.k8s.io/v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: ClusterRoleBinding
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        k8s-app: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: system:metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">roleRef:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    apiGroup: rbac.authorization.k8s.io
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    kind: ClusterRole
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: system:metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">subjects:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    - kind: ServiceAccount
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      name: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      namespace: kube-system
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: Service
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        k8s-app: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    namespace: kube-system
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">spec:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    ports:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - name: https
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          port: 443
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          protocol: TCP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">          targetPort: https
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    selector:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        k8s-app: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: apps/v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: Deployment
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        k8s-app: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    namespace: kube-system
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">spec:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    selector:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        matchLabels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            k8s-app: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    strategy:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        rollingUpdate:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            maxUnavailable: 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    template:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                k8s-app: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        spec:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            containers:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                - args:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                    - --cert-dir=/tmp
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                    - --kubelet-insecure-tls
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                    - --secure-port=4443
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                    - --kubelet-preferred-address-types=InternalIP,Hostname,InternalDNS,ExternalDNS,ExternalIP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                    - --kubelet-use-node-status-port
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                    image: k8s.gcr.io/metrics-server/metrics-server:v0.6.0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                    # image: registry.cn-hangzhou.aliyuncs.com/lfy_k8s_images/metrics-server:v0.4.3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                    imagePullPolicy: IfNotPresent
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                    livenessProbe:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                        failureThreshold: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                        httpGet:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                            path: /livez
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                            port: https
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                            scheme: HTTPS
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                        periodSeconds: 10
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                    name: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                    ports:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                        - containerPort: 4443
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                          name: https
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                          protocol: TCP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                    readinessProbe:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                        failureThreshold: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                        httpGet:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                            path: /readyz
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                            port: https
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                            scheme: HTTPS
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                        periodSeconds: 10
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                    securityContext:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                        readOnlyRootFilesystem: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                        runAsNonRoot: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                        runAsUser: 1000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                    volumeMounts:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                        - mountPath: /tmp
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                          name: tmp-dir
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            nodeSelector:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                kubernetes.io/os: linux
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            priorityClassName: system-cluster-critical
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            serviceAccountName: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            volumes:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                - emptyDir: {}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                  name: tmp-dir
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">apiVersion: apiregistration.k8s.io/v1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kind: APIService
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        k8s-app: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    name: v1beta1.metrics.k8s.io
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">spec:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    group: metrics.k8s.io
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    groupPriorityMinimum: 100
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    insecureSkipTLSVerify: true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    service:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        name: metrics-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        namespace: kube-system
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    version: v1beta1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    versionPriority: 100
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li>5.1 <!-- raw HTML omitted -->执行命令查看<!-- raw HTML omitted --><code>Node</code>节点结果</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl top nodes
+</span></span><span style="display:flex;"><span>NAME            CPU<span style="color:#f92672">(</span>cores<span style="color:#f92672">)</span>   CPU%   MEMORY<span style="color:#f92672">(</span>bytes<span style="color:#f92672">)</span>   MEMORY%   
+</span></span><span style="display:flex;"><span>k8s-master-01   148m         7%     3690Mi          46%       
+</span></span><span style="display:flex;"><span>k8s-node-01     35m          1%     492Mi           8%        
+</span></span><span style="display:flex;"><span>k8s-node-02     32m          1%     358Mi           6%</span></span></code></pre></div><ul>
+<li>5.2 <!-- raw HTML omitted -->执行命令查看<!-- raw HTML omitted --><code>Pod</code>状态</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$  kubectl top pods -A
+</span></span><span style="display:flex;"><span>NAMESPACE       NAME                                        CPU<span style="color:#f92672">(</span>cores<span style="color:#f92672">)</span>  MEMORY<span style="color:#f92672">(</span>bytes<span style="color:#f92672">)</span>   
+</span></span><span style="display:flex;"><span>default         nfs-client-provisioner-6f9769d4c4-h6jw9     3m           12Mi 
+</span></span><span style="display:flex;"><span>ingress-nginx   ingress-nginx-controller-5fd8bfcbdc-bzppj   2m           96Mi
+</span></span><span style="display:flex;"><span>kube-flannel    kube-flannel-ds-6tl2b                       5m           33Mi
+</span></span><span style="display:flex;"><span>kube-flannel    kube-flannel-ds-n4k68                       3m           33Mi 
+</span></span><span style="display:flex;"><span>kube-flannel    kube-flannel-ds-zkqhz                       3m           33Mi 
+</span></span><span style="display:flex;"><span>kube-system     coredns-64897985d-6r9ds                     2m           17Mi
+</span></span><span style="display:flex;"><span>kube-system     coredns-64897985d-fwmz5                     2m           14Mi
+</span></span><span style="display:flex;"><span>kube-system     etcd-k8s-master-01                          20m          112Mi
+</span></span><span style="display:flex;"><span>kube-system     kube-apiserver-k8s-master-01                63m          237Mi
+</span></span><span style="display:flex;"><span>kube-system     kube-controller-manager-k8s-master-01       20m          50Mi 
+</span></span><span style="display:flex;"><span>kube-system     kube-proxy-blnt7                            1m           18Mi 
+</span></span><span style="display:flex;"><span>kube-system     kube-proxy-k5gkm                            1m           17Mi
+</span></span><span style="display:flex;"><span>kube-system     kube-proxy-xpvqr                            1m           17Mi
+</span></span><span style="display:flex;"><span>kube-system     kube-scheduler-k8s-master-01                5m           21Mi
+</span></span><span style="display:flex;"><span>kube-system     metrics-server-658c4cf555-bpfcf             5m           19Mi</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="6">
+<li><!-- raw HTML omitted -->下载、安装<!-- raw HTML omitted --><code>KubeSphere</code>的<code>yaml</code>文件</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ wget -P /opt/k8s/yaml/kubesphere/ https://github.com/kubesphere/ks-installer/releases/download/v3.3.1/kubesphere-installer.yaml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ wget -P /opt/k8s/yaml/kubesphere/ https://github.com/kubesphere/ks-installer/releases/download/v3.3.1/cluster-configuration.yaml</span></span></code></pre></div><ul>
+<li>6.1 修改<code>cluster-configuration</code>文件<code>启用可插拔组件</code></li>
+</ul>
+<blockquote>
+<ul>
+<li>6.1.1 <a href="https://kubesphere.com.cn/docs/v3.3/pluggable-components/overview/" rel="external" target="_self">官网<!-- raw HTML omitted -->启用可插拔组件<!-- raw HTML omitted --></a></li>
+</ul>
+</blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ClusterConfiguration</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">ks-installer</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">kubesphere-system</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">version</span>: <span style="color:#ae81ff">v3.3.0</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">persistence</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">storageClass</span>: <span style="color:#e6db74">&#34;&#34;</span>  	<span style="color:#75715e"># If there is no default StorageClass in your cluster, you need to specify an existing StorageClass here.</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">authentication</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">jwtSecret</span>: <span style="color:#e6db74">&#34;&#34;</span>  	<span style="color:#75715e"># Keep the jwtSecret consistent with the Host Cluster. Retrieve the jwtSecret by executing &#34;kubectl -n kubesphere-system get cm kubesphere-config -o yaml | grep -v &#34;apiVersion&#34; | grep jwtSecret&#34; on the Host Cluster.</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">local_registry</span>: <span style="color:#e6db74">&#34;&#34;</span>  	<span style="color:#75715e"># Add your private registry address if it is needed.</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># dev_tag: &#34;&#34;  	# Add your kubesphere image tag you want to install, by default it&#39;s same as ks-installer release version.</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">etcd</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">monitoring</span>: <span style="color:#66d9ef">true</span>  	<span style="color:#75715e"># 启用或禁用 etcd 监控仪表板安装。 在启用之前，您必须为 etcd 创建一个 Secret， 启用修改为：true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">endpointIps</span>: <span style="color:#ae81ff">192.168.94.110</span>  	<span style="color:#75715e"># etcd 集群 EndpointIps。 这里可以是一堆IP。</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">port</span>: <span style="color:#ae81ff">2379</span>  	<span style="color:#75715e"># etcd port.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">tlsEnable</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">common</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">core</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">console</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">enableMultiLogin</span>: <span style="color:#66d9ef">true</span>  	<span style="color:#75715e"># Enable or disable simultaneous logins. It allows different users to log in with the same account at the same time.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">port</span>: <span style="color:#ae81ff">30880</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">NodePort</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># apiserver:  	# Enlarge the apiserver and controller manager&#39;s resource requests and limits for the large cluster</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#  resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># controllerManager:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#  resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">redis</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">true</span>  	<span style="color:#75715e"># 启用 Redis 功能，修改为：true</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">enableHA</span>: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">volumeSize</span>: <span style="color:#ae81ff">2Gi  	# Redis PVC size.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">openldap</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">true</span>  	<span style="color:#75715e"># 启用轻量级目录协议，修改为：true</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">volumeSize</span>: <span style="color:#ae81ff">2Gi  	# openldap PVC size.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">minio</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">volumeSize</span>: <span style="color:#ae81ff">20Gi  	# Minio PVC size.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">monitoring</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># type: external  	# Whether to specify the external prometheus stack, and need to modify the endpoint at the next line.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">endpoint</span>: <span style="color:#ae81ff">http://prometheus-operated.kubesphere-monitoring-system.svc:9090</span> <span style="color:#75715e"># Prometheus endpoint to get metrics data.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">GPUMonitoring</span>:  	<span style="color:#75715e"># Enable or disable the GPU-related metrics. If you enable this switch but have no GPU resources, Kubesphere will set it to zero.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">gpu</span>:  	<span style="color:#75715e"># Install GPUKinds. The default GPU kind is nvidia.com/gpu. Other GPU kinds can be added here according to your needs.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">kinds</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">resourceName</span>: <span style="color:#e6db74">&#34;nvidia.com/gpu&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">resourceType</span>: <span style="color:#e6db74">&#34;GPU&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">default</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">es</span>:   <span style="color:#75715e"># Storage backend for logging, events and auditing.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># master:</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#   volumeSize: 4Gi  # The volume size of Elasticsearch master nodes.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#   replicas: 1      # The total number of master nodes. Even numbers are not allowed.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># data:</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#   volumeSize: 20Gi  # The volume size of Elasticsearch data nodes.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#   replicas: 1  	# The total number of data nodes.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">logMaxAge</span>: <span style="color:#ae81ff">7</span>  	<span style="color:#75715e"># Log retention time in built-in Elasticsearch. It is 7 days by default.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">elkPrefix</span>: <span style="color:#ae81ff">logstash  	# The string making up index names. The index name will be formatted as ks-&lt;elk_prefix&gt;-log.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">basicAuth</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">username</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">password</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">externalElasticsearchHost</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">externalElasticsearchPort</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">alerting:  	# (CPU: 0.1 Core, Memory</span>: <span style="color:#ae81ff">100</span> <span style="color:#ae81ff">MiB) It enables users to customize alerting policies to send messages to receivers in time with different time intervals and alerting levels to choose from.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">true</span>  	<span style="color:#75715e"># 启用或禁用 KubeSphere 警报系统，修改为：true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># thanosruler:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   replicas: 1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">auditing</span>:  	<span style="color:#75715e"># Provide a security-relevant chronological set of records，recording the sequence of activities happening on the platform, initiated by different tenants.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">true</span>  	<span style="color:#75715e"># 启用或禁用 KubeSphere 审计日志系统，修改为：true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># operator:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># webhook:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">devops:  	# (CPU: 0.47 Core, Memory</span>: <span style="color:#ae81ff">8.6</span> <span style="color:#ae81ff">G) Provide an out-of-the-box CI/CD system based on Jenkins, and automated workflow tools including Source-to-Image &amp; Binary-to-Image.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">true</span>  	<span style="color:#75715e"># 启用或禁用 KubeSphere DevOps 系统，修改为：true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">jenkinsMemoryLim</span>: <span style="color:#ae81ff">2Gi  	# Jenkins memory limit.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">jenkinsMemoryReq</span>: <span style="color:#ae81ff">1500Mi  	# Jenkins memory request.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">jenkinsVolumeSize</span>: <span style="color:#ae81ff">8Gi  	# Jenkins volume size.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">jenkinsJavaOpts_Xms</span>: <span style="color:#ae81ff">1200m  	# The following three fields are JVM parameters.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">jenkinsJavaOpts_Xmx</span>: <span style="color:#ae81ff">1600m</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">jenkinsJavaOpts_MaxRAM</span>: <span style="color:#ae81ff">2g</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">events</span>:  	<span style="color:#75715e"># Provide a graphical web console for Kubernetes Events exporting, filtering and alerting in multi-tenant Kubernetes clusters.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">true</span>  	<span style="color:#75715e"># 启用或禁用 KubeSphere 事件系统，修改为：true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># operator:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># exporter:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ruler:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   enabled: true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   replicas: 2</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">logging:  	# (CPU: 57 m, Memory</span>: <span style="color:#ae81ff">2.76</span> <span style="color:#ae81ff">G) Flexible logging functions are provided for log query, collection and management in a unified console. Additional log collectors can be added, such as Elasticsearch, Kafka and Fluentd.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">true</span>  	<span style="color:#75715e"># 启用或禁用 KubeSphere 日志系统，修改为：true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">logsidecar</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># resources: {}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">metrics_server:  	# (CPU: 56 m, Memory</span>: <span style="color:#ae81ff">44.35</span> <span style="color:#ae81ff">MiB) It enables HPA (Horizontal Pod Autoscaler).</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">false</span>  	<span style="color:#75715e"># 启用或禁用监控指标服务器，从hub.docker官方拉取镜像，网络不好会报网络错误，如果已提前安装请忽略，修改为：true</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">monitoring</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">storageClass</span>: <span style="color:#e6db74">&#34;&#34;</span>  	<span style="color:#75715e"># If there is an independent StorageClass you need for Prometheus, you can specify it here. The default StorageClass is used by default.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">node_exporter</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">port</span>: <span style="color:#ae81ff">9100</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># kube_rbac_proxy:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># kube_state_metrics:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># prometheus:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   replicas: 1  # Prometheus replicas are responsible for monitoring different segments of data source and providing high availability.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   volumeSize: 20Gi  # Prometheus PVC size.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   operator:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># alertmanager:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   replicas: 1  	# AlertManager Replicas.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># notification_manager:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   operator:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   proxy:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">gpu</span>:  	<span style="color:#75715e"># GPU monitoring-related plug-in installation.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">nvidia_dcgm_exporter</span>:  	<span style="color:#75715e"># Ensure that gpu resources on your hosts can be used normally, otherwise this plug-in will not work properly.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">false</span>  	<span style="color:#75715e"># Check whether the labels on the GPU hosts contain &#34;nvidia.com/gpu.present=true&#34; to ensure that the DCGM pod is scheduled to these nodes.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># resources: {}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">multicluster</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">clusterRole</span>: <span style="color:#ae81ff">none  # host | member | none </span> <span style="color:#75715e"># You can install a solo cluster, or specify it as the Host or Member Cluster.</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">network</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networkpolicy</span>: <span style="color:#75715e"># Network policies allow network isolation within the same cluster, which means firewalls can be set up between certain instances (Pods).</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># Make sure that the CNI network plugin used by the cluster supports NetworkPolicy. There are a number of CNI network plugins that support NetworkPolicy, including Calico, Cilium, Kube-router, Romana and Weave Net.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">true</span>  	<span style="color:#75715e"># 启用或禁用网络策略，修改为：true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ippool</span>: <span style="color:#75715e"># Use Pod IP Pools to manage the Pod network address space. Pods to be created can be assigned IP addresses from a Pod IP Pool.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">type</span>: <span style="color:#ae81ff">none</span> <span style="color:#75715e"># 如果 Calico 用作您的 CNI 插件，请为此字段指定“calico”。 “none”表示 Pod IP 池已禁用</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">topology</span>: <span style="color:#75715e"># Use Service Topology to view Service-to-Service communication based on Weave Scope.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">type</span>: <span style="color:#ae81ff">none</span> <span style="color:#75715e"># Specify &#34;weave-scope&#34; for this field to enable Service Topology. &#34;none&#34; means that Service Topology is disabled.</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">openpitrix</span>: <span style="color:#75715e"># An App Store that is accessible to all platform tenants. You can use it to manage apps across their entire lifecycle.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">store</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">true</span>  	<span style="color:#75715e"># 启用或禁用 KubeSphere 应用商店，修改为：true</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">servicemesh</span>:  	<span style="color:#75715e"># (0.3 Core, 300 MiB) Provide fine-grained traffic management, observability and tracing, and visualized traffic topology.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">true</span>  	<span style="color:#75715e"># 基础组件（试点）。 启用或禁用 KubeSphere 服务网格（基于 Istio）微服务治理功能，修改为：true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">istio</span>:  <span style="color:#75715e"># Customizing the istio installation configuration, refer to https://istio.io/latest/docs/setup/additional-setup/customize-installation/</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">components</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ingressGateways</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">istio-ingressgateway</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cni</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">edgeruntime</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">true</span>  	<span style="color:#75715e"># 将边缘节点添加到集群并在边缘节点上部署工作负载，启动边缘计算服务，修改为：true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">kubeedge</span>:  	<span style="color:#75715e"># kubeedge configurations</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">cloudCore</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cloudHub</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">advertiseAddress</span>: <span style="color:#75715e"># At least a public IP address or an IP address which can be accessed by edge nodes must be provided.</span>
+</span></span><span style="display:flex;"><span>            - <span style="color:#e6db74">&#34;&#34;</span>            <span style="color:#75715e"># Note that once KubeEdge is enabled, CloudCore will malfunction if the address is not provided.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">service</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">cloudhubNodePort</span>: <span style="color:#e6db74">&#34;30000&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">cloudhubQuicNodePort</span>: <span style="color:#e6db74">&#34;30001&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">cloudhubHttpsNodePort</span>: <span style="color:#e6db74">&#34;30002&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">cloudstreamNodePort</span>: <span style="color:#e6db74">&#34;30003&#34;</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">tunnelNodePort</span>: <span style="color:#e6db74">&#34;30004&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># resources: {}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># hostNetWork: false</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">iptables-manager</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">true</span> 
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">mode</span>: <span style="color:#e6db74">&#34;external&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># resources: {}</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># edgeService:</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">gatekeeper</span>:        <span style="color:#75715e"># Provide admission policy and rule management, A validating (mutating TBA) webhook that enforces CRD-based policies executed by Open Policy Agent.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">enabled</span>: <span style="color:#66d9ef">false</span>   <span style="color:#75715e"># Enable or disable Gatekeeper.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># controller_manager:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># audit:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#   resources: {}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">terminal</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># image: &#39;alpine:3.15&#39; # There must be an nsenter program in the image</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">timeout</span>: <span style="color:#ae81ff">600</span>  	<span style="color:#75715e"># Container timeout, if set to 0, no timeout will be used. The unit is seconds</span></span></span></code></pre></div><ul>
+<li>6.2 <!-- raw HTML omitted -->修改好配置后安装<!-- raw HTML omitted --><code>KubeSphere</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl apply -f kubesphere-installer.yaml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ kubectl apply -f cluster-configuration.yaml</span></span></code></pre></div><ul>
+<li>6.3 <!-- raw HTML omitted -->跟踪安装进度<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl logs -n kubesphere-system <span style="color:#66d9ef">$(</span>kubectl get pod -n kubesphere-system -l <span style="color:#e6db74">&#39;app in (ks-install, ks-installer)&#39;</span> -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.items[0].metadata.name}&#39;</span><span style="color:#66d9ef">)</span> -f</span></span></code></pre></div><ul>
+<li>6.4 查看所有<code>Pod</code>是否在<code>KubeSphere</code><!-- raw HTML omitted -->的相关命名空间中正常运行<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get svc/ks-console -n kubesphere-system</span></span></code></pre></div><ul>
+<li>6.5 解决<code>prometheus-k8s</code>的<code>pods</code><!-- raw HTML omitted -->因为证书不能启动<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl -n kubesphere-monitoring-system create secret generic kube-etcd-client-certs  --from-file<span style="color:#f92672">=</span>etcd-client-ca.crt<span style="color:#f92672">=</span>/etc/kubernetes/pki/etcd/ca.crt  --from-file<span style="color:#f92672">=</span>etcd-client.crt<span style="color:#f92672">=</span>/etc/kubernetes/pki/apiserver-etcd-client.crt  --from-file<span style="color:#f92672">=</span>etcd-client.key<span style="color:#f92672">=</span>/etc/kubernetes/pki/apiserver-etcd-client.key</span></span></code></pre></div><ul>
+<li>6.6 <!-- raw HTML omitted -->使用浏览器访问<!-- raw HTML omitted --><code>KubeSphere</code>放行：<code>30880</code>端口</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted --><strong>默认用户名：</strong><!-- raw HTML omitted --><code>admin</code></li>
+<li><!-- raw HTML omitted --><strong>默认密码：</strong><!-- raw HTML omitted --><code>P@88w0rd</code></li>
+</ul>
+</blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ http://IP:30880</span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

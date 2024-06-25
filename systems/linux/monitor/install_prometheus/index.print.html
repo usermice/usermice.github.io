@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="Prometheus 名称地址 描述 Prometheus官网 prometheus-book Github-Prometheus Prometheus学习笔记 Prometheus介绍和使用 Prometheus&#43;Grafana详解 Prometheus自定义监控部署 Prometheus CLIENT LIBRARIES 使用Prometheus&#43;Grafana快速打造高逼格监控平台 概述 Prometheus是一个开源监控系统，它前身是SoundCloud的告警工具包。从2012年开始，许多公司和组织开始使用Prometheus。该项目的开发人员和用户社区非常活跃，越来越多的开发人员和用户参与到该项目中。目前它是一个独立的开源项目，且不依赖于任何公司。为了强调这点和明确该项目治理结构，Prometheus在2016年继Kurberntes之后，加入了Cloud Native Computing Foundation">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_Prometheus :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="Prometheus 名称地址 描述 Prometheus官网 prometheus-book Github-Prometheus Prometheus学习笔记 Prometheus介绍和使用 Prometheus&#43;Grafana详解 Prometheus自定义监控部署 Prometheus CLIENT LIBRARIES 使用Prometheus&#43;Grafana快速打造高逼格监控平台 概述 Prometheus是一个开源监控系统，它前身是SoundCloud的告警工具包。从2012年开始，许多公司和组织开始使用Prometheus。该项目的开发人员和用户社区非常活跃，越来越多的开发人员和用户参与到该项目中。目前它是一个独立的开源项目，且不依赖于任何公司。为了强调这点和明确该项目治理结构，Prometheus在2016年继Kurberntes之后，加入了Cloud Native Computing Foundation">
+    <meta property="og:url" content="https://erge.blog/systems/linux/monitor/install_prometheus/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_Prometheus :: Hugo Relearn Theme">
+    <meta property="og:description" content="Prometheus 名称地址 描述 Prometheus官网 prometheus-book Github-Prometheus Prometheus学习笔记 Prometheus介绍和使用 Prometheus&#43;Grafana详解 Prometheus自定义监控部署 Prometheus CLIENT LIBRARIES 使用Prometheus&#43;Grafana快速打造高逼格监控平台 概述 Prometheus是一个开源监控系统，它前身是SoundCloud的告警工具包。从2012年开始，许多公司和组织开始使用Prometheus。该项目的开发人员和用户社区非常活跃，越来越多的开发人员和用户参与到该项目中。目前它是一个独立的开源项目，且不依赖于任何公司。为了强调这点和明确该项目治理结构，Prometheus在2016年继Kurberntes之后，加入了Cloud Native Computing Foundation">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-21T14:16:56+08:00">
+    <meta property="article:modified_time" content="2024-06-21T14:16:56+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_Prometheus :: Hugo Relearn Theme">
+    <meta itemprop="description" content="Prometheus 名称地址 描述 Prometheus官网 prometheus-book Github-Prometheus Prometheus学习笔记 Prometheus介绍和使用 Prometheus&#43;Grafana详解 Prometheus自定义监控部署 Prometheus CLIENT LIBRARIES 使用Prometheus&#43;Grafana快速打造高逼格监控平台 概述 Prometheus是一个开源监控系统，它前身是SoundCloud的告警工具包。从2012年开始，许多公司和组织开始使用Prometheus。该项目的开发人员和用户社区非常活跃，越来越多的开发人员和用户参与到该项目中。目前它是一个独立的开源项目，且不依赖于任何公司。为了强调这点和明确该项目治理结构，Prometheus在2016年继Kurberntes之后，加入了Cloud Native Computing Foundation">
+    <meta itemprop="datePublished" content="2024-06-21T14:16:56+08:00">
+    <meta itemprop="dateModified" content="2024-06-21T14:16:56+08:00">
+    <meta itemprop="wordCount" content="846">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_Prometheus :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/monitor/install_prometheus/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/monitor/"><span itemprop="name">Monitor</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_Prometheus</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/monitor/install_zabbix/" title="Install_Zabbix (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/monitor/install_open_falcon/" title="Install_Open_Falcon (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_prometheus">Install_Prometheus</h1>
+
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<h2 id="prometheus"><code>Prometheus</code></h2>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://prometheus.io/docs/introduction/first_steps/" rel="external" target="_self"><code>Prometheus</code>官网</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://yunlzheng.gitbook.io/prometheus-book" rel="external" target="_self"><code>prometheus-book</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://github.com/prometheus" rel="external" target="_self"><code>Github-Prometheus</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://blog.gmem.cc/prometheus-study-note" rel="external" target="_self"><code>Prometheus</code>学习笔记</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://blog.51cto.com/qiangsh/3093700" rel="external" target="_self"><code>Prometheus</code>介绍和使用</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://juejin.im/post/5d79d804e51d453b7779d5ce" rel="external" target="_self"><code>Prometheus</code>+<code>Grafana</code>详解</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.cnblogs.com/qianjingchen/articles/9578341.html" rel="external" target="_self"><code>Prometheus</code>自定义监控部署</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://prometheus.io/docs/instrumenting/clientlibs/" rel="external" target="_self"><code>Prometheus  CLIENT LIBRARIES</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://juejin.im/post/5d397c2fe51d45775e33f64a" rel="external" target="_self">使用<code>Prometheus</code>+<code>Grafana</code>快速打造高逼格监控平台</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->概述<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><code>Prometheus</code>是一个开源监控系统，它前身是<a href="https://soundcloud.com" rel="external" target="_self"><code>SoundCloud</code></a>的告警工具包。从<code>2012</code>年开始，许多公司和组织开始使用<code>Prometheus</code>。该项目的开发人员和用户社区非常活跃，越来越多的开发人员和用户参与到该项目中。目前它是一个独立的开源项目，且不依赖于任何公司。为了强调这点和明确该项目治理结构，<code>Prometheus</code>在<code>2016</code>年继<a href="https://kubernetes.io" rel="external" target="_self"><code>Kurberntes</code></a>之后，加入了<a href="https://www.cncf.io" rel="external" target="_self"><code>Cloud Native Computing Foundation</code></a></p>
+<ul>
+<li>1.1 <code>prometheus</code><!-- raw HTML omitted -->特点<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->多维度数据模型，一个时间序列由一个度量指标和多个标签键值对确定<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->灵活的查询语言，对收集的时许数据进行重组<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->强大的数据可视化功能，除了内置的浏览器，也支持<!-- raw HTML omitted --><code>grafana</code><!-- raw HTML omitted -->集成<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->高效存储，内存加本地磁盘，可通过功能分片和联盟来拓展性能<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->运维简单，只依赖于本地磁盘，<!-- raw HTML omitted --><code>go</code><!-- raw HTML omitted -->二进制安装包没有任何其他依赖 <!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->精简告警<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->非常多的客户端库<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->提供了许多导出器来收集常用系统指标<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+</blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->数据模型 <!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><code>Prometheus</code>从根本上存储的所有数据都是时间序列数据（<code>Time Serie Data</code>，简称时序数据）。时序数据是具有时间戳的数据流，该数据流属于某个度量指标（<code>Metric</code>）和该度量指标下的多个标签（<code>Label</code>）。除了提供存储功能，<code>Prometheus</code>还可以利用查询表达式来执行非常灵活和复杂的查询。</p>
+<ul>
+<li>
+<p><!-- raw HTML omitted -->度量指标和标签<!-- raw HTML omitted --></p>
+<p>每个时间序列（<code>Time Serie</code>，简称时序）由度量指标和一组标签键值对唯一确定。</p>
+</li>
+<li>
+<p>度量指标名称描述了被监控系统的某个测量特征（比如<code>http_requests_total</code>表示<code>http</code>请求总数）。度量指标名称由<code>ASCII</code>字母、数字、下划线和冒号组成，须匹配正则表达式<code>[a-zA-Z_:][a-zA-Z0-9_:]*</code>。</p>
+</li>
+<li>
+<p>标签开启了<code>Prometheus</code>的多维数据模型。对于同一个度量指标，不同标签值组合会形成特定维度的时序。<code>Prometheus</code>的查询语言可以通过度量指标和标签对时序数据进行过滤和聚合。改变任何度量指标上的任何标签值，都会形成新的时序。标签名称可以包含<code>ASCII</code>字母、数字和下划线，须匹配正则表达式<code>[a-zA-Z_][a-zA-Z0-9_]*</code>，带有 _ 下划线的标签名称保留为内部使用。标签值可以包含任意<code>Unicode</code>字符，包括中文。</p>
+</li>
+<li>
+<p><!-- raw HTML omitted -->采样值(<code>Sample</code>)<!-- raw HTML omitted --></p>
+</li>
+</ul>
+<blockquote>
+<p>时序数据其实就是一系列采样值。每个采样值包括：</p>
+<ul>
+<li><!-- raw HTML omitted -->一个<code>64</code>位的浮点数值  <!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->一个精确到毫秒的时间戳  <!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->注解(<code>Notation</code>)<!-- raw HTML omitted --></li>
+</ul>
+<p>一个注解由一个度量指标和一组标签键值对构成。形式如下：</p>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">[</span>metric name<span style="color:#f92672">]{[</span>label name<span style="color:#f92672">]=[</span>label value<span style="color:#f92672">]</span>, ...<span style="color:#f92672">}</span>  </span></span></code></pre></div><p>例如，度量指标为<code>api_http_requests_total</code>，标签为<code>method=&quot;POST&quot;</code>、<code>handler=&quot;/messages&quot;</code>的注解表示如下：</p>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>api_http_requests_total<span style="color:#f92672">{</span>method<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;POST&#34;</span>, handler<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/messages&#34;</span><span style="color:#f92672">}</span></span></span></code></pre></div></blockquote>
+</blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->度量指标类型 <!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->计数器(<code>Counter</code>)<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0"><code>计数器是一种累计型的度量指标，它是一个只能递增的数值。计数器主要用于统计类似于服务请求数、任务完成数和错误出现次数这样的数据</code></pre></div><ul>
+<li><!-- raw HTML omitted -->计量器(<code>Gauge</code>)<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0"><code>计量器表示一个既可以增加, 又可以减少的度量指标值。计量器主要用于测量类似于温度、内存使用量这样的瞬时数据</code></pre></div><ul>
+<li><!-- raw HTML omitted -->直方图(<code>Histogram</code>)<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0"><code>直方图对观察结果（通常是请求持续时间或者响应大小这样的数据）进行采样，并在可配置的桶中对其进行统计。有以下几种方式来产生直方图（假设度量指标为 ）：  </code></pre></div><ul>
+<li><!-- raw HTML omitted -->按桶计数<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0"><code>相当于&lt;basename&gt;_bucket{le=&#34;&lt;upper inclusive bound&gt;&#34;}</code></pre></div><ul>
+<li><!-- raw HTML omitted -->采样值总和<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0"><code>相当于 &lt;basename&gt;_sum  </code></pre></div><ul>
+<li><!-- raw HTML omitted -->采样值总数<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0"><code>相当于 &lt;basename&gt;_count ，也等同于把所有采样值放到一个桶里来计数 &lt;basename&gt;_bucket{le=&#34;+Inf&#34;}</code></pre></div><ul>
+<li><!-- raw HTML omitted -->汇总(<code>Summary</code>)<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0"><code>类似于直方图，汇总也对观察结果进行采样。除了可以统计采样值总和和总数，它还能够按分位数统计。有以下几种方式来产生汇总（假设度量指标为 ）：</code></pre></div><ul>
+<li><!-- raw HTML omitted -->采样值总和<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0"><code>相当于 &lt;basename&gt;_sum</code></pre></div><ul>
+<li><!-- raw HTML omitted -->采样值总数<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0"><code>相当于 &lt;basename&gt;_count  </code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->任务(<code>Job</code>)和实例(<code>Instance</code>)<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p>在<code>Prometheus</code>里，可以从中抓取采样值的端点称为实例，为了性能扩展而复制出来的多个这样的实例形成了一个任务</p>
+<ul>
+<li><!-- raw HTML omitted -->例如下面的<!-- raw HTML omitted --><code>api-server</code><!-- raw HTML omitted -->任务有四个相同的实例<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0"><code>job: api-server
+instance 1: 1.2.3.4:5670
+instance 2: 1.2.3.4:5671
+instance 3: 5.6.7.8:5670
+instance 4: 5.6.7.8:5671</code></pre></div><p>​	<code>Prometheus</code>抓取完采样值后，会自动给采样值添加下面的标签和值：</p>
+<ul>
+<li>
+<p><code>job:</code><!-- raw HTML omitted --> 抓取所属任务<!-- raw HTML omitted --></p>
+</li>
+<li>
+<p><code>instance</code><!-- raw HTML omitted -->： 抓取来源实例<!-- raw HTML omitted --></p>
+<p>另外每次抓取时，<code>Prometheus</code>还会自动在以下时序里插入采样值：</p>
+</li>
+<li>
+<p><code>up{job=&quot;[job-name]&quot;, instance=&quot;instance-id&quot;}</code><!-- raw HTML omitted -->：采样值为 1 表示实例健康，否则为不健康<!-- raw HTML omitted --></p>
+</li>
+<li>
+<p><code>scrape_duration_seconds{job=&quot;[job-name]&quot;, instance=&quot;[instance-id]&quot;}</code><!-- raw HTML omitted -->：采样值为本次抓取消耗时间<!-- raw HTML omitted --></p>
+</li>
+<li>
+<p><code>scrape_samples_post_metric_relabeling{job=&quot;&lt;job-name&gt;&quot;, instance=&quot;&lt;instance-id&gt;&quot;}</code><!-- raw HTML omitted -->：采样值为重新打标签后的采样值个数  <!-- raw HTML omitted --></p>
+</li>
+<li>
+<p><code>scrape_samples_scraped{job=&quot;&lt;job-name&gt;&quot;, instance=&quot;&lt;instance-id&gt;&quot;}</code><!-- raw HTML omitted -->：采样值为本次抓取到的采样值个数  <!-- raw HTML omitted --></p>
+</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="prometheus与其他监控系统对比"><code>Prometheus</code>与其他监控系统对比</h3>
+<ul>
+<li>
+<ol>
+<li><code>Prometheus vs Zabbix</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://www.zabbix.com" rel="external" target="_self"><code>Zabbix</code></a><!-- raw HTML omitted -->使用的是<!-- raw HTML omitted --><code>C</code><!-- raw HTML omitted -->和<!-- raw HTML omitted --><code>PHP</code>, <code>Prometheus</code><!-- raw HTML omitted -->使用<!-- raw HTML omitted --><code>Golang</code><!-- raw HTML omitted -->整体而言<!-- raw HTML omitted --><code>Prometheus</code><!-- raw HTML omitted -->运行速度更快一点<!-- raw HTML omitted --></li>
+<li><code>Zabbix</code><!-- raw HTML omitted -->属于传统主机监控，主要用于物理主机、交换机、网络等监控，<!-- raw HTML omitted --><code>Prometheus</code><!-- raw HTML omitted -->不仅适用主机监控，还适用于<!-- raw HTML omitted --><code>Cloud</code>、<code>SaaS</code>、<code>Openstack</code>、<code>Container</code><!-- raw HTML omitted -->监控<!-- raw HTML omitted --></li>
+<li><code>Zabbix</code><!-- raw HTML omitted -->在传统主机监控方面，有更丰富的插件<!-- raw HTML omitted --></li>
+<li><code>Zabbix</code><!-- raw HTML omitted -->可以在<!-- raw HTML omitted --><code>WebGui</code><!-- raw HTML omitted -->中配置很多事情，<!-- raw HTML omitted --><code>Prometheus</code><!-- raw HTML omitted -->需要手动修改文件配置<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><code>Prometheus vs Nagios</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://www.nagios.org" rel="external" target="_self"><code>Nagios</code></a><!-- raw HTML omitted -->数据不支持自定义<!-- raw HTML omitted --><code>Labels</code><!-- raw HTML omitted -->, 不支持查询，告警也不支持去噪、分组, 没有数据存储，如果想查询历史状态，需要安装插件<!-- raw HTML omitted --></li>
+<li><code>Nagios</code><!-- raw HTML omitted -->是上世纪 90 年代的监控系统，比较适合小集群或静态系统的监控<!-- raw HTML omitted --><code>Nagios</code><!-- raw HTML omitted -->太古老，很多特性都没有<!-- raw HTML omitted --><code>Prometheus</code><!-- raw HTML omitted -->要优秀很多<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><code>Prometheus vs Sensu</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://sensu.io" rel="external" target="_self"><code>Sensu</code></a><!-- raw HTML omitted -->广义上讲是<!-- raw HTML omitted --><code>Nagios</code><!-- raw HTML omitted -->的升级版本，它解决了很多<!-- raw HTML omitted --><code>Nagios</code><!-- raw HTML omitted -->的问题，如果你对<!-- raw HTML omitted --><code>Nagios</code><!-- raw HTML omitted -->很熟悉，使用<!-- raw HTML omitted --><code>Sensu</code><!-- raw HTML omitted -->是个不错的选择<!-- raw HTML omitted --></li>
+<li><code>Sensu</code><!-- raw HTML omitted -->依赖<!-- raw HTML omitted --><code>RabbitMQ</code><!-- raw HTML omitted -->和<!-- raw HTML omitted --><code>Redis</code><!-- raw HTML omitted -->，数据存储上扩展性更好<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><code>Prometheus vs InfluxDB</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://www.influxdata.com" rel="external" target="_self"><code>InflusDB</code></a><!-- raw HTML omitted -->是一个开源的时序数据库，主要用于存储数据，如果想搭建监控告警系统，需要依赖其他系统<!-- raw HTML omitted --></li>
+<li><code>InfluxDB</code><!-- raw HTML omitted -->在存储水平扩展以及高可用方面做的更好, 毕竟核心是数据库<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="altermanager核心概念"><code>altermanager</code>核心概念</h3>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->分组<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>分组将类似性质的警报分类为单个通知。在许多系统一次性失败并且数百到数千个警报可能同时发生的较大中断期间，这尤其有用</li>
+<li>示例：发生网络分区时，群集中正在运行数十或数百个服务实例。一半的服务实例无法再访问数据库。<code>Prometheus</code>中的警报规则配置为在每个服务实例无法与数据库通信时发送警报。结果，数百个警报被发送到<code>Alertmanager</code></li>
+<li>作为用户，人们只想获得单个页面，同时仍能够确切地看到哪些服务实例受到影响。因此，可以将<code>Alertmanager</code>配置为按群集和<code>alertname</code>对警报进行分组，以便发送单个紧凑通知</li>
+<li>通过配置文件中的路由树配置警报的分组，分组通知的定时以及这些通知的接收器</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->抑制<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>如果某些其他警报已经触发，则抑制是抑制某些警报的通知的概念。示例：正在触发警报，通知无法访问整个集群。<code>Alertmanager</code>可以配置为在该特定警报触发时将与该集群有关的所有其他警报静音。这可以防止数百或数千个与实际问题无关的触发警报的通知。通过<code>Alertmanager</code>的配置文件配置禁止</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->沉默<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>3沉默是在给定时间内简单地静音警报的简单方法。基于匹配器配置静默，就像路由树一样。检查传入警报它们是否匹配活动静默的所有相等或正则表达式匹配器。如果他们这样做，则不会发送该警报的通知。在<code>Alertmanager</code>的<code>Web</code>界面中配置了静音</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->客户端行为<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Alertmanager</code>对其客户的行为有特殊要求。这些仅适用于不使用<code>Prometheus</code>发送警报的高级用例</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->高可用<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Alertmanager</code>支持配置以创建用于高可用性的集群。这可以使用<code>--cluster- *</code>标志进行配置。重要的是不要在<code>Prometheus</code>和它的<code>Alertmanagers</code>之间加载平衡流量，而是将<code>Prometheus</code>指向所有<code>Alertmanagers</code>的列表</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="6">
+<li><!-- raw HTML omitted -->监控要点<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>监控方式</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>硬件监控</td>
+<td>温度、硬件故障等</td>
+</tr>
+<tr>
+<td>系统监控</td>
+<td><code>CPU</code>、内存、硬盘、网卡流量、<code>TCP</code>状态、进程数</td>
+</tr>
+<tr>
+<td>应用监控</td>
+<td><code>Nginx</code>、<code>Tomcat</code>、<code>PHP</code>、<code>MySQL</code>、<code>Redis</code>等</td>
+</tr>
+<tr>
+<td>日志监控</td>
+<td>系统日志、服务日志、访问日志、错误日志</td>
+</tr>
+<tr>
+<td>安全监控</td>
+<td><code>WAF</code>、敏感文件监控</td>
+</tr>
+<tr>
+<td><code>API</code>监控</td>
+<td>可用性、接口请求、相应时间</td>
+</tr>
+<tr>
+<td>业务监控</td>
+<td>例如电商网站、每分钟生成多少订单、注册用户多少、推广活动效果</td>
+</tr>
+<tr>
+<td>流量分析</td>
+<td>根据流量获取用户相关信息，例如用户地理位置、某页面访问状态、页面停留时间等</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Counter</code></td>
+<td>递增计数器 <code>eg</code>： <code>API</code></td>
+</tr>
+<tr>
+<td><code>Gauge</code></td>
+<td>可以任意变化的数值 <code>eg. cpu</code>占用率</td>
+</tr>
+<tr>
+<td><code>Histogram</code></td>
+<td>对一段时间范围内数据进行采样，并对所有数值求和与统计数量<code>eg</code>柱状图</td>
+</tr>
+<tr>
+<td><code>Summary</code></td>
+<td>与<code>Histogram</code>类似</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<hr>
+<h3 id="安装部署">安装部署</h3>
+<h4 id="prometheus安装"><code>prometheus</code>安装</h4>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted --><a href="https://prometheus.io/docs/prometheus/latest/installation/" rel="external" target="_self"><code>docker</code>安装</a><!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mkdir -p /opt/prometheus/<span style="color:#f92672">{</span>conf,logs,data<span style="color:#f92672">}</span>  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ docker run --detach --name prometheus <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--restart always --publish 19090:9090 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--volume /opt/prometheus/data:/data <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--volume /opt/prometheus/conf:/etc/prometheus <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--config.file<span style="color:#f92672">=</span>/opt/prometheus/conf/prometheus.yml <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>prom/prometheus:v2.40.0  	<span style="color:#75715e"># --config.file 使用额外卷</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat &gt;/opt/docker-compost/prometheus/docker-compose.yml<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">version: &#34;3&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">services:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">prometheus:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">container_name: prometheus  # 启动后名称
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">image: &#39;prom/prometheus:v2.40.0&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># image: &#39;prom/prometheus:v2.40.4&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># image: &#39;prom/prometheus:v2.40.3&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">restart: always
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">hostname: &#39;prometheus&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">environment:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  TZ: Asia/Shanghai
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ports:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#39;19090:9090&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      volumes:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#39;/opt/prometheus/data:/data&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#39;/opt/prometheus/conf:/etc/prometheus&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ docker-compose up -d</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted --><a href="https://prometheus.io/docs/prometheus/latest/getting_started/" rel="external" target="_self">二进制安装</a><!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd /opt/src <span style="color:#f92672">&amp;&amp;</span> wget https://github.com/prometheus/prometheus/releases/download/v2.40.0/prometheus-2.40.0.linux-amd64.tar.gz
+</span></span><span style="display:flex;"><span>$ tar -zxf prometheus-2.40.0.linux-amd64.tar.gz
+</span></span><span style="display:flex;"><span>$ mv prometheus-2.40.0.linux-amd64 prometheus  
+</span></span><span style="display:flex;"><span>$ chown root.root prometheus -R </span></span></code></pre></div><ul>
+<li>2.1 <!-- raw HTML omitted -->编写启动文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/usr/lib/systemd/system/prometheus.service <span style="color:#e6db74">&lt;&lt;EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Unit]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Description=Prometheus
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Documentation=https://prometheus.io/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">After=network.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Service]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Type=simple
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ExecStart=/opt/prometheus/prometheus --config.file=/opt/prometheus/prometheus.yml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ExecReload=/bin/kill -HUP $MAINPID
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Restart=on-failure  	# 或者使用 always
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">StandardOutput=syslog
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">StandardError=syslog
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">SyslogIdentifier=prometheus
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">User=user_name
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Group=user_name
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">LimitNOFILE=65535
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Install]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">WantedBy=multi-user.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li>启动服务、以及设置开机自启<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ nohup ./prometheus --config.file<span style="color:#f92672">=</span>prometheus.yml 2&gt;&amp;<span style="color:#ae81ff">1</span> 1&gt;prometheus.log &amp;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ systemctl enable prometheus
+</span></span><span style="display:flex;"><span>$ systemctl start prometheus</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->查看服务<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ netstat -lntup |grep prometheus
+</span></span><span style="display:flex;"><span>tcp6       <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> :::9090                 :::*                    LISTEN      16655/prometheus</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->源码安装<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ go get github.com/prometheus/prometheus/cmd/...  
+</span></span><span style="display:flex;"><span>$ prometheus --config.file<span style="color:#f92672">=</span>your_config.yml  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 或者make build  </span>
+</span></span><span style="display:flex;"><span>$ mkdir -p $GOPATH/src/github.com/prometheus
+</span></span><span style="display:flex;"><span>$ cd $GOPATH/src/github.com/prometheus
+</span></span><span style="display:flex;"><span>$ git clone https://github.com/prometheus/prometheus.git
+</span></span><span style="display:flex;"><span>$ cd prometheus
+</span></span><span style="display:flex;"><span>$ make build
+</span></span><span style="display:flex;"><span>$ ./prometheus --config.file<span style="color:#f92672">=</span>your_config.yml</span></span></code></pre></div></blockquote>
+<hr>
+<h4 id="alertmanager安装"><code>alertmanager</code>安装</h4>
+<ul>
+<li>
+<ol>
+<li><code>docker</code><!-- raw HTML omitted -->安装<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://quay.io/repository/prometheus/alertmanager?tab=tags&tag=latest" rel="external" target="_self"><code>Alertmanager</code></a></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mkdir -p /opt/alertmanager/<span style="color:#f92672">{</span>conf,logs,data<span style="color:#f92672">}</span>  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ docker run --detach --name alertmanager <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --restart always --publish 19093:9093 --publish 19094:9094 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --volume /opt/alertmanager/data:/data <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  --volume /opt/alertmanager/conf:/etc/alertmanager <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  quay.io/prometheus/alertmanager:latest
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat &gt;/opt/docker-compost/alertmanager/docker-compose.yml<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">version: &#34;3&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  services:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    alertmanager:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      container_name: alertmanager  # 启动后名称
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      image: &#39;quay.io/prometheus/alertmanager:latest&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      # image: &#39;quay.io/prometheus/alertmanager:v0.24.0&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      # image: &#39;quay.io/prometheus/alertmanager:v0.23.0&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      restart: always
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      hostname: &#39;alertmanager&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      environment:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        TZ: Asia/Shanghai
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      ports:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#39;19093:9093&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#39;19094:9094&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      volumes:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#39;/opt/alertmanager/data:/data&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - &#39;/opt/alertmanager/conf:/etc/alertmanager&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ docker-compose up -d</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->二进制安装<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd /opt <span style="color:#f92672">&amp;&amp;</span> wget -c https://github.com/prometheus/alertmanager/releases/download/v0.24.0/alertmanager-0.24.0.linux-amd64.tar.gz
+</span></span><span style="display:flex;"><span>$ tar zxf alertmanager-0.24.0.linux-amd64.tar.gz
+</span></span><span style="display:flex;"><span>$ mv alertmanager-0.24.0.linux-amd64 alertmanager
+</span></span><span style="display:flex;"><span>$ chown root.root alertmanager -R</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->编写启动文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/usr/lib/systemd/system/alertmanager.service <span style="color:#e6db74">&lt;&lt;EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Unit]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Description=Alertmanager
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Documentation=https://prometheus.io/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">After=network.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Service]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Type=simple
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ExecStart=/opt/alertmanager/alertmanager --config.file=/opt/alertmanager/alertmanager.yml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Restart=on-failure
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Install]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">WantedBy=multi-user.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->启动服务、以及设置开机自启<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ nohup ./alertmanager --config.file<span style="color:#f92672">=</span>alertmanager.yml 2&gt;&amp;<span style="color:#ae81ff">1</span> 1&gt;alertmanager.log &amp;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ systemctl enable alertmanager
+</span></span><span style="display:flex;"><span>$ systemctl start alertmanager</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->查看启动服务的端口<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ netstat -lntup |grep alertmanager
+</span></span><span style="display:flex;"><span>tcp6       <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> :::9094                 :::*                    LISTEN      17237/alertmanager
+</span></span><span style="display:flex;"><span>tcp6       <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> :::9093                 :::*                    LISTEN      17237/alertmanager
+</span></span><span style="display:flex;"><span>udp6       <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> :::9094                 :::*                                17237/alertmanager</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->编译安装<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ GO15VENDOREXPERIMENT<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> go get github.com/prometheus/alertmanager/cmd/...
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># cd $GOPATH/src/github.com/prometheus/alertmanager</span>
+</span></span><span style="display:flex;"><span>$ alertmanager --config.file<span style="color:#f92672">=</span>&lt;your_file&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 手动源码构建</span>
+</span></span><span style="display:flex;"><span>$ mkdir -p $GOPATH/src/github.com/prometheus
+</span></span><span style="display:flex;"><span>$ cd $GOPATH/src/github.com/prometheus
+</span></span><span style="display:flex;"><span>$ git clone https://github.com/prometheus/alertmanager.git
+</span></span><span style="display:flex;"><span>$ cd alertmanager
+</span></span><span style="display:flex;"><span>$ make build
+</span></span><span style="display:flex;"><span>$ ./alertmanager --config.file<span style="color:#f92672">=</span>&lt;your_file&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># amtool构建</span>
+</span></span><span style="display:flex;"><span>$ make build BINARIES<span style="color:#f92672">=</span>amtool</span></span></code></pre></div></blockquote>
+<hr>
+<h4 id="节点安装node_export">节点安装<code>node_export</code></h4>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->利用<!-- raw HTML omitted --><code>node_export</code><!-- raw HTML omitted -->来监控主机，官方也提供了很多其他的<!-- raw HTML omitted --><code>export</code><!-- raw HTML omitted -->可以用来直接使用<!-- raw HTML omitted --></li>
+<li><a href="https://prometheus.io/docs/instrumenting/exporters/" rel="external" target="_self"><code>EXPORTERS AND INTEGRATIONS</code></a></li>
+<li><a href="https://prometheus.io/docs/guides/node-exporter/" rel="external" target="_self">使用<code>NODE EXPORTER</code>监控<code>LINUX</code>主机指标</a></li>
+<li><a href="https://grafana.com/grafana/dashboards/8919-1-node-exporter-for-prometheus-dashboard-cn-0413-consulmanager/" rel="external" target="_self"><code>1 Node Exporter Dashboard 22/04/13 ConsulManager</code>自动同步版</a></li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->二进制安装  <!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd /opt <span style="color:#f92672">&amp;&amp;</span> wget -c https://github.com/prometheus/node_exporter/releases/download/v1.4.0/node_exporter-1.4.0.linux-amd64.tar.gz
+</span></span><span style="display:flex;"><span>$ tar zxvf node_exporter-1.4.0.linux-amd64.tar.gz
+</span></span><span style="display:flex;"><span>$ mv node_exporter-1.4.0.linux-amd64 node_exporter
+</span></span><span style="display:flex;"><span>$ chown root.root node_exporter -R</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->编写启动文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/usr/lib/systemd/system/node_exporter.service <span style="color:#e6db74">&lt;&lt;EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Unit]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Description=node_exporter
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Documentation=https://prometheus.io/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">After=network.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Service]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Type=simple
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ExecStart=/opt/node_exporter/node_exporter
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Restart=on-failure
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Install]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">WantedBy=multi-user.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->启动服务、以及设置开机自启<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ nohup ./node_exporter --config.file<span style="color:#f92672">=</span>node_exporter.yml 2&gt;&amp;<span style="color:#ae81ff">1</span> 1&gt;node_exporter.log &amp;  
+</span></span><span style="display:flex;"><span>$ systemctl enable node_exporter
+</span></span><span style="display:flex;"><span>$ systemctl start node_exporter</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->查看启动的服务端口<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ netstat -lntup |grep node_export
+</span></span><span style="display:flex;"><span>tcp6       <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> :::9100                 :::*                    LISTEN      4551/node_exporter</span></span></code></pre></div></blockquote>
+<hr>
+<h4 id="部署cadvisor采集源">部署<code>cAdvisor</code>采集源</h4>
+<ul>
+<li>
+<ol>
+<li><code>Docker</code><!-- raw HTML omitted -->部署<!-- raw HTML omitted --><code>cAdvisor</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://grafana.com/grafana/dashboards/893-main/" rel="external" target="_self"><code>Docker and system monitoring Grafana dashboard</code></a></li>
+<li><a href="https://grafana.com/grafana/dashboards/10585-docker-dashboard/" rel="external" target="_self"><code>Grafana Docker Dashboard</code></a></li>
+<li><a href="https://grafana.com/grafana/dashboards/16314-docker-container-os-node-node-exporter-cadvisor/?tab=revisions" rel="external" target="_self"><code>docker container &amp; OS node(node_exporter, cadvisor)</code></a></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ docker run -d --name<span style="color:#f92672">=</span>cadvisor <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -p 8080:8080 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -v /:/rootfs:ro <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -v /var/run:/var/run:rw <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -v /sys:/sys:ro <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -v /var/lib/docker/:/var/lib/docker:ro <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  google/cadvisor:v0.33.0</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->查看指标<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ http://&lt;目标节点IP&gt;:8080/metrics</span></span></code></pre></div></blockquote>
+<hr>
+<h4 id="数据库服务器部署mysqld_exporter">数据库服务器部署<code>mysqld_exporter</code></h4>
+<blockquote>
+<ul>
+<li><a href="https://grafana.com/grafana/dashboards/17320-1-mysqld-exporter-dashboard-22-11-06/" rel="external" target="_self"><code>1 Mysqld Exporter Dashboard 22/11/06中文版</code></a></li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->二进制安装  <!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd /opt <span style="color:#f92672">&amp;&amp;</span> wget https://github.com/prometheus/mysqld_exporter/releases/download/v0.14.0/mysqld_exporter-0.14.0.linux-amd64.tar.gz
+</span></span><span style="display:flex;"><span>$ tar zxvf mysqld_exporter-0.14.0.linux-amd64.tar.gz
+</span></span><span style="display:flex;"><span>$ mv mysqld_exporter-0.14.0.linux-amd64 mysqld_exporter  
+</span></span><span style="display:flex;"><span>$ chown -R root. mysqld_exporter  </span></span></code></pre></div><ul>
+<li><code>mysqld_exporter</code><!-- raw HTML omitted -->需要连接<!-- raw HTML omitted --><code>Mysql</code><!-- raw HTML omitted -->，首先为它创建用户并赋予所需的权限<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span><span style="color:#66d9ef">GRANT</span> REPLICATION CLIENT, PROCESS <span style="color:#66d9ef">ON</span> <span style="color:#f92672">*</span>.<span style="color:#f92672">*</span> <span style="color:#66d9ef">TO</span> <span style="color:#e6db74">&#39;exporter&#39;</span><span style="color:#f92672">@</span><span style="color:#e6db74">&#39;localhost&#39;</span> <span style="color:#66d9ef">identified</span> <span style="color:#66d9ef">by</span> <span style="color:#e6db74">&#39;123456&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">GRANT</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">ON</span> performance_schema.<span style="color:#f92672">*</span> <span style="color:#66d9ef">TO</span> <span style="color:#e6db74">&#39;exporter&#39;</span><span style="color:#f92672">@</span><span style="color:#e6db74">&#39;localhost&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">flush</span> <span style="color:#66d9ef">privileges</span>;</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->在数据库服务器<!-- raw HTML omitted --><code>mysqld_exporter</code><!-- raw HTML omitted -->目录下创建<!-- raw HTML omitted --><code>.my.cnf</code><!-- raw HTML omitted -->文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/opt/mysqld_exporter/.my.cnf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[client]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">user=mysql_monitor
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">password=mysql_monitor
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->编写启动文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/usr/lib/systemd/system/mysqld_exporter.service <span style="color:#e6db74">&lt;&lt;EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Unit]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Description=mysql_exporter
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Documentation=https://prometheus.io/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">After=network.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Service]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Type=simple
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ExecStart=/opt/mysqld_exporter/mysqld_exporter --config.my-cnf=/opt/mysqld_exporter/.my.cnf 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Restart=on-failure
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Install]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">WantedBy=multi-user.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->启动服务、以及设置开机自启<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ./mysqld_exporter  --config.my-cnf<span style="color:#f92672">=</span>/opt/mysqld_exporter/.my.cnf
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ systemctl enable mysqld_exporter
+</span></span><span style="display:flex;"><span>$ systemctl start mysqld_exporter</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->查看启动的服务端口<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ss -unplt|grep mysqld_exporter
+</span></span><span style="display:flex;"><span>tcp    LISTEN     <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">128</span>    <span style="color:#f92672">[</span>::<span style="color:#f92672">]</span>:9104               <span style="color:#f92672">[</span>::<span style="color:#f92672">]</span>:*                   users:<span style="color:#f92672">((</span><span style="color:#e6db74">&#34;mysqld_exporter&#34;</span>,pid<span style="color:#f92672">=</span>7339,fd<span style="color:#f92672">=</span>3<span style="color:#f92672">))</span></span></span></code></pre></div></blockquote>
+<hr>
+<h4 id="部署pushgateway推送网关">部署<code>pushgateway</code>(推送网关)</h4>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->二进制安装  <!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd /opt <span style="color:#f92672">&amp;&amp;</span> wget -c https://github.com/prometheus/pushgateway/releases/download/v1.4.3/pushgateway-1.4.3.linux-amd64.tar.gz
+</span></span><span style="display:flex;"><span>$ tar zxf pushgateway-1.4.3.linux-amd64.tar.gz
+</span></span><span style="display:flex;"><span>$ mv pushgateway-1.4.3.linux-amd64 pushgateway
+</span></span><span style="display:flex;"><span>$ chown root.root pushgateway -R</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->编写启动文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/usr/lib/systemd/system/pushgateway.service <span style="color:#e6db74">&lt;&lt;EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Unit]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Description=pushgateway
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Documentation=https://prometheus.io/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">After=network.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Service]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Type=simple
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ExecStart=/opt/pushgateway/pushgateway
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Restart=on-failure
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[Install]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">WantedBy=multi-user.target
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->启动服务、以及设置开机自启<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ nohup ./pushgateway --config.file<span style="color:#f92672">=</span>node_exporter.yml 2&gt;&amp;<span style="color:#ae81ff">1</span> 1&gt;node_exporter.log &amp;  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ systemctl enable pushgateway
+</span></span><span style="display:flex;"><span>$ systemctl start pushgateway</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->查看启动的服务端口<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ netstat -lntup |grep push
+</span></span><span style="display:flex;"><span>tcp6       <span style="color:#ae81ff">0</span>      <span style="color:#ae81ff">0</span> :::9091                 :::*                    LISTEN      5982/pushgateway</span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

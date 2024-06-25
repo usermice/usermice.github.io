@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="修改gitlab配置文件 GitLab → 搭建中常遇的问题与日常维护 $ cat &gt;/etc/gitlab/gitlab.rb&lt;&lt;-EOF # 修改gitlab默认端口 external_url &#39;http://185.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Use_Gitlab :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="修改gitlab配置文件 GitLab → 搭建中常遇的问题与日常维护 $ cat &gt;/etc/gitlab/gitlab.rb&lt;&lt;-EOF # 修改gitlab默认端口 external_url &#39;http://185.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/gitlab/use_gitlab/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Use_Gitlab :: Hugo Relearn Theme">
+    <meta property="og:description" content="修改gitlab配置文件 GitLab → 搭建中常遇的问题与日常维护 $ cat &gt;/etc/gitlab/gitlab.rb&lt;&lt;-EOF # 修改gitlab默认端口 external_url &#39;http://185.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-17T23:42:07+08:00">
+    <meta property="article:modified_time" content="2024-06-17T23:42:07+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Use_Gitlab :: Hugo Relearn Theme">
+    <meta itemprop="description" content="修改gitlab配置文件 GitLab → 搭建中常遇的问题与日常维护 $ cat &gt;/etc/gitlab/gitlab.rb&lt;&lt;-EOF # 修改gitlab默认端口 external_url &#39;http://185.">
+    <meta itemprop="datePublished" content="2024-06-17T23:42:07+08:00">
+    <meta itemprop="dateModified" content="2024-06-17T23:42:07+08:00">
+    <meta itemprop="wordCount" content="792">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Use_Gitlab :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/gitlab/use_gitlab/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/gitlab/"><span itemprop="name">Gitlab</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Use_Gitlab</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/gitlab/use_gitrunner/" title="Use_Gitrunner (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/gitlab/use_git_command/" title="Use_Git_Command (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="use_gitlab">Use_Gitlab</h1>
+
+<h2 id="修改gitlab配置文件">修改gitlab配置文件</h2>
+<ul>
+<li>
+<ol>
+<li><a href="https://blog.csdn.net/A___LEi/article/details/110476531" rel="external" target="_self"><code>GitLab →</code> 搭建中常遇的问题与日常维护</a></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/etc/gitlab/gitlab.rb<span style="color:#e6db74">&lt;&lt;-EOF  	# 修改gitlab默认端口
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">external_url &#39;http://185.167.13.45:12580&#39;  	# 修改链接地址，在32行左右
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">unicorn[&#39;port&#39;] = &#39;9092&#39;  	# 修改默认端口，在 995行左右，新版本改为：puma[&#39;port&#39;]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="处理gitlab报错">处理gitlab报错</h2>
+<ul>
+<li>
+<ol>
+<li><a href="https://blog.csdn.net/fishinhouse/article/details/105131917" rel="external" target="_self"><code>gitlab runner 500</code>错误解决</a></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ docker exec -it gitlab cat /var/log/gitlab/gitlab-rails/production.log
+</span></span><span style="display:flex;"><span>$ gitlab-rails console
+</span></span><span style="display:flex;"><span>--------------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>Ruby:         ruby 2.7.5p203 <span style="color:#f92672">(</span>2021-11-24 revision f69aeb8314<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>x86_64-linux<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>GitLab:       14.4.4 <span style="color:#f92672">(</span>838dea1cf23<span style="color:#f92672">)</span> FOSS
+</span></span><span style="display:flex;"><span>GitLab Shell: 13.21.1
+</span></span><span style="display:flex;"><span>PostgreSQL:   12.7
+</span></span><span style="display:flex;"><span>--------------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>Loading production environment <span style="color:#f92672">(</span>Rails 6.1.4.1<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:001:0&gt; ApplicationSetting.current.reset_runners_registration_token!
+</span></span><span style="display:flex;"><span><span style="color:#f92672">=</span>&gt; true
+</span></span><span style="display:flex;"><span>irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:002:0&gt; exit
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ gitlab-rails dbconsole 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>-- Clear project tokens<span style="color:#f92672">(</span>清除项目令牌<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>UPDATE projects SET runners_token <span style="color:#f92672">=</span> null, runners_token_encrypted <span style="color:#f92672">=</span> null;
+</span></span><span style="display:flex;"><span>-- Clear group tokens<span style="color:#f92672">(</span>清除组令牌<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>UPDATE namespaces SET runners_token <span style="color:#f92672">=</span> null, runners_token_encrypted <span style="color:#f92672">=</span> null;
+</span></span><span style="display:flex;"><span>-- Clear instance tokens<span style="color:#f92672">(</span>清除实例令牌<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>UPDATE application_settings SET runners_registration_token_encrypted <span style="color:#f92672">=</span> null;
+</span></span><span style="display:flex;"><span>-- Clear key used <span style="color:#66d9ef">for</span> JWT authentication<span style="color:#f92672">(</span>用于 JWT 身份验证的清除密钥<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>-- This may break the $CI_JWT_TOKEN job variable:
+</span></span><span style="display:flex;"><span>-- https://gitlab.com/gitlab-org/gitlab/-/issues/325965
+</span></span><span style="display:flex;"><span>UPDATE application_settings SET encrypted_ci_jwt_signing_key <span style="color:#f92672">=</span> null;
+</span></span><span style="display:flex;"><span>-- Clear runner tokens<span style="color:#f92672">(</span>清除跑步者令牌<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>UPDATE ci_runners SET token <span style="color:#f92672">=</span> null, token_encrypted <span style="color:#f92672">=</span> null;</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->处理<!-- raw HTML omitted --><code>502</code><!-- raw HTML omitted -->报错<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->修改配置文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ vim /etc/gitlab/gitlab.rb  	<span style="color:#75715e"># 修改gitlab默认端口</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 报错502,下列取消注释</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># unicorn[&#39;port&#39;] = 8088</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># postgresql[&#39;shared_buffers&#39;] = &#34;256MB&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># postgresql[&#39;max_connections&#39;] = 200</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->然后重启<!-- raw HTML omitted --><code>gitlab</code><!-- raw HTML omitted -->以及做初始化<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ gitlab-ctl reconfigure  	<span style="color:#75715e"># 初始化gitlab</span>
+</span></span><span style="display:flex;"><span>$ gitlab-ctl restart</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><code>gitlab 403 forbidden</code><!-- raw HTML omitted -->报错解决<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>gitlab</code>稳定运行有一年多了，今天研发部小伙伴跑来说，他的<code>gitlab</code>访问不了，不一会，还有几位小伙伴也一样的反馈查看他们的报错，为<code>403 forbidden</code>奇怪的是，我访问是正常的</li>
+<li>排查过程</li>
+<li>首先上服务器，查看各服务均正常<code>gitlab-ctl logs</code>查看日志，发现有一个<code>IP 172.17.2.254</code>访问被拒绝，而这个<code>IP</code>，是无线网段的网关。瞬间明白了，不能用的全是用无线上网的同学，只要是经过<code>2.254</code>的都不能用继续查看日志，有个<code>xiaoxiao</code>用户，有过几次登陆失败，之后就全都是<code>forbidden</code>看来<code>gitlab</code>是有防爆破机制，查看配置文档<code>gitlab.yml</code>，果然有<code>rack_attack</code>的配置，如图：</li>
+</ul>
+<p><a href="#R-image-91304f0e53c41fc6debe4321040c5733" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Gitlab_Server/Snipaste_2022-10-11_20-13-40.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-91304f0e53c41fc6debe4321040c5733"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Gitlab_Server/Snipaste_2022-10-11_20-13-40.png"></a></p>
+<ul>
+<li>解决方法，进入<code>redis</code>，删除被墙的<code>IP</code>地址即可以，命令如下：</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /opt/gitlab/embedded/bin/redis-cli -s /var/opt/gitlab/redis/redis.socket keys <span style="color:#e6db74">&#39;*&#39;</span> | grep <span style="color:#e6db74">&#39;rack::attack&#39;</span> | xargs /opt/gitlab/embedded/bin/redis-cli -s /var/opt/gitlab/redis/redis.socket DEL
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>integer<span style="color:#f92672">)</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 执行这命令 使用无线连接gitlab的电脑恢复正常。</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><code>postfix</code><!-- raw HTML omitted -->启动报错<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>修改<code>/etc/postfix/main.cf</code>中：<code>#myhostname = host.domain.tld </code></li>
+<li>其中：<code>host.domain.tld</code>必须是：<code>xxx.xxxx.xxx</code></li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><code>gitlab8.0</code><!-- raw HTML omitted -->版本汉化<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->安装扩展插件以及下载汉化版本库<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y install patch git
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># git clone https://gitlab.com/xhang/gitlab.git  	# 汉化版本库</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># git diff v10.0.2 v10.0.2-zh &gt; ../10.0.2-zh.diff  	# 版本对比</span>
+</span></span><span style="display:flex;"><span>$ git clone https://gitlab.com/larryli/gitlab.git</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->配置汉化文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd gitlab
+</span></span><span style="display:flex;"><span>$ git diff origin/8-0-stable..origin/8-0-zh &gt; patch.diff  	<span style="color:#75715e"># 生成:patch.diff文件</span>
+</span></span><span style="display:flex;"><span>$ patch -d /opt/gitlab/embedded/service/gitlab-rails -p1 &lt; /tmp/patch.diff  	<span style="color:#75715e"># 把:patch.diff文件安装到gitlab安装目录下</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->重启<!-- raw HTML omitted --><code>gitlab</code><!-- raw HTML omitted -->以及做初始化<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ gitlab-ctl reconfigure
+</span></span><span style="display:flex;"><span>$ gitlab-ctl restart  	<span style="color:#75715e"># 重启gitlab</span></span></span></code></pre></div><ul>
+<li>
+<p><!-- raw HTML omitted -->在打包补丁<!-- raw HTML omitted --><code>patch -d /opt/gitlab/embedded/service/gitlab-rails -p1 &lt; …/v10.8.4-zh.diff</code>
+<!-- raw HTML omitted -->后可能会出来该情况，一路回车跳过即可<!-- raw HTML omitted --></p>
+<p><a href="#R-image-67af13fdb35dafb0ffcbb7cffb367734" class="lightbox-link"><img alt="汉化" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Gitlab_Server/languge-zh.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-67af13fdb35dafb0ffcbb7cffb367734"><img alt="汉化" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Gitlab_Server/languge-zh.png"></a></p>
+<p><a href="#R-image-63fc203a2764248cf539e517b721cf88" class="lightbox-link"><img alt="汉化2" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Gitlab_Server/languge-zh-1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-63fc203a2764248cf539e517b721cf88"><img alt="汉化2" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Gitlab_Server/languge-zh-1.png"></a></p>
+</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="修改gitlab管理员密码的三种方式">修改<code>gitlab</code>管理员密码的三种方式</h2>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->方法一，使用<!-- raw HTML omitted --><code>id</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:001:0&gt; user <span style="color:#f92672">=</span> User.where<span style="color:#f92672">(</span>id:<span style="color:#f92672">[</span>user<span style="color:#960050;background-color:#1e0010">&#39;</span>s register index<span style="color:#f92672">])</span>.first</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->方法二，使用邮箱<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:001:0&gt; user <span style="color:#f92672">=</span> User.where<span style="color:#f92672">(</span>email:<span style="color:#f92672">[</span>user<span style="color:#960050;background-color:#1e0010">&#39;</span>s register email<span style="color:#f92672">])</span>.first</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->方法三，使用用户名<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:001:0&gt; user <span style="color:#f92672">=</span> User.where<span style="color:#f92672">(</span>name:<span style="color:#f92672">[</span>user<span style="color:#960050;background-color:#1e0010">&#39;</span>s register name<span style="color:#f92672">])</span>.first</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->执行命令进入控制台：<!-- raw HTML omitted --><code>gitlab-rails console production</code><!-- raw HTML omitted -->，如果报错执行：<!-- raw HTML omitted --><code>gitlab-rails console -e production</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ gitlab-rails console -e production
+</span></span><span style="display:flex;"><span>--------------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>GitLab:       12.8.6 <span style="color:#f92672">(</span>5fc76a64537<span style="color:#f92672">)</span> FOSS
+</span></span><span style="display:flex;"><span>GitLab Shell: 11.0.0
+</span></span><span style="display:flex;"><span>PostgreSQL:   10.12
+</span></span><span style="display:flex;"><span>--------------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>Loading production environment <span style="color:#f92672">(</span>Rails 6.0.2<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:001:0&gt; user <span style="color:#f92672">=</span> User.where<span style="color:#f92672">(</span>id: 1<span style="color:#f92672">)</span>.first
+</span></span><span style="display:flex;"><span><span style="color:#f92672">=</span>&gt; <span style="color:#75715e">#&lt;User id:1 @root&gt;</span>
+</span></span><span style="display:flex;"><span>irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:002:0&gt; user.password <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;12345678&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;12345678&#34;</span>
+</span></span><span style="display:flex;"><span>irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:003:0&gt; user.password_confirmation <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;12345678&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;12345678&#34;</span>
+</span></span><span style="display:flex;"><span>irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:004:0&gt; user.save!
+</span></span><span style="display:flex;"><span>Enqueued ActionMailer::DeliveryJob <span style="color:#f92672">(</span>Job ID: b6aca58a-cfde-4890-aa22-a8f491290c96<span style="color:#f92672">)</span> to Sidekiq<span style="color:#f92672">(</span>mailers<span style="color:#f92672">)</span> with arguments: <span style="color:#e6db74">&#34;DeviseMailer&#34;</span>, <span style="color:#e6db74">&#34;password_change&#34;</span>, <span style="color:#e6db74">&#34;deliver_now&#34;</span>, <span style="color:#75715e">#&lt;GlobalID:0x00007f79cb5f5298 @uri=#&lt;URI::GID gid://gitlab/User/1&gt;&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">=</span>&gt; true
+</span></span><span style="display:flex;"><span>irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:005:0&gt; exit</span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="gitlab配置邮箱"><code>Gitlab</code>配置邮箱</h2>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ vim /etc/gitlab/gitlab.ra
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># gitlab_rails[&#39;smtp_enable&#39;] = true</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># gitlab_rails[&#39;smtp_address&#39;] = &#34;smtp.server&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># gitlab_rails[&#39;smtp_port&#39;] = 465</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># gitlab_rails[&#39;smtp_user_name&#39;] = &#34;smtp user&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># gitlab_rails[&#39;smtp_password&#39;] = &#34;smtp password&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># gitlab_rails[&#39;smtp_domain&#39;] = &#34;example.com&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># gitlab_rails[&#39;smtp_authentication&#39;] = &#34;login&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># gitlab_rails[&#39;smtp_enable_starttls_auto&#39;] = true</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># gitlab_rails[&#39;smtp_tls&#39;] = false</span></span></span></code></pre></div><p><a href="#R-image-517bb244975fe9bd4c86f0828ee791d5" class="lightbox-link"><img alt="configure-git-email" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Gitlab_Server/configure-git-email.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-517bb244975fe9bd4c86f0828ee791d5"><img alt="configure-git-email" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Gitlab_Server/configure-git-email.png"></a></p>
+</blockquote>
+<hr>
+<h2 id="gitlab版本升级"><code>Gitlab</code>版本升级</h2>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://docs.gitlab.com/ee/update/index.html#upgrade-paths" rel="external" target="_self"><code>Gitlab</code>升级</a></td>
+<td>升级博客</td>
+</tr>
+<tr>
+<td><a href="https://zhuanlan.zhihu.com/p/352342116" rel="external" target="_self"><code>Gitlab</code>版本升级</a></td>
+<td>升级博客</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-9.5.10
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-10.8.7
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-11.11.8
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-12.0.12
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-12.1.17
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-12.10.14
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-13.0.14
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-13.1.11
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-13.8.8
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-13.12.15
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-14.0.12
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-14.1.1  	<span style="color:#75715e"># 14.1.1为过度必须版本</span>
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-14.2.1  	<span style="color:#75715e"># 14.2.1为过度必须版本</span>
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-14.3.6
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-14.9.5
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-14.10.Z
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-15.0.Z
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-15.1.Z
+</span></span><span style="display:flex;"><span>$ yum install -y gitlab-ce-15.4.0</span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="gitlab备份还原"><code>Gitlab</code>备份还原</h2>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.jianshu.com/p/a2600f8dffc2" rel="external" target="_self"><code>Gitlab</code>备份还原</a></td>
+<td>备份还原博客</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><!-- raw HTML omitted -->创建备份，创建后会在：<!-- raw HTML omitted --><code>/var/opt/gitlab/backups/</code><!-- raw HTML omitted -->目录下生成备份文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ gitlab-rake gitlab:backup:create</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->备份还原前先停止相关服务<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ gitlab-ctl stop unicorn  	<span style="color:#75715e"># docker exec -it gitlab gitlab-ctl stop unicorn</span>
+</span></span><span style="display:flex;"><span>$ gitlab-ctl stop sidekiq  	<span style="color:#75715e"># docker exec -it gitlab gitlab-ctl stop sidekiq</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->从默认备份恢复，以及<!-- raw HTML omitted --><code>backups</code><!-- raw HTML omitted -->目录下有多个备份文件时，指定时间戳恢复<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ gitlab-rake gitlab:backup:restore BACKUP<span style="color:#f92672">=</span><span style="color:#ae81ff">1500809139</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 从默认备份恢复（backups目录下只有一个备份文件时）</span>
+</span></span><span style="display:flex;"><span>$ gitlab-rake gitlab:backup:restore  	<span style="color:#75715e"># docker exec -it gitlab gitlab-rake gitlab:backup:restore</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->确认<!-- raw HTML omitted --><code>：gitlab-secrets.json</code><!-- raw HTML omitted -->文件是否有做备份，如果忘记做备份需要做清空处理<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ gitlab-rails dbconsole
+</span></span><span style="display:flex;"><span>$ gitlab-psql -d gitlabhq_production
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 等待几分钟，会进入交互界面，进入后输入如下命令</span>
+</span></span><span style="display:flex;"><span>$ SELECT * FROM public.<span style="color:#e6db74">&#34;ci_group_variables&#34;</span>;
+</span></span><span style="display:flex;"><span>$ SELECT * FROM public.<span style="color:#e6db74">&#34;ci_variables&#34;</span>;
+</span></span><span style="display:flex;"><span>$ DELETE FROM ci_group_variables;
+</span></span><span style="display:flex;"><span>$ DELETE FROM ci_variables;
+</span></span><span style="display:flex;"><span>$ UPDATE projects SET runners_token <span style="color:#f92672">=</span> null, runners_token_encrypted <span style="color:#f92672">=</span> null;
+</span></span><span style="display:flex;"><span>$ UPDATE namespaces SET runners_token <span style="color:#f92672">=</span> null, runners_token_encrypted <span style="color:#f92672">=</span> null;
+</span></span><span style="display:flex;"><span>$ UPDATE application_settings SET runners_registration_token_encrypted <span style="color:#f92672">=</span> null;
+</span></span><span style="display:flex;"><span>$ UPDATE application_settings SET encrypted_ci_jwt_signing_key <span style="color:#f92672">=</span> null;
+</span></span><span style="display:flex;"><span>$ UPDATE ci_runners SET token <span style="color:#f92672">=</span> null, token_encrypted <span style="color:#f92672">=</span> null;
+</span></span><span style="display:flex;"><span>$ UPDATE ci_builds SET token <span style="color:#f92672">=</span> null, token_encrypted <span style="color:#f92672">=</span> null;
+</span></span><span style="display:flex;"><span>$ TRUNCATE web_hooks CASCADE;</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->还原后启动<!-- raw HTML omitted --><code>Gitlab</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ gitlab-ctl start  	<span style="color:#75715e"># docker exec -it gitlab gitlab-ctl start</span>
+</span></span><span style="display:flex;"><span>$ gitlab-ctl reconfigure  	<span style="color:#75715e"># docker exec -it gitlab gitlab-ctl reconfigure</span></span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="gitlab恢复数据报错解决方法"><code>Gitlab</code>恢复数据报错解决方法</h2>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.jianshu.com/p/09a2b0c25ecd" rel="external" target="_self"><code>Gitlab</code>恢复数据报错解决方法</a></td>
+<td>博客地址</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>postgresql</code><!-- raw HTML omitted -->配置<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ vim /var/opt/gitlab/postgresql/data/postgresql.conf
+</span></span><span style="display:flex;"><span>listen_addresses <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;*&#39;</span>  	<span style="color:#75715e"># 中添加*符号</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 最下面新增两行</span>
+</span></span><span style="display:flex;"><span>$ vim /var/opt/gitlab/postgresql/data/pg_hba.conf
+</span></span><span style="display:flex;"><span>local   all         all                               trust
+</span></span><span style="display:flex;"><span>host    all         all                               127.0.0.1/32 trust
+</span></span><span style="display:flex;"><span>$ gitlab-ctl restart</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>gitlab</code><!-- raw HTML omitted -->账号为超级用户<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ su - gitlab-psql
+</span></span><span style="display:flex;"><span>Last login: Fri Dec <span style="color:#ae81ff">24</span> 17:35:01 CST <span style="color:#ae81ff">2021</span> on pts/0
+</span></span><span style="display:flex;"><span>-sh-4.2$ /opt/gitlab/embedded/bin/psql -h 127.0.0.1 gitlabhq_production
+</span></span><span style="display:flex;"><span>psql <span style="color:#f92672">(</span>12.7<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>SSL connection <span style="color:#f92672">(</span>protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>Type <span style="color:#e6db74">&#34;help&#34;</span> <span style="color:#66d9ef">for</span> help.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>gitlabhq_production<span style="color:#f92672">=</span><span style="color:#75715e"># ALTER USER gitlab WITH SUPERUSER;</span>
+</span></span><span style="display:flex;"><span>ALTER ROLE
+</span></span><span style="display:flex;"><span>gitlabhq_production<span style="color:#f92672">=</span><span style="color:#75715e"># \q</span></span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="配置gitlab的nginx映射以及白名单">配置<code>Gitlab</code>的<code>Nginx</code>映射以及白名单</h2>
+<blockquote>
+<ul>
+<li><code>Gitlab</code><!-- raw HTML omitted -->白名单<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/opt/gitlab/gitlab.rb<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">gitlab_rails[&#39;rack_attack_git_basic_auth&#39;] = {  	# 670 行左右
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   #&#39;enabled&#39; =&gt; true,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   &#39;enabled&#39; =&gt; false,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   &#39;ip_whitelist&#39; =&gt; [&#34;IP&#34;,&#34;127.0.0.1&#34;],
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   &#39;maxretry&#39; =&gt; 10,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   &#39;findtime&#39; =&gt; 60,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   &#39;bantime&#39; =&gt; 86400
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->修改展示<!-- raw HTML omitted --><code>Gitlab UI</code><!-- raw HTML omitted -->端的<!-- raw HTML omitted --><code>SSH</code><!-- raw HTML omitted -->端口<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/opt/gitlab/gitlab.rb<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">gitlab_rails[&#39;gitlab_shell_ssh_port&#39;] = 18082  	# 651 行左右，
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

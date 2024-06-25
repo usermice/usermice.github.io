@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="安全控制 访问控制 kubernetes作为一个分布式集群的管理工具，保证集群的安全性是其一个重要的任务。所谓的安全性其实就是保证对kubernetes的各种客户端进行认证和授权操作 在kubernetes集群中，客户端通常由两类： User Account：一般是独立于kubernetes之外的其他服务管理的用户账号 Service Account：kubernetes管理的账号，用于为Pod的服务进程在访问kubernetes时提供身份标识 graph LR C1((用户)) --&gt; B1(User&lt;br&gt;Account) --&gt; A((Kubernetes)) C2((Pod)) --&gt; B2(Service&lt;br&gt;Account) --&gt; A((Kubernetes)) 认证、授权和准入控制 API Server是访问和管理资源对象的唯一入口。任何一个请求访问API Server，都要经过下面的三个流程： Authentication(认证)：身份鉴别，只有正确的账号才能通过认证 Authorization(授权)：权限鉴别，判断用户是否有权限对访问的资源执行特定的动作 Admission Control(准入控制)：精细访问控制，用于补充授权机制以实现更加精细的访问控制功能 需要注意：在Kubernetes中不能通过API调用将普通用户添加到集群中 普通账户是针对（人）用户的，服务账户针对Pods进程 普通账户是全局性，在集群所有namespaces中，名称具有唯一性 通常，集群的普通账户可以与企业数据库同步，新的普通账户创建需要特殊权限，服务账户创建目的是更轻量化，允许集群用户为特定任务创建服务账户 普通账户和服务账户的审核注意事项不同 对于复杂系统的配置包，可以包括对该系统的各种组件的服务账户的定义 graph LR A((请求)) --&gt; B[Authentication&lt;br&gt;认证&lt;br&gt;身份鉴别&lt;br&gt;] --&gt; C[Authorization&lt;br&gt;授权&lt;br&gt;权限鉴别&lt;br&gt;] --&gt; D[Admission Control&lt;br&gt;注入控制&lt;br&gt;精细访问控制&lt;br&gt;] --&gt; E((Kubernetes&lt;br&gt;资源)) 认证管理 User Accounts(普通账户) Service Accounts(服务账户) apiVersion: v1 kind: ServiceAccount # 权限管理 metadata: name: nfs-client-provisioner namespace: default kubernetes的客户端http和https身份认证方式 kubernetes允许同时配置多种认证方式，只要其中任意一种方式认证通过即可 kubernetes集群安全的关键点在于如何识别并认证客户端身份，它提供了3种客户端身份认证方式 2.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Configure_K8s_Auth :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="安全控制 访问控制 kubernetes作为一个分布式集群的管理工具，保证集群的安全性是其一个重要的任务。所谓的安全性其实就是保证对kubernetes的各种客户端进行认证和授权操作 在kubernetes集群中，客户端通常由两类： User Account：一般是独立于kubernetes之外的其他服务管理的用户账号 Service Account：kubernetes管理的账号，用于为Pod的服务进程在访问kubernetes时提供身份标识 graph LR C1((用户)) --&gt; B1(User&lt;br&gt;Account) --&gt; A((Kubernetes)) C2((Pod)) --&gt; B2(Service&lt;br&gt;Account) --&gt; A((Kubernetes)) 认证、授权和准入控制 API Server是访问和管理资源对象的唯一入口。任何一个请求访问API Server，都要经过下面的三个流程： Authentication(认证)：身份鉴别，只有正确的账号才能通过认证 Authorization(授权)：权限鉴别，判断用户是否有权限对访问的资源执行特定的动作 Admission Control(准入控制)：精细访问控制，用于补充授权机制以实现更加精细的访问控制功能 需要注意：在Kubernetes中不能通过API调用将普通用户添加到集群中 普通账户是针对（人）用户的，服务账户针对Pods进程 普通账户是全局性，在集群所有namespaces中，名称具有唯一性 通常，集群的普通账户可以与企业数据库同步，新的普通账户创建需要特殊权限，服务账户创建目的是更轻量化，允许集群用户为特定任务创建服务账户 普通账户和服务账户的审核注意事项不同 对于复杂系统的配置包，可以包括对该系统的各种组件的服务账户的定义 graph LR A((请求)) --&gt; B[Authentication&lt;br&gt;认证&lt;br&gt;身份鉴别&lt;br&gt;] --&gt; C[Authorization&lt;br&gt;授权&lt;br&gt;权限鉴别&lt;br&gt;] --&gt; D[Admission Control&lt;br&gt;注入控制&lt;br&gt;精细访问控制&lt;br&gt;] --&gt; E((Kubernetes&lt;br&gt;资源)) 认证管理 User Accounts(普通账户) Service Accounts(服务账户) apiVersion: v1 kind: ServiceAccount # 权限管理 metadata: name: nfs-client-provisioner namespace: default kubernetes的客户端http和https身份认证方式 kubernetes允许同时配置多种认证方式，只要其中任意一种方式认证通过即可 kubernetes集群安全的关键点在于如何识别并认证客户端身份，它提供了3种客户端身份认证方式 2.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/kubernetes/configure_k8s_auth/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Configure_K8s_Auth :: Hugo Relearn Theme">
+    <meta property="og:description" content="安全控制 访问控制 kubernetes作为一个分布式集群的管理工具，保证集群的安全性是其一个重要的任务。所谓的安全性其实就是保证对kubernetes的各种客户端进行认证和授权操作 在kubernetes集群中，客户端通常由两类： User Account：一般是独立于kubernetes之外的其他服务管理的用户账号 Service Account：kubernetes管理的账号，用于为Pod的服务进程在访问kubernetes时提供身份标识 graph LR C1((用户)) --&gt; B1(User&lt;br&gt;Account) --&gt; A((Kubernetes)) C2((Pod)) --&gt; B2(Service&lt;br&gt;Account) --&gt; A((Kubernetes)) 认证、授权和准入控制 API Server是访问和管理资源对象的唯一入口。任何一个请求访问API Server，都要经过下面的三个流程： Authentication(认证)：身份鉴别，只有正确的账号才能通过认证 Authorization(授权)：权限鉴别，判断用户是否有权限对访问的资源执行特定的动作 Admission Control(准入控制)：精细访问控制，用于补充授权机制以实现更加精细的访问控制功能 需要注意：在Kubernetes中不能通过API调用将普通用户添加到集群中 普通账户是针对（人）用户的，服务账户针对Pods进程 普通账户是全局性，在集群所有namespaces中，名称具有唯一性 通常，集群的普通账户可以与企业数据库同步，新的普通账户创建需要特殊权限，服务账户创建目的是更轻量化，允许集群用户为特定任务创建服务账户 普通账户和服务账户的审核注意事项不同 对于复杂系统的配置包，可以包括对该系统的各种组件的服务账户的定义 graph LR A((请求)) --&gt; B[Authentication&lt;br&gt;认证&lt;br&gt;身份鉴别&lt;br&gt;] --&gt; C[Authorization&lt;br&gt;授权&lt;br&gt;权限鉴别&lt;br&gt;] --&gt; D[Admission Control&lt;br&gt;注入控制&lt;br&gt;精细访问控制&lt;br&gt;] --&gt; E((Kubernetes&lt;br&gt;资源)) 认证管理 User Accounts(普通账户) Service Accounts(服务账户) apiVersion: v1 kind: ServiceAccount # 权限管理 metadata: name: nfs-client-provisioner namespace: default kubernetes的客户端http和https身份认证方式 kubernetes允许同时配置多种认证方式，只要其中任意一种方式认证通过即可 kubernetes集群安全的关键点在于如何识别并认证客户端身份，它提供了3种客户端身份认证方式 2.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-25T01:12:49+08:00">
+    <meta property="article:modified_time" content="2024-06-25T01:12:49+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Configure_K8s_Auth :: Hugo Relearn Theme">
+    <meta itemprop="description" content="安全控制 访问控制 kubernetes作为一个分布式集群的管理工具，保证集群的安全性是其一个重要的任务。所谓的安全性其实就是保证对kubernetes的各种客户端进行认证和授权操作 在kubernetes集群中，客户端通常由两类： User Account：一般是独立于kubernetes之外的其他服务管理的用户账号 Service Account：kubernetes管理的账号，用于为Pod的服务进程在访问kubernetes时提供身份标识 graph LR C1((用户)) --&gt; B1(User&lt;br&gt;Account) --&gt; A((Kubernetes)) C2((Pod)) --&gt; B2(Service&lt;br&gt;Account) --&gt; A((Kubernetes)) 认证、授权和准入控制 API Server是访问和管理资源对象的唯一入口。任何一个请求访问API Server，都要经过下面的三个流程： Authentication(认证)：身份鉴别，只有正确的账号才能通过认证 Authorization(授权)：权限鉴别，判断用户是否有权限对访问的资源执行特定的动作 Admission Control(准入控制)：精细访问控制，用于补充授权机制以实现更加精细的访问控制功能 需要注意：在Kubernetes中不能通过API调用将普通用户添加到集群中 普通账户是针对（人）用户的，服务账户针对Pods进程 普通账户是全局性，在集群所有namespaces中，名称具有唯一性 通常，集群的普通账户可以与企业数据库同步，新的普通账户创建需要特殊权限，服务账户创建目的是更轻量化，允许集群用户为特定任务创建服务账户 普通账户和服务账户的审核注意事项不同 对于复杂系统的配置包，可以包括对该系统的各种组件的服务账户的定义 graph LR A((请求)) --&gt; B[Authentication&lt;br&gt;认证&lt;br&gt;身份鉴别&lt;br&gt;] --&gt; C[Authorization&lt;br&gt;授权&lt;br&gt;权限鉴别&lt;br&gt;] --&gt; D[Admission Control&lt;br&gt;注入控制&lt;br&gt;精细访问控制&lt;br&gt;] --&gt; E((Kubernetes&lt;br&gt;资源)) 认证管理 User Accounts(普通账户) Service Accounts(服务账户) apiVersion: v1 kind: ServiceAccount # 权限管理 metadata: name: nfs-client-provisioner namespace: default kubernetes的客户端http和https身份认证方式 kubernetes允许同时配置多种认证方式，只要其中任意一种方式认证通过即可 kubernetes集群安全的关键点在于如何识别并认证客户端身份，它提供了3种客户端身份认证方式 2.">
+    <meta itemprop="datePublished" content="2024-06-25T01:12:49+08:00">
+    <meta itemprop="dateModified" content="2024-06-25T01:12:49+08:00">
+    <meta itemprop="wordCount" content="538">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Configure_K8s_Auth :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329889" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329889" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329889" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329889" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329889" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329889" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329889" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329889" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329889" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329889" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329889" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329889" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329889" rel="stylesheet" media="print">
+    <script src="../../../../js/variant.js?1719329889"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support html disableInlineCopyToClipboard" data-url="../../../../systems/linux/kubernetes/configure_k8s_auth/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+            <div class="topbar-button topbar-button-toc" data-content-empty="hide" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleTopbarFlyout(this)" type="button" title="Table of Contents (CTRL&#43;ALT&#43;t)"><i class="fa-fw fas fa-list-alt"></i></button>
+              <div class="topbar-content">
+                <div class="topbar-content-wrapper"><nav class="TableOfContents">
+  <ul>
+    <li><a href="#安全控制">安全控制</a>
+      <ul>
+        <li><a href="#访问控制">访问控制</a></li>
+        <li><a href="#认证授权和准入控制">认证、授权和准入控制</a></li>
+        <li><a href="#rbac实战"><code>RBAC</code>实战</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/kubernetes/"><span itemprop="name">Kubernetes</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Configure_K8s_Auth</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+            <div class="topbar-button topbar-button-print" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/kubernetes/configure_k8s_auth/index.print.html" title="Print whole chapter (CTRL&#43;ALT&#43;p)"><i class="fa-fw fas fa-print"></i></a>
+            </div>
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/kubernetes/configure_k8s_helm/" title="Configure_K8s_Helm (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/keepalived/" title="Keepalived (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-more" data-content-empty="hide" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleTopbarFlyout(this)" type="button" title="More"><i class="fa-fw fas fa-ellipsis-v"></i></button>
+              <div class="topbar-content">
+                <div class="topbar-content-wrapper">
+                  <div class="topbar-area topbar-area-more" data-area="more">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="configure_k8s_auth">Configure_K8s_Auth</h1>
+
+<h2 id="安全控制">安全控制</h2>
+<h3 id="访问控制">访问控制</h3>
+<ul>
+<li>
+<ol>
+<li><code>kubernetes</code>作为一个分布式集群的管理工具，保证集群的安全性是其一个重要的任务。所谓的安全性其实就是保证对<code>kubernetes</code>的各种客户端进行认证和授权操作</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>在<code>kubernetes</code>集群中，客户端通常由两类：</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>User Account</code><!-- raw HTML omitted -->：一般是独立于<!-- raw HTML omitted --><code>kubernetes</code><!-- raw HTML omitted -->之外的其他服务管理的用户账号<!-- raw HTML omitted --></li>
+<li><code>Service Account</code>：<code>kubernetes</code><!-- raw HTML omitted -->管理的账号，用于为<!-- raw HTML omitted --><code>Pod</code><!-- raw HTML omitted -->的服务进程在访问<!-- raw HTML omitted --><code>kubernetes</code><!-- raw HTML omitted -->时提供身份标识<!-- raw HTML omitted --></li>
+</ul>
+
+<pre class="mermaid align-center zoomable">graph LR
+C1((用户)) --&gt; B1(User&lt;br&gt;Account) --&gt; A((Kubernetes))
+C2((Pod)) --&gt; B2(Service&lt;br&gt;Account) --&gt; A((Kubernetes))</pre></blockquote>
+<hr>
+<h3 id="认证授权和准入控制">认证、授权和准入控制</h3>
+<ul>
+<li>
+<ol>
+<li><code>API Server</code><!-- raw HTML omitted -->是访问和管理资源对象的唯一入口。任何一个请求访问<!-- raw HTML omitted --><code>API Server</code>，<!-- raw HTML omitted -->都要经过下面的三个流程：<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Authentication</code>(认证)<!-- raw HTML omitted -->：身份鉴别，只有正确的账号才能通过认证<!-- raw HTML omitted --></li>
+<li><code>Authorization</code>(授权)<!-- raw HTML omitted -->：权限鉴别，判断用户是否有权限对访问的资源执行特定的动作<!-- raw HTML omitted --></li>
+<li><code>Admission Control</code>(准入控制)<!-- raw HTML omitted -->：精细访问控制，用于补充授权机制以实现更加精细的访问控制功能<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->需要注意：<!-- raw HTML omitted -->在<code>Kubernetes</code>中不能通过<code>API</code>调用将普通用户添加到集群中</li>
+</ul>
+<blockquote>
+<ul>
+<li>普通账户是针对（人）用户的，服务账户针对<code>Pods</code>进程</li>
+<li>普通账户是全局性，在集群所有<code>namespaces</code>中，名称具有唯一性</li>
+<li>通常，集群的普通账户可以与企业数据库同步，新的普通账户创建需要特殊权限，服务账户创建目的是更轻量化，允许集群用户为特定任务创建服务账户</li>
+<li>普通账户和服务账户的审核注意事项不同</li>
+<li>对于复杂系统的配置包，可以包括对该系统的各种组件的服务账户的定义</li>
+</ul>
+</blockquote>
+
+<pre class="mermaid align-center zoomable">graph LR
+A((请求)) --&gt; B[Authentication&lt;br&gt;认证&lt;br&gt;身份鉴别&lt;br&gt;] --&gt; C[Authorization&lt;br&gt;授权&lt;br&gt;权限鉴别&lt;br&gt;] --&gt; D[Admission Control&lt;br&gt;注入控制&lt;br&gt;精细访问控制&lt;br&gt;] --&gt; E((Kubernetes&lt;br&gt;资源))</pre></blockquote>
+<hr>
+<h4 id="认证管理">认证管理</h4>
+<h5 id="user-accounts普通账户"><code>User Accounts</code>(普通账户)</h5>
+<hr>
+<h5 id="service-accounts服务账户"><code>Service Accounts</code>(服务账户)</h5>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ServiceAccount   </span> <span style="color:#75715e"># 权限管理</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#ae81ff">nfs-client-provisioner</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span></span></span></code></pre></div></blockquote>
+<hr>
+<h5 id="kubernetesfont-colorred的客户端fonthttpfont-colorred和fonthttpsfont-colorred身份认证方式font"><code>kubernetes</code><!-- raw HTML omitted -->的客户端<!-- raw HTML omitted --><code>http</code><!-- raw HTML omitted -->和<!-- raw HTML omitted --><code>https</code><!-- raw HTML omitted -->身份认证方式<!-- raw HTML omitted --></h5>
+<ul>
+<li>
+<ol>
+<li><code>kubernetes</code><!-- raw HTML omitted -->允许同时配置多种认证方式，<!-- raw HTML omitted -->只要其中任意一种方式认证通过即可</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><code>kubernetes</code>集群安全的关键点在于如何识别并认证客户端身份，它提供了<code>3</code>种客户端身份认证方式</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>2.1 <code>HTTP Base</code><!-- raw HTML omitted -->认证：<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->通过用户名+密码的方式进行认证，<!-- raw HTML omitted -->这种方式是把<code>用户名:密码</code>用<code>BASE64</code>算法进行编码后的字符串放在<code>HTTP</code>请求中的<code>Header</code>的<code>Authorization</code>域里面发送给服务端。服务端收到后进行解码，获取用户名和密码，然后进行用户身份认证的过程</li>
+</ul>
+</blockquote>
+<ul>
+<li>2.2 <code>HTTP Token</code><!-- raw HTML omitted -->认证：<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->通过一个<code>Token</code>来识别合法用户，<!-- raw HTML omitted -->这种认证方式是用一个很长的难以被模仿的字符串<code>--Token</code>来表明客户端身份的一种方式。每个<code>Token</code>对应一个用户名，当客户端发起<code>API</code>调用请求的时候，需要在<code>HTTP</code>的<code>Header</code>中放入<code>Token</code>，<code>API Server</code>接受到<code>Token</code>后会和服务器中保存的<code>Token</code>进行比对，然后进行用户身份认证的过程。</li>
+</ul>
+</blockquote>
+<ul>
+<li>2.3 <code>HTTPS</code><!-- raw HTML omitted -->证书认证： <!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->基于<code>CA</code>根证书签名的双向数字证书认证方式，<!-- raw HTML omitted -->这种认证方式是安全性最高的一种方式，但是同时也是操作起来最麻烦的一种方式</li>
+<li><!-- raw HTML omitted -->证书申请和下发：<!-- raw HTML omitted --><code>HTTPS</code>通信双方的服务器向<code>CA</code>机构申请证书，<code>CA</code>机构发根证书、服务端证书及私钥给申请者</li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->客户端和服务器的双向认证<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<blockquote>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->客户端向服务端发起请求，<!-- raw HTML omitted -->服务端下发自己的证书给客户端。客户端收到证书后，通过私钥解密证书，在证书中获取服务端的私钥。客户端利用服务器端的公钥认证证书中的信息，如果一致，则认可这个服务器。</li>
+<li><!-- raw HTML omitted -->客户端发送自己的证书给服务器端，<!-- raw HTML omitted -->服务端接收到证书后，通过私钥解密证书。在证书中获取客户端的公钥，并用该公钥认证证书信息，确认客户端是否合法。</li>
+</ul>
+</blockquote>
+</blockquote>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->服务器端和客户端进行通信<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<blockquote>
+<blockquote>
+<ul>
+<li>服务器端和客户端协商好加密方案后，客户端会产生一个随机的私钥并加密，然后发送到服务器端</li>
+<li>服务器端接收到这个私钥后，双方接下来通信的所有内容都通过该随机私钥加密</li>
+</ul>
+</blockquote>
+</blockquote>
+
+<pre class="mermaid align-center zoomable">graph TB
+A((CA机构)) -- 申请证书 --&gt;B((服务端))
+A((CA机构)) -- 申请证书 --&gt; C((客户端))
+B((服务端)) -- 下发证书 --&gt; A((CA机构))
+C((客户端)) -- 下发证书 --&gt; A((CA机构))
+
+B((服务端)) &lt;-- 双向身份认证 --&gt; C((客户端))
+B((服务端)) &lt;-- 双向通信 --&gt; C((客户端))</pre></blockquote>
+<hr>
+<h4 id="授权管理">授权管理</h4>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->授权发生在认证成功之后，<!-- raw HTML omitted -->通过认证就可以知道请求用户是谁，然后<code>kubernetes</code>会根据事先定义的授权策略来决定用户是否有权限访问，这个过程就称为授权</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>每个发送到<code>API Server</code>的请求都带上了用户和资源的信息：比如发送请求的用户、请求的路径、请求的动作等，授权就是根据这些信息和授权策略进行比较，如果符合策略，则认为授权通过，否则会返回错误。</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li><code>API Server</code>目前支持的几种授权策略</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>AlwaysDeny</code><!-- raw HTML omitted -->：表示拒绝所有请求，一般用于测试<!-- raw HTML omitted --></li>
+<li><code>AlwaysAllow</code><!-- raw HTML omitted -->：允许接收所有的请求，相当于集群不需要授权流程（<code>kubernetes</code>默认的策略）<!-- raw HTML omitted --></li>
+<li><code>ABAC</code><!-- raw HTML omitted -->：基于属性的访问控制，表示使用用户配置的授权规则对用户请求进行匹配和控制<!-- raw HTML omitted --></li>
+<li><code>Webhook</code><!-- raw HTML omitted -->：通过调用外部<code>REST</code>服务对用户进行授权<!-- raw HTML omitted --></li>
+<li><code>Node</code><!-- raw HTML omitted -->：是一种专用模式，用于对<code>kubelet</code>发出的请求进行访问控制<!-- raw HTML omitted --></li>
+<li><code>RBAC</code><!-- raw HTML omitted -->：基于角色的访问控制（<code>kubeadm</code>安装方式下的默认选项）<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<hr>
+<h5 id="rbac基于角色的访问控制"><code>RBAC</code>基于角色的访问控制</h5>
+<blockquote>
+<ul>
+<li><code>RBAC</code><!-- raw HTML omitted -->基于角色的访问控制<!-- raw HTML omitted -->(<code>Role Based Access Control</code>)<!-- raw HTML omitted -->主要是在描述一件事情：给哪些对象授权了哪些权限<!-- raw HTML omitted --></li>
+<li><code>RBAC</code>涉及到了下面几个概念：</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->对象：<!-- raw HTML omitted --><code>User</code>、<code>Groups</code>、<code>ServiceAccount</code>。</li>
+<li><!-- raw HTML omitted -->角色：<!-- raw HTML omitted -->代表着一组定义在资源上的可操作的动作（权限）的集合</li>
+<li><!-- raw HTML omitted -->绑定：<!-- raw HTML omitted -->将定义好的角色和用户绑定在一起</li>
+</ul>
+</blockquote>
+<ul>
+<li><code>RBAC</code>引入的<code>4</code>个顶级资源对象：</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Role</code>(角色)<!-- raw HTML omitted -->，用于指定一组权限<!-- raw HTML omitted --></li>
+<li><code>ClusterRole</code>(集群角色)<!-- raw HTML omitted -->，用于指定一组权限<!-- raw HTML omitted --></li>
+<li><code>RoleBinding</code>(角色绑定)<!-- raw HTML omitted -->，用于将角色（权限的集合）赋予给对象<!-- raw HTML omitted --></li>
+<li><code>ClusterRoleBinding</code>(集群角色绑定)<!-- raw HTML omitted -->，用于将角色（权限的集合）赋予给对象<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+
+<pre class="mermaid align-center zoomable">graph TB
+A1(Group) --- A[RoleBinding]
+A2(User) --- A[RoleBinding]
+A3(Service&lt;br&gt;Account) --- A[RoleBinding]
+
+A[RoleBinding] --- B[Role]
+
+B[Role] --- Pod --- |a=1|B1[List]
+B[Role] --- Pod --- |a=2|B2[Get]
+B[Role] --- Pod --- |a=3|B3[Watch]
+
+B[Role] --- Deployment --- |b=1|B4[List]
+B[Role] --- Deployment --- |b=2|B5[Get]
+B[Role] --- Deployment --- |b=3|B6[Watch]</pre></blockquote>
+<hr>
+<h5 id="role普通角色"><code>Role</code>(普通角色)</h5>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->一个角色就是一组权限的集合，这里的权限都是许可形式的（白名单）<!-- raw HTML omitted --></li>
+<li><code>Role</code><!-- raw HTML omitted -->只能对命名空间的资源进行授权，需要指定<!-- raw HTML omitted --><code>namespace</code></li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li><code>rules:</code><!-- raw HTML omitted -->中的参数说明：<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl explain role.rules.resources  	<span style="color:#75715e"># 显示 resources 使用方式</span></span></span></code></pre></div><ul>
+<li>1.1 <code>apiGroups:</code></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->支持的<!-- raw HTML omitted --><code>API</code><!-- raw HTML omitted -->组列表，<!-- raw HTML omitted --><code>&quot;&quot;</code>,<code>&quot;apps&quot;</code>,<code>&quot;autoscaling</code>&quot;&quot;,<code>&quot;batch&quot;</code>。</li>
+</ul>
+</blockquote>
+<ul>
+<li>1.2 <code>resources:</code></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->支持的资源对象列表，<!-- raw HTML omitted --><code>&quot;namespaces&quot;</code>,<code>&quot;services&quot;</code>,<code>&quot;endpoints&quot;</code>,<code>&quot;pods&quot;</code>,<code>&quot;secrets&quot;</code>,<code>&quot;configmaps&quot;</code>,<code>&quot;crontabs&quot;</code>,<code>&quot;deployments&quot;</code>,<code>&quot;jobs&quot;</code>,<code>&quot;nodes&quot;</code>,<code>&quot;rolebindings&quot;</code>,<code>&quot;clusterroles&quot;</code>,<code>&quot;daemonsets&quot;</code>,<code>&quot;replicasets&quot;</code>,<code>&quot;statefulsets&quot;</code>,<code>&quot;horizontalpodautoscalers&quot;</code>,<code>&quot;replicationcontrollers&quot;</code>,<code>&quot;cronjobs&quot;</code></li>
+</ul>
+</blockquote>
+<ul>
+<li>1.3 <code>verbs:</code></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->对资源对象的操作方法列表，<!-- raw HTML omitted --><code>&quot;get&quot;</code>,<code> &quot;list&quot;</code>,<code> &quot;watch&quot;</code>,<code> &quot;create&quot;</code>,<code> &quot;update&quot;</code>,<code> &quot;patch&quot;</code>, <code>&quot;delete&quot;</code>,<code>&quot;exec&quot;</code></li>
+</ul>
+</blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Role</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">authorization-role</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">apiGroups</span>: [<span style="color:#e6db74">&#34;&#34;</span>]  	<span style="color:#75715e"># 支持的API组列表，&#34;&#34;空字符串，表示核心API群</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">resources</span>: [<span style="color:#e6db74">&#34;pods&#34;</span>]  	<span style="color:#75715e"># 支持的资源对象列表</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">verbs</span>: [<span style="color:#e6db74">&#34;get&#34;</span>,<span style="color:#e6db74">&#34;watch&#34;</span>,<span style="color:#e6db74">&#34;list&#34;</span>]</span></span></code></pre></div></blockquote>
+<hr>
+<h5 id="rolebinding普通角色绑定"><code>RoleBinding</code>(普通角色绑定)</h5>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->角色绑定用来把一个角色绑定到一个目标对象上，绑定目标可以是<!-- raw HTML omitted --><code>User</code>、<code>Group</code>或者<code>ServiceAccount</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>RoleBinding</code>可以将同一<code>namespace</code>中的<code>subject</code>对象绑定到某个<code>Role</code>下，则此<code>Subject</code>具有该<code>Role</code>定义的权限</li>
+<li><code>subjects:</code><!-- raw HTML omitted --><!-- raw HTML omitted --></li>
+<li><code>roleRef:</code><!-- raw HTML omitted --><!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">RoleBinding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">authorization-role-binding</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">subjects</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">User  	# User，Group，ServiceAccoun  </span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">name</span>: <span style="color:#ae81ff">user-name</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io  </span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">roleRef</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Role</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">authorization-role</span></span></span></code></pre></div></blockquote>
+<hr>
+<h5 id="clusterrole集群角色"><code>ClusterRole</code>(集群角色)</h5>
+<ul>
+<li>
+<ol>
+<li><code>ClusterRole</code><!-- raw HTML omitted -->可以对集群范围内的资源、跨<code>namespace</code>的范围资源、非资源类型进行授权<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ClusterRole</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">name</span>: <span style="color:#ae81ff">authorization-clusterrole</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">apiGroups</span>: [<span style="color:#e6db74">&#34;&#34;</span>]  	<span style="color:#75715e"># 支持的API组列表，&#34;&#34;空字符串，表示核心API群</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">resources</span>: [<span style="color:#e6db74">&#34;pods&#34;</span>]  	<span style="color:#75715e"># 支持的资源对象列表</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">verbs</span>: [<span style="color:#e6db74">&#34;get&#34;</span>,<span style="color:#e6db74">&#34;watch&#34;</span>,<span style="color:#e6db74">&#34;list&#34;</span>]</span></span></code></pre></div></blockquote>
+<hr>
+<h5 id="clusterrolebinding集群角色绑定"><code>ClusterRoleBinding</code>(集群角色绑定)</h5>
+<blockquote>
+<ul>
+<li><code>ClusterRoleBinding</code>在整个集群级别和所有<code>namespaces</code>将特定的<code>subject</code>与<code>ClusterRole</code>绑定，授予权限</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ClusterRoleBinding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">authorization-clusterrole-binding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">subjects</span>:  <span style="color:#75715e"># 应用什么类型的主体  </span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">User  	# User，Group，ServiceAccoun </span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">name</span>: <span style="color:#ae81ff">user-name  	# 对应的名字</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">roleRef</span>:  	<span style="color:#75715e"># 角色绑定 </span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io  	# 对应的Api分组  </span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ClusterRole  	# 角色类型</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">authorization-clusterrole</span></span></span></code></pre></div></blockquote>
+<hr>
+<h4 id="准入控制">准入控制</h4>
+<ul>
+<li>
+<ol>
+<li>通过了前面的认证和授权之后，还需要经过准入控制通过之后，<code>API Server</code>才会处理这个请求。</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>准入控制是一个可配置的控制器列表，可以通过在<code>API Server</code>上通过命令行设置选择执行哪些注入控制器。</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>只有当所有的注入控制器都检查通过之后，<code>API Server</code>才会执行该请求，否则返回拒绝。</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span>--enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,ResourceQuota,DefaultTolerationSeconds</span></span></code></pre></div></blockquote>
+<hr>
+<h5 id="admission-controlfont-colorred准入控制font"><code>Admission Control</code><!-- raw HTML omitted -->(准入控制)<!-- raw HTML omitted --></h5>
+<blockquote>
+<ul>
+<li><code>AlwaysAdmit</code><!-- raw HTML omitted -->：允许所有请求<!-- raw HTML omitted --></li>
+<li><code>AlwaysDeny</code><!-- raw HTML omitted -->：禁止所有请求，一般用于测试<!-- raw HTML omitted --></li>
+<li><code>AlwaysPullImages</code><!-- raw HTML omitted -->：在启动容器之前总去下载镜像<!-- raw HTML omitted --></li>
+<li><code>DenyExecOnPrivileged</code>：它会拦截所有想在<code>Privileged Container</code>上执行命令的请求</li>
+<li><code>ImagePolicyWebhook</code>：这个插件将允许后端的一个<code>Webhook</code>程序来完成<code>admission controller</code>的功能</li>
+<li><code>Service Account</code>：实现<code>ServiceAccount</code>实现了自动化</li>
+<li><code>SecurityContextDeny</code>：这个插件将使用<code>SecurityContext</code>的<code>Pod</code>中的定义全部失效</li>
+<li><code>ResourceQuota</code>：用于资源配额管理目的，观察所有请求，确保在<code>namespace</code>上的配额不会超标</li>
+<li><code>LimitRanger</code>：用于资源限制管理，作用于<code>namespace</code>上，确保对<code>Pod</code>进行资源限制</li>
+<li><code>InitialResources</code>：为未设置资源请求与限制的<code>Pod</code>，根据其镜像的历史资源的使用情况进行设置</li>
+<li><code>NamespaceLifecycle</code>：如果尝试在一个不存在的<code>namespace</code>中创建资源对象，则该创建请求将被拒 绝。当删除一个<code>namespace</code>时，系统将会删除该<code>namespace</code>中所有对象</li>
+<li><code>DefaultStorageClass</code>：为了实现共享存储的动态供应，为未指定<code>StorageClass</code>或<code>PV</code>的<code>PVC</code>尝试匹配默认<code>StorageClass</code>，尽可能减少用户在申请<code>PVC</code>时所需了解的后端存储细节</li>
+<li><code>DefaultTolerationSeconds</code>：这个插件为那些没有设置<code>forgiveness tolerations</code>并具有<code>notready:NoExecute</code>和<code>unreachable:NoExecute</code>两种<code>taints</code>的<code>Pod</code>设置默认的<code>“容忍”</code>时间，为<code>5min</code></li>
+<li><code>PodSecurityPolicy</code>：这个插件用于在创建或修改Pod时决定是否根据<code>Pod</code>的<code>security context</code>和可用的<code>PodSecurityPolicy</code>对<code>Pod</code>的安全策略进行控制</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="rbac实战"><code>RBAC</code>实战</h3>
+<ul>
+<li>
+<ol>
+<li>创建一个只能管理<code>dev</code>命名空间下<code>Pods</code>资源的账号。</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->创建密钥<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd /etc/kubernetes/pki/
+</span></span><span style="display:flex;"><span>$ <span style="color:#f92672">(</span>umask 077;openssl genrsa -out user-name.key 2048<span style="color:#f92672">)</span></span></span></code></pre></div><ul>
+<li>用<code>API Server</code>的密钥去签署证书</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->证书申请：<!-- raw HTML omitted -->申请的用户是<code>user-name</code>，组是<code>group-name</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ openssl req -new -key user-name.key -out user-name.csr -subj <span style="color:#e6db74">&#34;/CN=user-name/O=group-name&#34;</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->签署证书<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ openssl x509 -req -in user-name.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out user-name.crt -days <span style="color:#ae81ff">3650</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->设置集群、用户、上下文信息：<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl config set-cluster kubernetes --embed-certs<span style="color:#f92672">=</span>true --certificate-authority<span style="color:#f92672">=</span>/etc/kubernetes/pki/ca.crt --server<span style="color:#f92672">=</span>https://192.168.18.100:6443
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ kubectl config set-credentials user-name --embed-certs<span style="color:#f92672">=</span>true --client-certificate<span style="color:#f92672">=</span>/etc/kubernetes/pki/user-name.crt --client-key<span style="color:#f92672">=</span>/etc/kubernetes/pki/user-name.key
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ kubectl config set-context user-name@kubernetes --cluster<span style="color:#f92672">=</span>kubernetes --user<span style="color:#f92672">=</span>user-name</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->测试账户、切换<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->切换账号到<!-- raw HTML omitted --><code>user-name</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl config use-context user-name@kubernetes</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->查看<code>default</code>下的<code>Pod</code>，发现没有权限：<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get pods -n default</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->切换到<code>admin</code>账户：<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl config use-context kubernetes-admin@kubernetes</span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h4 id="rolebindingfont-colorred引用fontclusterrolefont-colorred进行授权font"><code>RoleBinding</code><!-- raw HTML omitted -->引用<!-- raw HTML omitted --><code>ClusterRole</code><!-- raw HTML omitted -->进行授权<!-- raw HTML omitted --></h4>
+<ul>
+<li>
+<ol>
+<li><code>RoleBinding</code>(角色绑定)可以引用<code>ClusterRole</code>(集群角色)，对属于同一命名空间内<code>ClusterRole</code>定义的资源主体进行授权。</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>一种很常用的做法是，集群管理员为集群范围预定义好一组角色<code>ClusterRole</code>，然后在多个命名空间中重复使用这些<code>ClusterRole</code>。这样可以大幅度提高授权管理工作效率，也使得各个命名空间下的基础性授权规则和使用体验保持一致。</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>虽然<code>authorization-clusterrole</code>是一个集群角色，但是因为使用了<code>RoleBinding</code>，所以<code>xudaxian</code>只能读取<code>default</code>命名空间中的资源</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">RoleBinding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">authorization-clusterrole-binding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">subjects</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">xudaxian</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">User</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">roleRef</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ClusterRole</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">authorization-clusterrole</span></span></span></code></pre></div></blockquote>
+<hr>
+<h4 id="font-colorred创建fontrolefont-colorred和fontrolebindingfont-colorred为fontuser-namefont-colorred授权font"><!-- raw HTML omitted -->创建<!-- raw HTML omitted --><code>Role</code><!-- raw HTML omitted -->和<!-- raw HTML omitted --><code>RoleBinding</code><!-- raw HTML omitted -->，为<!-- raw HTML omitted --><code>user-name</code><!-- raw HTML omitted -->授权<!-- raw HTML omitted --></h4>
+<ul>
+<li>
+<ol>
+<li>创建<code>dev-role.yaml</code>文件，内容如下：</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Role</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">name</span>: <span style="color:#ae81ff">dev-role</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">apiGroups</span>: [<span style="color:#e6db74">&#34;&#34;</span>]  	<span style="color:#75715e"># 支持的API组列表，&#34;&#34;空字符串，表示核心API群</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">resources</span>: [<span style="color:#e6db74">&#34;pods&#34;</span>]  	<span style="color:#75715e"># 支持的资源对象列表</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">verbs</span>: [<span style="color:#e6db74">&#34;get&#34;</span>,<span style="color:#e6db74">&#34;watch&#34;</span>,<span style="color:#e6db74">&#34;list&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">RoleBinding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">name</span>: <span style="color:#ae81ff">authorization-role-binding </span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">subjects</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">User</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">name</span>: <span style="color:#ae81ff">user-name</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io </span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">roleRef</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Role </span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">dev-role</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li>创建<code>Role</code>和<code>RoleBinding</code>：</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl create -f dev-role.yaml</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li>切换账户到<code>user-name</code>用户，再次验证：</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl config use-context user-name@kubernetes
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 再次查看：</span>
+</span></span><span style="display:flex;"><span>$ kubectl get pod -n default
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 切回admin账户：</span>
+</span></span><span style="display:flex;"><span>$ kubectl config use-context kubernetes-admin@kubernetes</span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+        </div>
+      </main>
+    </div>
+    <aside id="R-sidebar" class="default-animation showVisitedLinks">
+      <div id="R-header-topbar" class="default-animation"></div>
+      <div id="R-header-wrapper" class="default-animation">
+        <div id="R-header" class="default-animation">
+          <style>
+            #R-logo svg,
+            #R-logo svg * {
+              color: #282828;
+              color: var(--MENU-SECTIONS-BG-color);
+              fill: #282828 !important;
+              fill: var(--MENU-SECTIONS-BG-color) !important;
+              opacity: .945;
+            }
+            a#R-logo {
+              color: #282828;
+              color: var(--MENU-SECTIONS-BG-color);
+              font-family: 'Work Sans', 'Helvetica', 'Tahoma', 'Geneva', 'Arial', sans-serif;
+              font-size: 1.875rem;
+              font-weight: 300;
+              margin-top: -.8125rem;
+              max-width: 60%;
+              text-transform: uppercase;
+              width: 14.125rem;
+              white-space: nowrap;
+            }
+            a#R-logo:hover {
+              color: #282828;
+              color: var(--MENU-SECTIONS-BG-color);
+            }
+            #R-logo svg {
+              margin-bottom: -1.25rem;
+              margin-inline-start: -1.47rem;
+              margin-inline-end: .5rem;
+              width: 40.5%;
+            }
+            @media only all and (max-width: 59.999rem) {
+              a#R-logo {
+                font-size: 1.5625rem;
+                margin-top: -.1875rem;
+              }
+              #R-logo svg {
+                margin-bottom: -.75rem;
+                margin-inline-start: -1.47rem;
+                margin-inline-end: .5rem;
+              }
+            }
+          </style>
+          <a id="R-logo" href="../../../../">
+            <img src="images/s2-1.png" alt="二哥">
+          </a>
+        </div>
+
+        <search><form action="../../../../search.html" method="get">
+          <div class="searchbox default-animation">
+            <button class="search-detail" type="submit" title="Search (CTRL+ALT+f)"><i class="fas fa-search"></i></button>
+            <label class="a11y-only" for="R-search-by">Search</label>
+            <input data-search-input id="R-search-by" name="search-by" class="search-by" type="search" placeholder="Search...">
+            <button class="search-clear" type="button" data-search-clear="" title="Clear search"><i class="fas fa-times" title="Clear search"></i></button>
+          </div>
+        </form></search>
+        <script>
+          var contentLangs=['en'];
+        </script>
+        <script src="../../../../js/auto-complete.js?1719329889" defer></script>
+        <script src="../../../../js/lunr/lunr.min.js?1719329889" defer></script>
+        <script src="../../../../js/lunr/lunr.stemmer.support.min.js?1719329889" defer></script>
+        <script src="../../../../js/lunr/lunr.multi.min.js?1719329889" defer></script>
+        <script src="../../../../js/lunr/lunr.en.min.js?1719329889" defer></script>
+        <script src="../../../../js/search.js?1719329889" defer></script>
+      </div>
+      <div id="R-homelinks" class="default-animation homelinks">
+        <ul>
+          <li><a class="padding" href="../../../../"><i class='fa-fw fas fa-home'></i> Home</a></li>
+        </ul>
+        <hr class="padding">
+      </div>
+      <div id="R-content-wrapper" class="highlightable">
+        <div id="R-topics">
+          <ul class="enlarge morespace collapsible-menu">
+          <li data-nav-id="/basics/" class=""><input type="checkbox" id="R-section-a6deabe447afe1b2e1405bfc57ca61ff" aria-controls="R-subsections-a6deabe447afe1b2e1405bfc57ca61ff"><label for="R-section-a6deabe447afe1b2e1405bfc57ca61ff"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Basics</span></label><a class="padding" href="../../../../basics/">Basics<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-a6deabe447afe1b2e1405bfc57ca61ff" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/hugo_theme_next/" class="alwaysopen"><input type="checkbox" id="R-section-4c48b58c6275cad2a97afb5c467cac99" aria-controls="R-subsections-4c48b58c6275cad2a97afb5c467cac99" checked><label for="R-section-4c48b58c6275cad2a97afb5c467cac99"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Hugo_Theme_Next</span></label><a class="padding" href="../../../../basics/hugo_theme_next/">Hugo_Theme_Next<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-4c48b58c6275cad2a97afb5c467cac99" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/hugo_theme_next/emoji_support/" class=""><a class="padding" href="../../../../basics/hugo_theme_next/emoji_support/">Emoji_Support<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/hugo_theme_next/custom_files/" class=""><a class="padding" href="../../../../basics/hugo_theme_next/custom_files/">Custom_Files<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/basics/video/" class="alwaysopen"><input type="checkbox" id="R-section-42af7fff84a4df6d7df07565c2262bba" aria-controls="R-subsections-42af7fff84a4df6d7df07565c2262bba" checked><label for="R-section-42af7fff84a4df6d7df07565c2262bba"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Video</span></label><a class="padding" href="../../../../basics/video/">Video<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-42af7fff84a4df6d7df07565c2262bba" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/video/video_download/" class=""><a class="padding" href="../../../../basics/video/video_download/">Video<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/basics/markdown/" class="alwaysopen"><input type="checkbox" id="R-section-8d81245d2120aff81556115f7666a5e0" aria-controls="R-subsections-8d81245d2120aff81556115f7666a5e0" checked><label for="R-section-8d81245d2120aff81556115f7666a5e0"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu MarkDown</span></label><a class="padding" href="../../../../basics/markdown/">MarkDown<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-8d81245d2120aff81556115f7666a5e0" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/markdown/markdown_syntax/" class=""><a class="padding" href="../../../../basics/markdown/markdown_syntax/">Markdown_Syntax<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/basics/ai/" class="alwaysopen"><input type="checkbox" id="R-section-cc50241241d2c4ea02a668bba6462573" aria-controls="R-subsections-cc50241241d2c4ea02a668bba6462573" checked><label for="R-section-cc50241241d2c4ea02a668bba6462573"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu AI</span></label><a class="padding" href="../../../../basics/ai/">AI<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-cc50241241d2c4ea02a668bba6462573" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/ai/chatgpt/" class=""><a class="padding" href="../../../../basics/ai/chatgpt/">ChatGPT<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/basics/template/" class="alwaysopen"><input type="checkbox" id="R-section-d35117bb3084276b1f0714ea8420a43e" aria-controls="R-subsections-d35117bb3084276b1f0714ea8420a43e" checked><label for="R-section-d35117bb3084276b1f0714ea8420a43e"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu template</span></label><a class="padding" href="../../../../basics/template/">template<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-d35117bb3084276b1f0714ea8420a43e" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/template/syntax_highlighting/" class=""><a class="padding" href="../../../../basics/template/syntax_highlighting/">Syntax_Highlighting<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/template/qrcode_manager/" class=""><a class="padding" href="../../../../basics/template/qrcode_manager/">QRcode_Manager<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/template/mermaid_charts/" class=""><a class="padding" href="../../../../basics/template/mermaid_charts/">Mermaid_Charts<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/template/math_formula/" class=""><a class="padding" href="../../../../basics/template/math_formula/">Math Formula<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/template/github_repo_template/" class=""><a class="padding" href="../../../../basics/template/github_repo_template/"><i class='fab fa-github'></i> Github Repo Template<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/language/" class=""><input type="checkbox" id="R-section-84e0c5289a63136422908a7e4241adc6" aria-controls="R-subsections-84e0c5289a63136422908a7e4241adc6"><label for="R-section-84e0c5289a63136422908a7e4241adc6"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Languges</span></label><a class="padding" href="../../../../language/">Languges<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-84e0c5289a63136422908a7e4241adc6" class="morespace collapsible-menu">
+          <li data-nav-id="/language/lua/" class="alwaysopen"><input type="checkbox" id="R-section-9000cbd7e4710ffe5c3bf153d3bb1374" aria-controls="R-subsections-9000cbd7e4710ffe5c3bf153d3bb1374" checked><label for="R-section-9000cbd7e4710ffe5c3bf153d3bb1374"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Lua</span></label><a class="padding" href="../../../../language/lua/">Lua<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-9000cbd7e4710ffe5c3bf153d3bb1374" class="morespace collapsible-menu">
+          <li data-nav-id="/language/lua/language_lua/" class=""><a class="padding" href="../../../../language/lua/language_lua/">Lua<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/language/yaml/" class="alwaysopen"><input type="checkbox" id="R-section-7d1bf276ada0eceb02dd825b91e54998" aria-controls="R-subsections-7d1bf276ada0eceb02dd825b91e54998" checked><label for="R-section-7d1bf276ada0eceb02dd825b91e54998"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Yaml</span></label><a class="padding" href="../../../../language/yaml/">Yaml<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-7d1bf276ada0eceb02dd825b91e54998" class="morespace collapsible-menu">
+          <li data-nav-id="/language/yaml/language-yaml/" class=""><a class="padding" href="../../../../language/yaml/language-yaml/">Yaml<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/language/golang/" class="alwaysopen"><input type="checkbox" id="R-section-68528191e10f5bc742856b3bb35d9f34" aria-controls="R-subsections-68528191e10f5bc742856b3bb35d9f34" checked><label for="R-section-68528191e10f5bc742856b3bb35d9f34"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Golang</span></label><a class="padding" href="../../../../language/golang/">Golang<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-68528191e10f5bc742856b3bb35d9f34" class="morespace collapsible-menu">
+          <li data-nav-id="/language/golang/language-golang/" class=""><a class="padding" href="../../../../language/golang/language-golang/">Golang<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/language/python/" class="alwaysopen"><input type="checkbox" id="R-section-be2954e8559d07ab422f7ea1c72c5405" aria-controls="R-subsections-be2954e8559d07ab422f7ea1c72c5405" checked><label for="R-section-be2954e8559d07ab422f7ea1c72c5405"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Python</span></label><a class="padding" href="../../../../language/python/">Python<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-be2954e8559d07ab422f7ea1c72c5405" class="morespace collapsible-menu">
+          <li data-nav-id="/language/python/language-python-django/" class=""><a class="padding" href="../../../../language/python/language-python-django/">Django<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/language/python/language-python/" class=""><a class="padding" href="../../../../language/python/language-python/">Python<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/language/python/python-crawler/" class=""><a class="padding" href="../../../../language/python/python-crawler/">Crawler<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/services/" class=""><input type="checkbox" id="R-section-95afbf0e432a5495fcd79c6e50f92da5" aria-controls="R-subsections-95afbf0e432a5495fcd79c6e50f92da5"><label for="R-section-95afbf0e432a5495fcd79c6e50f92da5"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Services</span></label><a class="padding" href="../../../../services/">Services<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-95afbf0e432a5495fcd79c6e50f92da5" class="morespace collapsible-menu">
+          <li data-nav-id="/services/shopping/" class="alwaysopen"><input type="checkbox" id="R-section-e74c46d7456e8bcd8a5b287628f47e95" aria-controls="R-subsections-e74c46d7456e8bcd8a5b287628f47e95" checked><label for="R-section-e74c46d7456e8bcd8a5b287628f47e95"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Shopping</span></label><a class="padding" href="../../../../services/shopping/">Shopping<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-e74c46d7456e8bcd8a5b287628f47e95" class="morespace collapsible-menu">
+          <li data-nav-id="/services/shopping/install_prestashop/" class=""><a class="padding" href="../../../../services/shopping/install_prestashop/">PrestaShop<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/services/shopping/install_opencart/" class=""><a class="padding" href="../../../../services/shopping/install_opencart/">OpenCart<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/services/shopping/install_jeepay/" class=""><a class="padding" href="../../../../services/shopping/install_jeepay/">JeePay<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/services/certificate/" class=""><a class="padding" href="../../../../services/certificate/">Certificate<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/services/blog/" class="alwaysopen"><input type="checkbox" id="R-section-47d595cf5fa5000ee12b114cac976798" aria-controls="R-subsections-47d595cf5fa5000ee12b114cac976798" checked><label for="R-section-47d595cf5fa5000ee12b114cac976798"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Blog</span></label><a class="padding" href="../../../../services/blog/">Blog<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-47d595cf5fa5000ee12b114cac976798" class="morespace collapsible-menu">
+          <li data-nav-id="/services/blog/install-blog-hexo/" class=""><a class="padding" href="../../../../services/blog/install-blog-hexo/">Hexo<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/systems/" class="parent "><input type="checkbox" id="R-section-30e48890399c6ecdfb15937b01bd309a" aria-controls="R-subsections-30e48890399c6ecdfb15937b01bd309a" checked><label for="R-section-30e48890399c6ecdfb15937b01bd309a"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Systems</span></label><a class="padding" href="../../../../systems/">Systems<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-30e48890399c6ecdfb15937b01bd309a" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/" class="parent alwaysopen"><input type="checkbox" id="R-section-de656359c9ce2d10a06145d02d07bd35" aria-controls="R-subsections-de656359c9ce2d10a06145d02d07bd35" checked><label for="R-section-de656359c9ce2d10a06145d02d07bd35"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Linux</span></label><a class="padding" href="../../../../systems/linux/">Linux<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-de656359c9ce2d10a06145d02d07bd35" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/use_linux/" class="alwaysopen"><input type="checkbox" id="R-section-49f8f651101e295f3d007dbb41613e23" aria-controls="R-subsections-49f8f651101e295f3d007dbb41613e23" checked><label for="R-section-49f8f651101e295f3d007dbb41613e23"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Use_Linux</span></label><a class="padding" href="../../../../systems/linux/use_linux/">Use_Linux<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-49f8f651101e295f3d007dbb41613e23" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/use_linux/system_optimization/" class=""><a class="padding" href="../../../../systems/linux/use_linux/system_optimization/">System_Optimization<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/system_architecture_planning_diagram/" class=""><a class="padding" href="../../../../systems/linux/use_linux/system_architecture_planning_diagram/">System_Architecture_Planning_Diagram<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/regular_expression/" class=""><a class="padding" href="../../../../systems/linux/use_linux/regular_expression/">Regular_Expression<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/linux_document/" class=""><a class="padding" href="../../../../systems/linux/use_linux/linux_document/">Linux_Document<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/linux_conmmon_commands/" class=""><a class="padding" href="../../../../systems/linux/use_linux/linux_conmmon_commands/">Linux_Conmmon_Commands<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/install_cloud_foundry/" class=""><a class="padding" href="../../../../systems/linux/use_linux/install_cloud_foundry/">Install_Cloud_Foundry<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/work_order/" class="alwaysopen"><input type="checkbox" id="R-section-2f07bd5be968f6cd5106cd8668cec86e" aria-controls="R-subsections-2f07bd5be968f6cd5106cd8668cec86e" checked><label for="R-section-2f07bd5be968f6cd5106cd8668cec86e"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Work_Order</span></label><a class="padding" href="../../../../systems/linux/work_order/">Work_Order<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-2f07bd5be968f6cd5106cd8668cec86e" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/work_order/install_ferry/" class=""><a class="padding" href="../../../../systems/linux/work_order/install_ferry/">Install_Ferry<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/web/" class="alwaysopen"><input type="checkbox" id="R-section-16667cef7ba079f56d077b0672418894" aria-controls="R-subsections-16667cef7ba079f56d077b0672418894" checked><label for="R-section-16667cef7ba079f56d077b0672418894"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Web</span></label><a class="padding" href="../../../../systems/linux/web/">Web<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-16667cef7ba079f56d077b0672418894" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/web/website_optimization_advertise/" class=""><a class="padding" href="../../../../systems/linux/web/website_optimization_advertise/">Website_Optimization_Advertise<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/web/website_http_status_messages/" class=""><a class="padding" href="../../../../systems/linux/web/website_http_status_messages/">Website_HTTP_Status_Messages<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/web/install-nginx/" class=""><a class="padding" href="../../../../systems/linux/web/install-nginx/">Install Nginx<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/web/install_nginx_third_party_modules/" class=""><a class="padding" href="../../../../systems/linux/web/install_nginx_third_party_modules/">Install_Nginx_Third_Party_Modules<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/web/configure_nginx/" class=""><a class="padding" href="../../../../systems/linux/web/configure_nginx/">Configure_Nginx<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/storage/" class="alwaysopen"><input type="checkbox" id="R-section-78cdb047edff213265dfa96259e7a4f9" aria-controls="R-subsections-78cdb047edff213265dfa96259e7a4f9" checked><label for="R-section-78cdb047edff213265dfa96259e7a4f9"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Storage</span></label><a class="padding" href="../../../../systems/linux/storage/">Storage<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-78cdb047edff213265dfa96259e7a4f9" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/storage/install_nfs/" class=""><a class="padding" href="../../../../systems/linux/storage/install_nfs/">Install_NFS<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/storage/install_moosefs/" class=""><a class="padding" href="../../../../systems/linux/storage/install_moosefs/">Install_MooseFS<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/storage/install_minio/" class=""><a class="padding" href="../../../../systems/linux/storage/install_minio/">Install_Minio<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/storage/install_fastdfs/" class=""><a class="padding" href="../../../../systems/linux/storage/install_fastdfs/">Install_FastDFS<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/storage/configur_storage/" class=""><a class="padding" href="../../../../systems/linux/storage/configur_storage/">Configur_Storage<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/service_management/" class="alwaysopen"><input type="checkbox" id="R-section-14edec8fa5c3e740a4fda2b953c2000b" aria-controls="R-subsections-14edec8fa5c3e740a4fda2b953c2000b" checked><label for="R-section-14edec8fa5c3e740a4fda2b953c2000b"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Service_Management</span></label><a class="padding" href="../../../../systems/linux/service_management/">Service_Management<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-14edec8fa5c3e740a4fda2b953c2000b" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/service_management/install_nacos/" class=""><a class="padding" href="../../../../systems/linux/service_management/install_nacos/">Install_Nacos<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/service_management/install_mesos/" class=""><a class="padding" href="../../../../systems/linux/service_management/install_mesos/">Install_Mesos<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/service_management/install_hive/" class=""><a class="padding" href="../../../../systems/linux/service_management/install_hive/">Install_Hive<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/service_management/install_consul/" class=""><a class="padding" href="../../../../systems/linux/service_management/install_consul/">Install_Consul<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/script/" class="alwaysopen"><input type="checkbox" id="R-section-03579ce96d17eb0c798805c4164837e4" aria-controls="R-subsections-03579ce96d17eb0c798805c4164837e4" checked><label for="R-section-03579ce96d17eb0c798805c4164837e4"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Script</span></label><a class="padding" href="../../../../systems/linux/script/">Script<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-03579ce96d17eb0c798805c4164837e4" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/script/how_to_write_shell_scripts/" class=""><a class="padding" href="../../../../systems/linux/script/how_to_write_shell_scripts/">How_To_Write_Shell_Scripts<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/rsyncd/" class="alwaysopen"><input type="checkbox" id="R-section-9e23d094a527b7c92407accf5be989fb" aria-controls="R-subsections-9e23d094a527b7c92407accf5be989fb" checked><label for="R-section-9e23d094a527b7c92407accf5be989fb"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Rsyncd</span></label><a class="padding" href="../../../../systems/linux/rsyncd/">Rsyncd<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-9e23d094a527b7c92407accf5be989fb" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/rsyncd/install_timesyncd/" class=""><a class="padding" href="../../../../systems/linux/rsyncd/install_timesyncd/">Install_TimeSyncd<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/rsyncd/install_rsync/" class=""><a class="padding" href="../../../../systems/linux/rsyncd/install_rsync/">Install_Rsync<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/rsyncd/install_lsyncd/" class=""><a class="padding" href="../../../../systems/linux/rsyncd/install_lsyncd/">Install_Lsyncd<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/nosql/" class="alwaysopen"><input type="checkbox" id="R-section-58e6fa2c18e9900c5034634874e76aa0" aria-controls="R-subsections-58e6fa2c18e9900c5034634874e76aa0" checked><label for="R-section-58e6fa2c18e9900c5034634874e76aa0"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Nosql</span></label><a class="padding" href="../../../../systems/linux/nosql/">Nosql<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-58e6fa2c18e9900c5034634874e76aa0" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/nosql/install_scylladb/" class=""><a class="padding" href="../../../../systems/linux/nosql/install_scylladb/">Install_Scylladb<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/install_redis/" class=""><a class="padding" href="../../../../systems/linux/nosql/install_redis/">Install_Redis<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/install_redis_cluster/" class=""><a class="padding" href="../../../../systems/linux/nosql/install_redis_cluster/">Install_Redis_Cluster<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/install_cassandra/" class=""><a class="padding" href="../../../../systems/linux/nosql/install_cassandra/">Install_Cassandra<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/install_aerospike/" class=""><a class="padding" href="../../../../systems/linux/nosql/install_aerospike/">Install_Aerospike<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/configure_redis/" class=""><a class="padding" href="../../../../systems/linux/nosql/configure_redis/">Configure_Redis<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/monitor/" class="alwaysopen"><input type="checkbox" id="R-section-abc3124cdccc835552a636499dd41a83" aria-controls="R-subsections-abc3124cdccc835552a636499dd41a83" checked><label for="R-section-abc3124cdccc835552a636499dd41a83"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Monitor</span></label><a class="padding" href="../../../../systems/linux/monitor/">Monitor<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-abc3124cdccc835552a636499dd41a83" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/monitor/install_zabbix/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_zabbix/">Install_Zabbix<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/install_prometheus/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_prometheus/">Install_Prometheus<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/install_open_falcon/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_open_falcon/">Install_Open_Falcon<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/install_nightingale/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_nightingale/">Install_Nightingale<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/install_grafana/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_grafana/">Install_Grafana<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/configure_zabbix/" class=""><a class="padding" href="../../../../systems/linux/monitor/configure_zabbix/">Configure_Zabbix<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/configure_zabbix_grafana/" class=""><a class="padding" href="../../../../systems/linux/monitor/configure_zabbix_grafana/">Configure_Zabbix_Grafana<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/configure_prometheus/" class=""><a class="padding" href="../../../../systems/linux/monitor/configure_prometheus/">Configure_Prometheus<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/configure_open_falcon/" class=""><a class="padding" href="../../../../systems/linux/monitor/configure_open_falcon/">Configure_Open_Falcon<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/message_queue/" class="alwaysopen"><input type="checkbox" id="R-section-861d5d5af8f939283fc63038dd67e207" aria-controls="R-subsections-861d5d5af8f939283fc63038dd67e207" checked><label for="R-section-861d5d5af8f939283fc63038dd67e207"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Message_Queue</span></label><a class="padding" href="../../../../systems/linux/message_queue/">Message_Queue<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-861d5d5af8f939283fc63038dd67e207" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/message_queue/install_activemq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_activemq/">Install_ActiveMQ<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_rocketmq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_rocketmq/">Install_RocketMQ<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_redpanda/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_redpanda/">Install_Redpanda<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_rabbitmq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_rabbitmq/">Install_RabbitMQ<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_nsq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_nsq/">Install_Nsq<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_kafka/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_kafka/">Install_Kafka<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/configure_rabbitmq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/configure_rabbitmq/">Configure_Rabbitmq<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/logs/" class="alwaysopen"><input type="checkbox" id="R-section-78ebf403abc38403afe01438a8d427da" aria-controls="R-subsections-78ebf403abc38403afe01438a8d427da" checked><label for="R-section-78ebf403abc38403afe01438a8d427da"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Logs</span></label><a class="padding" href="../../../../systems/linux/logs/">Logs<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-78ebf403abc38403afe01438a8d427da" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/logs/use_logrotate/" class=""><a class="padding" href="../../../../systems/linux/logs/use_logrotate/">Use_Logrotate<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_quickwit/" class=""><a class="padding" href="../../../../systems/linux/logs/install_quickwit/">Install_Quickwit<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_logkit/" class=""><a class="padding" href="../../../../systems/linux/logs/install_logkit/">Install_Logkit<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_graylog/" class=""><a class="padding" href="../../../../systems/linux/logs/install_graylog/">Install_Graylog<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_fluentd/" class=""><a class="padding" href="../../../../systems/linux/logs/install_fluentd/">Install_Fluentd<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_finder/" class=""><a class="padding" href="../../../../systems/linux/logs/install_finder/">Install_Finder<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_es_head/" class=""><a class="padding" href="../../../../systems/linux/logs/install_es_head/">Install_Es_Head<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_elk/" class=""><a class="padding" href="../../../../systems/linux/logs/install_elk/">Install_ELK<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/configure_elk/" class=""><a class="padding" href="../../../../systems/linux/logs/configure_elk/">Configure_ELK<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/ldap/" class="alwaysopen"><input type="checkbox" id="R-section-bad9f2f06d1b124e56b35ed49036dda2" aria-controls="R-subsections-bad9f2f06d1b124e56b35ed49036dda2" checked><label for="R-section-bad9f2f06d1b124e56b35ed49036dda2"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu LDAP</span></label><a class="padding" href="../../../../systems/linux/ldap/">LDAP<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-bad9f2f06d1b124e56b35ed49036dda2" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/ldap/config_openldap/" class=""><a class="padding" href="../../../../systems/linux/ldap/config_openldap/">Config_OpenLDAP<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ldap/install_kerberos/" class=""><a class="padding" href="../../../../systems/linux/ldap/install_kerberos/">Install_Kerberos<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ldap/install_openldap/" class=""><a class="padding" href="../../../../systems/linux/ldap/install_openldap/">Install_OpenLDAP<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/kubernetes/" class="parent alwaysopen"><input type="checkbox" id="R-section-5c5867ab6fb998140913e96100f44665" aria-controls="R-subsections-5c5867ab6fb998140913e96100f44665" checked><label for="R-section-5c5867ab6fb998140913e96100f44665"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Kubernetes</span></label><a class="padding" href="../../../../systems/linux/kubernetes/">Kubernetes<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-5c5867ab6fb998140913e96100f44665" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/kubernetes/kubernetes_template/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/kubernetes_template/">Kubernetes_Template<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/kubernetes_command/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/kubernetes_command/">Kubernetes_Command<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_kubernetes/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_kubernetes/">Install_Kubernetes<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_rancher/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_rancher/">Install_K8s_Rancher<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_kubesphere/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_kubesphere/">Install_K8s_KubeSphere<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_harbor/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_harbor/">Install_K8s_Harbor<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_dashboard/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_dashboard/">Install_K8s_Dashboard<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_coredns/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_coredns/">Install_K8s_CoreDNS<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_argo_cd/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_argo_cd/">Install_K8s_Argo_CD<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_storage/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_storage/">Configure_K8s_Storage<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_rancher/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_rancher/">Configure_K8s_Rancher<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_jcr/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_jcr/">Configure_K8s_Jcr<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_helm/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_helm/">Configure_K8s_Helm<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_auth/" class="active"><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_auth/">Configure_K8s_Auth<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/keepalived/" class="alwaysopen"><input type="checkbox" id="R-section-3ca69c2a3ab36ad947b2dfaf7b98bf13" aria-controls="R-subsections-3ca69c2a3ab36ad947b2dfaf7b98bf13" checked><label for="R-section-3ca69c2a3ab36ad947b2dfaf7b98bf13"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Keepalived</span></label><a class="padding" href="../../../../systems/linux/keepalived/">Keepalived<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-3ca69c2a3ab36ad947b2dfaf7b98bf13" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/keepalived/install_keepalived/" class=""><a class="padding" href="../../../../systems/linux/keepalived/install_keepalived/">Install_Keepalived<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/jumpserver/" class="alwaysopen"><input type="checkbox" id="R-section-f322e41abfd5771d40b756709835fa3f" aria-controls="R-subsections-f322e41abfd5771d40b756709835fa3f" checked><label for="R-section-f322e41abfd5771d40b756709835fa3f"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu JumpServer</span></label><a class="padding" href="../../../../systems/linux/jumpserver/">JumpServer<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-f322e41abfd5771d40b756709835fa3f" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/jumpserver/use_jumpserver/" class=""><a class="padding" href="../../../../systems/linux/jumpserver/use_jumpserver/">Use_JumpServer<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/jumpserver/install_jumpserver/" class=""><a class="padding" href="../../../../systems/linux/jumpserver/install_jumpserver/">Install_JumpServer<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/jenkins/" class="alwaysopen"><input type="checkbox" id="R-section-f690c0dab88e64f38122fac9ce428cdf" aria-controls="R-subsections-f690c0dab88e64f38122fac9ce428cdf" checked><label for="R-section-f690c0dab88e64f38122fac9ce428cdf"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Jenkins</span></label><a class="padding" href="../../../../systems/linux/jenkins/">Jenkins<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-f690c0dab88e64f38122fac9ce428cdf" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/jenkins/use_jenkins/" class=""><a class="padding" href="../../../../systems/linux/jenkins/use_jenkins/">Use_Jenkins<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/jenkins/install_jenkins/" class=""><a class="padding" href="../../../../systems/linux/jenkins/install_jenkins/">Install_Jenkins<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/jdk/" class="alwaysopen"><input type="checkbox" id="R-section-36efe864ba441ecbd1a5221b646d395f" aria-controls="R-subsections-36efe864ba441ecbd1a5221b646d395f" checked><label for="R-section-36efe864ba441ecbd1a5221b646d395f"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu JDK</span></label><a class="padding" href="../../../../systems/linux/jdk/">JDK<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-36efe864ba441ecbd1a5221b646d395f" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/jdk/install_jdk_and_jar_run/" class=""><a class="padding" href="../../../../systems/linux/jdk/install_jdk_and_jar_run/">Install_Jdk_And_Jar_Run<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/install_system/" class="alwaysopen"><input type="checkbox" id="R-section-b49d7d5d0bcf33190967e60032a76ba5" aria-controls="R-subsections-b49d7d5d0bcf33190967e60032a76ba5" checked><label for="R-section-b49d7d5d0bcf33190967e60032a76ba5"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Install_System</span></label><a class="padding" href="../../../../systems/linux/install_system/">Install_System<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-b49d7d5d0bcf33190967e60032a76ba5" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/install_system/install_cobbler/" class=""><a class="padding" href="../../../../systems/linux/install_system/install_cobbler/">Install_Cobbler<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/install_system/install_kickstart/" class=""><a class="padding" href="../../../../systems/linux/install_system/install_kickstart/">Install_Kickstart<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/haproxy/" class="alwaysopen"><input type="checkbox" id="R-section-7bc7ce397a3c135c33a1fe515157e26b" aria-controls="R-subsections-7bc7ce397a3c135c33a1fe515157e26b" checked><label for="R-section-7bc7ce397a3c135c33a1fe515157e26b"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu HAProxy</span></label><a class="padding" href="../../../../systems/linux/haproxy/">HAProxy<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-7bc7ce397a3c135c33a1fe515157e26b" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/haproxy/install_proxy/" class=""><a class="padding" href="../../../../systems/linux/haproxy/install_proxy/">Install_Proxy<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/haproxy/install_haproxy/" class=""><a class="padding" href="../../../../systems/linux/haproxy/install_haproxy/">Install_HAProxy<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/gitlab/" class="alwaysopen"><input type="checkbox" id="R-section-eb6fb2d7fa852777afa9d0bd3d061e2f" aria-controls="R-subsections-eb6fb2d7fa852777afa9d0bd3d061e2f" checked><label for="R-section-eb6fb2d7fa852777afa9d0bd3d061e2f"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Gitlab</span></label><a class="padding" href="../../../../systems/linux/gitlab/">Gitlab<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-eb6fb2d7fa852777afa9d0bd3d061e2f" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/gitlab/use_gitrunner/" class=""><a class="padding" href="../../../../systems/linux/gitlab/use_gitrunner/">Use_Gitrunner<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/use_gitlab/" class=""><a class="padding" href="../../../../systems/linux/gitlab/use_gitlab/">Use_Gitlab<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/use_git_command/" class=""><a class="padding" href="../../../../systems/linux/gitlab/use_git_command/">Use_Git_Command<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/install_gogs/" class=""><a class="padding" href="../../../../systems/linux/gitlab/install_gogs/">Install_Gogs<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/install_gitlab/" class=""><a class="padding" href="../../../../systems/linux/gitlab/install_gitlab/">Install_Gitlab<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/install_gitlab_runner/" class=""><a class="padding" href="../../../../systems/linux/gitlab/install_gitlab_runner/">Install_Gitlab_Runner<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/install_gitea/" class=""><a class="padding" href="../../../../systems/linux/gitlab/install_gitea/">Install_Gitea<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/firewalld/" class="alwaysopen"><input type="checkbox" id="R-section-8a9c9b45fea025ec58be52ee30e98fab" aria-controls="R-subsections-8a9c9b45fea025ec58be52ee30e98fab" checked><label for="R-section-8a9c9b45fea025ec58be52ee30e98fab"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Firewalld</span></label><a class="padding" href="../../../../systems/linux/firewalld/">Firewalld<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-8a9c9b45fea025ec58be52ee30e98fab" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/firewalld/use_firewalld/" class=""><a class="padding" href="../../../../systems/linux/firewalld/use_firewalld/">Use_Firewalld<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/email/" class="alwaysopen"><input type="checkbox" id="R-section-89489275bf8e3d75bdaa43edad4e280b" aria-controls="R-subsections-89489275bf8e3d75bdaa43edad4e280b" checked><label for="R-section-89489275bf8e3d75bdaa43edad4e280b"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Email</span></label><a class="padding" href="../../../../systems/linux/email/">Email<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-89489275bf8e3d75bdaa43edad4e280b" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/email/install_iredmail/" class=""><a class="padding" href="../../../../systems/linux/email/install_iredmail/">Install_iRedMail<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/databases/" class="alwaysopen"><input type="checkbox" id="R-section-8d2e8b3049adc0e55fd190214593db4d" aria-controls="R-subsections-8d2e8b3049adc0e55fd190214593db4d" checked><label for="R-section-8d2e8b3049adc0e55fd190214593db4d"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Databases</span></label><a class="padding" href="../../../../systems/linux/databases/">Databases<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-8d2e8b3049adc0e55fd190214593db4d" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/databases/update_mysql5-7_to_mysql8/" class=""><a class="padding" href="../../../../systems/linux/databases/update_mysql5-7_to_mysql8/">Update_Mysql5 7_To_Mysql8<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_ydb/" class=""><a class="padding" href="../../../../systems/linux/databases/install_ydb/">Install_Ydb<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_postgresql/" class=""><a class="padding" href="../../../../systems/linux/databases/install_postgresql/">Install_PostgreSQL<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_otter/" class=""><a class="padding" href="../../../../systems/linux/databases/install_otter/">Install_Otter<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_mysql_pxc/" class=""><a class="padding" href="../../../../systems/linux/databases/install_mysql_pxc/">Install_Mysql_PXC<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_mysql_router/" class=""><a class="padding" href="../../../../systems/linux/databases/install_mysql_router/">Install_MySQL_Router<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_maxscale/" class=""><a class="padding" href="../../../../systems/linux/databases/install_maxscale/">Install_MaxScale<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_proxysql/" class=""><a class="padding" href="../../../../systems/linux/databases/install_proxysql/">Install_ProxySQL<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_manticore_search/" class=""><a class="padding" href="../../../../systems/linux/databases/install_manticore_search/">Install_Manticore_Search<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_canal/" class=""><a class="padding" href="../../../../systems/linux/databases/install_canal/">Install_Canal<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/use_mysql/" class=""><a class="padding" href="../../../../systems/linux/databases/use_mysql/">Use_Mysql<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_mysql/" class=""><a class="padding" href="../../../../systems/linux/databases/install_mysql/">Install_Mysql<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/daemon/" class="alwaysopen"><input type="checkbox" id="R-section-adb931a8154ce0d9ab51418f1e06b3ab" aria-controls="R-subsections-adb931a8154ce0d9ab51418f1e06b3ab" checked><label for="R-section-adb931a8154ce0d9ab51418f1e06b3ab"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Daemon</span></label><a class="padding" href="../../../../systems/linux/daemon/">Daemon<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-adb931a8154ce0d9ab51418f1e06b3ab" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/daemon/install_supervisord/" class=""><a class="padding" href="../../../../systems/linux/daemon/install_supervisord/">Install_Supervisord<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/crontab/" class="alwaysopen"><input type="checkbox" id="R-section-5dbcbf4ab907358eb8cdb15d3a6874c0" aria-controls="R-subsections-5dbcbf4ab907358eb8cdb15d3a6874c0" checked><label for="R-section-5dbcbf4ab907358eb8cdb15d3a6874c0"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Crontab</span></label><a class="padding" href="../../../../systems/linux/crontab/">Crontab<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-5dbcbf4ab907358eb8cdb15d3a6874c0" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/crontab/install_xxl_job/" class=""><a class="padding" href="../../../../systems/linux/crontab/install_xxl_job/">Install Xxl Job<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/codes/" class="alwaysopen"><input type="checkbox" id="R-section-b1a3b874591fa49fdbf0d03a3df78c1a" aria-controls="R-subsections-b1a3b874591fa49fdbf0d03a3df78c1a" checked><label for="R-section-b1a3b874591fa49fdbf0d03a3df78c1a"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Codes</span></label><a class="padding" href="../../../../systems/linux/codes/">Codes<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-b1a3b874591fa49fdbf0d03a3df78c1a" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/codes/configure_sonarqube/" class=""><a class="padding" href="../../../../systems/linux/codes/configure_sonarqube/">Configure_SonarQube<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/codes/install_sonarqube/" class=""><a class="padding" href="../../../../systems/linux/codes/install_sonarqube/">Install_SonarQube<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/cdn/" class=""><a class="padding" href="../../../../systems/linux/cdn/">CDN<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/backend/" class="alwaysopen"><input type="checkbox" id="R-section-a8a02cab0c95abb1fddb36006407a99c" aria-controls="R-subsections-a8a02cab0c95abb1fddb36006407a99c" checked><label for="R-section-a8a02cab0c95abb1fddb36006407a99c"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Backend</span></label><a class="padding" href="../../../../systems/linux/backend/">Backend<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-a8a02cab0c95abb1fddb36006407a99c" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/backend/tomcat/" class="alwaysopen"><input type="checkbox" id="R-section-a37d588e6abdd2fd4d9ed098f2480ef4" aria-controls="R-subsections-a37d588e6abdd2fd4d9ed098f2480ef4" checked><label for="R-section-a37d588e6abdd2fd4d9ed098f2480ef4"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Tomcat</span></label><a class="padding" href="../../../../systems/linux/backend/tomcat/">Tomcat<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-a37d588e6abdd2fd4d9ed098f2480ef4" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/backend/tomcat/configure_tomcat/" class=""><a class="padding" href="../../../../systems/linux/backend/tomcat/configure_tomcat/">Configure_Tomcat<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/backend/tomcat/install_tomcat/" class=""><a class="padding" href="../../../../systems/linux/backend/tomcat/install_tomcat/">Install_Tomcat<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/backend/php/" class="alwaysopen"><input type="checkbox" id="R-section-0f591cf97f2213fd2c12be6cea731d4e" aria-controls="R-subsections-0f591cf97f2213fd2c12be6cea731d4e" checked><label for="R-section-0f591cf97f2213fd2c12be6cea731d4e"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu PHP</span></label><a class="padding" href="../../../../systems/linux/backend/php/">PHP<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-0f591cf97f2213fd2c12be6cea731d4e" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/backend/php/configure_php_expand/" class=""><a class="padding" href="../../../../systems/linux/backend/php/configure_php_expand/">Configure_PHP_Expand<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/backend/php/install_php/" class=""><a class="padding" href="../../../../systems/linux/backend/php/install_php/">Install_PHP<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/systems/linux/ansible/" class="alwaysopen"><input type="checkbox" id="R-section-d91fd45339335865ca8b3da1c08c6f27" aria-controls="R-subsections-d91fd45339335865ca8b3da1c08c6f27" checked><label for="R-section-d91fd45339335865ca8b3da1c08c6f27"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Ansible</span></label><a class="padding" href="../../../../systems/linux/ansible/">Ansible<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-d91fd45339335865ca8b3da1c08c6f27" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/ansible/use_slatstack/" class=""><a class="padding" href="../../../../systems/linux/ansible/use_slatstack/">Use_Slatstack<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ansible/use_ansible/" class=""><a class="padding" href="../../../../systems/linux/ansible/use_ansible/">Use_Ansible<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ansible/install_slatstack/" class=""><a class="padding" href="../../../../systems/linux/ansible/install_slatstack/">Install_Slatstack<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ansible/install_ansible/" class=""><a class="padding" href="../../../../systems/linux/ansible/install_ansible/">Install_Ansible<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/systems/black-macos/" class=""><a class="padding" href="../../../../systems/black-macos/">Black MacOs<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/activation_key/" class="alwaysopen"><input type="checkbox" id="R-section-b7cd59ef441cb6c4b9b5d009ebd42017" aria-controls="R-subsections-b7cd59ef441cb6c4b9b5d009ebd42017" checked><label for="R-section-b7cd59ef441cb6c4b9b5d009ebd42017"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Activation Key</span></label><a class="padding" href="../../../../systems/activation_key/">Activation Key<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-b7cd59ef441cb6c4b9b5d009ebd42017" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/activation_key/windows/" class=""><a class="padding" href="../../../../systems/activation_key/windows/">Windows<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/activation_key/vmware/" class=""><a class="padding" href="../../../../systems/activation_key/vmware/">Vmware<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          </ul>
+        </div>
+        <div id="R-shortcuts">
+          <div class="nav-title padding">More</div>
+          <ul class="space">
+            <li><a class="padding" href="../../../../categories/"><i class='fa-fw fas fa-layer-group'></i> Categories</a></li>
+            <li><a class="padding" href="../../../../tags/"><i class='fa-fw fas fa-tags'></i> Tags</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-solid fa-box-archive'></i> Archive</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-solid fa-screwdriver-wrench'></i> Tools</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-fw fas fa-camera'></i> Showcases</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-fw fas fa-bullhorn'></i> Credits</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-brands fa-qq'></i> QQ</a></li>
+            <li><a class="padding" href="https://www.zhihu.com/people/lisenhui"><i class='fa-brands fa-zhihu'></i> 知乎</a></li>
+            <li><a class="padding" href="../../../../qq@qq.com"><i class='fa-solid fa-envelope'></i> E-Mail</a></li>
+            <li><a class="padding" href="https://weibo.com/yourname"><i class='fa-brands fa-weibo'></i> WeiBo</a></li>
+            <li><a class="padding" href="https://www.youtube.com/watch?v=RgKAFK5djSk"><i class='fa-brands fa-youtube'></i> Youtube</a></li>
+            <li><a class="padding" href="https://github.com/McShelby/hugo-theme-relearn"><i class='fa-fw fab fa-github'></i> GitHub repo</a></li>
+          </ul>
+        </div>
+        <div class="padding footermargin footerLangSwitch footerVariantSwitch footerVisitedLinks footerFooter showLangSwitch showVariantSwitch showVisitedLinks showFooter"></div>
+        <div id="R-menu-footer">
+          <hr class="padding default-animation footerLangSwitch footerVariantSwitch footerVisitedLinks footerFooter showLangSwitch showVariantSwitch showVisitedLinks showFooter">
+          <div id="R-prefooter" class="footerLangSwitch footerVariantSwitch footerVisitedLinks showLangSwitch showVariantSwitch showVisitedLinks">
+            <ul>
+              <li id="R-select-language-container" class="footerLangSwitch showLangSwitch">
+                <div class="padding menu-control">
+                  <i class="fa-fw fas fa-language"></i>
+                  <span>&nbsp;</span>
+                  <div class="control-style">
+                    <label class="a11y-only" for="R-select-language">Language</label>
+                    <select id="R-select-language" onchange="location = this.querySelector( this.value ).dataset.url;">
+                      <option id="R-select-language-en" value="#R-select-language-en" data-url="../../../../systems/linux/kubernetes/configure_k8s_auth/" lang="en" selected>English</option>
+                    </select>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+              </li>
+              <li id="R-select-variant-container" class="footerVariantSwitch showVariantSwitch">
+                <div class="padding menu-control">
+                  <i class="fa-fw fas fa-paint-brush"></i>
+                  <span>&nbsp;</span>
+                  <div class="control-style">
+                    <label class="a11y-only" for="R-select-variant">Theme</label>
+                    <select id="R-select-variant" onchange="window.variants && variants.changeVariant( this.value );">
+                      <option id="R-select-variant-relearn-auto" value="relearn-auto" selected>Relearn Light/Dark</option>
+                      <option id="R-select-variant-relearn-light" value="relearn-light">Relearn Light</option>
+                      <option id="R-select-variant-relearn-dark" value="relearn-dark">Relearn Dark</option>
+                      <option id="R-select-variant-relearn-bright" value="relearn-bright">Relearn Bright</option>
+                      <option id="R-select-variant-zen-auto" value="zen-auto">Zen Light/Dark</option>
+                      <option id="R-select-variant-zen-light" value="zen-light">Zen Light</option>
+                      <option id="R-select-variant-zen-dark" value="zen-dark">Zen Dark</option>
+                      <option id="R-select-variant-retro-auto" value="retro-auto">Retro Learn/Neon</option>
+                      <option id="R-select-variant-neon" value="neon">Neon</option>
+                      <option id="R-select-variant-learn" value="learn">Learn</option>
+                      <option id="R-select-variant-blue" value="blue">Blue</option>
+                      <option id="R-select-variant-green" value="green">Green</option>
+                      <option id="R-select-variant-red" value="red">Red</option>
+                      <option id="R-select-variant-my-branding" value="my-branding">Your Branding</option>
+                    </select>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+                <script>window.variants && variants.markSelectedVariant();</script>
+              </li>
+              <li class="footerVisitedLinks showVisitedLinks">
+                <div class="padding menu-control">
+                  <i class="fa-fw fas fa-history"></i>
+                  <span>&nbsp;</span>
+                  <div class="control-style">
+                    <button onclick="clearHistory();">Clear History</button>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div id="R-footer" class="footerFooter showFooter">
+	    <p>Built with <a href="https://github.com/McShelby/hugo-theme-relearn" title="love"><i class="fas fa-heart"></i></a> by <a href="https://gohugo.io/">Hugo</a></p>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <script src="../../../../js/clipboard.min.js?1719329889" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329889" defer></script>
+    <script src="../../../../js/d3/d3-color.min.js?1719329889" defer></script>
+    <script src="../../../../js/d3/d3-dispatch.min.js?1719329889" defer></script>
+    <script src="../../../../js/d3/d3-drag.min.js?1719329889" defer></script>
+    <script src="../../../../js/d3/d3-ease.min.js?1719329889" defer></script>
+    <script src="../../../../js/d3/d3-interpolate.min.js?1719329889" defer></script>
+    <script src="../../../../js/d3/d3-selection.min.js?1719329889" defer></script>
+    <script src="../../../../js/d3/d3-timer.min.js?1719329889" defer></script>
+    <script src="../../../../js/d3/d3-transition.min.js?1719329889" defer></script>
+    <script src="../../../../js/d3/d3-zoom.min.js?1719329889" defer></script>
+    <script src="../../../../js/js-yaml.min.js?1719329889" defer></script>
+    <script src="../../../../js/mermaid.min.js?1719329889" defer></script>
+    <script>
+      window.themeUseMermaid = JSON.parse("{ \"securityLevel\": \"loose\" }");
+    </script>
+    <script src="../../../../js/theme.js?1719329889" defer></script>
+  </body>
+</html>

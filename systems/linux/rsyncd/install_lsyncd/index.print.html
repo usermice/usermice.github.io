@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="Lsyncd部署 **Lsyncd**是一个实时文件同步工具，它可以监视指定的目录树，一旦文件发生变化（如创建、修改、删除），就会立即将这些变化同步到另一个目标位置。它主要用于在多个服务器之间保持文件夹内容同步，并且可以实现高效的增量同步 主要特点和用途： 实时监控和同步：
+Lsyncd使用轮询或文件系统的通知机制（如inotify）来实时监控文件系统的变化。
+当监控的目录发生变化时，它可以快速响应并将变更内容同步到目标位置。
+增量同步：
+Lsyncd不会简单地全量复制文件，而是通过增量方式同步文件变更，提高了同步效率。
+灵活的配置：
+可以通过简单的配置文件定义监控源目录和目标位置，以及定义同步规则和行为。">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_Lsyncd :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="Lsyncd部署 **Lsyncd**是一个实时文件同步工具，它可以监视指定的目录树，一旦文件发生变化（如创建、修改、删除），就会立即将这些变化同步到另一个目标位置。它主要用于在多个服务器之间保持文件夹内容同步，并且可以实现高效的增量同步 主要特点和用途： 实时监控和同步：
+Lsyncd使用轮询或文件系统的通知机制（如inotify）来实时监控文件系统的变化。
+当监控的目录发生变化时，它可以快速响应并将变更内容同步到目标位置。
+增量同步：
+Lsyncd不会简单地全量复制文件，而是通过增量方式同步文件变更，提高了同步效率。
+灵活的配置：
+可以通过简单的配置文件定义监控源目录和目标位置，以及定义同步规则和行为。">
+    <meta property="og:url" content="https://erge.blog/systems/linux/rsyncd/install_lsyncd/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_Lsyncd :: Hugo Relearn Theme">
+    <meta property="og:description" content="Lsyncd部署 **Lsyncd**是一个实时文件同步工具，它可以监视指定的目录树，一旦文件发生变化（如创建、修改、删除），就会立即将这些变化同步到另一个目标位置。它主要用于在多个服务器之间保持文件夹内容同步，并且可以实现高效的增量同步 主要特点和用途： 实时监控和同步：
+Lsyncd使用轮询或文件系统的通知机制（如inotify）来实时监控文件系统的变化。
+当监控的目录发生变化时，它可以快速响应并将变更内容同步到目标位置。
+增量同步：
+Lsyncd不会简单地全量复制文件，而是通过增量方式同步文件变更，提高了同步效率。
+灵活的配置：
+可以通过简单的配置文件定义监控源目录和目标位置，以及定义同步规则和行为。">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-21T20:07:42+08:00">
+    <meta property="article:modified_time" content="2024-06-21T20:07:42+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_Lsyncd :: Hugo Relearn Theme">
+    <meta itemprop="description" content="Lsyncd部署 **Lsyncd**是一个实时文件同步工具，它可以监视指定的目录树，一旦文件发生变化（如创建、修改、删除），就会立即将这些变化同步到另一个目标位置。它主要用于在多个服务器之间保持文件夹内容同步，并且可以实现高效的增量同步 主要特点和用途： 实时监控和同步：
+Lsyncd使用轮询或文件系统的通知机制（如inotify）来实时监控文件系统的变化。
+当监控的目录发生变化时，它可以快速响应并将变更内容同步到目标位置。
+增量同步：
+Lsyncd不会简单地全量复制文件，而是通过增量方式同步文件变更，提高了同步效率。
+灵活的配置：
+可以通过简单的配置文件定义监控源目录和目标位置，以及定义同步规则和行为。">
+    <meta itemprop="datePublished" content="2024-06-21T20:07:42+08:00">
+    <meta itemprop="dateModified" content="2024-06-21T20:07:42+08:00">
+    <meta itemprop="wordCount" content="200">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_Lsyncd :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/rsyncd/install_lsyncd/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/rsyncd/"><span itemprop="name">Rsyncd</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_Lsyncd</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/rsyncd/install_rsync/" title="Install_Rsync (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/nosql/" title="Nosql (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_lsyncd">Install_Lsyncd</h1>
+
+<h2 id="lsyncd部署"><code>Lsyncd</code>部署</h2>
+<blockquote>
+<ul>
+<li>**<code>Lsyncd</code>**是一个实时文件同步工具，它可以监视指定的目录树，一旦文件发生变化（如创建、修改、删除），就会立即将这些变化同步到另一个目标位置。它主要用于在多个服务器之间保持文件夹内容同步，并且可以实现高效的增量同步</li>
+<li><strong>主要特点和用途：</strong></li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><strong>实时监控和同步</strong>：</p>
+<p><code>Lsyncd</code>使用轮询或文件系统的通知机制（如<code>inotify</code>）来实时监控文件系统的变化。</p>
+<p>当监控的目录发生变化时，它可以快速响应并将变更内容同步到目标位置。</p>
+</li>
+<li>
+<p><strong>增量同步</strong>：</p>
+<p><code>Lsyncd</code>不会简单地全量复制文件，而是通过增量方式同步文件变更，提高了同步效率。</p>
+</li>
+<li>
+<p><strong>灵活的配置</strong>：</p>
+<p>可以通过简单的配置文件定义监控源目录和目标位置，以及定义同步规则和行为。</p>
+<p>支持通过<code>Lua</code>脚本来自定义处理逻辑，如过滤器、排除规则等。</p>
+</li>
+<li>
+<p><strong>跨平台支持</strong>：</p>
+<p><code>Lsyncd</code>可以运行在多种操作系统上，包括<code>Linux</code>、<code>BSD</code>和<code>macOS</code>等。</p>
+</li>
+<li>
+<p><strong>高可靠性和可扩展性</strong>：</p>
+<p><code>Lsyncd</code>设计用于高可靠性的文件同步，可以处理大量的文件系统变更和同步任务。</p>
+<p>可以配置成为集群环境下的一部分，以实现更复杂的同步和备份策略。</p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li><strong>使用场景：</strong></li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><strong>分布式系统的文件同步</strong>：</p>
+<p>在多台服务器之间同步重要文件，确保文件内容的一致性和可用性。</p>
+</li>
+<li>
+<p><strong>实时备份和数据保护</strong>：</p>
+<p>将重要数据即时备份到另一个位置，以应对意外数据丢失或损坏的情况。</p>
+</li>
+<li>
+<p><strong>网站和应用程序部署</strong>：</p>
+<p>在不同的服务器上部署相同的网站或应用程序代码，确保所有服务器上的内容始终保持同步。</p>
+</li>
+</ul>
+</blockquote>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->安装扩展工具<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y install expect epel-release lsyncd</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->生成密钥实现绵密登录<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ssh-keygen -t rsa -P <span style="color:#e6db74">&#34;&#34;</span> -f ~/.ssh/id_rsa  	<span style="color:#75715e"># -t指定SSH密钥的算法为RSA算法，-P设置密码为空，-f指定生成的密钥文件存放位置</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->使用<!-- raw HTML omitted --><code>expect</code><!-- raw HTML omitted -->工具使脚本推送密钥<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ expect <span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">spawn ssh-copy-id myadmin@$IP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">expect &#34;(yes/no)?&#34; {send &#34;yes\r&#34;}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">expect &#34;password:&#34; {send &#34;$passwd\r&#34;}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">expect &#34;#&#34; {send &#34;exit\r&#34;}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->给予普通用户授权，使普通用户可以使用<!-- raw HTML omitted --><code>Lsyncd</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;#####  	Start/Stop Service  	#####
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Cmnd_Alias MYADMIN_START_SERVICES = /etc/lsyncd.conf, /usr/bin/lsyncd, /bin/rsync, /var/log/lsyncd/*
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">myadmin ALL=(ALL)NOPASSWD:MYADMIN_START_SERVICES 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;</span> &gt;&gt;/etc/sudoers.d/myadmin
+</span></span><span style="display:flex;"><span>$ chmod <span style="color:#ae81ff">660</span> /etc/sudoers.d/myadmin</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->编写<!-- raw HTML omitted --><code>Lsyncd.conf</code><!-- raw HTML omitted -->文件<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;--insist：继续运行，即使有失败的目标。
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">--statusInterval：多少秒写入文件，默认是10s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">--sync为同步配置，部分参数如下：
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">--source：本地文件目录
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">--host：远程服务器地址
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">--targetdir：远程目标目录
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">--port：目前主机SSH端口号，默认为22
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">settings {  --settings为全局配置
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> logfile = &#34;</span>/var/log/lsyncd/lsyncd.log<span style="color:#e6db74">&#34;,  --logfile：日志文件路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> statusFile = &#34;</span>/var/log/lsyncd/lsyncd.status<span style="color:#e6db74">&#34;, --statusFile：进程路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> inotifyMode = &#34;</span>CloseWrite or Modify<span style="color:#e6db74">&#34;,   
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> maxProcesses = 100, --ssh同步修改为&#34;</span>1<span style="color:#e6db74">&#34; 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> maxDelays    = 10,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sync {  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> default.rsyncssh,  --# ssh同步方式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> source = &#34;</span>/opt/backup<span style="color:#e6db74">&#34;,  --源服务器目录
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> host=&#34;</span>192.168.40.198<span style="color:#e6db74">&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> targetdir=&#34;</span>/opt/backup/<span style="color:#e6db74">&#34;, --目标服务器目录，源服务器和目标服务器相同
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> delay = 1,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> rsync = {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     binary = &#34;</span>/usr/bin/rsync<span style="color:#e6db74">&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     archive = true,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     compress = false,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     verbose = true,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sync {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> default.rsync,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> source = &#34;</span>/data/nginx/cache<span style="color:#e6db74">&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> target =&#34;</span>root@192.168.32.11:/data/nginx/cache<span style="color:#e6db74">&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> delay  = 1,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> rsync = {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     binary = &#34;</span>/usr/bin/rsync<span style="color:#e6db74">&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     archive = true,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     compress = false,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     verbose = true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">} &#34;</span>&gt;&gt;/etc/lsyncd.conf</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="6">
+<li><!-- raw HTML omitted -->给予权限， 启动<!-- raw HTML omitted --><code>Lsyncd</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ chown -R myadmin. /var/log/lsyncd
+</span></span><span style="display:flex;"><span>$ lsyncd -nodaemon /etc/lsyncd.conf  	<span style="color:#75715e"># 运行查看下是否有报错  </span>
+</span></span><span style="display:flex;"><span>$ systemctl enable lsyncd <span style="color:#f92672">&amp;&amp;</span> systemctl start lsyncd</span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

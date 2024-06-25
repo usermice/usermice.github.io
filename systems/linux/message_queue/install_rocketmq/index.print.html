@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="Rocketmq部署 单机单实例 安装Rocketmq必要条件 64位JDK 1.8&#43; Maven 3.2.x Git 使用于Broker服务器4G&#43;可用磁盘空间 安装JDK配置环境变量 打开链接找早期版本 $ tar -zxvf /usr/local/src/jdk-8u181-linux-x64.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_RocketMQ :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="Rocketmq部署 单机单实例 安装Rocketmq必要条件 64位JDK 1.8&#43; Maven 3.2.x Git 使用于Broker服务器4G&#43;可用磁盘空间 安装JDK配置环境变量 打开链接找早期版本 $ tar -zxvf /usr/local/src/jdk-8u181-linux-x64.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/message_queue/install_rocketmq/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_RocketMQ :: Hugo Relearn Theme">
+    <meta property="og:description" content="Rocketmq部署 单机单实例 安装Rocketmq必要条件 64位JDK 1.8&#43; Maven 3.2.x Git 使用于Broker服务器4G&#43;可用磁盘空间 安装JDK配置环境变量 打开链接找早期版本 $ tar -zxvf /usr/local/src/jdk-8u181-linux-x64.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-20T21:24:19+08:00">
+    <meta property="article:modified_time" content="2024-06-20T21:24:19+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_RocketMQ :: Hugo Relearn Theme">
+    <meta itemprop="description" content="Rocketmq部署 单机单实例 安装Rocketmq必要条件 64位JDK 1.8&#43; Maven 3.2.x Git 使用于Broker服务器4G&#43;可用磁盘空间 安装JDK配置环境变量 打开链接找早期版本 $ tar -zxvf /usr/local/src/jdk-8u181-linux-x64.">
+    <meta itemprop="datePublished" content="2024-06-20T21:24:19+08:00">
+    <meta itemprop="dateModified" content="2024-06-20T21:24:19+08:00">
+    <meta itemprop="wordCount" content="1030">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_RocketMQ :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/message_queue/install_rocketmq/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/message_queue/"><span itemprop="name">Message_Queue</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_RocketMQ</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/message_queue/install_activemq/" title="Install_ActiveMQ (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/message_queue/install_redpanda/" title="Install_Redpanda (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_rocketmq">Install_RocketMQ</h1>
+
+<h2 id="rocketmq部署"><code>Rocketmq</code>部署</h2>
+<h3 id="单机单实例">单机单实例</h3>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->安装<!-- raw HTML omitted --><code>Rocketmq</code><!-- raw HTML omitted -->必要条件<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><code>64</code><!-- raw HTML omitted -->位<!-- raw HTML omitted --><code>JDK 1.8+</code></li>
+<li><!-- raw HTML omitted --><code>Maven 3.2.x</code><!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted --><code>Git</code><!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->使用于<!-- raw HTML omitted --><code>Broker</code><!-- raw HTML omitted -->服务器<!-- raw HTML omitted --><code>4G+</code><!-- raw HTML omitted -->可用磁盘空间<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->安装<!-- raw HTML omitted --><code>JDK</code><!-- raw HTML omitted -->配置环境变量<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://www.oracle.com/java/technologies/oracle-java-archive-downloads.html" rel="external" target="_self">打开链接找早期版本</a></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ tar -zxvf /usr/local/src/jdk-8u181-linux-x64.tar.gz -C /usr/local/src/  	<span style="color:#75715e"># 加压到指定位置</span>
+</span></span><span style="display:flex;"><span>$ ln -s /usr/local/src/jdk1.8.0_181 /usr/local/jdk  	<span style="color:#75715e"># 做个软链接，取消软链接rm -rf /usr/local/jdk  文件后不要加&#34;/&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 添加环境变量</span>
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#39;################################
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">HISTSIZE=10
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">export TMOUT=600
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">export HISTTIMEFORMAT=&#34;%F %T &#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#######JDK環境變數########################
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">export JAVA_HOME=/usr/local/jdk
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">export JRE_HOME=$JAVA_HOME/jre
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">export CLASSPATH=$JAVA_HOME/lib:$JAVA_HOME/lib/tools.jar
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">export PATH=$PATH:$JAVA_HOME/bin:$JAVA_HOME/jre/bin
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;</span>&gt;&gt; /etc/profile
+</span></span><span style="display:flex;"><span>$ source /etc/profile</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted --><a href="https://maven.apache.org/download.cgi" rel="external" target="_self">部署<code>maven3.2.2</code>版本</a><!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ wget -P /usr/local/src/ https://downloads.apache.org/maven/maven-3/3.8.1/binaries/apache-maven-3.8.1-bin.tar.gz
+</span></span><span style="display:flex;"><span>$ tar -zxvf /usr/local/src/apache-maven-3.8.1-bin.tar.gz -C /usr/local/src/
+</span></span><span style="display:flex;"><span>$ ln -s /usr/local/src/apache-maven-3.8.1/ /usr/local/maven
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#39;#####  添加maven环境变量  ########
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">export MAVEN_HOME=/usr/local/maven
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">export PATH=${PATH}:${MAVEN_HOME}/bin&#39;</span> &gt;&gt;/etc/profile
+</span></span><span style="display:flex;"><span>source /etc/profile
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># cp /usr/local/src/apache-maven-3.8.1/conf/settings.xml ~/.m2/  	# 拷贝文件到此目录下</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># vim  ~/.m2/settings.xml</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#  &lt;profiles&gt;  	# 拷贝下面几行到&lt;profiles&gt;下</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#      &lt;repositories&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#        &lt;repository&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#          &lt;id&gt;org.codehaus&lt;/id&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#          &lt;url&gt;https://repo1.maven.org/maven2/org/codehaus/&lt;/url&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#        &lt;/repository&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#      &lt;/repositories&gt;</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted --><a href="https://rocketmq.apache.org/docs/quick-start/" rel="external" target="_self">下载并解压<code>rocketmq</code>安装包、使用<code>mvn</code>打包</a><!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y install unzip
+</span></span><span style="display:flex;"><span>$ wget -P /usr/local/src/ https://downloads.apache.org/rocketmq/4.8.0/rocketmq-all-4.8.0-source-release.zip
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 二进制文件包</span>
+</span></span><span style="display:flex;"><span>$ wget -P /usr/local/src/ https://downloads.apache.org/rocketmq/4.8.0/rocketmq-all-4.8.0-bin-release.zip
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ unzip /usr/local/src/rocketmq-all-4.8.0-source-release.zip -d /usr/local/src/  	<span style="color:#75715e"># 解压到指定位置</span>
+</span></span><span style="display:flex;"><span>$ cd /usr/local/src/rocketmq-all-4.8.0-source-release
+</span></span><span style="display:flex;"><span>$ mvn -Prelease-all -DskipTests clean install -U
+</span></span><span style="display:flex;"><span>$ cd distribution/target/rocketmq-4.8.0/rocketmq-4.8.0</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->启动名称服务器<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ nohup sh bin/mqnamesrv &amp;
+</span></span><span style="display:flex;"><span>$ tail -f ~/logs/rocketmqlogs/namesrv.log</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->先修改经纪人服务器配置文件<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ vim /usr/local/src/rocketmq-all-4.8.0-source-release/distribution/target/rocketmq-4.8.0/rocketmq-4.8.0/bin/runbroker.sh
+</span></span><span style="display:flex;"><span>JAVA_OPT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>JAVA_OPT<span style="color:#e6db74">}</span><span style="color:#e6db74"> -server -Xms128m -Xmx256m -Xmn256m&#34;</span>  	<span style="color:#75715e"># 此处几个参数需要修改</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ vim /usr/local/src/rocketmq-all-4.8.0-source-release/distribution/target/rocketmq-4.8.0/rocketmq-4.8.0/bin/runserver.sh
+</span></span><span style="display:flex;"><span>JAVA_OPT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>JAVA_OPT<span style="color:#e6db74">}</span><span style="color:#e6db74"> -server -Xms128m -Xmx256m -Xmn256m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=320m&#34;</span>  	<span style="color:#75715e"># 修改Xms128m -Xmx256m &gt; -Xmn256m</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->启动经纪人服务<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ tail -f ~/logs/rocketmqlogs/broker.log  	<span style="color:#75715e"># 报错异常关闭selinux</span>
+</span></span><span style="display:flex;"><span>The broker<span style="color:#f92672">[</span>%s, 172.30.30.233:10911<span style="color:#f92672">]</span> boot success...</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->发送接收消息<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ export NAMESRV_ADDR<span style="color:#f92672">=</span>localhost:9876
+</span></span><span style="display:flex;"><span>$ sh bin/tools.sh org.apache.rocketmq.example.quickstart.Producer
+</span></span><span style="display:flex;"><span>$ sh bin/tools.sh org.apache.rocketmq.example.quickstart.Consumer</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->关闭服务器<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sh bin/mqshutdown broker
+</span></span><span style="display:flex;"><span>The mqbroker<span style="color:#f92672">(</span>36695<span style="color:#f92672">)</span> is running...
+</span></span><span style="display:flex;"><span>Send shutdown request to mqbroker<span style="color:#f92672">(</span>36695<span style="color:#f92672">)</span> OK
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sh bin/mqshutdown namesrv
+</span></span><span style="display:flex;"><span>The mqnamesrv<span style="color:#f92672">(</span>36664<span style="color:#f92672">)</span> is running...
+</span></span><span style="display:flex;"><span>Send shutdown request to mqnamesrv<span style="color:#f92672">(</span>36664<span style="color:#f92672">)</span> OK</span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h3 id="集群模式部署">集群模式部署</h3>
+<blockquote>
+<ul>
+<li><a href="https://github.com/apache/rocketmq/blob/master/docs/cn/operation.md" rel="external" target="_self">运维管理部署<code>Rocketmq</code></a></li>
+<li><!-- raw HTML omitted -->启动<!-- raw HTML omitted --><code>NameServer</code></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ nohup sh  /usr/local/src/rocketmq-all-4.8.0-source-release/distribution/target/rocketmq-4.8.0/rocketmq-4.8.0/bin/mqnamesrv &amp;</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->验证<!-- raw HTML omitted --><code>Name Server</code><!-- raw HTML omitted -->是否启动成功<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ tail -f ~/logs/rocketmqlogs/namesrv.log
+</span></span><span style="display:flex;"><span>2021-04-24 16:51:14 INFO main - The Name Server boot success. serializeType<span style="color:#f92672">=</span>JSON</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->查看并修改<!-- raw HTML omitted --><code>Rocketmq</code><!-- raw HTML omitted -->集群配置文件<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd /usr/local/src/rocketmq-all-4.8.0-source-release/distribution/target/rocketmq-4.8.0/rocketmq-4.8.0/conf/2m-2s-sync
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>root@localhost 2m-2s-sync<span style="color:#f92672">]</span><span style="color:#75715e"># ll</span>
+</span></span><span style="display:flex;"><span>-rw-r--r--. <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">928</span> Dec  <span style="color:#ae81ff">8</span> 18:16 broker-a.properties
+</span></span><span style="display:flex;"><span>-rw-r--r--. <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">922</span> Dec  <span style="color:#ae81ff">8</span> 18:16 broker-a-s.properties
+</span></span><span style="display:flex;"><span>-rw-r--r--. <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">928</span> Dec  <span style="color:#ae81ff">8</span> 18:16 broker-b.properties
+</span></span><span style="display:flex;"><span>-rw-r--r--. <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">922</span> Dec  <span style="color:#ae81ff">8</span> 18:16 broker-b-s.properties
+</span></span><span style="display:flex;"><span>-rw-------. <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">290</span> Apr <span style="color:#ae81ff">23</span> 22:47 nohup.out
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ vim broker-a-s.properties  	<span style="color:#75715e"># 主机做主从必添加两处</span>
+</span></span><span style="display:flex;"><span>storePathRootDir<span style="color:#f92672">=</span>/opt/slave/broker-a-s
+</span></span><span style="display:flex;"><span>listenPort <span style="color:#f92672">=</span> <span style="color:#ae81ff">10915</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>broker-a.properties</code><!-- raw HTML omitted -->配置文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;broker-a.properties<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 所属集群名字
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerClusterName=rocketmq-cluster
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># broker名字，注意此处不同的配置文件填写的不一样，
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerName=broker-a
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 0:表示 Master，&gt;0:表示 Slave
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerId=0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># nameServer地址，分号分割
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">namesrvAddr=mq-nameserver1:9876;mq-nameserver2:9876
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 在发送消息时，自动创建服务器不存在的topic，默认创建的队列数
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">defaultTopicQueueNums=4
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 是否允许 Broker 自动创建Topic，建议线下开启，线上关闭
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">autoCreateTopicEnable=false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 是否允许 Broker 自动创建订阅组，建议线下开启，线上关闭
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">autoCreateSubscriptionGroup=false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># Broker 对外服务的监听端口
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">listenPort=10911
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">haListenPort=10912
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 删除文件时间点，默认凌晨 4点
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">deleteWhen=04
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 文件保留时间，默认 48 小时
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">fileReservedTime=120
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># commitLog每个文件的大小默认1G
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">mapedFileSizeCommitLog=1073741824
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># ConsumeQueue每个文件默认存30W条，根据业务情况调整
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">mapedFileSizeConsumeQueue=300000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># destroyMapedFileIntervalForcibly=120000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># redeleteHangedFileInterval=120000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 检测物理文件磁盘空间
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">diskMaxUsedSpaceRatio=88
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathRootDir=/rocketmq/store
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># commitLog 存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathCommitLog=/rocketmq/store/commitlog
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 消费队列存储路径存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathConsumeQueue=/rocketmq/store/consumequeue
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 消息索引存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathIndex=/rocketmq/store/index
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># checkpoint 文件存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storeCheckpoint=/rocketmq/store/checkpoint
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># abort 文件存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">abortFile=/rocketmq/store/abort
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 限制的消息大小
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">maxMessageSize=65536
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushCommitLogLeastPages=4
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushConsumeQueueLeastPages=2
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushCommitLogThoroughInterval=10000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushConsumeQueueThoroughInterval=60000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># Broker 的角色
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - ASYNC_MASTER 异步复制Master
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - SYNC_MASTER 同步双写Master
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - SLAVE
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerRole=SYNC_MASTER
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 刷盘方式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - ASYNC_FLUSH 异步刷盘
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - SYNC_FLUSH 同步刷盘
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">flushDiskType=ASYNC_FLUSH
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># checkTransactionMessageEnable=false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 发消息线程池数量
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># sendMessageThreadPoolNums=128
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 拉消息线程池数量 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># pullMessageThreadPoolNums=128
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 强制指定本机IP，需要根据每台机器进行修改。官方介绍可为空，系统默认自动识别，但多网卡时IP地址可能读取错误
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerIP1=10.125.15.124
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>broker-a-s.properties</code><!-- raw HTML omitted -->配置文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;broker-a-s.properties<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 所属集群名字
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerClusterName=rocketmq-cluster
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># broker名字，注意此处不同的配置文件填写的不一样，
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerName=broker-a-s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 0 表示 Master，&gt;0 表示 Slave
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerId=1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># nameServer地址，分号分割
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">namesrvAddr=mq-nameserver1:9876;mq-nameserver2:9876
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 在发送消息时，自动创建服务器不存在的topic，默认创建的队列数
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">defaultTopicQueueNums=4
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 是否允许 Broker 自动创建Topic，建议线下开启，线上关闭
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">autoCreateTopicEnable=false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 是否允许 Broker 自动创建订阅组，建议线下开启，线上关闭
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">autoCreateSubscriptionGroup=false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># Broker 对外服务的监听端口
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">listenPort=10923
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">haListenPort=10924
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 删除文件时间点，默认凌晨 4点
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">deleteWhen=04
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 文件保留时间，默认 48 小时
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">fileReservedTime=120
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># commitLog每个文件的大小默认1G
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">mapedFileSizeCommitLog=1073741824
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># ConsumeQueue每个文件默认存30W条，根据业务情况调整
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">mapedFileSizeConsumeQueue=300000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># destroyMapedFileIntervalForcibly=120000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># redeleteHangedFileInterval=120000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 检测物理文件磁盘空间
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">diskMaxUsedSpaceRatio=88
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathRootDir=/rocketmq/store-s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># commitLog 存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathCommitLog=/rocketmq/store-s/commitlog
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 消费队列存储路径存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathConsumeQueue=/rocketmq/store-s/consumequeue
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 消息索引存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathIndex=/rocketmq/store-s/index
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># checkpoint 文件存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storeCheckpoint=/rocketmq/store-s/checkpoint
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># abort 文件存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">abortFile=/rocketmq/store-s/abort
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 限制的消息大小
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">maxMessageSize=65536
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushCommitLogLeastPages=4
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushConsumeQueueLeastPages=2
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushCommitLogThoroughInterval=10000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushConsumeQueueThoroughInterval=60000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># Broker 的角色
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - ASYNC_MASTER 异步复制Master
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - SYNC_MASTER 同步双写Master
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - SLAVE
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerRole=SLAVE
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 刷盘方式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - ASYNC_FLUSH 异步刷盘
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - SYNC_FLUSH 同步刷盘
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">flushDiskType=ASYNC_FLUSH
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># checkTransactionMessageEnable=false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 发消息线程池数量
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># sendMessageThreadPoolNums=128
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 拉消息线程池数量 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># pullMessageThreadPoolNums=128
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 强制指定本机IP，需要根据每台机器进行修改。官方介绍可为空，系统默认自动识别，但多网卡时IP地址可能读取错误
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerIP1=10.125.15.125
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>broker-b.properties</code><!-- raw HTML omitted -->配置文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;broker-b.properties<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 所属集群名字
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerClusterName=rocketmq-cluster
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># broker名字，注意此处不同的配置文件填写的不一样，
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerName=broker-b
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 0 表示 Master，&gt;0 表示 Slave
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerId=0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># nameServer地址，分号分割
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">namesrvAddr=mq-nameserver1:9876;mq-nameserver2:9876
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 在发送消息时，自动创建服务器不存在的topic，默认创建的队列数
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">defaultTopicQueueNums=4
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 是否允许 Broker 自动创建Topic，建议线下开启，线上关闭
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">autoCreateTopicEnable=false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 是否允许 Broker 自动创建订阅组，建议线下开启，线上关闭
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">autoCreateSubscriptionGroup=false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># Broker 对外服务的监听端口
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">listenPort=10911
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">haListenPort=10912
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 删除文件时间点，默认凌晨 4点
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">deleteWhen=04
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 文件保留时间，默认 48 小时
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">fileReservedTime=120
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># commitLog每个文件的大小默认1G
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">mapedFileSizeCommitLog=1073741824
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># ConsumeQueue每个文件默认存30W条，根据业务情况调整
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">mapedFileSizeConsumeQueue=300000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># destroyMapedFileIntervalForcibly=120000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># redeleteHangedFileInterval=120000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 检测物理文件磁盘空间
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">diskMaxUsedSpaceRatio=88
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathRootDir=/rocketmq/store
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># commitLog 存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathCommitLog=/rocketmq/store/commitlog
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 消费队列存储路径存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathConsumeQueue=/rocketmq/store/consumequeue
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 消息索引存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathIndex=/rocketmq/store/index
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># checkpoint 文件存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storeCheckpoint=/rocketmq/store/checkpoint
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># abort 文件存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">abortFile=/rocketmq/store/abort
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 限制的消息大小
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">maxMessageSize=65536
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushCommitLogLeastPages=4
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushConsumeQueueLeastPages=2
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushCommitLogThoroughInterval=10000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushConsumeQueueThoroughInterval=60000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># Broker 的角色
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - ASYNC_MASTER 异步复制Master
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - SYNC_MASTER 同步双写Master
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - SLAVE
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerRole=SYNC_MASTER
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 刷盘方式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - ASYNC_FLUSH 异步刷盘
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - SYNC_FLUSH 同步刷盘
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">flushDiskType=ASYNC_FLUSH
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># checkTransactionMessageEnable=false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 发消息线程池数量
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># sendMessageThreadPoolNums=128
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 拉消息线程池数量 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># pullMessageThreadPoolNums=128
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 强制指定本机IP，需要根据每台机器进行修改。官方介绍可为空，系统默认自动识别，但多网卡时IP地址可能读取错误
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerIP1=10.125.15.125
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>broker-b-s.properties</code><!-- raw HTML omitted -->配置文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;broker-b-s.properties<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 所属集群名字
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerClusterName=rocketmq-cluster
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># broker名字，注意此处不同的配置文件填写的不一样，
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerName=broker-b-s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 0：表示Master，&gt;0：表示 Slave
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerId=1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># nameServer地址，分号分割
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">namesrvAddr=mq-nameserver1:9876;mq-nameserver2:9876
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 在发送消息时，自动创建服务器不存在的topic，默认创建的队列数
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">defaultTopicQueueNums=4
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 是否允许 Broker 自动创建Topic，建议线下开启，线上关闭
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">autoCreateTopicEnable=false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 是否允许 Broker 自动创建订阅组，建议线下开启，线上关闭
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">autoCreateSubscriptionGroup=false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># Broker 对外服务的监听端口
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">listenPort=10923
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">haListenPort=10924
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 删除文件时间点，默认凌晨 4点
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">deleteWhen=04
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 文件保留时间，默认 48 小时
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">fileReservedTime=120
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># commitLog每个文件的大小默认1G
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">mapedFileSizeCommitLog=1073741824
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># ConsumeQueue每个文件默认存30W条，根据业务情况调整
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">mapedFileSizeConsumeQueue=300000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># destroyMapedFileIntervalForcibly=120000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># redeleteHangedFileInterval=120000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 检测物理文件磁盘空间
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">diskMaxUsedSpaceRatio=88
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathRootDir=/rocketmq/store-s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># commitLog 存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathCommitLog=/rocketmq/store-s/commitlog
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 消费队列存储路径存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathConsumeQueue=/rocketmq/store-s/consumequeue
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 消息索引存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storePathIndex=/rocketmq/store-s/index
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># checkpoint 文件存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">storeCheckpoint=/rocketmq/store-s/checkpoint
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># abort 文件存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">abortFile=/rocketmq/store-s/abort
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 限制的消息大小
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">maxMessageSize=65536
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushCommitLogLeastPages=4
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushConsumeQueueLeastPages=2
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushCommitLogThoroughInterval=10000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># flushConsumeQueueThoroughInterval=60000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># Broker 的角色
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - ASYNC_MASTER 异步复制Master
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - SYNC_MASTER 同步双写Master
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - SLAVE
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerRole=SLAVE
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 刷盘方式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - ASYNC_FLUSH 异步刷盘
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># - SYNC_FLUSH 同步刷盘
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">flushDiskType=ASYNC_FLUSH
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># checkTransactionMessageEnable=false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 发消息线程池数量
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># sendMessageThreadPoolNums=128
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 拉消息线程池数量 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># pullMessageThreadPoolNums=128
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 强制指定本机IP，需要根据每台机器进行修改。官方介绍可为空，系统默认自动识别，但多网卡时IP地址可能读取错误
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">brokerIP1=10.125.15.124
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->在其他几个节点服务器启动<!-- raw HTML omitted --><code>Master</code></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ nohup sh mqbroker -n 192.168.1.1:9876 -c $ROCKETMQ_HOME/conf/2m-2s-async/broker-a.properties &amp;  	<span style="color:#75715e"># 在机器A机器启动Master</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ nohup sh mqbroker -n 192.168.1.1:9876 -c $ROCKETMQ_HOME/conf/2m-2s-async/broker-b.properties &amp;  	<span style="color:#75715e"># 在机器B机器启动Master</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ nohup sh mqbroker -n 192.168.1.1:9876 -c $ROCKETMQ_HOME/conf/2m-2s-async/broker-a-s.properties &amp;  	<span style="color:#75715e"># 在机器C机器启动Slave</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ nohup sh mqbroker -n 192.168.1.1:9876 -c $ROCKETMQ_HOME/conf/2m-2s-async/broker-b-s.properties &amp;  	<span style="color:#75715e"># 在机器C机器启动Slave</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->安装<!-- raw HTML omitted --><code>rocketmq-console</code><!-- raw HTML omitted -->图形化管理控制台<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->下载图形化管理控制台<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git clone https://github.com/apache/rocketmq-externals.git</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->修改配置文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/usr/local/src/rocketmq-externals/rocketmq-console/src/main/resources/application.properties<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 管理后台访问上下文路径，默认为空，如果填写，一定要前面加“/”，后面不要加，否则启动报错
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server.contextPath=/rocketmq
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 访问端口
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server.port=8080
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">### SSL setting  默认就行
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># server.ssl.key-store=classpath:rmqcngkeystore.jks
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># server.ssl.key-store-password=rocketmq
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># server.ssl.keyStoreType=PKCS12
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># server.ssl.keyAlias=rmqcngkey
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># spring.application.index=true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">spring.application.name=rocketmq-console
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">spring.http.encoding.charset=UTF-8
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">spring.http.encoding.enabled=true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">spring.http.encoding.force=true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># logback配置文件路径，先默认即可
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">logging.config=classpath:logback.xml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># if this value is empty,use env value rocketmq.config.namesrvAddr  NAMESRV_ADDR | now, you can set it in ops page.default &gt; localhost:9876
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># Name Server地址，修改成你自己的服务地址。多个地址用英文分号“;”隔开
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rocketmq.config.namesrvAddr=localhost:9876
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># if you use rocketmq version &lt; 3.5.8, rocketmq.config.isVIPChannel should be false.default true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rocketmq.config.isVIPChannel=
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># rocketmq-console&#39;s data path:dashboard/monitor
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rocketmq.config.dataPath=/tmp/rocketmq-console/data
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># set it false if you don&#39;t want use dashboard.default true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rocketmq.config.enableDashBoardCollect=true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># set the message track trace topic if you don&#39;t want use the default one
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rocketmq.config.msgTrackTopicName=
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rocketmq.config.ticketKey=ticket
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># Must create userInfo file: ${rocketmq.config.dataPath}/users.properties if the login is required
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rocketmq.config.loginRequired=false
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->打包运行<!-- raw HTML omitted --><code>rocketmq-console</code><!-- raw HTML omitted -->服务<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mvn clean package -Dmaven.test.skip<span style="color:#f92672">=</span>true
+</span></span><span style="display:flex;"><span>$ cd /usr/local/src/rocketmq-externals/rocketmq-console/target/
+</span></span><span style="display:flex;"><span>$ java -jar rocketmq-console-ng-2.0.0.jar</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->打开浏览器访问<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ http://IP:8080/#/
+</span></span><span style="display:flex;"><span>控制台→更换语言→Simplified Chinese<span style="color:#f92672">(</span>切换中文<span style="color:#f92672">)</span></span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

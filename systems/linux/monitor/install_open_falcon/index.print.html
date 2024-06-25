@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="部署Open Falcon服务 Open-falcon架构 介绍 OpenFalcon是一款企业级、高可用、可扩展的开源监控解决方案。此项目最初由小米公司发起，小米运维团队从互联网公司的需求出发，根据多年的运维经验，结合SRE、SA、DEVS的使用经验和反馈，开发的一套面向互联网的企业级开源监控产品，最新版本为v2.0。目前有几十家公司不同程度使用OpenFalcon作为分布式系统的监控解决方案。
+优点 采集器自动发现，支持falcon-agent、snmp、支持用户主动push数据、用户自定义插件 支持每个周期上亿次的数据采集、告警判定、历史数据存储和查询 高效的分区、支持监控策略模板、模板继承和覆盖、多种告警方式、支持告警回调 单节点能支持200万metric的上报、归档、存储 其存储采用rrdtool归档，秒级返回上百个metric一年的历史数据 多维度的数据展示，可由用户自定义Screen 通过各种插件目前支持Linux、Windows、Mysql、Redis、Memache、RabbitMQ和交换机监控 监控范围 OpenFalcon支持系统基础监控，第三方服务监控，JVM监控，业务应用监控 基础监控指Linux平台的系统指标监控，包括CPU、Load、内存、磁盘、IO、网络等，这些指标由OpenFalcon的agent节点直接支持，无需插件 JVM监控主要通过插件完成，插件通过JVM开放的JMX通信端口，获取到JVM参数指标，并推送到agent节点，再由agent发送到OpenFalcon 第三方服务监控指一些常见服务监控，包括MySQL、Redis、Nginx等，OpenFalcon官网提供了很多第三方服务的监控插件，也可以自己实现插件，定义采集指标。而采集到的指标，也是通过插件先发送给agent，再由agent发送到OpenFalcon 业务应用监控主要是监控企业自主开发的应用服务。由企业根据业务需要定义采集指标，自实现插件。将获取到的采集指标发送到agent，再由agent发送到OpenFalcon openfalcon数据流向 常见的OpenFalcon包含transfer、hbs、agent、judge、graph、API几个进程。但没有提供用户界面。用户界面的解决方案是OpenFalcon官方提供的Dashboard，由python编写的一个Web服务。Dashboard调用OpenFalcon的API节点REST，完成用户认证，查询历史等操作。 以下是各个节点的数据流向图，主数据流向是agent-&gt;transfer-&gt;judge/graph： 模块 组件 Agent: 是用于采集被部署机器上的监控数据，每隔60秒push给Transfer模块。agent与Transfer建立的是长连接（毕竟每分钟发送一次，短连接开销太大）。每台要被监控的机器都要部署该模块，它消耗的资源很小，不用太担心这一点。同时agent提供了一个http接口/v1/push用于接收用户手工push的一些数据，然后通过长连接迅速转发给Transfer，在实际使用中，我们对于某些自己项目接口的监控就是通过此方式来进行上传的">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_Open_Falcon :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="部署Open Falcon服务 Open-falcon架构 介绍 OpenFalcon是一款企业级、高可用、可扩展的开源监控解决方案。此项目最初由小米公司发起，小米运维团队从互联网公司的需求出发，根据多年的运维经验，结合SRE、SA、DEVS的使用经验和反馈，开发的一套面向互联网的企业级开源监控产品，最新版本为v2.0。目前有几十家公司不同程度使用OpenFalcon作为分布式系统的监控解决方案。
+优点 采集器自动发现，支持falcon-agent、snmp、支持用户主动push数据、用户自定义插件 支持每个周期上亿次的数据采集、告警判定、历史数据存储和查询 高效的分区、支持监控策略模板、模板继承和覆盖、多种告警方式、支持告警回调 单节点能支持200万metric的上报、归档、存储 其存储采用rrdtool归档，秒级返回上百个metric一年的历史数据 多维度的数据展示，可由用户自定义Screen 通过各种插件目前支持Linux、Windows、Mysql、Redis、Memache、RabbitMQ和交换机监控 监控范围 OpenFalcon支持系统基础监控，第三方服务监控，JVM监控，业务应用监控 基础监控指Linux平台的系统指标监控，包括CPU、Load、内存、磁盘、IO、网络等，这些指标由OpenFalcon的agent节点直接支持，无需插件 JVM监控主要通过插件完成，插件通过JVM开放的JMX通信端口，获取到JVM参数指标，并推送到agent节点，再由agent发送到OpenFalcon 第三方服务监控指一些常见服务监控，包括MySQL、Redis、Nginx等，OpenFalcon官网提供了很多第三方服务的监控插件，也可以自己实现插件，定义采集指标。而采集到的指标，也是通过插件先发送给agent，再由agent发送到OpenFalcon 业务应用监控主要是监控企业自主开发的应用服务。由企业根据业务需要定义采集指标，自实现插件。将获取到的采集指标发送到agent，再由agent发送到OpenFalcon openfalcon数据流向 常见的OpenFalcon包含transfer、hbs、agent、judge、graph、API几个进程。但没有提供用户界面。用户界面的解决方案是OpenFalcon官方提供的Dashboard，由python编写的一个Web服务。Dashboard调用OpenFalcon的API节点REST，完成用户认证，查询历史等操作。 以下是各个节点的数据流向图，主数据流向是agent-&gt;transfer-&gt;judge/graph： 模块 组件 Agent: 是用于采集被部署机器上的监控数据，每隔60秒push给Transfer模块。agent与Transfer建立的是长连接（毕竟每分钟发送一次，短连接开销太大）。每台要被监控的机器都要部署该模块，它消耗的资源很小，不用太担心这一点。同时agent提供了一个http接口/v1/push用于接收用户手工push的一些数据，然后通过长连接迅速转发给Transfer，在实际使用中，我们对于某些自己项目接口的监控就是通过此方式来进行上传的">
+    <meta property="og:url" content="https://erge.blog/systems/linux/monitor/install_open_falcon/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_Open_Falcon :: Hugo Relearn Theme">
+    <meta property="og:description" content="部署Open Falcon服务 Open-falcon架构 介绍 OpenFalcon是一款企业级、高可用、可扩展的开源监控解决方案。此项目最初由小米公司发起，小米运维团队从互联网公司的需求出发，根据多年的运维经验，结合SRE、SA、DEVS的使用经验和反馈，开发的一套面向互联网的企业级开源监控产品，最新版本为v2.0。目前有几十家公司不同程度使用OpenFalcon作为分布式系统的监控解决方案。
+优点 采集器自动发现，支持falcon-agent、snmp、支持用户主动push数据、用户自定义插件 支持每个周期上亿次的数据采集、告警判定、历史数据存储和查询 高效的分区、支持监控策略模板、模板继承和覆盖、多种告警方式、支持告警回调 单节点能支持200万metric的上报、归档、存储 其存储采用rrdtool归档，秒级返回上百个metric一年的历史数据 多维度的数据展示，可由用户自定义Screen 通过各种插件目前支持Linux、Windows、Mysql、Redis、Memache、RabbitMQ和交换机监控 监控范围 OpenFalcon支持系统基础监控，第三方服务监控，JVM监控，业务应用监控 基础监控指Linux平台的系统指标监控，包括CPU、Load、内存、磁盘、IO、网络等，这些指标由OpenFalcon的agent节点直接支持，无需插件 JVM监控主要通过插件完成，插件通过JVM开放的JMX通信端口，获取到JVM参数指标，并推送到agent节点，再由agent发送到OpenFalcon 第三方服务监控指一些常见服务监控，包括MySQL、Redis、Nginx等，OpenFalcon官网提供了很多第三方服务的监控插件，也可以自己实现插件，定义采集指标。而采集到的指标，也是通过插件先发送给agent，再由agent发送到OpenFalcon 业务应用监控主要是监控企业自主开发的应用服务。由企业根据业务需要定义采集指标，自实现插件。将获取到的采集指标发送到agent，再由agent发送到OpenFalcon openfalcon数据流向 常见的OpenFalcon包含transfer、hbs、agent、judge、graph、API几个进程。但没有提供用户界面。用户界面的解决方案是OpenFalcon官方提供的Dashboard，由python编写的一个Web服务。Dashboard调用OpenFalcon的API节点REST，完成用户认证，查询历史等操作。 以下是各个节点的数据流向图，主数据流向是agent-&gt;transfer-&gt;judge/graph： 模块 组件 Agent: 是用于采集被部署机器上的监控数据，每隔60秒push给Transfer模块。agent与Transfer建立的是长连接（毕竟每分钟发送一次，短连接开销太大）。每台要被监控的机器都要部署该模块，它消耗的资源很小，不用太担心这一点。同时agent提供了一个http接口/v1/push用于接收用户手工push的一些数据，然后通过长连接迅速转发给Transfer，在实际使用中，我们对于某些自己项目接口的监控就是通过此方式来进行上传的">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-21T14:10:19+08:00">
+    <meta property="article:modified_time" content="2024-06-21T14:10:19+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_Open_Falcon :: Hugo Relearn Theme">
+    <meta itemprop="description" content="部署Open Falcon服务 Open-falcon架构 介绍 OpenFalcon是一款企业级、高可用、可扩展的开源监控解决方案。此项目最初由小米公司发起，小米运维团队从互联网公司的需求出发，根据多年的运维经验，结合SRE、SA、DEVS的使用经验和反馈，开发的一套面向互联网的企业级开源监控产品，最新版本为v2.0。目前有几十家公司不同程度使用OpenFalcon作为分布式系统的监控解决方案。
+优点 采集器自动发现，支持falcon-agent、snmp、支持用户主动push数据、用户自定义插件 支持每个周期上亿次的数据采集、告警判定、历史数据存储和查询 高效的分区、支持监控策略模板、模板继承和覆盖、多种告警方式、支持告警回调 单节点能支持200万metric的上报、归档、存储 其存储采用rrdtool归档，秒级返回上百个metric一年的历史数据 多维度的数据展示，可由用户自定义Screen 通过各种插件目前支持Linux、Windows、Mysql、Redis、Memache、RabbitMQ和交换机监控 监控范围 OpenFalcon支持系统基础监控，第三方服务监控，JVM监控，业务应用监控 基础监控指Linux平台的系统指标监控，包括CPU、Load、内存、磁盘、IO、网络等，这些指标由OpenFalcon的agent节点直接支持，无需插件 JVM监控主要通过插件完成，插件通过JVM开放的JMX通信端口，获取到JVM参数指标，并推送到agent节点，再由agent发送到OpenFalcon 第三方服务监控指一些常见服务监控，包括MySQL、Redis、Nginx等，OpenFalcon官网提供了很多第三方服务的监控插件，也可以自己实现插件，定义采集指标。而采集到的指标，也是通过插件先发送给agent，再由agent发送到OpenFalcon 业务应用监控主要是监控企业自主开发的应用服务。由企业根据业务需要定义采集指标，自实现插件。将获取到的采集指标发送到agent，再由agent发送到OpenFalcon openfalcon数据流向 常见的OpenFalcon包含transfer、hbs、agent、judge、graph、API几个进程。但没有提供用户界面。用户界面的解决方案是OpenFalcon官方提供的Dashboard，由python编写的一个Web服务。Dashboard调用OpenFalcon的API节点REST，完成用户认证，查询历史等操作。 以下是各个节点的数据流向图，主数据流向是agent-&gt;transfer-&gt;judge/graph： 模块 组件 Agent: 是用于采集被部署机器上的监控数据，每隔60秒push给Transfer模块。agent与Transfer建立的是长连接（毕竟每分钟发送一次，短连接开销太大）。每台要被监控的机器都要部署该模块，它消耗的资源很小，不用太担心这一点。同时agent提供了一个http接口/v1/push用于接收用户手工push的一些数据，然后通过长连接迅速转发给Transfer，在实际使用中，我们对于某些自己项目接口的监控就是通过此方式来进行上传的">
+    <meta itemprop="datePublished" content="2024-06-21T14:10:19+08:00">
+    <meta itemprop="dateModified" content="2024-06-21T14:10:19+08:00">
+    <meta itemprop="wordCount" content="589">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_Open_Falcon :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/monitor/install_open_falcon/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/monitor/"><span itemprop="name">Monitor</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_Open_Falcon</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/monitor/install_prometheus/" title="Install_Prometheus (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/monitor/install_nightingale/" title="Install_Nightingale (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_open_falcon">Install_Open_Falcon</h1>
+
+<h2 id="部署open-falcon服务">部署<code>Open Falcon</code>服务</h2>
+<h3 id="open-falcon架构"><code>Open-falcon</code>架构</h3>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->介绍<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><code>OpenFalcon</code>是一款企业级、高可用、可扩展的开源监控解决方案。此项目最初由小米公司发起，小米运维团队从互联网公司的需求出发，根据多年的运维经验，结合<code>SRE</code>、<code>SA</code>、<code>DEVS</code>的使用经验和反馈，开发的一套面向互联网的企业级开源监控产品，最新版本为<code>v2.0</code>。目前有几十家公司不同程度使用<code>OpenFalcon</code>作为分布式系统的监控解决方案。</p>
+</blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->优点<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>采集器自动发现，支持<code>falcon-agent</code>、<code>snmp</code>、支持用户主动push数据、用户自定义插件</li>
+<li>支持每个周期上亿次的数据采集、告警判定、历史数据存储和查询</li>
+<li>高效的分区、支持监控策略模板、模板继承和覆盖、多种告警方式、支持告警回调</li>
+<li>单节点能支持200万<code>metric</code>的上报、归档、存储</li>
+<li>其存储采用<code>rrdtool</code>归档，秒级返回上百个<code>metric</code>一年的历史数据</li>
+<li>多维度的数据展示，可由用户自定义<code>Screen</code></li>
+<li>通过各种插件目前支持<code>Linux</code>、<code>Windows</code>、<code>Mysql</code>、<code>Redis</code>、<code>Memache</code>、<code>RabbitMQ</code>和交换机监控</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->监控范围<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>OpenFalcon</code>支持系统基础监控，第三方服务监控，<code>JVM</code>监控，业务应用监控</li>
+<li>基础监控指<code>Linux</code>平台的系统指标监控，包括<code>CPU</code>、<code>Load</code>、内存、磁盘、<code>IO</code>、网络等，这些指标由<code>OpenFalcon</code>的<code>agent</code>节点直接支持，无需插件</li>
+<li><code>JVM</code>监控主要通过插件完成，插件通过<code>JVM</code>开放的<code>JMX</code>通信端口，获取到<code>JVM</code>参数指标，并推送到<code>agent</code>节点，再由<code>agent</code>发送到<code>OpenFalcon</code></li>
+<li>第三方服务监控指一些常见服务监控，包括<code>MySQL</code>、<code>Redis</code>、<code>Nginx</code>等，<code>OpenFalcon</code>官网提供了很多第三方服务的监控插件，也可以自己实现插件，定义采集指标。而采集到的指标，也是通过插件先发送给<code>agent</code>，再由agent发送到<code>OpenFalcon</code></li>
+<li>业务应用监控主要是监控企业自主开发的应用服务。由企业根据业务需要定义采集指标，自实现插件。将获取到的采集指标发送到<code>agen</code>t，再由<code>agent</code>发送到<code>OpenFalcon</code></li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><code>openfalcon</code><!-- raw HTML omitted -->数据流向<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>常见的<code>OpenFalcon</code>包含<code>transfer</code>、<code>hbs</code>、<code>agent</code>、<code>judge</code>、<code>graph</code>、<code>API</code>几个进程。但没有提供用户界面。用户界面的解决方案是<code>OpenFalcon</code>官方提供的<code>Dashboard</code>，由<code>python</code>编写的一个Web服务。<code>Dashboard</code>调用<code>OpenFalcon</code>的<code>API</code>节点<code>REST</code>，完成用户认证，查询历史等操作。</li>
+<li>以下是各个节点的数据流向图，主数据流向是<code>agent</code>-&gt;<code>transfer</code>-&gt;<code>judge/graph</code>：</li>
+</ul>
+<p><a href="#R-image-01dce878c18a7265c52f92e14d077d2f" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/transfer.jpg" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-01dce878c18a7265c52f92e14d077d2f"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/transfer.jpg"></a></p>
+<p><a href="#R-image-f7157592d8b6302f4c24ee099074dbb4" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/transfer-1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f7157592d8b6302f4c24ee099074dbb4"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/transfer-1.png"></a></p>
+</blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->模块<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-9b86e7e630133c047eed171c0f1de585" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/transfer-2.jpg" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-9b86e7e630133c047eed171c0f1de585"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/transfer-2.jpg"></a></p>
+<p><a href="#R-image-9bc55a94fa26e84ab4005c2bd00614ce" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/transfer-3.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-9bc55a94fa26e84ab4005c2bd00614ce"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/transfer-3.png"></a></p>
+<p><a href="#R-image-fc0e2a16238bf9ffc549c85229543e1c" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/transfer-4.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-fc0e2a16238bf9ffc549c85229543e1c"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/transfer-4.png"></a></p>
+</blockquote>
+<ul>
+<li>
+<ol start="6">
+<li><!-- raw HTML omitted -->组件<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><code>Agent</code>: 是用于采集被部署机器上的监控数据，每隔<code>60</code>秒<code>push</code>给<code>Transfer</code>模块。<code>agent</code>与<code>Transfer</code>建立的是长连接（毕竟每分钟发送一次，短连接开销太大）。每台要被监控的机器都要部署该模块，它消耗的资源很小，不用太担心这一点。同时<code>agent</code>提供了一个<code>http</code>接口<code>/v1/push</code>用于接收用户手工<code>push</code>的一些数据，然后通过长连接迅速转发给<code>Transfer</code>，在实际使用中，我们对于某些自己项目接口的监控就是通过此方式来进行上传的</p>
+</li>
+<li>
+<p><code>transfer</code>： 是数据转发服务。它接收<code>agent</code>上报的数据，然后按照哈希规则进行数据分片、并将分片后的数据分别<code>push</code>给<code>graph</code>和<code>judge</code>等组件</p>
+</li>
+<li>
+<p><code>graph</code>是存储绘图数据的组件。<code>graph</code>组件接收<code>transfer</code>组件推送上来的监控数据，同时处理<code>query</code>组件的查询请求、返回绘图数据</p>
+</li>
+<li>
+<p><code>query</code>组件，提供统一的绘图数据查询入口。<code>query</code>组件接收查询请求，根据一致性哈希算法去相应的<code>graph</code>实例查询不同监控项的数据，然后汇总拿到的数据，最后统一返回给用户</p>
+</li>
+<li>
+<p><code>dashboard</code>是面向用户的查询界面。在这里，用户可以看到<code>push</code>到<code>graph</code>中的所有数据，并查看其趋势图</p>
+</li>
+<li>
+<p>邮件短信发送模块，这个组件没有代码，需要各个公司自行提供。监控系统产生报警事件之后需要发送报警邮件或者报警短信，各个公司可能有自己的邮件服务器，有自己的邮件发送方法；有自己的短信通道，有自己的短信发送方法。<code>falcon</code>为了适配各个公司，在接入方案上做了一个规范，需要各公司提供<code>http</code>的短信和邮件发送接口</p>
+</li>
+<li>
+<p><code>Sender</code>： 6 中提到各个公司会提供邮件、短信发送接口，但是产生了报警之后就立马调用这些接口发送报警，是不合适的。因为这些接口可能无法处理巨大的并发量，而且接口本身的处理速度可能也比较慢，这会拖慢我们的处理逻辑。所以一个比较好的方式是把邮件、短信发送这个事情做成异步的。<code>Sender</code>提供一个短信<code>redis</code>队列，提供一个邮件<code>redis</code>队列。当有短信要发送的时候，直接将短信内容写入短信<code>redis</code>队列即可，当有邮件要发送的时候，直接将邮件内容写入邮件<code>redis</code>队列。针对每个队列，后面有一个预设大小的<code>worker</code>线程池来处理。有了队列的缓冲，即便某个时刻产生了大量报警，造成邮件、短信发送的突发流量，也不会对邮件、短信发送接口造成冲击</p>
+</li>
+<li>
+<p><code>Fe</code>这是<code>Go</code>版本的<code>UIC</code>，也是一个统一的<code>web</code>入口，因为监控组件众多，记忆<code>ip</code>、<code>port</code>去访问还是比较麻烦。<code>fe</code>像是一个监控的<code>hao123.</code>就是为了用户使用方便配置的一个web浏览器操作界面</p>
+</li>
+<li>
+<p><code>Portal</code>是用来配置报警策略的,和<code>HBS</code>一起描述</p>
+</li>
+<li>
+<p><code>HBS(Heartbeat Server)</code>：</p>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Portal</code>的数据库中有一个<code>host</code>表，维护了公司所有机器的信息，比如<code>hostname</code>、<code>ip</code>等等。<code>HBS</code>第一个功能：<code>agent</code>发送心跳信息给<code>HBS</code>的时候，会把<code>hostname</code>、<code>ip</code>、<code>agent</code> <code>version</code>、<code>plugin version</code>等信息告诉<code>HBS</code>，<code>HBS</code>负责更新<code>host</code>表</li>
+<li><code>Agent</code>只采集用户配置的监控项。比如用户配置了对某个机器<code>80</code>端口的监控，我们才会去采集这个机器<code>80</code>端口的存活性。那<code>agent</code>如何知道自己应该采集哪些端口和进程呢？向<code>HBS</code>要，<code>HBS</code>去读取<code>Portal</code>的数据库，返回给<code>agent</code></li>
+<li><code>Judge</code>需要获取所有的报警策略，让<code>Judge</code>去读取<code>Portal</code>的<code>DB</code>么？不太好。因为<code>Judge</code>的实例数目比较多，如果公司有几十万机器，<code>Judge</code>实例数目可能会是几百个，几百个<code>Judge</code>实例去访问<code>Portal</code>数据库，也是一个比较大的压力。既然<code>HBS</code>无论如何都要访问<code>Portal</code>的数据库了，那就让<code>HBS</code>去获取所有的报警策略缓存在内存里，然后<code>Judge</code>去向<code>HBS</code>请求。这样一来，对<code>Portal DB</code>的压力就会大大减小</li>
+</ul>
+</blockquote>
+<ul>
+<li><code>Judge Judge</code>用于告警判断，<code>agent</code>将数据<code>push</code>给<code>Transfer</code>，<code>Transfer</code>不但会转发给<code>Graph</code>组件来绘图，还会转发给<code>Judge</code>用于判断是否触发告警。因为监控系统数据量比较大，一台机器显然是搞不定的，所以必须要有个数据分片方案。<code>Transfer</code>通过一致性哈希来分片，每个<code>Judge</code>就只需要处理一小部分数据就可以了。所以判断告警的功能不能放在直接的数据接收端<code>Transfer</code>，而应该放到<code>Transfer</code>后面的组件里，就有了<code>Judge.</code></li>
+<li><code>Links</code>是为报警合并功能写的组件。如果你不想使用报警合并功能，这个组件是无需安装的。一般不会用到</li>
+<li><code>alarm</code>模块是处理报警<code>event</code>的，<code>judge</code>产生的报警<code>event</code>写入<code>redis</code>，<code>alarm</code>从<code>redis</code>读取处理，报警<code>event</code>的处理逻辑并非仅仅是发邮件、发短信这么简单。为了能够自动化对<code>event</code>做处理，<code>alarm</code>需要支持在产生<code>event</code>的时候回调用户提供的接口；有的时候报警短信、邮件太多，对于优先级比较低的报警，希望做报警合并，这些逻辑都是在<code>alarm</code>中做的</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="7">
+<li><!-- raw HTML omitted -->流程<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>目标服务器运行<code>agent</code></li>
+<li><code>agent</code>采集各类监控项数值，传给<code>transfer</code></li>
+<li><code>transfer</code>校验和整理监控项数值，做一致性<code>hash</code>分片，传给对应的<code>judge</code>模块以验证是否触发告警</li>
+<li><code>transfer</code>整理监控项数值，做一致性<code>hash</code>分片，传输给<code>graph</code>以进行数据的存储</li>
+<li><code>judge</code>根据具体报警策略或阈值进行告警判断，如触发告警则组装告警<code>event</code>事件，写入缓存队列</li>
+<li><code>alarm</code>和<code>sender</code>根据<code>event</code>事件中的判定结果，执行<code>event</code>，像用户组发送短信或邮件</li>
+<li><code>graph</code>收到监控项数据后，将数据存储成<code>RRD</code>文件格式，进行归档，并提供查询接口</li>
+<li><code>query</code>将调用<code>graph</code>的查询接口，将监控数据传送到<code>dashboard</code>以进行页面展示</li>
+<li><code>dashboard</code>则渲染页面，展示曲线报表图等</li>
+<li><code>portal</code>提供页面供用户配置机器分组、报警策略、表达式、<code>nodata</code>等配置</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="open-falcon部署"><code>Open-falcon</code>部署</h3>
+<blockquote>
+<ul>
+<li><code>Open-Falcon</code><!-- raw HTML omitted -->为前后端分离的架构，包含<!-- raw HTML omitted --><code>backend</code><!-- raw HTML omitted -->和<!-- raw HTML omitted --><code>frontend</code><!-- raw HTML omitted -->两部分<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->前端(客户端)和后端(服务端)<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->环境准备<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->安装<!-- raw HTML omitted --><code>redis</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum install -y redis
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 启动</span>
+</span></span><span style="display:flex;"><span>$ redis-server &amp;</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->装<!-- raw HTML omitted --><code>mysql</code></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->解压到<!-- raw HTML omitted --><code>/usr/local</code><!-- raw HTML omitted -->目录<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ wget http://ftp.iij.ad.jp/pub/db/mysql/Downloads/MySQL-5.7/mysql-5.7.22-linux-glibc2.12-x86_64.tar.gz</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->移动至该目录<!-- raw HTML omitted --><code>cd /usr/local/mysql</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mv mysql-5.7.22-linux-glibc2.12-x86_64 /usr/local/mysql</span></span></code></pre></div><ul>
+<li><code>rpm -qa | grep mariadb</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ rpm -e mariadb-libs –nodeps</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->创建数据库目录<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mkdir data</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->创建<!-- raw HTML omitted --><code>mysql</code><!-- raw HTML omitted -->系统组和系统用户并不建立家目录<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ groupadd -r mysql <span style="color:#f92672">&amp;&amp;</span> useradd -r -g mysql -s /bin/false -M mysql</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->授权给<!-- raw HTML omitted --><code>mysql</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ chown -R mysql:mysql .</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->做个软链接<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ln -s /usr/local/mysql/bin/* /usr/local/bin</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->编写主配置文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/etc/my.cnf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[mysqld]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">basedir=/usr/local/mysql
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">datadir=/usr/local/mysql/data
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">pid-file=/usr/local/mysql/data/mysqld.pid
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">socket=/usr/local/mysql/mysql.sock
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">log-error=/usr/local/mysql/data/mysql.err
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[client]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">socket=/usr/local/mysql/mysql.sock
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->初始化数据库<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mysqld --initialize --user<span style="color:#f92672">=</span>mysql --basedir<span style="color:#f92672">=</span>/usr/local/mysql --datadir<span style="color:#f92672">=</span>/usr/local/mysql/data</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->移动至<!-- raw HTML omitted --><code>support-files</code><!-- raw HTML omitted -->目录下<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd support-files</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->复制启动服务至<!-- raw HTML omitted --><code>/etc/init.d/mysqld</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cp mysql.server /etc/init.d/mysqld</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->启动<!-- raw HTML omitted --><code>mysql</code><!-- raw HTML omitted -->服务<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /etc/init.d/mysqld start</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->找密码<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat /usr/local/mysql/data/mysql.err</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->登录<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mysql -uroot -p<span style="color:#e6db74">&#39;密码&#39;</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->修改密码<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ alter user root@localhost identified by <span style="color:#e6db74">&#39;123&#39;</span>;</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->初始化<!-- raw HTML omitted --><code>mysql</code><!-- raw HTML omitted -->表结构<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd /tmp/ <span style="color:#f92672">&amp;&amp;</span> git clone https://github.com/open-falcon/falcon-plus.git 
+</span></span><span style="display:flex;"><span>$ cd /tmp/falcon-plus/scripts/mysql/db_schema/
+</span></span><span style="display:flex;"><span>$ mysql -h 127.0.0.1 -u root -p &lt; 1_uic-db-schema.sql
+</span></span><span style="display:flex;"><span>$ mysql -h 127.0.0.1 -u root -p &lt; 2_portal-db-schema.sql
+</span></span><span style="display:flex;"><span>$ mysql -h 127.0.0.1 -u root -p &lt; 3_dashboard-db-schema.sql
+</span></span><span style="display:flex;"><span>$ mysql -h 127.0.0.1 -u root -p &lt; 4_graph-db-schema.sql
+</span></span><span style="display:flex;"><span>$ mysql -h 127.0.0.1 -u root -p &lt; 5_alarms-db-schema.sql
+</span></span><span style="display:flex;"><span>$ rm -rf /tmp/falcon-plus/</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>Go</code><!-- raw HTML omitted -->语言开发环境(需要<code>epel</code>源)<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum install golang -y</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->查看<!-- raw HTML omitted --><code>go</code><!-- raw HTML omitted -->的安装路径<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ find / -name go</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->设置环境变量<!-- raw HTML omitted --><code>GOROOT</code>和<code>GOPATH</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ export GOROOT<span style="color:#f92672">=</span>/usr/lib/golang
+</span></span><span style="display:flex;"><span>$ export GOPATH<span style="color:#f92672">=</span>/home</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->下载编译好的二进制版本<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ wget https://github.com/open-falcon/falcon-plus/releases/download/v0.2.1/open-falcon-v0.2.1.tar.gz</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->启动后端<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->创建工作目录<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ export FALCON_HOME<span style="color:#f92672">=</span>/home/work
+</span></span><span style="display:flex;"><span>$ export WORKSPACE<span style="color:#f92672">=</span>$FALCON_HOME/open-falcon
+</span></span><span style="display:flex;"><span>$ mkdir -p $WORKSPACE</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->解压二进制包<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ tar -xzvf open-falcon-v0.2.1.tar.gz -C $WORKSPACE</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->在一台机器上启动所有的后端组件<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><!-- raw HTML omitted -->修改配置文件<!-- raw HTML omitted --><code>cfg.json</code></p>
+<p>部分模块依赖连接数据库，因为如果不修改配置文件，<code>aggregator</code>模块会出现无法启动，<code>graph</code>、<code>hbs</code>、<code>nodata</code>、<code>api</code>、<code>alarm</code>模块会出现开启不报错但是状态为开启失败的情况。</p>
+<p>如果需要每个模块都能正常启动，需要将上面模块的<code>cfg.json</code>的数据库信息进行修改，需要修改配置文件所在的目录</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>配置文件所在路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aggregator</code></td>
+<td><code>/home/work/aggregator/config/cfg.json</code></td>
+</tr>
+<tr>
+<td><code>graph</code></td>
+<td><code>/home/work/graph/config/cfg.json</code></td>
+</tr>
+<tr>
+<td><code>hbs</code></td>
+<td><code>/home/work/hbs/config/cfg.json</code></td>
+</tr>
+<tr>
+<td><code>nodata</code></td>
+<td><code>/home/work/nodata/config/cfg.json</code></td>
+</tr>
+<tr>
+<td><code>api</code></td>
+<td><code>/home/work/api/config/cfg.json</code></td>
+</tr>
+<tr>
+<td><code>alarm</code></td>
+<td><code>/home/work/alarm/config/cfg.json</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><!-- raw HTML omitted -->启动<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd $WORKSPACE
+</span></span><span style="display:flex;"><span>$ ./open-falcon start
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 检查所有模块的启动状况</span>
+</span></span><span style="display:flex;"><span>$ ./open-falcon check</span></span></code></pre></div></blockquote>
+</blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->安装前端<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->创建工作目录<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ export HOME<span style="color:#f92672">=</span>/home/work
+</span></span><span style="display:flex;"><span>$ export WORKSPACE<span style="color:#f92672">=</span>$HOME/open-falcon
+</span></span><span style="display:flex;"><span>$ mkdir -p $WORKSPACE
+</span></span><span style="display:flex;"><span>$ cd $WORKSPACE</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->克隆前端组件<!-- raw HTML omitted --><code>diamante</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd $WORKSPACE
+</span></span><span style="display:flex;"><span>$ git clone https://github.com/open-falcon/dashboard.git</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->安装依赖包<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum install -y python-virtualenv
+</span></span><span style="display:flex;"><span>$ yum install -y python-devel
+</span></span><span style="display:flex;"><span>$ yum install -y openldap-devel
+</span></span><span style="display:flex;"><span>$ yum install -y mysql-devel
+</span></span><span style="display:flex;"><span>$ yum groupinstall <span style="color:#e6db74">&#34;Development tools&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cd $WORKSPACE/dashboard/
+</span></span><span style="display:flex;"><span>$ virtualenv ./env
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ ./env/bin/pip install -r pip_requirements.txt -i https://pypi.douban.com/simple</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->修改配置<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>dashboard的配置文件为： <span style="color:#e6db74">&#39;rrd/config.py&#39;</span>，请根据实际情况修改
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># API_ADDR 表示后端api组件的地址</span>
+</span></span><span style="display:flex;"><span>API_ADDR <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://127.0.0.1:8080/api/v1&#34;</span> 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 根据实际情况，修改PORTAL_DB_*, 默认用户名为root，默认密码为&#34;&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 根据实际情况，修改ALARM_DB_*, 默认用户名为root，默认密码为&#34;&#34;</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->在生产环境启动<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ bash control start
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 停止</span>
+</span></span><span style="display:flex;"><span>$ bash control stop
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 查看日志</span>
+</span></span><span style="display:flex;"><span>$ Bash control tail</span></span></code></pre></div><ul>
+<li><code>dashboard</code><!-- raw HTML omitted -->用户管理<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0"><code>dashbord没有默认创建任何账号包括管理账号，需要你通过页面进行注册账号。
+想拥有管理全局的超级管理员账号，需要手动注册用户名为root的账号（第一个帐号名称为root的用户会被自动设置为超级管理员）。
+超级管理员可以给普通用户分配权限管理。
+
+小提示：注册账号能够被任何打开dashboard页面的人注册，所以当给相关的人注册完账号后，需要去关闭注册账号功能。只需要去修改api组件的配置文件cfg.json，将signup_disable配置项修改为true，重启api即可。当需要给人开账号的时候，再将配置选项改回去，用完再关掉即可。</code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->被监控端配置<!-- raw HTML omitted --><code>agent</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>agent</code><!-- raw HTML omitted -->需要部署到所有要被监控的机器上，比如公司有10万台机器，那就要部署10万个<!-- raw HTML omitted --><code>agent</code>。<code>agent</code><!-- raw HTML omitted -->本身资源消耗很少，不用担心<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->配置说明：配置文件必须叫<!-- raw HTML omitted --><code>cfg.json</code><!-- raw HTML omitted -->，可以基于<!-- raw HTML omitted --><code>cfg.example.json</code><!-- raw HTML omitted -->修改<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;debug&#34;</span>: true,  	<span style="color:#75715e"># 控制一些debug信息的输出，生产环境通常设置为false</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;hostname&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,  	<span style="color:#75715e"># agent采集了数据发给transfer，endpoint就设置为了hostname，默认通过`hostname`获取，如果配置中配置了hostname，就用配置中的</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;ip&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#75715e"># agent与hbs心跳的时候会把自己的ip地址发给hbs，agent会自动探测本机ip，如果不想让agent自动探测，可以手工修改该配置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;plugin&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;enabled&#34;</span>: false,  	<span style="color:#75715e"># 默认不开启插件机制</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;dir&#34;</span>: <span style="color:#e6db74">&#34;./plugin&#34;</span>,  	<span style="color:#75715e"># 把放置插件脚本的git repo clone到这个目录</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;git&#34;</span>: <span style="color:#e6db74">&#34;https://github.com/open-falcon/plugin.git&#34;</span>, <span style="color:#75715e"># 放置插件脚本的git repo地址</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;logs&#34;</span>: <span style="color:#e6db74">&#34;./logs&#34;</span>  	<span style="color:#75715e"># 插件执行的log，如果插件执行有问题，可以去这个目录看log</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;heartbeat&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;enabled&#34;</span>: true,  	<span style="color:#75715e"># 此处enabled要设置为true</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;addr&#34;</span>: <span style="color:#e6db74">&#34;127.0.0.1:6030&#34;</span>, <span style="color:#75715e"># hbs的地址，端口是hbs的rpc端口</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;interval&#34;</span>: 60,  	<span style="color:#75715e"># 心跳周期，单位是秒</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;timeout&#34;</span>: <span style="color:#ae81ff">1000</span>  	<span style="color:#75715e"># 连接hbs的超时时间，单位是毫秒</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;transfer&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;enabled&#34;</span>: true, 
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;addrs&#34;</span>: <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;127.0.0.1:18433&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">]</span>,  	<span style="color:#75715e"># transfer的地址，端口是transfer的rpc端口, 可以支持写多个transfer的地址，agent会保证HA</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;interval&#34;</span>: 60,  	<span style="color:#75715e"># 采集周期，单位是秒，即agent一分钟采集一次数据发给transfer</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;timeout&#34;</span>: <span style="color:#ae81ff">1000</span>  	<span style="color:#75715e"># 连接transfer的超时时间，单位是毫秒</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;http&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;enabled&#34;</span>: true,  	<span style="color:#75715e"># 是否要监听http端口</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;listen&#34;</span>: <span style="color:#e6db74">&#34;:1988&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;backdoor&#34;</span>: false
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;collector&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;ifacePrefix&#34;</span>: <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;eth&#34;</span>, <span style="color:#e6db74">&#34;em&#34;</span><span style="color:#f92672">]</span>,  	<span style="color:#75715e"># 默认配置只会采集网卡名称前缀是eth、em的网卡流量，配置为空就会采集所有的，lo的也会采集。可以从/proc/net/dev看到各个网卡的流量信息</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;mountPoint&#34;</span>: <span style="color:#f92672">[]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;default_tags&#34;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;ignore&#34;</span>: <span style="color:#f92672">{</span>  	<span style="color:#75715e"># 默认采集了200多个metric，可以通过ignore设置为不采集</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;cpu.busy&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;df.bytes.free&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;df.bytes.total&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;df.bytes.used&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;df.bytes.used.percent&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;df.inodes.total&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;df.inodes.free&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;df.inodes.used&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;df.inodes.used.percent&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;mem.memtotal&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;mem.memused&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;mem.memused.percent&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;mem.memfree&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;mem.swaptotal&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;mem.swapused&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;mem.swapfree&#34;</span>: true
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->进程管理<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ./open-falcon start agent  	<span style="color:#75715e"># 启动进程</span>
+</span></span><span style="display:flex;"><span>$ ./open-falcon stop agent  	<span style="color:#75715e"># 停止进程</span>
+</span></span><span style="display:flex;"><span>$ ./open-falcon monitor agent  	<span style="color:#75715e"># 查看日志</span></span></span></code></pre></div><ul>
+<li>
+<p><!-- raw HTML omitted -->验证<!-- raw HTML omitted --></p>
+<p>看<code>var</code>目录下的<code>log</code>是否正常，或者浏览器访问其<code>1988</code>端口。另外<code>agent</code>提供了一个<code>--check</code>参数，可以检查<code>agent</code>是否可以正常跑在当前机器上</p>
+</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ./falcon-agent --check</span></span></code></pre></div><ul>
+<li>
+<p><code>/v1/push</code><!-- raw HTML omitted -->接口<!-- raw HTML omitted --></p>
+<p>设计初衷是不希望用户直接连到<code>Transfer</code>发送数据，而是通过<code>agent</code>的<code>/v1/push</code>接口转发，接口使用范例：</p>
+</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>ts<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>date +%s<span style="color:#e6db74">`</span>; curl -X POST -d <span style="color:#e6db74">&#34;[{\&#34;metric\&#34;: \&#34;metric.demo\&#34;, \&#34;endpoint\&#34;: \&#34;qd-open-falcon-judge01.hd\&#34;, \&#34;timestamp\&#34;: </span>$ts<span style="color:#e6db74">,\&#34;step\&#34;: 60,\&#34;value\&#34;: 9,\&#34;counterType\&#34;: \&#34;GAUGE\&#34;,\&#34;tags\&#34;: \&#34;project=falcon,module=judge\&#34;}]&#34;</span> http://127.0.0.1:1988/v1/push</span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="Open-falcon配置 查看监控数据 Linux下smokeping网络监控环境部署记录
+agent只要部署到机器上，并且配置好了heartbeat和transfer就自动采集数据了，我们就可以去dashboard上面搜索监控数据查看了。dashboard是个web&gt; 项目，浏览器访问之。左侧输入endpoint搜索，endpoint是什么？应该用什么搜索？对于agent采集的数据endpoint都是机器名，去目标机器上执行hostname&gt; ，看到的输出就是endpoint，拿着hostname去搜索。
+选中前面的复选框，点击“查看counter列表”，可以列出隶属于这个endpoint的counter假如我们要查看cpu.busy，在counter搜索框中输入cpu&gt; 并回车。看到cpu.busy了吧，点击，会看到一个新页面，图表中就是这个机器的cpu.busy&gt; 的近一小时数据了，想看更长时间的？右上角有个小三角，展开菜单，可以选择更长的时间跨度
+配置报警策略 配置报警接收人">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Configure_Open_Falcon :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="Open-falcon配置 查看监控数据 Linux下smokeping网络监控环境部署记录
+agent只要部署到机器上，并且配置好了heartbeat和transfer就自动采集数据了，我们就可以去dashboard上面搜索监控数据查看了。dashboard是个web&gt; 项目，浏览器访问之。左侧输入endpoint搜索，endpoint是什么？应该用什么搜索？对于agent采集的数据endpoint都是机器名，去目标机器上执行hostname&gt; ，看到的输出就是endpoint，拿着hostname去搜索。
+选中前面的复选框，点击“查看counter列表”，可以列出隶属于这个endpoint的counter假如我们要查看cpu.busy，在counter搜索框中输入cpu&gt; 并回车。看到cpu.busy了吧，点击，会看到一个新页面，图表中就是这个机器的cpu.busy&gt; 的近一小时数据了，想看更长时间的？右上角有个小三角，展开菜单，可以选择更长的时间跨度
+配置报警策略 配置报警接收人">
+    <meta property="og:url" content="https://erge.blog/systems/linux/monitor/configure_open_falcon/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Configure_Open_Falcon :: Hugo Relearn Theme">
+    <meta property="og:description" content="Open-falcon配置 查看监控数据 Linux下smokeping网络监控环境部署记录
+agent只要部署到机器上，并且配置好了heartbeat和transfer就自动采集数据了，我们就可以去dashboard上面搜索监控数据查看了。dashboard是个web&gt; 项目，浏览器访问之。左侧输入endpoint搜索，endpoint是什么？应该用什么搜索？对于agent采集的数据endpoint都是机器名，去目标机器上执行hostname&gt; ，看到的输出就是endpoint，拿着hostname去搜索。
+选中前面的复选框，点击“查看counter列表”，可以列出隶属于这个endpoint的counter假如我们要查看cpu.busy，在counter搜索框中输入cpu&gt; 并回车。看到cpu.busy了吧，点击，会看到一个新页面，图表中就是这个机器的cpu.busy&gt; 的近一小时数据了，想看更长时间的？右上角有个小三角，展开菜单，可以选择更长的时间跨度
+配置报警策略 配置报警接收人">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-20T23:52:32+08:00">
+    <meta property="article:modified_time" content="2024-06-20T23:52:32+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Configure_Open_Falcon :: Hugo Relearn Theme">
+    <meta itemprop="description" content="Open-falcon配置 查看监控数据 Linux下smokeping网络监控环境部署记录
+agent只要部署到机器上，并且配置好了heartbeat和transfer就自动采集数据了，我们就可以去dashboard上面搜索监控数据查看了。dashboard是个web&gt; 项目，浏览器访问之。左侧输入endpoint搜索，endpoint是什么？应该用什么搜索？对于agent采集的数据endpoint都是机器名，去目标机器上执行hostname&gt; ，看到的输出就是endpoint，拿着hostname去搜索。
+选中前面的复选框，点击“查看counter列表”，可以列出隶属于这个endpoint的counter假如我们要查看cpu.busy，在counter搜索框中输入cpu&gt; 并回车。看到cpu.busy了吧，点击，会看到一个新页面，图表中就是这个机器的cpu.busy&gt; 的近一小时数据了，想看更长时间的？右上角有个小三角，展开菜单，可以选择更长的时间跨度
+配置报警策略 配置报警接收人">
+    <meta itemprop="datePublished" content="2024-06-20T23:52:32+08:00">
+    <meta itemprop="dateModified" content="2024-06-20T23:52:32+08:00">
+    <meta itemprop="wordCount" content="126">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Configure_Open_Falcon :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/monitor/configure_open_falcon/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/monitor/"><span itemprop="name">Monitor</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Configure_Open_Falcon</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/monitor/configure_prometheus/" title="Configure_Prometheus (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/message_queue/" title="Message_Queue (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="configure_open_falcon">Configure_Open_Falcon</h1>
+
+<h2 id="open-falcon配置"><code>Open-falcon</code>配置</h2>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->查看监控数据<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><a href="https://www.cnblogs.com/kevingrace/p/5570488.html" rel="external" target="_self"><code>Linux</code>下<code>smokeping</code>网络监控环境部署记录</a></p>
+</li>
+<li>
+<p><code>agent</code>只要部署到机器上，并且配置好了<code>heartbeat</code>和<code>transfer</code>就自动采集数据了，我们就可以去<code>dashboard</code>上面搜索监控数据查看了。<code>dashboard</code>是个<code>web&gt; </code>项目，浏览器访问之。左侧输入<code>endpoint</code>搜索，<code>endpoint</code>是什么？应该用什么搜索？对于<code>agent</code>采集的数据<code>endpoint</code>都是机器名，去目标机器上执行<code>hostname</code>&gt; ，看到的输出就是<code>endpoint</code>，拿着<code>hostname</code>去搜索。</p>
+</li>
+<li>
+<p>选中前面的复选框，点击“查看<code>counter</code>列表”，可以列出隶属于这个<code>endpoint</code>的<code>counter</code>假如我们要查看<code>cpu.busy</code>，在<code>counter</code>搜索框中输入<code>cpu</code>&gt; 并回车。看到<code>cpu.busy</code>了吧，点击，会看到一个新页面，图表中就是这个机器的<code>cpu.busy</code>&gt; 的近一小时数据了，想看更长时间的？右上角有个小三角，展开菜单，可以选择更长的时间跨度</p>
+</li>
+</ul>
+<p><a href="#R-image-fe9c451505eab30a7174a93d333d9a52" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/dashboard.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-fe9c451505eab30a7174a93d333d9a52"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/dashboard.png"></a></p>
+<p><a href="#R-image-7db440048c6ad543bdc25251718e5b52" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/dashboard-cpu.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-7db440048c6ad543bdc25251718e5b52"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/dashboard-cpu.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->配置报警策略<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><!-- raw HTML omitted -->配置报警接收人<!-- raw HTML omitted --></p>
+<p><code>falcon</code>的报警接收人不是一个具体的手机号，也不是一个具体的邮箱，因为手机号、邮箱都是容易发生变化的，如果变化了去修改所有相关配置那就太麻烦了。我们把用&gt; 户的联系信息维护在一个叫 <code>帐户/Profile</code> 里，以后如果要修改手机号、邮箱，只要修改自己的帐户信息即可。报警接收人也不是单个的人，而是一个组（<code>Teams</code>），比如<code>&gt; falcon</code>这个系统的任何组件出问题了，都应该发报警给<code>falcon</code>的运维和开发人员，发给<code>falcon</code>这个团队，这样一来，新员工入职只要加入<code>falcon</code>这个<code>Team</code>&gt; 即可；员工离职，只要从<code>falcon</code>这个<code>Team</code>删掉即可。</p>
+</li>
+</ul>
+<p><a href="#R-image-ac2c4bd77d4d0bb54e754007903d0b7b" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/dashboard-profile.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-ac2c4bd77d4d0bb54e754007903d0b7b"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/dashboard-profile.png"></a></p>
+<ul>
+<li><!-- raw HTML omitted -->添加报警组，添加成员<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-c61819ffaccfbac568ada1699367b3c3" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/dashboard-group.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-c61819ffaccfbac568ada1699367b3c3"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/dashboard-group.png"></a></p>
+<p><a href="#R-image-6b7594038282bf1c5b139c348ba46c16" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/dashboard-group-1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-6b7594038282bf1c5b139c348ba46c16"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/dashboard-group-1.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->创建<!-- raw HTML omitted --><code>HostGroup</code></li>
+</ul>
+<blockquote>
+<ul>
+<li>比如我们要对<code>falcon-judge</code>这个组件做端口监控，那首先创建一个<code>HostGroup</code>，把所有部署了<code>falcon-judge</code>&gt; 这个模块的机器都塞进去，以后要扩容或下线机器的时候直接从这个<code>HostGroup</code>增删机器即可，报警策略会自动生效、失效。咱们为这个<code>HostGroup</code>取名为：<code>&gt; sa.dev.falcon.judge</code>，这个名称有讲究，<code>sa</code>是我们部门，<code>dev</code>是我们组，<code>falcon</code>是项目名，<code>judge</code>&gt; 是组件名，传达出了很多信息，这样命名比较容易管理，推荐大家这么做</li>
+</ul>
+<p><a href="#R-image-52c81751438c56fc42fc2b765a050908" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/hostgroups.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-52c81751438c56fc42fc2b765a050908"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/hostgroups.png"></a></p>
+<ul>
+<li>在往组里加机器的时候如果报错，需要检查<code>portal</code>的数据库中<code>host</code>表，看里边是否有相关机器。那<code>host</code>表中的机器从哪里来呢？<code>agent</code>有个<code>heartbeat(hbs)</code>&gt; 的配置，<code>agent</code>每分钟会发心跳给<code>hbs</code>，把自己的<code>ip</code>、<code>hostname</code>、<code>agent version</code>等信息告诉<code>hbs</code>，<code>hbs</code>负责写入<code>host</code>表。如果<code>host</code>&gt; 表中没数据，需要检查这条链路是否通畅</li>
+</ul>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->创建策略模板<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><code>portal</code>最上面有个<code>Templates</code>链接，这就是策略模板管理的入口。我们进去之后创建一个模板，名称姑且也叫：<code>sa.dev.falcon.judge.tpl</code>，与<code>HostGroup</code>&gt; 名称相同，在里边配置一个端口监控，通常进程监控有两种手段，一个是进程本身是否存活，一个是端口是否在监听，此处我们使用端口监控</li>
+</ul>
+<p><a href="#R-image-6a219dc8f72a6326a712757f2e047662" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/template.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-6a219dc8f72a6326a712757f2e047662"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/template.png"></a></p>
+<p><a href="#R-image-d8f7956d378f034cb964a34ab5b43079" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/template-1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-d8f7956d378f034cb964a34ab5b43079"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/template-1.png"></a></p>
+<ul>
+<li>右上角那个加号按钮是用于增加策略的，一个模板中可以有多个策略，此处我们只添加了一个。下面可以配置报警接收人，此处填写的是<code>falcon</code>，这是之前在<code>UIC</code>&gt; 中创建的<code>Team</code>。</li>
+</ul>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->将<!-- raw HTML omitted --><code>HostGroup</code><!-- raw HTML omitted -->与模板绑定<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>一个模板是可以绑定到多个<code>HostGroup</code>的，现在我们重新回到<code>HostGroups</code>页面，找到<code>sa.dev.falcon.judge</code>这个<code>HostGroup</code>&gt; ，右侧有几个超链接，点击【templates】进入一个新页面，输入模板名称，绑定一下就行了</li>
+</ul>
+<p><a href="#R-image-ad2e075a539e9b0bbda066294f8db17c" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/hostgroups-tempates.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-ad2e075a539e9b0bbda066294f8db17c"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/hostgroups-tempates.png"></a></p>
+<p><a href="#R-image-42bf0be0c2284847d190dac2c1b8739b" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/hostgroups-tempates-1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-42bf0be0c2284847d190dac2c1b8739b"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/hostgroups-tempates-1.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->补充<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>上面步骤做完了，也就配置完了。如果<code>judge</code>组件宕机，端口不再监听了，就会报警。不过大家不要为了测试报警效果，直接把<code>judge</code>组件给干掉了，因为<code>judge</code>&gt; 本身就是负责判断报警的，把它干掉了，那就没法判断了……所以说<code>falcon</code>&gt; 现在并不完善，没法用来监控本身的组件。为了测试，大家可以修改一下端口监控的策略配置，改成一个没有在监听的端口，这样就触发报警了</li>
+<li>上面的策略只是对<code>falcon-judge</code>做了端口监控，那如果我们要对<code>falcon</code>这个项目的所有机器加一些负载监控，应该如何做呢？</li>
+<li>创建一个<code>HostGroup：sa.dev.falcon</code>，把所有<code>falcon</code>的机器都塞进去</li>
+<li>创建一个模板：<code>sa.dev.falcon.common</code>，添加一些像<code>ping</code>, <code>df.bytes.free.percent</code>, <code>load.5min</code>等策略</li>
+<li>将<code>sa.dev.falcon.common</code>绑定到<code>sa.dev.falcon</code>这个<code>HostGroup</code></li>
+</ul>
+<p><a href="#R-image-f32a430c4bb72f7a336054a8851eed8e" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/template-2.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f32a430c4bb72f7a336054a8851eed8e"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/template-2.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->配置策略表达式<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->策略表达式，即<!-- raw HTML omitted --><code>expression</code></li>
+</ul>
+<p><a href="#R-image-96c02c8b656050ae7e38b2fa05ca5972" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/expressions.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-96c02c8b656050ae7e38b2fa05ca5972"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/expressions.png"></a></p>
+<ul>
+<li>
+<p>上例中的配置传达出的意思是：<code>endpoint=aggregator</code>并且<code>metric=cpu.busy</code>的所有的监控指标，只要连续<code>3</code>次<code>&gt;= 0.5</code>则报警给<code>falcon-test1</code>&gt; 这个报警组。</p>
+</li>
+<li>
+<p><code>expression</code>无需绑定到<code>HostGroup</code>，<code>enjoy it</code></p>
+</li>
+</ul>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="nodata配置"><code>Nodata</code>配置</h3>
+<blockquote>
+<blockquote>
+<ul>
+<li>使用<code>Nodata</code>，需要进行两个配置: <code>Nodata</code>配置和策略配置。下面，我们以一个例子，讲述如何使用<code>Nodata</code>提供的服务</li>
+</ul>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->用户需求<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>当机器分组<code>cop.xiaomi_owt.inf_pdl.falcon</code>下的所有机器，其采集指标<code>agent.alive</code> 上报中断时，通知用户</li>
+</ul>
+</blockquote>
+<ul>
+<li><code>nodata</code><!-- raw HTML omitted -->配置<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->进入<!-- raw HTML omitted --><code>Nodata</code><!-- raw HTML omitted -->配置主页，可以看到<!-- raw HTML omitted --><code>Nodata</code><!-- raw HTML omitted -->配置列表<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-e30520f0170969802771b679e8779bea" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/nodata.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-e30520f0170969802771b679e8779bea"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/nodata.png"></a></p>
+<ul>
+<li><!-- raw HTML omitted -->点击右上角的添加按钮，添加<!-- raw HTML omitted --><code>nodata</code><!-- raw HTML omitted -->配置<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-fe914b995af258ef30b0d6a522aef7f8" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/nodata-1.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-fe914b995af258ef30b0d6a522aef7f8"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/nodata-1.png"></a></p>
+<ul>
+<li><!-- raw HTML omitted -->进行完上述配置后，分组<!-- raw HTML omitted --><code>cop.xiaomi_owt.inf_pdl.falcon</code><!-- raw HTML omitted -->下的所有机器，其采集项<!-- raw HTML omitted --> <code>agent.alive</code>&lt;&gt; font color=red&gt;上报中断后，<!-- raw HTML omitted --><code>nodata</code><!-- raw HTML omitted -->服务就会补发一个取值为<!-- raw HTML omitted --><code>-1.0</code>、<code>agent.alive</code><!-- raw HTML omitted -->&gt; 的监控数据给监控系统<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->策略配置<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>配置了<code>Nodata</code>后，如果有数据上报中断的情况，<code>Nodata</code>配置中的默认值就会被上报。我们可以针对这个默认值，设置报警；只要收到了默认值，就认为发生了数据上报&gt; 的中断（如果你设置的默认值，可能与正常上报的数据相等，那么请修改你的<code>Nodata</code>配置、使默认值有别于正常值）。将此策略，绑定到分组<code>&gt; cop.xiaomi_owt.inf_pdl.falcon</code>即可。</li>
+</ul>
+<p><a href="#R-image-c004ce389286830560656485d6f7ed2d" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/template-3.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-c004ce389286830560656485d6f7ed2d"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/template-3.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->注意事项<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>配置名称<code>name</code>，要全局唯一。这是为了方便<code>Nodata</code>配置的管理。</li>
+<li>监控实例<code>endpoint</code>, 可以是机器分组、机器名或者其他 这三种类型，只能选择其中的一种。同一类型，支持多个记录，但建议不超过5个，多条记录换行分割、每行一条&gt; 记录。选择机器分组时，系统会帮忙展开成具体机器名，支持动态生效。监控实体不是机器名时，只能选择“其他”类型。</li>
+<li>监控指标<code>metric</code>。</li>
+<li>数据标签<code>tags</code>，多个<code>tag</code>要用逗号隔开。必须填写完整的<code>tags</code>串，因为<code>nodata</code>会按照此<code>tags</code>串，去完全匹配、筛选监控数指标项。</li>
+<li>数据类型<code>type</code>，只支持原始值类型<code>GAUGE</code>。因为，<code>nodata</code>只应该监控 &ldquo;特征指标&rdquo;(如<code>agent.alive</code>)，&ldquo;特征指标&quot;都是<code>GAUGE</code>类型的</li>
+<li>采集周期<code>step</code>，单位是秒。必须填写 完整<code>&amp;</code>真实<code>step</code>。该字段不完整 或者 不真实，将会导致<code>nodata</code>监控的误报、漏报。</li>
+<li>补发值<code>default</code>，必须有别于上报的真实数据。比如，<code>cpu.idle</code>的取值范围是[0,100]，那么它的<code>nodata</code>默认取值 只能取小于<code>0</code>或者大于<code>100</code>&gt; 的值。否则，会发生误报、漏报</li>
+</ul>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="报警函数说明">报警函数说明</h3>
+<blockquote>
+<ul>
+<li>说明：<code>#</code>后面的数字的最大值，即在<code>judge</code>内存中保留最近几个点，是支持自定义的</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>all(#3)</code>: 最新的<code>3</code>个点都满足阈值条件则报警</li>
+<li><code>max(#3)</code>: 对于最新的<code>3</code>个点，其最大值满足阈值条件则报警</li>
+<li><code>min(#3)</code>: 对于最新的<code>3</code>个点，其最小值满足阈值条件则报警</li>
+<li><code>sum(#3)</code>: 对于最新的<code>3</code>个点，其和满足阈值条件则报警</li>
+<li><code>avg(#3)</code>: 对于最新的<code>3</code>个点，其平均值满足阈值条件则报警</li>
+<li><code>diff(#3)</code>: 拿最新<code>push</code>上来的点（被减数），与历史最新的<code>3</code>个点（<code>3</code>个减数）相减，得到<code>3</code>个差，只要有一个差满足阈值条件则报警</li>
+<li><code>pdiff(#3)</code>: 拿最新<code>push</code>上来的点，与历史最新的<code>3</code>个点相减，得到<code>3</code>个差，再将<code>3</code>个差值分别除以减数，得到<code>3</code>个商值，只要有一个商值满足阈值则报警</li>
+<li><code>lookup(#2,3)</code>: 最新的<code>3</code>个点中有<code>2</code>个满足条件则报警；</li>
+<li><code>stddev(#7) = 3</code>：离群点检测函数，取最新<strong>7</strong>个点的数据分别计算得到他们的标准差和均值，分别计为<code>σ</code>和<code>μ</code>，其中当前值计为<code>X</code>，那么当<code>X</code>落在区间 [μ-3σ, μ+3σ] 之外时，则认为当前值波动过大，触发报警；更多请参考<code>3-sigma</code>算法：https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule。</li>
+</ul>
+</blockquote>
+<ul>
+<li>最常用的就是<code>all</code>函数了，比如<code>cpu.idle</code> <code>all(#3) &lt; 5</code>，表示<code>cpu.idle</code>的值连续<code>3</code>次小于<code>5%</code>则报警。</li>
+<li><code>lookup</code>为非连续性报警函数，适用于在一定范围内容忍监控指标抖动的场景，比如某个主机的<code>cpu.busy</code>忽高忽低，使用<code>all(#1)&gt;80</code>明显过于严格，会产生大量报警干扰视线，使用<code>all(#3)&gt;80</code>则连续三次偏高的概率很小，可能永远不会触发报警，不能帮助我们发现系统的不稳定，那么如果使用<code>lookup(#3,5)</code>，我们就可以知道<code>cpu.busy</code>最近抖动频繁，超过了我们容忍的界线。</li>
+<li>新增 <code>stddev</code> 函数，基于高斯分布的离群点检测方式，比如<code>cpu.idle</code> <code>stddev(#5) = 3</code> ，表示获取<code>cpu.idle</code>的历史<code>5</code>个点数据，计算得到他们的标准差和均值，分别计为<code>σ</code>和<code>μ</code>，看其是否分布在<code>(μ-3σ,μ+3σ)</code>范围之内，如果不在范围之内则报警。</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="screen的使用"><code>screen</code>的使用</h3>
+<blockquote>
+<ul>
+<li>我们可以使用<code>screen</code>提前将图像定制好，而不用每次都去搜索出图，这样就实现了类似的cacti图像展示功能。</li>
+</ul>
+<p><a href="#R-image-337cfeb27783905ef460d8228de1106e" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen.jpg" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-337cfeb27783905ef460d8228de1106e"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen.jpg"></a></p>
+<p><a href="#R-image-eb4d21918058db639b24c348545e9bd9" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen-falcon.jpg" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-eb4d21918058db639b24c348545e9bd9"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen-falcon.jpg"></a></p>
+<p><a href="#R-image-4fbce357a934632e09708d209a71592b" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen-1.jpg" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-4fbce357a934632e09708d209a71592b"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen-1.jpg"></a></p>
+<p><a href="#R-image-e8af81186e04a622715eca88a49c3982" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen-2.jpg" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-e8af81186e04a622715eca88a49c3982"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen-2.jpg"></a></p>
+<p><a href="#R-image-31588af9e08f640d1c0aca91ea8762b8" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen-3.jpg" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-31588af9e08f640d1c0aca91ea8762b8"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen-3.jpg"></a></p>
+<p><a href="#R-image-ebea068efb0226b2ced1694960021558" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen-4.jpg" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-ebea068efb0226b2ced1694960021558"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen-4.jpg"></a></p>
+<p><a href="#R-image-aebaa9ab0a3a03a0d4329265e587f7a8" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen-5.jpg" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-aebaa9ab0a3a03a0d4329265e587f7a8"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen-5.jpg"></a></p>
+<p><a href="#R-image-b49a7ad967e6bebcfdac6dd83ca52ff8" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen-6.jpg" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-b49a7ad967e6bebcfdac6dd83ca52ff8"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Open-Falcon_Server/screen-6.jpg"></a></p>
+<p><!-- raw HTML omitted -->注：<!-- raw HTML omitted --><code>graph</code><!-- raw HTML omitted -->可以加多个<!-- raw HTML omitted --></p>
+</blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

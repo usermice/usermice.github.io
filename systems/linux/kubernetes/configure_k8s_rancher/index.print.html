@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="Rancher服务宕机情况下使用Kubernetes Cluster Rancher清理节点 #!/bin/bash KUBE_SVC=&#39; kubelet kube-scheduler kube-proxy kube-controller-manager kube-apiserver &#39; for kube_svc in ${KUBE_SVC}; do # 停止服务 if [[ `systemctl is-active ${kube_svc}` == &#39;active&#39; ]]; then systemctl stop ${kube_svc} fi # 禁止服务开机启动 if [[ `systemctl is-enabled ${kube_svc}` == &#39;enabled&#39; ]]; then systemctl disable ${kube_svc} fi done # 停止所有容器 docker stop $(docker ps -aq) # 删除所有容器 docker rm -f $(docker ps -qa) # 删除所有容器卷 docker volume rm $(docker volume ls -q) # 卸载mount目录 for mount in $(mount | grep tmpfs | grep &#39;/var/lib/kubelet&#39; | awk &#39;{ print $3 }&#39;) /var/lib/kubelet /var/lib/rancher; do umount $mount; done # 备份目录 mv /etc/kubernetes /etc/kubernetes-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) mv /var/lib/etcd /var/lib/etcd-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) mv /var/lib/rancher /var/lib/rancher-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) mv /opt/rke /opt/rke-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) # 删除残留路径 rm -rf /etc/ceph \ /etc/cni \ /opt/cni \ /run/secrets/kubernetes.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Configure_K8s_Rancher :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="Rancher服务宕机情况下使用Kubernetes Cluster Rancher清理节点 #!/bin/bash KUBE_SVC=&#39; kubelet kube-scheduler kube-proxy kube-controller-manager kube-apiserver &#39; for kube_svc in ${KUBE_SVC}; do # 停止服务 if [[ `systemctl is-active ${kube_svc}` == &#39;active&#39; ]]; then systemctl stop ${kube_svc} fi # 禁止服务开机启动 if [[ `systemctl is-enabled ${kube_svc}` == &#39;enabled&#39; ]]; then systemctl disable ${kube_svc} fi done # 停止所有容器 docker stop $(docker ps -aq) # 删除所有容器 docker rm -f $(docker ps -qa) # 删除所有容器卷 docker volume rm $(docker volume ls -q) # 卸载mount目录 for mount in $(mount | grep tmpfs | grep &#39;/var/lib/kubelet&#39; | awk &#39;{ print $3 }&#39;) /var/lib/kubelet /var/lib/rancher; do umount $mount; done # 备份目录 mv /etc/kubernetes /etc/kubernetes-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) mv /var/lib/etcd /var/lib/etcd-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) mv /var/lib/rancher /var/lib/rancher-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) mv /opt/rke /opt/rke-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) # 删除残留路径 rm -rf /etc/ceph \ /etc/cni \ /opt/cni \ /run/secrets/kubernetes.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/kubernetes/configure_k8s_rancher/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Configure_K8s_Rancher :: Hugo Relearn Theme">
+    <meta property="og:description" content="Rancher服务宕机情况下使用Kubernetes Cluster Rancher清理节点 #!/bin/bash KUBE_SVC=&#39; kubelet kube-scheduler kube-proxy kube-controller-manager kube-apiserver &#39; for kube_svc in ${KUBE_SVC}; do # 停止服务 if [[ `systemctl is-active ${kube_svc}` == &#39;active&#39; ]]; then systemctl stop ${kube_svc} fi # 禁止服务开机启动 if [[ `systemctl is-enabled ${kube_svc}` == &#39;enabled&#39; ]]; then systemctl disable ${kube_svc} fi done # 停止所有容器 docker stop $(docker ps -aq) # 删除所有容器 docker rm -f $(docker ps -qa) # 删除所有容器卷 docker volume rm $(docker volume ls -q) # 卸载mount目录 for mount in $(mount | grep tmpfs | grep &#39;/var/lib/kubelet&#39; | awk &#39;{ print $3 }&#39;) /var/lib/kubelet /var/lib/rancher; do umount $mount; done # 备份目录 mv /etc/kubernetes /etc/kubernetes-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) mv /var/lib/etcd /var/lib/etcd-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) mv /var/lib/rancher /var/lib/rancher-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) mv /opt/rke /opt/rke-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) # 删除残留路径 rm -rf /etc/ceph \ /etc/cni \ /opt/cni \ /run/secrets/kubernetes.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-25T01:31:25+08:00">
+    <meta property="article:modified_time" content="2024-06-25T01:31:25+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Configure_K8s_Rancher :: Hugo Relearn Theme">
+    <meta itemprop="description" content="Rancher服务宕机情况下使用Kubernetes Cluster Rancher清理节点 #!/bin/bash KUBE_SVC=&#39; kubelet kube-scheduler kube-proxy kube-controller-manager kube-apiserver &#39; for kube_svc in ${KUBE_SVC}; do # 停止服务 if [[ `systemctl is-active ${kube_svc}` == &#39;active&#39; ]]; then systemctl stop ${kube_svc} fi # 禁止服务开机启动 if [[ `systemctl is-enabled ${kube_svc}` == &#39;enabled&#39; ]]; then systemctl disable ${kube_svc} fi done # 停止所有容器 docker stop $(docker ps -aq) # 删除所有容器 docker rm -f $(docker ps -qa) # 删除所有容器卷 docker volume rm $(docker volume ls -q) # 卸载mount目录 for mount in $(mount | grep tmpfs | grep &#39;/var/lib/kubelet&#39; | awk &#39;{ print $3 }&#39;) /var/lib/kubelet /var/lib/rancher; do umount $mount; done # 备份目录 mv /etc/kubernetes /etc/kubernetes-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) mv /var/lib/etcd /var/lib/etcd-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) mv /var/lib/rancher /var/lib/rancher-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) mv /opt/rke /opt/rke-bak-$(date &#43;&#34;%Y%m%d%H%M&#34;) # 删除残留路径 rm -rf /etc/ceph \ /etc/cni \ /opt/cni \ /run/secrets/kubernetes.">
+    <meta itemprop="datePublished" content="2024-06-25T01:31:25+08:00">
+    <meta itemprop="dateModified" content="2024-06-25T01:31:25+08:00">
+    <meta itemprop="wordCount" content="504">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Configure_K8s_Rancher :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/kubernetes/configure_k8s_rancher/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/kubernetes/"><span itemprop="name">Kubernetes</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Configure_K8s_Rancher</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/kubernetes/configure_k8s_storage/" title="Configure_K8s_Storage (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/kubernetes/configure_k8s_jcr/" title="Configure_K8s_Jcr (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="configure_k8s_rancher">Configure_K8s_Rancher</h1>
+
+<h2 id="rancher服务宕机情况下使用kubernetes-cluster"><code>Rancher</code>服务宕机情况下使用<code>Kubernetes Cluster</code></h2>
+<ul>
+<li>
+<ol>
+<li><a href="https://docs.rancher.cn/docs/rancher2/cluster-admin/cleaning-cluster-nodes/_index/" rel="external" target="_self"><code>Rancher</code>清理节点</a></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>KUBE_SVC<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kubelet
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kube-scheduler
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kube-proxy
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kube-controller-manager
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kube-apiserver
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> kube_svc in <span style="color:#e6db74">${</span>KUBE_SVC<span style="color:#e6db74">}</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e"># 停止服务</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> <span style="color:#e6db74">`</span>systemctl is-active <span style="color:#e6db74">${</span>kube_svc<span style="color:#e6db74">}</span><span style="color:#e6db74">`</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;active&#39;</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        systemctl stop <span style="color:#e6db74">${</span>kube_svc<span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e"># 禁止服务开机启动</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> <span style="color:#e6db74">`</span>systemctl is-enabled <span style="color:#e6db74">${</span>kube_svc<span style="color:#e6db74">}</span><span style="color:#e6db74">`</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;enabled&#39;</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        systemctl disable <span style="color:#e6db74">${</span>kube_svc<span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 停止所有容器</span>
+</span></span><span style="display:flex;"><span>docker stop <span style="color:#66d9ef">$(</span>docker ps -aq<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 删除所有容器</span>
+</span></span><span style="display:flex;"><span>docker rm -f <span style="color:#66d9ef">$(</span>docker ps -qa<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 删除所有容器卷</span>
+</span></span><span style="display:flex;"><span>docker volume rm <span style="color:#66d9ef">$(</span>docker volume ls -q<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 卸载mount目录</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> mount in <span style="color:#66d9ef">$(</span>mount | grep tmpfs | grep <span style="color:#e6db74">&#39;/var/lib/kubelet&#39;</span> | awk <span style="color:#e6db74">&#39;{ print $3 }&#39;</span><span style="color:#66d9ef">)</span> /var/lib/kubelet /var/lib/rancher;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>   umount $mount;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 备份目录</span>
+</span></span><span style="display:flex;"><span>mv /etc/kubernetes /etc/kubernetes-bak-<span style="color:#66d9ef">$(</span>date +<span style="color:#e6db74">&#34;%Y%m%d%H%M&#34;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>mv /var/lib/etcd /var/lib/etcd-bak-<span style="color:#66d9ef">$(</span>date +<span style="color:#e6db74">&#34;%Y%m%d%H%M&#34;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>mv /var/lib/rancher /var/lib/rancher-bak-<span style="color:#66d9ef">$(</span>date +<span style="color:#e6db74">&#34;%Y%m%d%H%M&#34;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>mv /opt/rke /opt/rke-bak-<span style="color:#66d9ef">$(</span>date +<span style="color:#e6db74">&#34;%Y%m%d%H%M&#34;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 删除残留路径</span>
+</span></span><span style="display:flex;"><span>rm -rf /etc/ceph <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> /etc/cni <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> /opt/cni <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> /run/secrets/kubernetes.io <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> /run/calico <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> /run/flannel <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> /var/lib/calico <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> /var/lib/cni <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> /var/lib/kubelet <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> /var/log/containers <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> /var/log/kube-audit <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> /var/log/pods <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> /var/run/calico <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> /usr/libexec/kubernetes
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 清理网络接口</span>
+</span></span><span style="display:flex;"><span>no_del_net_inter<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">lo
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">docker0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">eth
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ens
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">bond
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>network_interface<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>ls /sys/class/net<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> net_inter in $network_interface;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">if</span> ! echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>no_del_net_inter<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> | grep -qE <span style="color:#e6db74">${</span>net_inter:0:3<span style="color:#e6db74">}</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        ip link delete $net_inter
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 清理残留进程</span>
+</span></span><span style="display:flex;"><span>port_list<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">80
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">443
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">6443
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">2376
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">2379
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">2380
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">8472
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">9099
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">10250
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">10254
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> port in $port_list;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>   pid<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>netstat -atlnup | grep $port | awk <span style="color:#e6db74">&#39;{print $7}&#39;</span> | awk -F <span style="color:#e6db74">&#39;/&#39;</span> <span style="color:#e6db74">&#39;{print $1}&#39;</span> | grep -v - | sort -rnk2 | uniq<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> -n $pid <span style="color:#f92672">]]</span>;<span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        kill -9 $pid
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>kube_pid<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>ps -ef | grep -v grep | grep kube | awk <span style="color:#e6db74">&#39;{print $2}&#39;</span><span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> -n $kube_pid <span style="color:#f92672">]]</span>;<span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>   kill -9 $kube_pid
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 清理Iptables表</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## 注意：如果节点Iptables有特殊配置，以下命令请谨慎操作</span>
+</span></span><span style="display:flex;"><span>sudo iptables --flush
+</span></span><span style="display:flex;"><span>sudo iptables --flush --table nat
+</span></span><span style="display:flex;"><span>sudo iptables --flush --table filter
+</span></span><span style="display:flex;"><span>sudo iptables --table nat --delete-chain
+</span></span><span style="display:flex;"><span>sudo iptables --table filter --delete-chain
+</span></span><span style="display:flex;"><span>systemctl restart docker</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted --><code>Rancher Server</code>是上游中心管理角色，控制或创建旗下<code>N</code>个<code>Kubernetes Cluster</code>集群，不管是测试中的单个节点或者是<code>Kubernetes Cluster</code>集群失效都无法读取，运维仍需要对下游所有<code>Kubernetes Cluster</code>集群管控<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>服务器</th>
+<th>IP</th>
+<th>CPU</th>
+<th>内存</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>master</td>
+<td>192.168.35.128</td>
+<td>8<code>core</code></td>
+<td>8G</td>
+</tr>
+<tr>
+<td>node-1</td>
+<td>192.168.35.129</td>
+<td>4<code>core</code></td>
+<td>4G</td>
+</tr>
+<tr>
+<td>node-2</td>
+<td>192.168.35.130</td>
+<td>4<code>core</code></td>
+<td>4G</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<ul>
+<li>
+<ol start="3">
+<li>前提条件</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>3.1 <!-- raw HTML omitted -->所有机器都是<code>CentOS 7</code><!-- raw HTML omitted --></li>
+<li>3.2 <!-- raw HTML omitted --><code>Rancher Server</code>是以<code>Docker</code>方式单独建立<!-- raw HTML omitted --></li>
+<li>3.3 <!-- raw HTML omitted --><code>test-cluster Kubernetes Cluster</code>集群是以<code>Rancher Server</code>自定义方式创建<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->模拟<code>Racnher Server</code>服务失效对<code>Kubernetes Cluster</code>集群进行管控<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>4.1 <!-- raw HTML omitted -->点击创建集群名称<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-f326b517587d1749c5e616772b7758fa" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-20_15-47-45.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f326b517587d1749c5e616772b7758fa"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-20_15-47-45.png"></a></p>
+<ul>
+<li>4.2 <!-- raw HTML omitted -->提前下载<code>Kubernetesfig</code>文件<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-436f4ef1111aee92e5ec81a5d1420903" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-20_15-49-19.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-436f4ef1111aee92e5ec81a5d1420903"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-20_15-49-19.png"></a></p>
+<p><a href="#R-image-aa94dd7c2c972291eb14acb91108f6b4" class="lightbox-link"><img alt="下k8s file" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-20_16-16-23.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-aa94dd7c2c972291eb14acb91108f6b4"><img alt="下k8s file" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-20_16-16-23.png"></a></p>
+</blockquote>
+<hr>
+<h2 id="模拟rancher服务宕机">模拟<code>Rancher</code>服务宕机</h2>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->停止<code>Rancher Server</code>服务<code>docker stop rancher</code><!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>1.1 <!-- raw HTML omitted --><code>查看Kubernetes</code>集群版本号<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-b97dbf5f2c0265ec98a1529382725808" class="lightbox-link"><img alt="查看<code>Rancher</code>安装<code>Kubernetes</code>集群版本" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-25_20-04-18.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-b97dbf5f2c0265ec98a1529382725808"><img alt="查看<code>Rancher</code>安装<code>Kubernetes</code>集群版本" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-25_20-04-18.png"></a></p>
+</blockquote>
+<h3 id="安装kubectl">安装<code>Kubectl</code></h3>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->在能连接<code>test-kubernetes-cluster</code>集群中任意一个节点部署<code>Kubectl</code><!-- raw HTML omitted --></li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted --><code>Kubectl</code>版本需和<code>test-cluster-cluster</code>版本相同或者高于<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/etc/yum.repos.d/kubernetes.repo<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[kubernetes] 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">name=Kubernetes 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">enabled=1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">gpgcheck=0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">repo_gpgcheck=0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ yum -y install kubectl-1.23.6-0</span></span></code></pre></div></blockquote>
+<h3 id="创建kube目录修改文件">创建<code>.kube</code>目录修改文件</h3>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->并且将下载的<code>Kubernetesfig</code>文件改名为<code>config</code>，然后放到<code>${HOME}/.kube/</code>目录中<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mkdir <span style="color:#e6db74">${</span>HOME<span style="color:#e6db74">}</span>/.kube
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ mv <span style="color:#e6db74">${</span>HOME<span style="color:#e6db74">}</span>/.kube/test-kubernetes-cluster.yaml <span style="color:#e6db74">${</span>HOME<span style="color:#e6db74">}</span>/.kube/config</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted --><code>${HOME}/.kube/config</code>文件没修改前<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat <span style="color:#e6db74">${</span>HOME<span style="color:#e6db74">}</span>/.kube/config
+</span></span><span style="display:flex;"><span>apiVersion: v1
+</span></span><span style="display:flex;"><span>kind: Config
+</span></span><span style="display:flex;"><span>clusters:
+</span></span><span style="display:flex;"><span>- name: <span style="color:#e6db74">&#34;test-kubernetes-cluster&#34;</span>
+</span></span><span style="display:flex;"><span>  cluster:
+</span></span><span style="display:flex;"><span>    server: <span style="color:#e6db74">&#34;https://192.168.80.210:4443/k8s/clusters/c-gwknl&#34;</span>
+</span></span><span style="display:flex;"><span>    certificate-authority-data: <span style="color:#e6db74">&#34;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJwekNDQ\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      VUyZ0F3SUJBZ0lCQURBS0JnZ3Foa2pPUFFRREFqQTdNUnd3R2dZRFZRUUtFeE5rZVc1aGJXbGoKY\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      kdsemRHVnVaWEl0YjNKbk1Sc3dHUVlEVlFRREV4SmtlVzVoYldsamJHbHpkR1Z1WlhJdFkyRXdIa\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      GNOTWpJdwpOVEkxTVRFeE9UUXhXaGNOTXpJd05USXlNVEV4T1RReFdqQTdNUnd3R2dZRFZRUUtFe\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      E5rZVc1aGJXbGpiR2x6CmRHVnVaWEl0YjNKbk1Sc3dHUVlEVlFRREV4SmtlVzVoYldsamJHbHpkR\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      1Z1WlhJdFkyRXdXVEFUQmdjcWhrak8KUFFJQkJnZ3Foa2pPUFFNQkJ3TkNBQVJTb3NwRzE4OHJBQ\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      mZabTAwQnRqcjAyL29udnZGVnppU09wZUdVd09SUApoSHpUbk1acTRmazVpRFhPV2lIUy9iQ0hvT\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      WQra1VtYkx6QVRPNkd2azdtSm8wSXdRREFPQmdOVkhROEJBZjhFCkJBTUNBcVF3RHdZRFZSMFRBU\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      UgvQkFVd0F3RUIvekFkQmdOVkhRNEVGZ1FVZ1YzR1g0Z2tXN3hPZVZWQURWem0KVEpxSW95b3dDZ\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      1lJS29aSXpqMEVBd0lEU0FBd1JRSWdlTHh3WTVGcGkweDBGNXhBQUNZMnNPbVQ4aHBqNjVCWApUc\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      1lsQk1sOGx0RUNJUURkNmlONTJmbG9hVzZybXpvWXRLQy9nOEJRRW00b2UrcGN0YldCaGY0UENRP\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      T0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ==&#34;</span>
+</span></span><span style="display:flex;"><span>- name: <span style="color:#e6db74">&#34;test-kubernetes-cluster-node-1-80-211&#34;</span>
+</span></span><span style="display:flex;"><span>  cluster:
+</span></span><span style="display:flex;"><span>    server: <span style="color:#e6db74">&#34;https://192.168.80.211:6443&#34;</span>
+</span></span><span style="display:flex;"><span>    certificate-authority-data: <span style="color:#e6db74">&#34;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM0VENDQ\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      WNtZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFTTVJBd0RnWURWUVFERXdkcmRXSmwKT\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      FdOaE1CNFhEVEl5TURVeU5URXhNek0xTUZvWERUTXlNRFV5TWpFeE16TTFNRm93RWpFUU1BNEdBM\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      VVFQXhNSAphM1ZpWlMxallUQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      0VCQUtJSzVRVy84eHB3CkRHUzMrN0M2Q0lobS8zcWFUUENvVmdFeU91YkVtR1EzbnAvYk9qTUJKY\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      3Ayck05cW5CV2M4ZmtUUWhCNHZsL24Kay8zSkUrMkdta1RBbVAwaGpLa3d6d1JiT2lrYzdYVEtnd\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      ElTQ3I2cjRkOWhZTElERElzTTJtUzZYYnhNdGd1SApoamk3MTJYQmNoZ3lEamxjREl3S1k5WXRYc\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      3lDY3hPejdFNXN4YmpLTk1nb2sxK3VZSTlHaHhYYUlGcGp0VWFUClJXUW00dE9JOFplWWlUWG9aT\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      nJldTU1SVkyZ3pQVjZ1dURTWGQybFRHMEtmVng0Y1FYSDJIekdSODJ4NWZkK3kKS01HY0M1N21DN\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      HpiM3pET1Z2NVNEdmxOZEhyQ0g3QmpVYzh0MlFpU2JyQUwrQ216NnhMVFF4dlp1YkVLejU2TApKe\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      ElKUGFhNkdSY0NBd0VBQWFOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdLa01BOEdBMVVkRXdFQi93U\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      UZNQU1CCkFmOHdIUVlEVlIwT0JCWUVGSkN3bmVCVXZUMUtoeWtCUjF6bmxWQ2I1T2RnTUEwR0NTc\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      UdTSWIzRFFFQkN3VUEKQTRJQkFRQnRwa0doRDJ1RFdYTmZaSUhaa0NNclNpSkZXaGxIUGNPa2VPZ\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      TJwcmp1UEZ0bzFWMVpyNlloWWVpcQp1cGxRdWlpenBwbEthZncxR1lpSnY4SCsrcHpjUFZoS3JTM\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      2F5Ykp1T2hxdnFyYUVZbzJDbjVVbkFpVWxBb2g1CnRqY1lNcVFKdkVzODd5UlFtUVhMSVNEMkdYb\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      3UwN24ySy9wTVZXQWpHYjRsUTk0VmpHcjI3dHppSlhIYkh2L04KbHNNZklJV2czbTFKSW9SMlBNa\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      3gvY1FpcGl6a3JRVHRpalhMbW0xbUFGOEtMR2JZcnNaTk1sMFdITWZWWjdXcgplemRBVjhVNDdsb\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      GowKzUzQ0FkZk0rYWpiSk5uMUtYMWF1Sm8rb1JXVTJjVno0SkYydUllMnBjcFcxUUplY1NPCmZ2U\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      ysyOU9FK09GZW5tenRINTdZTStTWk1jRE8KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>users:
+</span></span><span style="display:flex;"><span>- name: <span style="color:#e6db74">&#34;test-kubernetes-cluster&#34;</span>
+</span></span><span style="display:flex;"><span>  user:
+</span></span><span style="display:flex;"><span>    token: <span style="color:#e6db74">&#34;kubeconfig-user-j85xz8pbjt:ls679hfqpvf9c25nswd5gdfm2hf4qtxj2kvqmj6kzzrjkj48lwwlpd&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>contexts:
+</span></span><span style="display:flex;"><span>- name: <span style="color:#e6db74">&#34;test-kubernetes-cluster&#34;</span>
+</span></span><span style="display:flex;"><span>  context:
+</span></span><span style="display:flex;"><span>    user: <span style="color:#e6db74">&#34;test-kubernetes-cluster&#34;</span>
+</span></span><span style="display:flex;"><span>    cluster: <span style="color:#e6db74">&#34;test-kubernetes-cluster&#34;</span>
+</span></span><span style="display:flex;"><span>- name: <span style="color:#e6db74">&#34;test-kubernetes-cluster-node-1-80-211&#34;</span>
+</span></span><span style="display:flex;"><span>  context:
+</span></span><span style="display:flex;"><span>    user: <span style="color:#e6db74">&#34;test-kubernetes-cluster&#34;</span>
+</span></span><span style="display:flex;"><span>    cluster: <span style="color:#e6db74">&#34;test-kubernetes-cluster-node-1-80-211&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>current-context: <span style="color:#e6db74">&#34;test-kubernetes-cluster&#34;</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted --><code>${HOME}/.kube/config</code>文件修改后<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat <span style="color:#e6db74">${</span>HOME<span style="color:#e6db74">}</span>/.kube/config
+</span></span><span style="display:flex;"><span>apiVersion: v1
+</span></span><span style="display:flex;"><span>kind: Config
+</span></span><span style="display:flex;"><span>clusters:
+</span></span><span style="display:flex;"><span>- name: <span style="color:#e6db74">&#34;test-kubernetes-cluster-rke-master&#34;</span>
+</span></span><span style="display:flex;"><span>  cluster:
+</span></span><span style="display:flex;"><span>    server: <span style="color:#e6db74">&#34;https://192.168.80.211:6443&#34;</span>
+</span></span><span style="display:flex;"><span>    certificate-authority-data: <span style="color:#e6db74">&#34;LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM0VENDQ\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      WNtZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFTTVJBd0RnWURWUVFERXdkcmRXSmwKT\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      FdOaE1CNFhEVEl5TURVeU5URXhNek0xTUZvWERUTXlNRFV5TWpFeE16TTFNRm93RWpFUU1BNEdBM\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      VVFQXhNSAphM1ZpWlMxallUQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      0VCQUtJSzVRVy84eHB3CkRHUzMrN0M2Q0lobS8zcWFUUENvVmdFeU91YkVtR1EzbnAvYk9qTUJKY\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      3Ayck05cW5CV2M4ZmtUUWhCNHZsL24Kay8zSkUrMkdta1RBbVAwaGpLa3d6d1JiT2lrYzdYVEtnd\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      ElTQ3I2cjRkOWhZTElERElzTTJtUzZYYnhNdGd1SApoamk3MTJYQmNoZ3lEamxjREl3S1k5WXRYc\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      3lDY3hPejdFNXN4YmpLTk1nb2sxK3VZSTlHaHhYYUlGcGp0VWFUClJXUW00dE9JOFplWWlUWG9aT\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      nJldTU1SVkyZ3pQVjZ1dURTWGQybFRHMEtmVng0Y1FYSDJIekdSODJ4NWZkK3kKS01HY0M1N21DN\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      HpiM3pET1Z2NVNEdmxOZEhyQ0g3QmpVYzh0MlFpU2JyQUwrQ216NnhMVFF4dlp1YkVLejU2TApKe\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      ElKUGFhNkdSY0NBd0VBQWFOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdLa01BOEdBMVVkRXdFQi93U\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      UZNQU1CCkFmOHdIUVlEVlIwT0JCWUVGSkN3bmVCVXZUMUtoeWtCUjF6bmxWQ2I1T2RnTUEwR0NTc\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      UdTSWIzRFFFQkN3VUEKQTRJQkFRQnRwa0doRDJ1RFdYTmZaSUhaa0NNclNpSkZXaGxIUGNPa2VPZ\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      TJwcmp1UEZ0bzFWMVpyNlloWWVpcQp1cGxRdWlpenBwbEthZncxR1lpSnY4SCsrcHpjUFZoS3JTM\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      2F5Ykp1T2hxdnFyYUVZbzJDbjVVbkFpVWxBb2g1CnRqY1lNcVFKdkVzODd5UlFtUVhMSVNEMkdYb\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      3UwN24ySy9wTVZXQWpHYjRsUTk0VmpHcjI3dHppSlhIYkh2L04KbHNNZklJV2czbTFKSW9SMlBNa\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      3gvY1FpcGl6a3JRVHRpalhMbW0xbUFGOEtMR2JZcnNaTk1sMFdITWZWWjdXcgplemRBVjhVNDdsb\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      GowKzUzQ0FkZk0rYWpiSk5uMUtYMWF1Sm8rb1JXVTJjVno0SkYydUllMnBjcFcxUUplY1NPCmZ2U\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      ysyOU9FK09GZW5tenRINTdZTStTWk1jRE8KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>users:
+</span></span><span style="display:flex;"><span>- name: <span style="color:#e6db74">&#34;test-kubernetes-cluster-rke-master&#34;</span>
+</span></span><span style="display:flex;"><span>  user:
+</span></span><span style="display:flex;"><span>    token: <span style="color:#e6db74">&#34;kubeconfig-user-j85xz8pbjt:ls679hfqpvf9c25nswd5gdfm2hf4qtxj2kvqmj6kzzrjkj48lwwlpd&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>contexts:
+</span></span><span style="display:flex;"><span>- name: <span style="color:#e6db74">&#34;test-kubernetes-cluster-rke-master&#34;</span>
+</span></span><span style="display:flex;"><span>  context:
+</span></span><span style="display:flex;"><span>    user: <span style="color:#e6db74">&#34;test-kubernetes-cluster-rke-master&#34;</span>
+</span></span><span style="display:flex;"><span>    cluster: <span style="color:#e6db74">&#34;test-kubernetes-cluster-rke-master&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>current-context: <span style="color:#e6db74">&#34;test-kubernetes-cluster-rke-master&#34;</span></span></span></code></pre></div></blockquote>
+<h3 id="使用kubectl控制kubernetes-cluster集群">使用<code>Kubectl</code>控制<code>Kubernetes Cluster</code>集群</h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl --kubeconfig <span style="color:#e6db74">${</span>HOME<span style="color:#e6db74">}</span>/.kube/config get pods -n kube-system
+</span></span><span style="display:flex;"><span>$ kubectl create ns dev</span></span></code></pre></div></blockquote>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

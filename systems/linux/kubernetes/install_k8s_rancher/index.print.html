@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="安装Rancher图形化管理 Rancher是供采用容器的团队使用的完整软件堆栈。它解决了管理多个 Kubernetes集群的运营和安全挑战，并为DevOps团队提供用于运行容器化工作负载的集成工具 必须存在Docker环境 服务器 IP 内存 CPU master 192.168.35.128 8G 8core node-1 192.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_K8s_Rancher :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="安装Rancher图形化管理 Rancher是供采用容器的团队使用的完整软件堆栈。它解决了管理多个 Kubernetes集群的运营和安全挑战，并为DevOps团队提供用于运行容器化工作负载的集成工具 必须存在Docker环境 服务器 IP 内存 CPU master 192.168.35.128 8G 8core node-1 192.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/kubernetes/install_k8s_rancher/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_K8s_Rancher :: Hugo Relearn Theme">
+    <meta property="og:description" content="安装Rancher图形化管理 Rancher是供采用容器的团队使用的完整软件堆栈。它解决了管理多个 Kubernetes集群的运营和安全挑战，并为DevOps团队提供用于运行容器化工作负载的集成工具 必须存在Docker环境 服务器 IP 内存 CPU master 192.168.35.128 8G 8core node-1 192.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-25T02:05:41+08:00">
+    <meta property="article:modified_time" content="2024-06-25T02:05:41+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_K8s_Rancher :: Hugo Relearn Theme">
+    <meta itemprop="description" content="安装Rancher图形化管理 Rancher是供采用容器的团队使用的完整软件堆栈。它解决了管理多个 Kubernetes集群的运营和安全挑战，并为DevOps团队提供用于运行容器化工作负载的集成工具 必须存在Docker环境 服务器 IP 内存 CPU master 192.168.35.128 8G 8core node-1 192.">
+    <meta itemprop="datePublished" content="2024-06-25T02:05:41+08:00">
+    <meta itemprop="dateModified" content="2024-06-25T02:05:41+08:00">
+    <meta itemprop="wordCount" content="477">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_K8s_Rancher :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/kubernetes/install_k8s_rancher/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/kubernetes/"><span itemprop="name">Kubernetes</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_K8s_Rancher</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/kubernetes/install_kubernetes/" title="Install_Kubernetes (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/kubernetes/install_k8s_kubesphere/" title="Install_K8s_KubeSphere (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_k8s_rancher">Install_K8s_Rancher</h1>
+
+<h2 id="安装rancher图形化管理">安装<code>Rancher</code>图形化管理</h2>
+<ul>
+<li>
+<ol>
+<li><code>Rancher</code>是供采用容器的团队使用的完整软件堆栈。它解决了管理多个</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><code>Kubernetes</code>集群的运营和安全挑战，并为<code>DevOps</code>团队提供用于运行容器化工作负载的集成工具</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->必须存在<!-- raw HTML omitted --><code>Docker</code><!-- raw HTML omitted -->环境<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>服务器</th>
+<th><code>IP</code></th>
+<th>内存</th>
+<th>CPU</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>master</code></td>
+<td>192.168.35.128</td>
+<td>8G</td>
+<td>8<code>core</code></td>
+</tr>
+<tr>
+<td><code>node-1</code></td>
+<td>192.168.35.129</td>
+<td>4G</td>
+<td>4<code>core</code></td>
+</tr>
+<tr>
+<td><code>node-2</code></td>
+<td>192.168.35.130</td>
+<td>4G</td>
+<td>4<code>core</code></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<hr>
+<h3 id="安装基础环境">安装基础环境</h3>
+<ul>
+<li>
+<ol>
+<li><code>Nano</code><!-- raw HTML omitted -->：超轻量级开源云平台<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Naco</code>：基于<code>KVM</code>技术，使用<code>Go</code>语言开发，简单易学的虚拟机管理软件，从<code>Web</code>管理门户、主机监控、镜像克隆到故障切换，功能完备，开箱即用，数分钟之内即可将您的服务器集群升级为云主机平台</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum install -y nano</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->在所有节点都安装<!-- raw HTML omitted --><code>Docker</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># ENV configuration  </span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/swap / s/^\(.*\)$/#\1/g&#39;</span> /etc/fstab  
+</span></span><span style="display:flex;"><span>$ swapoff -a 
+</span></span><span style="display:flex;"><span>$ modprobe br_netfilter  
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;br_netfilter&#34;</span> &gt; /etc/modules-load.d/br_netfilter.conf  
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;net.bridge.bridge-nf-call-iptables = 1&#34;</span> &gt;&gt; /etc/sysctl.conf  
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;net.ipv4.ip_forward = 1&#34;</span> &gt;&gt; /etc/sysctl.conf  
+</span></span><span style="display:flex;"><span>$ sysctl -p  
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;s/#AllowTcpForwarding/AllowTcpForwarding/g&#39;</span> /etc/ssh/sshd_config  
+</span></span><span style="display:flex;"><span>$ systemctl reload sshd  
+</span></span><span style="display:flex;"><span>$ systemctl stop firewalld <span style="color:#f92672">&amp;&amp;</span> systemctl disable firewalld  
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;s/SELINUX=enforcing/SELINUX=disabled/g&#39;</span> /etc/selinux/config  
+</span></span><span style="display:flex;"><span>$ setenforce <span style="color:#ae81ff">0</span>  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># timedate configration  </span>
+</span></span><span style="display:flex;"><span>$ timedatectl set-timezone Asia/Shanghai  
+</span></span><span style="display:flex;"><span>$ yum install -y chrony  
+</span></span><span style="display:flex;"><span>$ systemctl start chronyd <span style="color:#f92672">&amp;&amp;</span> sudo systemctl enable chronyd 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ yum install -y yum-utils  
+</span></span><span style="display:flex;"><span>$ yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo  
+</span></span><span style="display:flex;"><span>$ yum install -y docker-ce-19.03.9 docker-ce-cli-19.03.9 --nogpgcheck  
+</span></span><span style="display:flex;"><span>$ systemctl enable docker <span style="color:#f92672">&amp;&amp;</span> systemctl start docker  </span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="安装rancher-v265">安装<code>Rancher v2.6.5</code></h3>
+<ul>
+<li>
+<ol>
+<li><a href="https://rancher.com/docs/rancher/v2.6/en/installation/other-installation-methods/single-node-docker/" rel="external" target="_self">使用<code>Docker</code>在单节点上安装<code>Rancher</code></a></li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><code>Rancher v2.6.5</code><!-- raw HTML omitted -->支持的<!-- raw HTML omitted --><code>Kubernetes Versions</code><!-- raw HTML omitted -->版本<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>v1.23.6 Default</code></li>
+<li><code>v1.22.9</code></li>
+<li><code>v1.21.12</code></li>
+<li><code>v1.20.15</code></li>
+<li><code>v1.19.16</code></li>
+<li><code>v1.18.20</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ docker pull rancher/rancher:v2.6.5
+</span></span><span style="display:flex;"><span>$ docker run -d --restart<span style="color:#f92672">=</span>unless-stopped -p 888:80 -p 4443:443 --privileged rancher/rancher:v2.6.5 </span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><a href="https://rancher.com/docs/rancher/v2.6/en/installation/install-rancher-on-k8s/" rel="external" target="_self">在<code>Kubernetes</code>集群上安装/升级<code>Rancher</code></a></li>
+</ol>
+</li>
+</ul>
+<hr>
+<h3 id="font-colorred在fontkubernetesfont-colorred集群上安装升级fontrancher"><!-- raw HTML omitted -->在<!-- raw HTML omitted --><code>Kubernetes</code><!-- raw HTML omitted -->集群上安装/升级<!-- raw HTML omitted --><code>Rancher</code></h3>
+<ul>
+<li>
+<ol>
+<li><a href="https://helm.sh/docs/intro/install/" rel="external" target="_self">安装<code>Helm</code></a></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://blog.csdn.net/qq_37481017/article/details/119002325" rel="external" target="_self">基于<code>K8S 1.21.2</code>集群安装<code>Rancher 2.5.9 HA</code></a></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 使用二进制安装Helm</span>
+</span></span><span style="display:flex;"><span>$ wget https://get.helm.sh/helm-v3.9.0-linux-amd64.tar.gz  
+</span></span><span style="display:flex;"><span>$ tar -zxvf helm-v3.9.0-linux-amd64.tar.gz
+</span></span><span style="display:flex;"><span>$ mv linux-amd64/helm /usr/local/bin/helm
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 脚本安装</span>
+</span></span><span style="display:flex;"><span>$ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+</span></span><span style="display:flex;"><span>$ chmod <span style="color:#ae81ff">700</span> get_helm.sh
+</span></span><span style="display:flex;"><span>$ ./get_helm.sh
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 源代码安装</span>
+</span></span><span style="display:flex;"><span>$ git clone https://github.com/helm/helm.git
+</span></span><span style="display:flex;"><span>$ cd helm
+</span></span><span style="display:flex;"><span>$ make</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->安装<!-- raw HTML omitted --><code>cert-manager</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl create namespace cert-manager
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 添加Jetstack Helm存储库</span>
+</span></span><span style="display:flex;"><span>$ helm repo add jetstack https://charts.jetstack.io
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 更新本地 Helm 图表存储库缓存</span>
+</span></span><span style="display:flex;"><span>$ helm repo update
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 安装cert-manager自定义所需的自定义资源</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.1/cert-manager.crds.yaml</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.7.1 --set installCRDs<span style="color:#f92672">=</span>true
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 验证cert-manager证书管理器是否安装成功</span>
+</span></span><span style="display:flex;"><span>$ kubectl get pods --namespace cert-manager</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->使用<!-- raw HTML omitted --><code>Helm</code><!-- raw HTML omitted -->安装稳定版<!-- raw HTML omitted --><code>Rancher</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 为Rancher创建命名空间</span>
+</span></span><span style="display:flex;"><span>$ kubectl create namespace cattle-system
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 添加 Helm 添加 Rancher 库</span>
+</span></span><span style="display:flex;"><span>$ helm repo add rancher-stable https://releases.rancher.com/server-charts/stable</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->使用<!-- raw HTML omitted --><code>helm</code><!-- raw HTML omitted -->安装<!-- raw HTML omitted --><code>Rancher</code><!-- raw HTML omitted -->注意选好版本，版本不对会报错<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ helm install rancher rancher-stable/rancher --namespace cattle-system --set hostname<span style="color:#f92672">=</span>my.rancher.org --set bootstrapPassword<span style="color:#f92672">=</span>admin --set replicas<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> --version 2.6.3
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#  --set ingress.tls.source=letsEncrypt \</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#  --set letsEncrypt.email=&lt;caviardé&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NAME: rancher
+</span></span><span style="display:flex;"><span>LAST DEPLOYED: Wed May <span style="color:#ae81ff">25</span> 18:01:51 <span style="color:#ae81ff">2022</span>
+</span></span><span style="display:flex;"><span>NAMESPACE: cattle-system
+</span></span><span style="display:flex;"><span>STATUS: deployed
+</span></span><span style="display:flex;"><span>REVISION: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>TEST SUITE: None
+</span></span><span style="display:flex;"><span>NOTES:
+</span></span><span style="display:flex;"><span>Rancher Server has been installed.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NOTE: Rancher may take several minutes to fully initialize. Please standby <span style="color:#66d9ef">while</span> Certificates are being issued, Containers are started and the Ingress rule comes up.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Check out our docs at https://rancher.com/docs/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>If you provided your own bootstrap password during installation, browse to https://my.rancher.org to get started.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>If this is the first time you installed Rancher, get started by running this command and clicking the URL it generates:</span></span></code></pre></div><div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo https://my.rancher.org/dashboard/?setup<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl get secret --namespace cattle-system bootstrap-secret -o go-template<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{{.data.bootstrapPassword|base64decode}}&#39;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># To get just the bootstrap password on its own, run:</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ kubectl get secret --namespace cattle-system bootstrap-secret -o go-template<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{{.data.bootstrapPassword|base64decode}}{{ &#34;\n&#34; }}&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Happy Containering!</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->等待<!-- raw HTML omitted --><code>Rancher</code><!-- raw HTML omitted -->安装成功<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl -n cattle-system rollout status deploy/rancher
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ kubectl get pods -o wide -n cattle-system
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ kubectl get pods --show-labels -n cattle-system</span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="浏览器登录rancher页面设置">浏览器登录<code>Rancher</code>页面设置</h2>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted --><strong>默认用户名：</strong><!-- raw HTML omitted --><code>admin</code></li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->密码新设置或者随机生成<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-9afc94adbe62047ff50f57544465ad9b" class="lightbox-link"><img alt="设置Rancher密码" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-19_18-29-03.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-9afc94adbe62047ff50f57544465ad9b"><img alt="设置Rancher密码" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-19_18-29-03.png"></a></p>
+</blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->设置<!-- raw HTML omitted --><code>Rancher Server</code><!-- raw HTML omitted -->地址<!-- raw HTML omitted --><code>IP</code><!-- raw HTML omitted -->或者域名<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-3db2690226d4aa08fdf628c3f3841333" class="lightbox-link"><img alt="设定Rancher地址" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-19_18-31-17.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-3db2690226d4aa08fdf628c3f3841333"><img alt="设定Rancher地址" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-19_18-31-17.png"></a></p>
+</blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->设置<!-- raw HTML omitted --><code>Rancher</code><!-- raw HTML omitted -->中文页面<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-a6c3a0f33ee9c7e13575a36d88fee372" class="lightbox-link"><img alt="set-chinses" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/set-Chinses.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-a6c3a0f33ee9c7e13575a36d88fee372"><img alt="set-chinses" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/set-Chinses.png"></a></p>
+</blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->登录后可以看到目前<!-- raw HTML omitted --><code>Rancher</code><!-- raw HTML omitted -->所管理只有<!-- raw HTML omitted --><code>Rancher</code><!-- raw HTML omitted -->本身存在<!-- raw HTML omitted --><code>K3S</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>5.1 <code>Rancher Labs</code>推出<code>Kubernetes</code>开源<code>K3S</code>是一个轻量级，只有<code>40MB</code>大小，易于安装<code>Kubernetes</code>发布版本，转为资源有限和低互动系统设计，适用于边缘应用、物联网、持续整合以及<code>ARM</code>等</li>
+</ul>
+<p><a href="#R-image-b917cf18095f3278649d23c795d6b6fa" class="lightbox-link"><img alt="初次登录页面" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-19_18-34-35.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-b917cf18095f3278649d23c795d6b6fa"><img alt="初次登录页面" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-19_18-34-35.png"></a></p>
+</blockquote>
+<hr>
+<h2 id="使用rancher创建rke-kubernetes集群">使用<code>Rancher</code>创建<code>RKE Kubernetes</code>集群</h2>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->等待被创建的集群都是基于数个实体服务器或虚拟机组成，其中这些机器硬件最低要求<!-- raw HTML omitted --><code>1Cores</code>、<code>1GB</code><!-- raw HTML omitted -->并且需要提前安装好<!-- raw HTML omitted --><code>Docker</code><!-- raw HTML omitted -->服务，操作系统必须符合<!-- raw HTML omitted --><code>RKE</code><a href="https://docs.rancher.cn/docs/rke/os/_index/" rel="external" target="_self">安装要求</a></li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->生产环境下不允许把<!-- raw HTML omitted --><code>worker</code><!-- raw HTML omitted -->角色添加具有<!-- raw HTML omitted --><code>etcd</code><!-- raw HTML omitted -->或<!-- raw HTML omitted --><code>control plane</code><!-- raw HTML omitted -->角色节点中<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<hr>
+<h3 id="web页面配置kubernetes-cluster集群"><code>Web</code>页面配置<code>Kubernetes Cluster</code>集群</h3>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->在<!-- raw HTML omitted --><code>Rancher</code><!-- raw HTML omitted -->浏览器页面中添加<!-- raw HTML omitted --><code>Kubernetes Cluster</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-f37b65412665934993ace13dc0cf9d35" class="lightbox-link"><img alt="Add-K8s-Cluster" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Add-Cluster.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f37b65412665934993ace13dc0cf9d35"><img alt="Add-K8s-Cluster" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Add-Cluster.png"></a></p>
+</blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->选择<!-- raw HTML omitted --><code>Existing nodes(自定义集群)</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-d23b2de65255311fb6e77b84fbd06276" class="lightbox-link"><img alt="自定义集群" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Add-Nodes.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-d23b2de65255311fb6e77b84fbd06276"><img alt="自定义集群" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Add-Nodes.png"></a></p>
+</blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->定义集群名称、然后下一步<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-f79a27230d7e7a4ade5dbd97ced320ff" class="lightbox-link"><img alt="填写集群名称" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-19_20-41-58.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f79a27230d7e7a4ade5dbd97ced320ff"><img alt="填写集群名称" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-19_20-41-58.png"></a></p>
+</blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->先选择<!-- raw HTML omitted --><code>etcd</code>、<code>Control Plane</code><!-- raw HTML omitted -->角色，把生成的命令复制到节点上执行，然后下一步<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-0675cdad3ffcc37be8c530210dbb00d0" class="lightbox-link"><img alt="部署etcd Control Plane" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-19_21-14-45.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-0675cdad3ffcc37be8c530210dbb00d0"><img alt="部署etcd Control Plane" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-19_21-14-45.png"></a></p>
+</blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->选择<!-- raw HTML omitted --><code>Worker</code><!-- raw HTML omitted -->工作节点,把生成的命令复制到节点执行<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-dc00e701f42d12a2ac4e97c6bcbe10b5" class="lightbox-link"><img alt="选择<code>Worker</code>工作节点" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-19_21-15-51.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-dc00e701f42d12a2ac4e97c6bcbe10b5"><img alt="选择<code>Worker</code>工作节点" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-19_21-15-51.png"></a></p>
+</blockquote>
+<ul>
+<li>
+<ol start="6">
+<li><!-- raw HTML omitted -->命令执行完成后，等待节点加入集群，成功后下方显示添加成功<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-8ac053a5883ae9f803009cd651337082" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-19_21-20-56.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-8ac053a5883ae9f803009cd651337082"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-19_21-20-56.png"></a></p>
+</blockquote>
+<hr>
+<h3 id="如果错过复制添加命令选择命名空间点击edit">如果错过复制添加命令选择命名空间点击<code>Edit</code></h3>
+<blockquote>
+<p><a href="#R-image-e2b25f51d8c5241ad1fb86bb8dc5106e" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-20_15-42-56.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-e2b25f51d8c5241ad1fb86bb8dc5106e"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-20_15-42-56.png"></a></p>
+<p><a href="#R-image-ba9f4749fefecd0b92acce16839ba762" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-20_15-44-52.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-ba9f4749fefecd0b92acce16839ba762"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Rancher/Snipaste_2022-05-20_15-44-52.png"></a></p>
+</blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

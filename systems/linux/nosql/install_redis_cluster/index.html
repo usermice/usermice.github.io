@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="Redis集群部署 Redis主从模式 单节点主从模式需要修改端口以及配置文件 主节点redis.conf配置文件 daemonize yes # redis后台运行 pidfile /usr/local/redis/logs/redis_6379.pid # Redis的pid文件存放位置 logfile /usr/local/redis/logs/redis_6379.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_Redis_Cluster :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="Redis集群部署 Redis主从模式 单节点主从模式需要修改端口以及配置文件 主节点redis.conf配置文件 daemonize yes # redis后台运行 pidfile /usr/local/redis/logs/redis_6379.pid # Redis的pid文件存放位置 logfile /usr/local/redis/logs/redis_6379.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/nosql/install_redis_cluster/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_Redis_Cluster :: Hugo Relearn Theme">
+    <meta property="og:description" content="Redis集群部署 Redis主从模式 单节点主从模式需要修改端口以及配置文件 主节点redis.conf配置文件 daemonize yes # redis后台运行 pidfile /usr/local/redis/logs/redis_6379.pid # Redis的pid文件存放位置 logfile /usr/local/redis/logs/redis_6379.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-21T15:40:06+08:00">
+    <meta property="article:modified_time" content="2024-06-21T15:40:06+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_Redis_Cluster :: Hugo Relearn Theme">
+    <meta itemprop="description" content="Redis集群部署 Redis主从模式 单节点主从模式需要修改端口以及配置文件 主节点redis.conf配置文件 daemonize yes # redis后台运行 pidfile /usr/local/redis/logs/redis_6379.pid # Redis的pid文件存放位置 logfile /usr/local/redis/logs/redis_6379.">
+    <meta itemprop="datePublished" content="2024-06-21T15:40:06+08:00">
+    <meta itemprop="dateModified" content="2024-06-21T15:40:06+08:00">
+    <meta itemprop="wordCount" content="1135">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_Redis_Cluster :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329889" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329889" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329889" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329889" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329889" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329889" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329889" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329889" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329889" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329889" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329889" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329889" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329889" rel="stylesheet" media="print">
+    <script src="../../../../js/variant.js?1719329889"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support html disableInlineCopyToClipboard" data-url="../../../../systems/linux/nosql/install_redis_cluster/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+            <div class="topbar-button topbar-button-toc" data-content-empty="hide" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleTopbarFlyout(this)" type="button" title="Table of Contents (CTRL&#43;ALT&#43;t)"><i class="fa-fw fas fa-list-alt"></i></button>
+              <div class="topbar-content">
+                <div class="topbar-content-wrapper"><nav class="TableOfContents">
+  <ul>
+    <li><a href="#redis集群部署"><code>Redis</code>集群部署</a>
+      <ul>
+        <li><a href="#redis主从模式"><code>Redis</code>主从模式</a></li>
+        <li><a href="#redis-cluster模式"><code>Redis Cluster</code>模式</a></li>
+        <li><a href="#docker部署redis集群"><code>docker</code>部署<code>Redis</code>集群</a></li>
+        <li><a href="#redis-50以下版本"><code>Redis 5.0</code>以下版本</a></li>
+        <li><a href="#redis-sentinel模式"><code>Redis Sentinel</code>模式</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/nosql/"><span itemprop="name">Nosql</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_Redis_Cluster</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+            <div class="topbar-button topbar-button-print" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/nosql/install_redis_cluster/index.print.html" title="Print whole chapter (CTRL&#43;ALT&#43;p)"><i class="fa-fw fas fa-print"></i></a>
+            </div>
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/nosql/install_redis/" title="Install_Redis (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/nosql/install_cassandra/" title="Install_Cassandra (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-more" data-content-empty="hide" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleTopbarFlyout(this)" type="button" title="More"><i class="fa-fw fas fa-ellipsis-v"></i></button>
+              <div class="topbar-content">
+                <div class="topbar-content-wrapper">
+                  <div class="topbar-area topbar-area-more" data-area="more">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_redis_cluster">Install_Redis_Cluster</h1>
+
+<h2 id="redis集群部署"><code>Redis</code>集群部署</h2>
+<h3 id="redis主从模式"><code>Redis</code>主从模式</h3>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->单节点<!-- raw HTML omitted -->主从模式需要修改<!-- raw HTML omitted -->端口<!-- raw HTML omitted -->以及配置文件</li>
+<li><!-- raw HTML omitted -->主节点<!-- raw HTML omitted --><code>redis.conf</code><!-- raw HTML omitted -->配置文件<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>daemonize yes  	<span style="color:#75715e"># redis后台运行</span>
+</span></span><span style="display:flex;"><span>pidfile /usr/local/redis/logs/redis_6379.pid  	<span style="color:#75715e"># Redis的pid文件存放位置</span>
+</span></span><span style="display:flex;"><span>logfile /usr/local/redis/logs/redis_6379.log  	<span style="color:#75715e"># Redis的日志文件存放位置</span>
+</span></span><span style="display:flex;"><span>port <span style="color:#ae81ff">6379</span>  	<span style="color:#75715e"># 端口号</span>
+</span></span><span style="display:flex;"><span>bind 192.168.176.131  	<span style="color:#75715e"># 最好是本机IP</span>
+</span></span><span style="display:flex;"><span>timeout <span style="color:#ae81ff">300</span>  	<span style="color:#75715e"># 超时时间300秒                                        </span>
+</span></span><span style="display:flex;"><span>databases <span style="color:#ae81ff">8</span>  	<span style="color:#75715e"># 缓存库的个数 </span>
+</span></span><span style="display:flex;"><span>dbfilename dump-16379.db  	<span style="color:#75715e"># 将数据库转储到的文件名</span>
+</span></span><span style="display:flex;"><span>dir ./  	<span style="color:#75715e"># 数据存放目录</span>
+</span></span><span style="display:flex;"><span>masterauth password  	<span style="color:#75715e"># 主库密码</span>
+</span></span><span style="display:flex;"><span>requirepass password  	<span style="color:#75715e"># 登录连接密码</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->从节点<!-- raw HTML omitted --><code>redis.conf</code><!-- raw HTML omitted -->配置文件，第二台从节点修改：<!-- raw HTML omitted --><code>bind</code><!-- raw HTML omitted -->为自己服务器本身<!-- raw HTML omitted --><code>ip</code></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>daemonize yes  	<span style="color:#75715e"># redis后台运行</span>
+</span></span><span style="display:flex;"><span>pidfile /usr/local/redis/logs/redis_6379.pid  	<span style="color:#75715e"># 不同实例修改为对应pid文件</span>
+</span></span><span style="display:flex;"><span>logfile /usr/local/redis/logs/redis_6379.log
+</span></span><span style="display:flex;"><span>port <span style="color:#ae81ff">6379</span>
+</span></span><span style="display:flex;"><span>bind 192.168.176.132
+</span></span><span style="display:flex;"><span>timeout <span style="color:#ae81ff">300</span>
+</span></span><span style="display:flex;"><span>databases <span style="color:#ae81ff">16</span>
+</span></span><span style="display:flex;"><span>dbfilename dump-16379.db
+</span></span><span style="display:flex;"><span>dir ./  	<span style="color:#75715e"># 数据存放目录</span>
+</span></span><span style="display:flex;"><span>masterauth <span style="color:#ae81ff">123456</span>  	<span style="color:#75715e"># 填写主库密码</span>
+</span></span><span style="display:flex;"><span>requirepass <span style="color:#ae81ff">123456</span>  	<span style="color:#75715e"># 登录连接密码</span>
+</span></span><span style="display:flex;"><span>slaveof 192.168.176.131 <span style="color:#ae81ff">6379</span>  	<span style="color:#75715e"># 连接的主库IP和端口号</span></span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h3 id="redis-cluster模式"><code>Redis Cluster</code>模式</h3>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->集群模式最少6个节点<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->修改配置文件<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>dir /usr/local/redis-cluster/data/redis-6379  	<span style="color:#75715e"># 修改为对应实例数据存放目录</span>
+</span></span><span style="display:flex;"><span>pidfile /usr/local/redis-cluster/logs/redis_6379.pid  	<span style="color:#75715e"># 修改为对应实例：Pid</span>
+</span></span><span style="display:flex;"><span>logfile /usr/local/redis-cluster/logs/redis_6379.log  	<span style="color:#75715e"># 修改为对应实例 </span>
+</span></span><span style="display:flex;"><span>port <span style="color:#ae81ff">6379</span>  	<span style="color:#75715e"># 端口号</span>
+</span></span><span style="display:flex;"><span>cluster-enabled yes  	<span style="color:#75715e"># 开启集群模式，把注释#去掉</span>
+</span></span><span style="display:flex;"><span>cluster-config-file /usr/local/redis-cluster/conf/redis_16379.conf  	<span style="color:#75715e"># 不同实例修改为对应</span>
+</span></span><span style="display:flex;"><span>cluster-node-timeout <span style="color:#ae81ff">10000</span>  	<span style="color:#75715e"># 请求超时，设置10秒</span>
+</span></span><span style="display:flex;"><span>appendonly yes  	<span style="color:#75715e"># aof日志开启，有需要就开启，它会每次写操作都记录一条日志</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><code>Redis5.0</code><!-- raw HTML omitted -->以上版本使用<!-- raw HTML omitted --><code>Redis-cli</code><!-- raw HTML omitted -->客户端部署<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->部署集群需要<!-- raw HTML omitted --><!-- raw HTML omitted -->防火墙开放集群端口<!-- raw HTML omitted --><!-- raw HTML omitted -->互通如端口是：<!-- raw HTML omitted --><code>6379</code> <!-- raw HTML omitted -->集群端口就是：<!-- raw HTML omitted --><code>16379</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /opt/apps/redis/bin/redis-cli -a password --cluster create --cluster-replicas <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> 192.168.213.128:6379 192.168.213.128:6380 192.168.213.128:6381 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span> 192.168.213.129:6379 192.168.213.129:6380 192.168.213.129:6381</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->脚本部署<!-- raw HTML omitted --><code>Redis-Cluster</code></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#39;#!bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">pkill redis-server
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">cd /opt/conf/redis-conf/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sed -i &#39;</span>s/^#cluster-enabled/cluster-enabled/<span style="color:#e6db74">&#39; re_17693.conf
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">cat re_17693.conf |tee re_1769{4..5}.conf
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">chown -R swadmin. *
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sed -i &#34;s/17693/17694/g&#34; re_17694.conf
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sed -i &#34;s/17693/17695/g&#34; re_17695.conf
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/opt/apps/redis/bin/redis-server /opt/conf/redis-conf/re_17693.conf &amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/opt/apps/redis/bin/redis-server /opt/conf/redis-conf/re_17694.conf &amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/opt/apps/redis/bin/redis-server /opt/conf/redis-conf/re_17695.conf &amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">firewall-cmd --permanent --new-ipset=redis_whitelist --type=hash:ip
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">firewall-cmd --permanent --add-rich-rule &#39;</span>rule family<span style="color:#f92672">=</span>ipv4 source ipset<span style="color:#f92672">=</span>redis_whitelist port protocol<span style="color:#f92672">=</span>tcp port<span style="color:#f92672">=</span>27693-27695 accept<span style="color:#e6db74">&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">firewall-cmd --permanent --add-rich-rule &#39;</span>rule family<span style="color:#f92672">=</span>ipv4 source ipset<span style="color:#f92672">=</span>redis_whitelist port protocol<span style="color:#f92672">=</span>tcp port<span style="color:#f92672">=</span>17693-17695 accept<span style="color:#e6db74">&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">read -p &#34;请输入对方服务器IP:&#34; IP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">firewall-cmd --permanent --ipset=redis_whitelist --add-entry=$IP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">firewall-cmd --reload
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#echo &#39;</span>yes<span style="color:#e6db74">&#39; |/opt/apps/redis/bin/redis-cli -a \
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">9tN6GFGK60Jk8BNkBJM611GwA66uDFeG \
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">--cluster create --cluster-replicas 1 \
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">192.168.213.128:17693  192.168.213.128:17694 \
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">192.168.213.128:17695  192.168.213.129:17693 \
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">192.168.213.129:17694  192.168.213.129:17695  #创建集群命令根据IP和端口修改
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;</span>&gt;redis-cluster.sh</span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h3 id="docker部署redis集群"><code>docker</code>部署<code>Redis</code>集群</h3>
+<ul>
+<li>
+<ol>
+<li><a href="https://www.jianshu.com/p/b7dea62bcd8b" rel="external" target="_self"><code>Docker</code>方式部署<code>redis-cluster</code></a></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;docker-install-redis-cluster.sh<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#------------ bootstrap the cluster nodes --------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">start_cmd=&#39;redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --masterauth Redis --requirepass Redis&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">redis_image=&#39;redis:5.0-rc&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">network_name=&#39;redis_cluster_net&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">docker network create $network_name
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">echo $network_name &#34; created&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#---------- create the cluster ------------------------
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">for port in `seq 6379 6384`; do \
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">docker run -d --name &#34;redis-&#34;$port -p $port:6379 --net $network_name $redis_image $start_cmd;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">echo &#34;created redis cluster node redis-&#34;$port
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">done
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">cluster_hosts=&#39;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">for port in `seq 6379 6384`; do \
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">hostip=`docker inspect -f &#39;{{(index .NetworkSettings.Networks &#34;redis_cluster_net&#34;).IPAddress}}&#39; &#34;redis-&#34;$port`;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">echo &#34;IP for cluster node redis-&#34;$port &#34;is&#34; $hostip
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">cluster_hosts=&#34;$cluster_hosts$hostip:6379 &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">done
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">echo &#34;cluster hosts &#34;$cluster_hosts
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">echo &#34;creating cluster....&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">echo &#39;yes&#39; | docker run -i --rm --restart=always -v /etc/localtime:/etc/localtime --net $network_name $redis_image redis-cli  -a Redis --cluster create $cluster_hosts --cluster-replicas 1;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="redis-50以下版本"><code>Redis 5.0</code>以下版本</h3>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.myfreax.com/how-to-install-ruby-on-centos-7/" rel="external" target="_self">如何在<code>CentOS 7</code>上安装<code>Ruby</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.jianshu.com/p/e4847f3926d1" rel="external" target="_self"><code>CentOS 7</code>安装<code>Ruby on Rails</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.cnblogs.com/xuliangxing/p/7132656.html" rel="external" target="_self"><code>Linux</code>安装<code>Ruby</code>详解(在线和离线安装)</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.cnblogs.com/tommy-huang/p/7279796.html" rel="external" target="_self"><code>CentOS 7</code>通过<code>RVM</code>来安装指定版本的<code>Ruby</code></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<hr>
+<h4 id="安装ruby">安装<code>Ruby</code></h4>
+<blockquote>
+<ul>
+<li><code>Redis 5.0</code>以下版本使用<code>Ruby</code>方式安装<code>Redis</code>集群</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#39;#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">yum install gcc-c++ patch readline readline-devel zlib zlib-devel libyaml-devel libffi-devel openssl-devel make bzip2 autoconf automake libtool bison iconv-devel -y   #安装依赖库
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3    #安装RVM
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">curl -sSL https://rvm.io/mpapis.asc | gpg2 --import -
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">curl -sSL https://rvm.io/pkuczynski.asc | gpg2 --import -
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">curl -L get.rvm.io | bash -s stable
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sleep 2
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">source /etc/profile.d/rvm.sh    #设定rvm环境
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sleep 3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rvm -v          #查看是否安装正常
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rvm list known  #查询当前Ruby的版本列表
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rvm install 2.4.6   #安装指定版本的Ruby
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ruby -v             #测试是否成功
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rvm use 2.4.6  --default     #在安装多个版本ruby环境下指定默认版本：这里讲2.4.6 作为默认ruby版本
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rvm system --default    #使用会系统默认版本Ruby
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">gem install redis       准备rubygem redis依赖
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;</span> &gt;install-ruby.sh</span></span></code></pre></div></blockquote>
+<hr>
+<h4 id="拷贝redis-tribrb到集群根目录">拷贝<code>redis-trib.rb</code>到集群根目录</h4>
+<blockquote>
+<ul>
+<li><code>redis-trib.rb</code> 是<code>redis</code>官方推出的管理<code>redis</code>集群 的工具，集成在<code>redis</code>的源码<code>src</code>目录下，将基于 <code>redis</code>提供的 集群命令 封装成 简单、便捷、实用 的 操作工具</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cp /opt/apps/redis/src/redis-trib.rb /opt/apps/redis/</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->查看<!-- raw HTML omitted --><code>redis-trib.rb</code><!-- raw HTML omitted -->命令环境是否正确，输出如下<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ./redis-trib.rb 
+</span></span><span style="display:flex;"><span>Usage: redis-trib &lt;command&gt; &lt;options&gt; &lt;arguments ...&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  create          host1:port1 ... hostN:portN
+</span></span><span style="display:flex;"><span>                  --replicas &lt;arg&gt;
+</span></span><span style="display:flex;"><span>  check           host:port
+</span></span><span style="display:flex;"><span>  info            host:port
+</span></span><span style="display:flex;"><span>  fix             host:port
+</span></span><span style="display:flex;"><span>                  --timeout &lt;arg&gt;
+</span></span><span style="display:flex;"><span>  reshard         host:port
+</span></span><span style="display:flex;"><span>                  --from &lt;arg&gt;
+</span></span><span style="display:flex;"><span>                  --to &lt;arg&gt;
+</span></span><span style="display:flex;"><span>                  --slots &lt;arg&gt;
+</span></span><span style="display:flex;"><span>                  --yes
+</span></span><span style="display:flex;"><span>                  --timeout &lt;arg&gt;
+</span></span><span style="display:flex;"><span>                  --pipeline &lt;arg&gt;
+</span></span><span style="display:flex;"><span>  rebalance       host:port
+</span></span><span style="display:flex;"><span>                  --weight &lt;arg&gt;
+</span></span><span style="display:flex;"><span>                  --auto-weights
+</span></span><span style="display:flex;"><span>                  --use-empty-masters
+</span></span><span style="display:flex;"><span>                  --timeout &lt;arg&gt;
+</span></span><span style="display:flex;"><span>                  --simulate
+</span></span><span style="display:flex;"><span>                  --pipeline &lt;arg&gt;</span></span></code></pre></div><ul>
+<li><code>redis-trib.rb</code><!-- raw HTML omitted -->是<!-- raw HTML omitted --><code>redis</code><!-- raw HTML omitted -->作者用<!-- raw HTML omitted --><code>ruby</code><!-- raw HTML omitted -->完成的。<!-- raw HTML omitted --><code>redis-trib.rb</code><!-- raw HTML omitted -->命令行工具 的具体功能如下:  <!-- raw HTML omitted --></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>create</code></td>
+<td>创建集群</td>
+</tr>
+<tr>
+<td><code>check</code></td>
+<td>检查集群</td>
+</tr>
+<tr>
+<td><code>info</code></td>
+<td>查看集群信息</td>
+</tr>
+<tr>
+<td><code>fix</code></td>
+<td>修复集群</td>
+</tr>
+<tr>
+<td><code>reshard</code></td>
+<td>在线迁移<code>slot</code></td>
+</tr>
+<tr>
+<td><code>rebalance</code></td>
+<td>平衡集群节点<code>slot</code>数量</td>
+</tr>
+<tr>
+<td><code>add-node</code></td>
+<td>将新节点加入集群</td>
+</tr>
+<tr>
+<td><code>del-node</code></td>
+<td>从集群中删除节点</td>
+</tr>
+<tr>
+<td><code>set-timeout</code></td>
+<td>设置集群节点间心跳连接的超时时间</td>
+</tr>
+<tr>
+<td><code>call</code></td>
+<td>在集群全部节点上执行命令</td>
+</tr>
+<tr>
+<td><code>import</code></td>
+<td>将外部<code>redis</code>数据导入集群</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->运行命令启动所有节点<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /opt/apps/redis/bin/redis-server /opt/conf/redis-conf/re_17693.conf &amp;
+</span></span><span style="display:flex;"><span>$ /opt/apps/redis/bin/redis-server /opt/conf/redis-conf/re_17694.conf &amp;
+</span></span><span style="display:flex;"><span>$ /opt/apps/redis/bin/redis-server /opt/conf/redis-conf/re_17695.conf &amp;</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->在每个<!-- raw HTML omitted --><code>redis</code><!-- raw HTML omitted -->节点的<!-- raw HTML omitted --><code>redis.conf</code><!-- raw HTML omitted -->文件中，我们都配置了<!-- raw HTML omitted --><code>cluster-config-file</code><!-- raw HTML omitted -->的文件路径，集群启动时<!-- raw HTML omitted --><code>conf</code><!-- raw HTML omitted -->目录会新生成 集群 节点配置文件。查看文件列表如下：<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y install tree
+</span></span><span style="display:flex;"><span>$ tree -L <span style="color:#ae81ff">3</span> .
+</span></span><span style="display:flex;"><span>.
+</span></span><span style="display:flex;"><span>├── bin
+</span></span><span style="display:flex;"><span>│   ├── redis-benchmark
+</span></span><span style="display:flex;"><span>│   ├── redis-check-aof
+</span></span><span style="display:flex;"><span>│   ├── redis-check-rdb
+</span></span><span style="display:flex;"><span>│   ├── redis-cli
+</span></span><span style="display:flex;"><span>│   ├── redis-sentinel -&gt; redis-server
+</span></span><span style="display:flex;"><span>│   └── redis-server
+</span></span><span style="display:flex;"><span>├── nodes-6379.conf
+</span></span><span style="display:flex;"><span>├── redis.conf
+</span></span><span style="display:flex;"><span>└── redis-trib.rb</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->配置密码<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ vim /usr/local/rvm/gems/ruby-2.4.6/gems/redis-4.1.3/lib/redis/client.rb
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># frozen_string_literal: true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>require_relative <span style="color:#e6db74">&#34;errors&#34;</span>
+</span></span><span style="display:flex;"><span>require <span style="color:#e6db74">&#34;socket&#34;</span>
+</span></span><span style="display:flex;"><span>require <span style="color:#e6db74">&#34;cgi&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>class Redis
+</span></span><span style="display:flex;"><span>class Client
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span> DEFAULTS <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>   :url <span style="color:#f92672">=</span>&gt; lambda <span style="color:#f92672">{</span> ENV<span style="color:#f92672">[</span><span style="color:#e6db74">&#34;REDIS_URL&#34;</span><span style="color:#f92672">]</span> <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>   :scheme <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;redis&#34;</span>,
+</span></span><span style="display:flex;"><span>   :host <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>,
+</span></span><span style="display:flex;"><span>   :port <span style="color:#f92672">=</span>&gt; 6379,
+</span></span><span style="display:flex;"><span>   :path <span style="color:#f92672">=</span>&gt; nil,
+</span></span><span style="display:flex;"><span>   :timeout <span style="color:#f92672">=</span>&gt; 5.0,
+</span></span><span style="display:flex;"><span>   :password <span style="color:#f92672">=</span>&gt; Redis,  	<span style="color:#75715e"># 配置密码</span>
+</span></span><span style="display:flex;"><span>   :db <span style="color:#f92672">=</span>&gt; 0,
+</span></span><span style="display:flex;"><span>   :driver <span style="color:#f92672">=</span>&gt; nil,
+</span></span><span style="display:flex;"><span>   :id <span style="color:#f92672">=</span>&gt; nil,
+</span></span><span style="display:flex;"><span>   :tcp_keepalive <span style="color:#f92672">=</span>&gt; 0,
+</span></span><span style="display:flex;"><span>   :reconnect_attempts <span style="color:#f92672">=</span>&gt; 1,
+</span></span><span style="display:flex;"><span>   :reconnect_delay <span style="color:#f92672">=</span>&gt; 0,
+</span></span><span style="display:flex;"><span>   :reconnect_delay_max <span style="color:#f92672">=</span>&gt; 0.5,
+</span></span><span style="display:flex;"><span>   :inherit_socket <span style="color:#f92672">=</span>&gt; false
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">}</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><code>redis-trib</code><!-- raw HTML omitted -->关联集群节点<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->按照从主到从的方式从左到右依次排列 6 个<!-- raw HTML omitted --><code>redis</code><!-- raw HTML omitted -->节点，如果不通两个问题：密码、防火墙<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#39;yes&#39;</span>|./redis-trib.rb create --replicas <span style="color:#ae81ff">1</span> 192.168.176.142:6379 192.168.176.143:6379 192.168.176.144:6379 192.168.176.145:6379 192.168.176.142:6380 192.168.176.143:6380 192.168.176.144:6380 192.168.176.145:6380  
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; Creating cluster
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; Performing hash slots allocation on <span style="color:#ae81ff">8</span> nodes...
+</span></span><span style="display:flex;"><span>Using <span style="color:#ae81ff">4</span> masters:
+</span></span><span style="display:flex;"><span>192.168.176.142:6379
+</span></span><span style="display:flex;"><span>192.168.176.143:6379
+</span></span><span style="display:flex;"><span>192.168.176.144:6379
+</span></span><span style="display:flex;"><span>192.168.176.145:6379
+</span></span><span style="display:flex;"><span>Adding replica 192.168.176.143:6380 to 192.168.176.142:6379
+</span></span><span style="display:flex;"><span>Adding replica 192.168.176.142:6380 to 192.168.176.143:6379
+</span></span><span style="display:flex;"><span>Adding replica 192.168.176.145:6380 to 192.168.176.144:6379
+</span></span><span style="display:flex;"><span>Adding replica 192.168.176.144:6380 to 192.168.176.145:6379
+</span></span><span style="display:flex;"><span>M: 157bd250dd382b95a9289d8b44fd2cfd466fea98 192.168.176.142:6379
+</span></span><span style="display:flex;"><span>   slots:0-4095 <span style="color:#f92672">(</span><span style="color:#ae81ff">4096</span> slots<span style="color:#f92672">)</span> master
+</span></span><span style="display:flex;"><span>M: c6df79e7c60c03921b69e4d4342507e8d4d2afbd 192.168.176.143:6379
+</span></span><span style="display:flex;"><span>   slots:4096-8191 <span style="color:#f92672">(</span><span style="color:#ae81ff">4096</span> slots<span style="color:#f92672">)</span> master
+</span></span><span style="display:flex;"><span>M: a463232f96c66cd7f27395253b65d0be8909656e 192.168.176.144:6379
+</span></span><span style="display:flex;"><span>   slots:8192-12287 <span style="color:#f92672">(</span><span style="color:#ae81ff">4096</span> slots<span style="color:#f92672">)</span> master
+</span></span><span style="display:flex;"><span>M: 44b244a188185835b42d4489eac614e7f81b4cf8 192.168.176.145:6379
+</span></span><span style="display:flex;"><span>   slots:12288-16383 <span style="color:#f92672">(</span><span style="color:#ae81ff">4096</span> slots<span style="color:#f92672">)</span> master
+</span></span><span style="display:flex;"><span>S: 1cafdeeb6cb52bb96dd16ac84d2242f59973f83a 192.168.176.142:6380
+</span></span><span style="display:flex;"><span>   replicates c6df79e7c60c03921b69e4d4342507e8d4d2afbd
+</span></span><span style="display:flex;"><span>S: a6d87fb995f3f5e98e2a09f4b5a3078f7221a257 192.168.176.143:6380
+</span></span><span style="display:flex;"><span>   replicates 157bd250dd382b95a9289d8b44fd2cfd466fea98
+</span></span><span style="display:flex;"><span>S: 31a3f0b03244d30bbc7e47acc0ec06d327b62860 192.168.176.144:6380
+</span></span><span style="display:flex;"><span>   replicates 44b244a188185835b42d4489eac614e7f81b4cf8
+</span></span><span style="display:flex;"><span>S: fc22025eb5db7cc0d55fe7dc11a3c368daa468bb 192.168.176.145:6380
+</span></span><span style="display:flex;"><span>   replicates a463232f96c66cd7f27395253b65d0be8909656e
+</span></span><span style="display:flex;"><span>Can I set the above configuration? <span style="color:#f92672">(</span>type <span style="color:#e6db74">&#39;yes&#39;</span> to accept<span style="color:#f92672">)</span>: yes     <span style="color:#75715e">#此处输入：yes、然后redis-trib.rb 开始执行 节点握手 和 槽分配 操作，输出如下：</span>
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; Nodes configuration updated
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; Assign a different config epoch to each node
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; Sending CLUSTER MEET messages to join the cluster
+</span></span><span style="display:flex;"><span>Waiting <span style="color:#66d9ef">for</span> the cluster to join....
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; Performing Cluster Check <span style="color:#f92672">(</span>using node 192.168.176.142:6379<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>M: 157bd250dd382b95a9289d8b44fd2cfd466fea98 192.168.176.142:6379
+</span></span><span style="display:flex;"><span>   slots:0-4095 <span style="color:#f92672">(</span><span style="color:#ae81ff">4096</span> slots<span style="color:#f92672">)</span> master
+</span></span><span style="display:flex;"><span>   <span style="color:#ae81ff">1</span> additional replica<span style="color:#f92672">(</span>s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>S: 31a3f0b03244d30bbc7e47acc0ec06d327b62860 192.168.176.144:6380
+</span></span><span style="display:flex;"><span>   slots: <span style="color:#f92672">(</span><span style="color:#ae81ff">0</span> slots<span style="color:#f92672">)</span> slave
+</span></span><span style="display:flex;"><span>   replicates 44b244a188185835b42d4489eac614e7f81b4cf8
+</span></span><span style="display:flex;"><span>M: a463232f96c66cd7f27395253b65d0be8909656e 192.168.176.144:6379
+</span></span><span style="display:flex;"><span>   slots:8192-12287 <span style="color:#f92672">(</span><span style="color:#ae81ff">4096</span> slots<span style="color:#f92672">)</span> master
+</span></span><span style="display:flex;"><span>   <span style="color:#ae81ff">1</span> additional replica<span style="color:#f92672">(</span>s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>M: 44b244a188185835b42d4489eac614e7f81b4cf8 192.168.176.145:6379
+</span></span><span style="display:flex;"><span>   slots:12288-16383 <span style="color:#f92672">(</span><span style="color:#ae81ff">4096</span> slots<span style="color:#f92672">)</span> master
+</span></span><span style="display:flex;"><span>   <span style="color:#ae81ff">1</span> additional replica<span style="color:#f92672">(</span>s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>S: fc22025eb5db7cc0d55fe7dc11a3c368daa468bb 192.168.176.145:6380
+</span></span><span style="display:flex;"><span>   slots: <span style="color:#f92672">(</span><span style="color:#ae81ff">0</span> slots<span style="color:#f92672">)</span> slave
+</span></span><span style="display:flex;"><span>   replicates a463232f96c66cd7f27395253b65d0be8909656e
+</span></span><span style="display:flex;"><span>M: c6df79e7c60c03921b69e4d4342507e8d4d2afbd 192.168.176.143:6379
+</span></span><span style="display:flex;"><span>   slots:4096-8191 <span style="color:#f92672">(</span><span style="color:#ae81ff">4096</span> slots<span style="color:#f92672">)</span> master
+</span></span><span style="display:flex;"><span>   <span style="color:#ae81ff">1</span> additional replica<span style="color:#f92672">(</span>s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>S: a6d87fb995f3f5e98e2a09f4b5a3078f7221a257 192.168.176.143:6380
+</span></span><span style="display:flex;"><span>   slots: <span style="color:#f92672">(</span><span style="color:#ae81ff">0</span> slots<span style="color:#f92672">)</span> slave
+</span></span><span style="display:flex;"><span>   replicates 157bd250dd382b95a9289d8b44fd2cfd466fea98
+</span></span><span style="display:flex;"><span>S: 1cafdeeb6cb52bb96dd16ac84d2242f59973f83a 192.168.176.142:6380
+</span></span><span style="display:flex;"><span>   slots: <span style="color:#f92672">(</span><span style="color:#ae81ff">0</span> slots<span style="color:#f92672">)</span> slave
+</span></span><span style="display:flex;"><span>   replicates c6df79e7c60c03921b69e4d4342507e8d4d2afbd
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>OK<span style="color:#f92672">]</span> All nodes agree about slots configuration.
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; Check <span style="color:#66d9ef">for</span> open slots...
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; Check slots coverage...
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>OK<span style="color:#f92672">]</span> All <span style="color:#ae81ff">16384</span> slots covered.</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><code>redis</code><!-- raw HTML omitted -->集群完整性检<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->使用<code>redis-trib.rb check</code>命令检测之前创建的 两个集群 是否成功，<code>check</code>命令只需要给出集群中 任意一个节点地址 就可以完成 整个集群 的 检查工作，命令如下：<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ./redis-trib.rb check 192.168.176.145:6379 
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; Performing Cluster Check <span style="color:#f92672">(</span>using node 192.168.176.142:6379<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>M: 157bd250dd382b95a9289d8b44fd2cfd466fea98 192.168.176.142:6379
+</span></span><span style="display:flex;"><span>   slots:0-4095 <span style="color:#f92672">(</span><span style="color:#ae81ff">4096</span> slots<span style="color:#f92672">)</span> master
+</span></span><span style="display:flex;"><span>   <span style="color:#ae81ff">1</span> additional replica<span style="color:#f92672">(</span>s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>S: 31a3f0b03244d30bbc7e47acc0ec06d327b62860 192.168.176.144:6380
+</span></span><span style="display:flex;"><span>   slots: <span style="color:#f92672">(</span><span style="color:#ae81ff">0</span> slots<span style="color:#f92672">)</span> slave
+</span></span><span style="display:flex;"><span>   replicates 44b244a188185835b42d4489eac614e7f81b4cf8
+</span></span><span style="display:flex;"><span>M: a463232f96c66cd7f27395253b65d0be8909656e 192.168.176.144:6379
+</span></span><span style="display:flex;"><span>   slots:8192-12287 <span style="color:#f92672">(</span><span style="color:#ae81ff">4096</span> slots<span style="color:#f92672">)</span> master
+</span></span><span style="display:flex;"><span>   <span style="color:#ae81ff">1</span> additional replica<span style="color:#f92672">(</span>s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>M: 44b244a188185835b42d4489eac614e7f81b4cf8 192.168.176.145:6379
+</span></span><span style="display:flex;"><span>   slots:12288-16383 <span style="color:#f92672">(</span><span style="color:#ae81ff">4096</span> slots<span style="color:#f92672">)</span> master
+</span></span><span style="display:flex;"><span>   <span style="color:#ae81ff">1</span> additional replica<span style="color:#f92672">(</span>s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>S: fc22025eb5db7cc0d55fe7dc11a3c368daa468bb 192.168.176.145:6380
+</span></span><span style="display:flex;"><span>   slots: <span style="color:#f92672">(</span><span style="color:#ae81ff">0</span> slots<span style="color:#f92672">)</span> slave
+</span></span><span style="display:flex;"><span>   replicates a463232f96c66cd7f27395253b65d0be8909656e
+</span></span><span style="display:flex;"><span>M: c6df79e7c60c03921b69e4d4342507e8d4d2afbd 192.168.176.143:6379
+</span></span><span style="display:flex;"><span>   slots:4096-8191 <span style="color:#f92672">(</span><span style="color:#ae81ff">4096</span> slots<span style="color:#f92672">)</span> master
+</span></span><span style="display:flex;"><span>   <span style="color:#ae81ff">1</span> additional replica<span style="color:#f92672">(</span>s<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>S: a6d87fb995f3f5e98e2a09f4b5a3078f7221a257 192.168.176.143:6380
+</span></span><span style="display:flex;"><span>   slots: <span style="color:#f92672">(</span><span style="color:#ae81ff">0</span> slots<span style="color:#f92672">)</span> slave
+</span></span><span style="display:flex;"><span>   replicates 157bd250dd382b95a9289d8b44fd2cfd466fea98
+</span></span><span style="display:flex;"><span>S: 1cafdeeb6cb52bb96dd16ac84d2242f59973f83a 192.168.176.142:6380
+</span></span><span style="display:flex;"><span>   slots: <span style="color:#f92672">(</span><span style="color:#ae81ff">0</span> slots<span style="color:#f92672">)</span> slave
+</span></span><span style="display:flex;"><span>   replicates c6df79e7c60c03921b69e4d4342507e8d4d2afbd
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>OK<span style="color:#f92672">]</span> All nodes agree about slots configuration.
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; Check <span style="color:#66d9ef">for</span> open slots...
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; Check slots coverage...
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>OK<span style="color:#f92672">]</span> All <span style="color:#ae81ff">16384</span> slots covered.</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="redis-sentinel模式"><code>Redis Sentinel</code>模式</h3>
+<blockquote>
+<ul>
+<li><code>Redis Sentinel</code>哨兵模式</li>
+<li><!-- raw HTML omitted -->节点-1<!-- raw HTML omitted --><code>sentinel_16380.conf</code></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>protected-mode no
+</span></span><span style="display:flex;"><span>bind 192.168.176.131  	<span style="color:#75715e"># 本机IP</span>
+</span></span><span style="display:flex;"><span>port <span style="color:#ae81ff">16380</span>
+</span></span><span style="display:flex;"><span>daemonize yes
+</span></span><span style="display:flex;"><span>sentinel monitor master 192.168.176.131 <span style="color:#ae81ff">6379</span> <span style="color:#ae81ff">2</span>  	<span style="color:#75715e"># 主IP与端口号</span>
+</span></span><span style="display:flex;"><span>sentinel down-after-milliseconds master <span style="color:#ae81ff">5000</span>  	<span style="color:#75715e"># 指定主节点应答哨兵sentinel的最大时间间隔，超过这个时间，哨兵主观上认为主节点下线，默认30秒</span>
+</span></span><span style="display:flex;"><span>sentinel failover-timeout master <span style="color:#ae81ff">180000</span>  	<span style="color:#75715e"># 故障转移的超时时间failover-timeout，默认三分钟，可以用在以下这些方面</span>
+</span></span><span style="display:flex;"><span>sentinel parallel-syncs master <span style="color:#ae81ff">1</span>  	<span style="color:#75715e"># 指定了在发生failover主备切换时，最多可以有多少个slave同时对新的master进行同步。这个数字越小，完成failover所需的时间就越长；反之，但是如果这个数字越大，就意味着越多的slave因为replication而不可用。可以通过将这个值设为1，来保证每次只有一个slave，处于不能处理命令请求的状态。</span>
+</span></span><span style="display:flex;"><span>sentinel auth-pass master <span style="color:#ae81ff">123456</span>  	<span style="color:#75715e"># 当在Redis实例中开启了requirepass &lt;foobared&gt;，所有连接Redis实例的客户端都要提供密码</span>
+</span></span><span style="display:flex;"><span>logfile /var/log/redis/sentinel_16380.log</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->节点2~3<!-- raw HTML omitted --><code>centinel_16380.conf </code></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>protected-mode no
+</span></span><span style="display:flex;"><span>bind 192.168.176.132  	<span style="color:#75715e"># 此处修改为本机IP</span>
+</span></span><span style="display:flex;"><span>port <span style="color:#ae81ff">16380</span>
+</span></span><span style="display:flex;"><span>daemonize yes
+</span></span><span style="display:flex;"><span>sentinel monitor master 192.168.176.131 <span style="color:#ae81ff">6379</span> <span style="color:#ae81ff">2</span>  	<span style="color:#75715e"># 主IP与端口号</span>
+</span></span><span style="display:flex;"><span>sentinel down-after-milliseconds master <span style="color:#ae81ff">5000</span>
+</span></span><span style="display:flex;"><span>sentinel failover-timeout master <span style="color:#ae81ff">180000</span>
+</span></span><span style="display:flex;"><span>sentinel parallel-syncs master <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>sentinel auth-pass master <span style="color:#ae81ff">123456</span>
+</span></span><span style="display:flex;"><span>logfile /var/log/redis/sentinel_16380.log</span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+        </div>
+      </main>
+    </div>
+    <aside id="R-sidebar" class="default-animation showVisitedLinks">
+      <div id="R-header-topbar" class="default-animation"></div>
+      <div id="R-header-wrapper" class="default-animation">
+        <div id="R-header" class="default-animation">
+          <style>
+            #R-logo svg,
+            #R-logo svg * {
+              color: #282828;
+              color: var(--MENU-SECTIONS-BG-color);
+              fill: #282828 !important;
+              fill: var(--MENU-SECTIONS-BG-color) !important;
+              opacity: .945;
+            }
+            a#R-logo {
+              color: #282828;
+              color: var(--MENU-SECTIONS-BG-color);
+              font-family: 'Work Sans', 'Helvetica', 'Tahoma', 'Geneva', 'Arial', sans-serif;
+              font-size: 1.875rem;
+              font-weight: 300;
+              margin-top: -.8125rem;
+              max-width: 60%;
+              text-transform: uppercase;
+              width: 14.125rem;
+              white-space: nowrap;
+            }
+            a#R-logo:hover {
+              color: #282828;
+              color: var(--MENU-SECTIONS-BG-color);
+            }
+            #R-logo svg {
+              margin-bottom: -1.25rem;
+              margin-inline-start: -1.47rem;
+              margin-inline-end: .5rem;
+              width: 40.5%;
+            }
+            @media only all and (max-width: 59.999rem) {
+              a#R-logo {
+                font-size: 1.5625rem;
+                margin-top: -.1875rem;
+              }
+              #R-logo svg {
+                margin-bottom: -.75rem;
+                margin-inline-start: -1.47rem;
+                margin-inline-end: .5rem;
+              }
+            }
+          </style>
+          <a id="R-logo" href="../../../../">
+            <img src="images/s2-1.png" alt="二哥">
+          </a>
+        </div>
+
+        <search><form action="../../../../search.html" method="get">
+          <div class="searchbox default-animation">
+            <button class="search-detail" type="submit" title="Search (CTRL+ALT+f)"><i class="fas fa-search"></i></button>
+            <label class="a11y-only" for="R-search-by">Search</label>
+            <input data-search-input id="R-search-by" name="search-by" class="search-by" type="search" placeholder="Search...">
+            <button class="search-clear" type="button" data-search-clear="" title="Clear search"><i class="fas fa-times" title="Clear search"></i></button>
+          </div>
+        </form></search>
+        <script>
+          var contentLangs=['en'];
+        </script>
+        <script src="../../../../js/auto-complete.js?1719329889" defer></script>
+        <script src="../../../../js/lunr/lunr.min.js?1719329889" defer></script>
+        <script src="../../../../js/lunr/lunr.stemmer.support.min.js?1719329889" defer></script>
+        <script src="../../../../js/lunr/lunr.multi.min.js?1719329889" defer></script>
+        <script src="../../../../js/lunr/lunr.en.min.js?1719329889" defer></script>
+        <script src="../../../../js/search.js?1719329889" defer></script>
+      </div>
+      <div id="R-homelinks" class="default-animation homelinks">
+        <ul>
+          <li><a class="padding" href="../../../../"><i class='fa-fw fas fa-home'></i> Home</a></li>
+        </ul>
+        <hr class="padding">
+      </div>
+      <div id="R-content-wrapper" class="highlightable">
+        <div id="R-topics">
+          <ul class="enlarge morespace collapsible-menu">
+          <li data-nav-id="/basics/" class=""><input type="checkbox" id="R-section-a6deabe447afe1b2e1405bfc57ca61ff" aria-controls="R-subsections-a6deabe447afe1b2e1405bfc57ca61ff"><label for="R-section-a6deabe447afe1b2e1405bfc57ca61ff"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Basics</span></label><a class="padding" href="../../../../basics/">Basics<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-a6deabe447afe1b2e1405bfc57ca61ff" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/hugo_theme_next/" class="alwaysopen"><input type="checkbox" id="R-section-4c48b58c6275cad2a97afb5c467cac99" aria-controls="R-subsections-4c48b58c6275cad2a97afb5c467cac99" checked><label for="R-section-4c48b58c6275cad2a97afb5c467cac99"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Hugo_Theme_Next</span></label><a class="padding" href="../../../../basics/hugo_theme_next/">Hugo_Theme_Next<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-4c48b58c6275cad2a97afb5c467cac99" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/hugo_theme_next/emoji_support/" class=""><a class="padding" href="../../../../basics/hugo_theme_next/emoji_support/">Emoji_Support<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/hugo_theme_next/custom_files/" class=""><a class="padding" href="../../../../basics/hugo_theme_next/custom_files/">Custom_Files<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/basics/video/" class="alwaysopen"><input type="checkbox" id="R-section-42af7fff84a4df6d7df07565c2262bba" aria-controls="R-subsections-42af7fff84a4df6d7df07565c2262bba" checked><label for="R-section-42af7fff84a4df6d7df07565c2262bba"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Video</span></label><a class="padding" href="../../../../basics/video/">Video<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-42af7fff84a4df6d7df07565c2262bba" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/video/video_download/" class=""><a class="padding" href="../../../../basics/video/video_download/">Video<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/basics/markdown/" class="alwaysopen"><input type="checkbox" id="R-section-8d81245d2120aff81556115f7666a5e0" aria-controls="R-subsections-8d81245d2120aff81556115f7666a5e0" checked><label for="R-section-8d81245d2120aff81556115f7666a5e0"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu MarkDown</span></label><a class="padding" href="../../../../basics/markdown/">MarkDown<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-8d81245d2120aff81556115f7666a5e0" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/markdown/markdown_syntax/" class=""><a class="padding" href="../../../../basics/markdown/markdown_syntax/">Markdown_Syntax<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/basics/ai/" class="alwaysopen"><input type="checkbox" id="R-section-cc50241241d2c4ea02a668bba6462573" aria-controls="R-subsections-cc50241241d2c4ea02a668bba6462573" checked><label for="R-section-cc50241241d2c4ea02a668bba6462573"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu AI</span></label><a class="padding" href="../../../../basics/ai/">AI<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-cc50241241d2c4ea02a668bba6462573" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/ai/chatgpt/" class=""><a class="padding" href="../../../../basics/ai/chatgpt/">ChatGPT<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/basics/template/" class="alwaysopen"><input type="checkbox" id="R-section-d35117bb3084276b1f0714ea8420a43e" aria-controls="R-subsections-d35117bb3084276b1f0714ea8420a43e" checked><label for="R-section-d35117bb3084276b1f0714ea8420a43e"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu template</span></label><a class="padding" href="../../../../basics/template/">template<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-d35117bb3084276b1f0714ea8420a43e" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/template/syntax_highlighting/" class=""><a class="padding" href="../../../../basics/template/syntax_highlighting/">Syntax_Highlighting<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/template/qrcode_manager/" class=""><a class="padding" href="../../../../basics/template/qrcode_manager/">QRcode_Manager<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/template/mermaid_charts/" class=""><a class="padding" href="../../../../basics/template/mermaid_charts/">Mermaid_Charts<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/template/math_formula/" class=""><a class="padding" href="../../../../basics/template/math_formula/">Math Formula<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/template/github_repo_template/" class=""><a class="padding" href="../../../../basics/template/github_repo_template/"><i class='fab fa-github'></i> Github Repo Template<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/language/" class=""><input type="checkbox" id="R-section-84e0c5289a63136422908a7e4241adc6" aria-controls="R-subsections-84e0c5289a63136422908a7e4241adc6"><label for="R-section-84e0c5289a63136422908a7e4241adc6"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Languges</span></label><a class="padding" href="../../../../language/">Languges<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-84e0c5289a63136422908a7e4241adc6" class="morespace collapsible-menu">
+          <li data-nav-id="/language/lua/" class="alwaysopen"><input type="checkbox" id="R-section-9000cbd7e4710ffe5c3bf153d3bb1374" aria-controls="R-subsections-9000cbd7e4710ffe5c3bf153d3bb1374" checked><label for="R-section-9000cbd7e4710ffe5c3bf153d3bb1374"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Lua</span></label><a class="padding" href="../../../../language/lua/">Lua<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-9000cbd7e4710ffe5c3bf153d3bb1374" class="morespace collapsible-menu">
+          <li data-nav-id="/language/lua/language_lua/" class=""><a class="padding" href="../../../../language/lua/language_lua/">Lua<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/language/yaml/" class="alwaysopen"><input type="checkbox" id="R-section-7d1bf276ada0eceb02dd825b91e54998" aria-controls="R-subsections-7d1bf276ada0eceb02dd825b91e54998" checked><label for="R-section-7d1bf276ada0eceb02dd825b91e54998"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Yaml</span></label><a class="padding" href="../../../../language/yaml/">Yaml<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-7d1bf276ada0eceb02dd825b91e54998" class="morespace collapsible-menu">
+          <li data-nav-id="/language/yaml/language-yaml/" class=""><a class="padding" href="../../../../language/yaml/language-yaml/">Yaml<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/language/golang/" class="alwaysopen"><input type="checkbox" id="R-section-68528191e10f5bc742856b3bb35d9f34" aria-controls="R-subsections-68528191e10f5bc742856b3bb35d9f34" checked><label for="R-section-68528191e10f5bc742856b3bb35d9f34"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Golang</span></label><a class="padding" href="../../../../language/golang/">Golang<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-68528191e10f5bc742856b3bb35d9f34" class="morespace collapsible-menu">
+          <li data-nav-id="/language/golang/language-golang/" class=""><a class="padding" href="../../../../language/golang/language-golang/">Golang<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/language/python/" class="alwaysopen"><input type="checkbox" id="R-section-be2954e8559d07ab422f7ea1c72c5405" aria-controls="R-subsections-be2954e8559d07ab422f7ea1c72c5405" checked><label for="R-section-be2954e8559d07ab422f7ea1c72c5405"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Python</span></label><a class="padding" href="../../../../language/python/">Python<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-be2954e8559d07ab422f7ea1c72c5405" class="morespace collapsible-menu">
+          <li data-nav-id="/language/python/language-python-django/" class=""><a class="padding" href="../../../../language/python/language-python-django/">Django<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/language/python/language-python/" class=""><a class="padding" href="../../../../language/python/language-python/">Python<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/language/python/python-crawler/" class=""><a class="padding" href="../../../../language/python/python-crawler/">Crawler<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/services/" class=""><input type="checkbox" id="R-section-95afbf0e432a5495fcd79c6e50f92da5" aria-controls="R-subsections-95afbf0e432a5495fcd79c6e50f92da5"><label for="R-section-95afbf0e432a5495fcd79c6e50f92da5"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Services</span></label><a class="padding" href="../../../../services/">Services<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-95afbf0e432a5495fcd79c6e50f92da5" class="morespace collapsible-menu">
+          <li data-nav-id="/services/shopping/" class="alwaysopen"><input type="checkbox" id="R-section-e74c46d7456e8bcd8a5b287628f47e95" aria-controls="R-subsections-e74c46d7456e8bcd8a5b287628f47e95" checked><label for="R-section-e74c46d7456e8bcd8a5b287628f47e95"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Shopping</span></label><a class="padding" href="../../../../services/shopping/">Shopping<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-e74c46d7456e8bcd8a5b287628f47e95" class="morespace collapsible-menu">
+          <li data-nav-id="/services/shopping/install_prestashop/" class=""><a class="padding" href="../../../../services/shopping/install_prestashop/">PrestaShop<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/services/shopping/install_opencart/" class=""><a class="padding" href="../../../../services/shopping/install_opencart/">OpenCart<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/services/shopping/install_jeepay/" class=""><a class="padding" href="../../../../services/shopping/install_jeepay/">JeePay<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/services/certificate/" class=""><a class="padding" href="../../../../services/certificate/">Certificate<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/services/blog/" class="alwaysopen"><input type="checkbox" id="R-section-47d595cf5fa5000ee12b114cac976798" aria-controls="R-subsections-47d595cf5fa5000ee12b114cac976798" checked><label for="R-section-47d595cf5fa5000ee12b114cac976798"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Blog</span></label><a class="padding" href="../../../../services/blog/">Blog<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-47d595cf5fa5000ee12b114cac976798" class="morespace collapsible-menu">
+          <li data-nav-id="/services/blog/install-blog-hexo/" class=""><a class="padding" href="../../../../services/blog/install-blog-hexo/">Hexo<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/systems/" class="parent "><input type="checkbox" id="R-section-30e48890399c6ecdfb15937b01bd309a" aria-controls="R-subsections-30e48890399c6ecdfb15937b01bd309a" checked><label for="R-section-30e48890399c6ecdfb15937b01bd309a"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Systems</span></label><a class="padding" href="../../../../systems/">Systems<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-30e48890399c6ecdfb15937b01bd309a" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/" class="parent alwaysopen"><input type="checkbox" id="R-section-de656359c9ce2d10a06145d02d07bd35" aria-controls="R-subsections-de656359c9ce2d10a06145d02d07bd35" checked><label for="R-section-de656359c9ce2d10a06145d02d07bd35"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Linux</span></label><a class="padding" href="../../../../systems/linux/">Linux<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-de656359c9ce2d10a06145d02d07bd35" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/use_linux/" class="alwaysopen"><input type="checkbox" id="R-section-49f8f651101e295f3d007dbb41613e23" aria-controls="R-subsections-49f8f651101e295f3d007dbb41613e23" checked><label for="R-section-49f8f651101e295f3d007dbb41613e23"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Use_Linux</span></label><a class="padding" href="../../../../systems/linux/use_linux/">Use_Linux<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-49f8f651101e295f3d007dbb41613e23" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/use_linux/system_optimization/" class=""><a class="padding" href="../../../../systems/linux/use_linux/system_optimization/">System_Optimization<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/system_architecture_planning_diagram/" class=""><a class="padding" href="../../../../systems/linux/use_linux/system_architecture_planning_diagram/">System_Architecture_Planning_Diagram<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/regular_expression/" class=""><a class="padding" href="../../../../systems/linux/use_linux/regular_expression/">Regular_Expression<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/linux_document/" class=""><a class="padding" href="../../../../systems/linux/use_linux/linux_document/">Linux_Document<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/linux_conmmon_commands/" class=""><a class="padding" href="../../../../systems/linux/use_linux/linux_conmmon_commands/">Linux_Conmmon_Commands<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/install_cloud_foundry/" class=""><a class="padding" href="../../../../systems/linux/use_linux/install_cloud_foundry/">Install_Cloud_Foundry<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/work_order/" class="alwaysopen"><input type="checkbox" id="R-section-2f07bd5be968f6cd5106cd8668cec86e" aria-controls="R-subsections-2f07bd5be968f6cd5106cd8668cec86e" checked><label for="R-section-2f07bd5be968f6cd5106cd8668cec86e"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Work_Order</span></label><a class="padding" href="../../../../systems/linux/work_order/">Work_Order<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-2f07bd5be968f6cd5106cd8668cec86e" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/work_order/install_ferry/" class=""><a class="padding" href="../../../../systems/linux/work_order/install_ferry/">Install_Ferry<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/web/" class="alwaysopen"><input type="checkbox" id="R-section-16667cef7ba079f56d077b0672418894" aria-controls="R-subsections-16667cef7ba079f56d077b0672418894" checked><label for="R-section-16667cef7ba079f56d077b0672418894"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Web</span></label><a class="padding" href="../../../../systems/linux/web/">Web<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-16667cef7ba079f56d077b0672418894" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/web/website_optimization_advertise/" class=""><a class="padding" href="../../../../systems/linux/web/website_optimization_advertise/">Website_Optimization_Advertise<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/web/website_http_status_messages/" class=""><a class="padding" href="../../../../systems/linux/web/website_http_status_messages/">Website_HTTP_Status_Messages<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/web/install-nginx/" class=""><a class="padding" href="../../../../systems/linux/web/install-nginx/">Install Nginx<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/web/install_nginx_third_party_modules/" class=""><a class="padding" href="../../../../systems/linux/web/install_nginx_third_party_modules/">Install_Nginx_Third_Party_Modules<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/web/configure_nginx/" class=""><a class="padding" href="../../../../systems/linux/web/configure_nginx/">Configure_Nginx<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/storage/" class="alwaysopen"><input type="checkbox" id="R-section-78cdb047edff213265dfa96259e7a4f9" aria-controls="R-subsections-78cdb047edff213265dfa96259e7a4f9" checked><label for="R-section-78cdb047edff213265dfa96259e7a4f9"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Storage</span></label><a class="padding" href="../../../../systems/linux/storage/">Storage<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-78cdb047edff213265dfa96259e7a4f9" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/storage/install_nfs/" class=""><a class="padding" href="../../../../systems/linux/storage/install_nfs/">Install_NFS<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/storage/install_moosefs/" class=""><a class="padding" href="../../../../systems/linux/storage/install_moosefs/">Install_MooseFS<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/storage/install_minio/" class=""><a class="padding" href="../../../../systems/linux/storage/install_minio/">Install_Minio<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/storage/install_fastdfs/" class=""><a class="padding" href="../../../../systems/linux/storage/install_fastdfs/">Install_FastDFS<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/storage/configur_storage/" class=""><a class="padding" href="../../../../systems/linux/storage/configur_storage/">Configur_Storage<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/service_management/" class="alwaysopen"><input type="checkbox" id="R-section-14edec8fa5c3e740a4fda2b953c2000b" aria-controls="R-subsections-14edec8fa5c3e740a4fda2b953c2000b" checked><label for="R-section-14edec8fa5c3e740a4fda2b953c2000b"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Service_Management</span></label><a class="padding" href="../../../../systems/linux/service_management/">Service_Management<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-14edec8fa5c3e740a4fda2b953c2000b" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/service_management/install_nacos/" class=""><a class="padding" href="../../../../systems/linux/service_management/install_nacos/">Install_Nacos<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/service_management/install_mesos/" class=""><a class="padding" href="../../../../systems/linux/service_management/install_mesos/">Install_Mesos<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/service_management/install_hive/" class=""><a class="padding" href="../../../../systems/linux/service_management/install_hive/">Install_Hive<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/service_management/install_consul/" class=""><a class="padding" href="../../../../systems/linux/service_management/install_consul/">Install_Consul<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/script/" class="alwaysopen"><input type="checkbox" id="R-section-03579ce96d17eb0c798805c4164837e4" aria-controls="R-subsections-03579ce96d17eb0c798805c4164837e4" checked><label for="R-section-03579ce96d17eb0c798805c4164837e4"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Script</span></label><a class="padding" href="../../../../systems/linux/script/">Script<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-03579ce96d17eb0c798805c4164837e4" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/script/how_to_write_shell_scripts/" class=""><a class="padding" href="../../../../systems/linux/script/how_to_write_shell_scripts/">How_To_Write_Shell_Scripts<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/rsyncd/" class="alwaysopen"><input type="checkbox" id="R-section-9e23d094a527b7c92407accf5be989fb" aria-controls="R-subsections-9e23d094a527b7c92407accf5be989fb" checked><label for="R-section-9e23d094a527b7c92407accf5be989fb"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Rsyncd</span></label><a class="padding" href="../../../../systems/linux/rsyncd/">Rsyncd<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-9e23d094a527b7c92407accf5be989fb" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/rsyncd/install_timesyncd/" class=""><a class="padding" href="../../../../systems/linux/rsyncd/install_timesyncd/">Install_TimeSyncd<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/rsyncd/install_rsync/" class=""><a class="padding" href="../../../../systems/linux/rsyncd/install_rsync/">Install_Rsync<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/rsyncd/install_lsyncd/" class=""><a class="padding" href="../../../../systems/linux/rsyncd/install_lsyncd/">Install_Lsyncd<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/nosql/" class="parent alwaysopen"><input type="checkbox" id="R-section-58e6fa2c18e9900c5034634874e76aa0" aria-controls="R-subsections-58e6fa2c18e9900c5034634874e76aa0" checked><label for="R-section-58e6fa2c18e9900c5034634874e76aa0"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Nosql</span></label><a class="padding" href="../../../../systems/linux/nosql/">Nosql<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-58e6fa2c18e9900c5034634874e76aa0" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/nosql/install_scylladb/" class=""><a class="padding" href="../../../../systems/linux/nosql/install_scylladb/">Install_Scylladb<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/install_redis/" class=""><a class="padding" href="../../../../systems/linux/nosql/install_redis/">Install_Redis<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/install_redis_cluster/" class="active"><a class="padding" href="../../../../systems/linux/nosql/install_redis_cluster/">Install_Redis_Cluster<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/install_cassandra/" class=""><a class="padding" href="../../../../systems/linux/nosql/install_cassandra/">Install_Cassandra<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/install_aerospike/" class=""><a class="padding" href="../../../../systems/linux/nosql/install_aerospike/">Install_Aerospike<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/configure_redis/" class=""><a class="padding" href="../../../../systems/linux/nosql/configure_redis/">Configure_Redis<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/monitor/" class="alwaysopen"><input type="checkbox" id="R-section-abc3124cdccc835552a636499dd41a83" aria-controls="R-subsections-abc3124cdccc835552a636499dd41a83" checked><label for="R-section-abc3124cdccc835552a636499dd41a83"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Monitor</span></label><a class="padding" href="../../../../systems/linux/monitor/">Monitor<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-abc3124cdccc835552a636499dd41a83" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/monitor/install_zabbix/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_zabbix/">Install_Zabbix<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/install_prometheus/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_prometheus/">Install_Prometheus<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/install_open_falcon/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_open_falcon/">Install_Open_Falcon<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/install_nightingale/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_nightingale/">Install_Nightingale<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/install_grafana/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_grafana/">Install_Grafana<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/configure_zabbix/" class=""><a class="padding" href="../../../../systems/linux/monitor/configure_zabbix/">Configure_Zabbix<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/configure_zabbix_grafana/" class=""><a class="padding" href="../../../../systems/linux/monitor/configure_zabbix_grafana/">Configure_Zabbix_Grafana<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/configure_prometheus/" class=""><a class="padding" href="../../../../systems/linux/monitor/configure_prometheus/">Configure_Prometheus<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/configure_open_falcon/" class=""><a class="padding" href="../../../../systems/linux/monitor/configure_open_falcon/">Configure_Open_Falcon<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/message_queue/" class="alwaysopen"><input type="checkbox" id="R-section-861d5d5af8f939283fc63038dd67e207" aria-controls="R-subsections-861d5d5af8f939283fc63038dd67e207" checked><label for="R-section-861d5d5af8f939283fc63038dd67e207"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Message_Queue</span></label><a class="padding" href="../../../../systems/linux/message_queue/">Message_Queue<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-861d5d5af8f939283fc63038dd67e207" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/message_queue/install_activemq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_activemq/">Install_ActiveMQ<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_rocketmq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_rocketmq/">Install_RocketMQ<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_redpanda/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_redpanda/">Install_Redpanda<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_rabbitmq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_rabbitmq/">Install_RabbitMQ<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_nsq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_nsq/">Install_Nsq<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_kafka/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_kafka/">Install_Kafka<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/configure_rabbitmq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/configure_rabbitmq/">Configure_Rabbitmq<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/logs/" class="alwaysopen"><input type="checkbox" id="R-section-78ebf403abc38403afe01438a8d427da" aria-controls="R-subsections-78ebf403abc38403afe01438a8d427da" checked><label for="R-section-78ebf403abc38403afe01438a8d427da"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Logs</span></label><a class="padding" href="../../../../systems/linux/logs/">Logs<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-78ebf403abc38403afe01438a8d427da" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/logs/use_logrotate/" class=""><a class="padding" href="../../../../systems/linux/logs/use_logrotate/">Use_Logrotate<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_quickwit/" class=""><a class="padding" href="../../../../systems/linux/logs/install_quickwit/">Install_Quickwit<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_logkit/" class=""><a class="padding" href="../../../../systems/linux/logs/install_logkit/">Install_Logkit<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_graylog/" class=""><a class="padding" href="../../../../systems/linux/logs/install_graylog/">Install_Graylog<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_fluentd/" class=""><a class="padding" href="../../../../systems/linux/logs/install_fluentd/">Install_Fluentd<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_finder/" class=""><a class="padding" href="../../../../systems/linux/logs/install_finder/">Install_Finder<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_es_head/" class=""><a class="padding" href="../../../../systems/linux/logs/install_es_head/">Install_Es_Head<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_elk/" class=""><a class="padding" href="../../../../systems/linux/logs/install_elk/">Install_ELK<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/configure_elk/" class=""><a class="padding" href="../../../../systems/linux/logs/configure_elk/">Configure_ELK<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/ldap/" class="alwaysopen"><input type="checkbox" id="R-section-bad9f2f06d1b124e56b35ed49036dda2" aria-controls="R-subsections-bad9f2f06d1b124e56b35ed49036dda2" checked><label for="R-section-bad9f2f06d1b124e56b35ed49036dda2"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu LDAP</span></label><a class="padding" href="../../../../systems/linux/ldap/">LDAP<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-bad9f2f06d1b124e56b35ed49036dda2" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/ldap/config_openldap/" class=""><a class="padding" href="../../../../systems/linux/ldap/config_openldap/">Config_OpenLDAP<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ldap/install_kerberos/" class=""><a class="padding" href="../../../../systems/linux/ldap/install_kerberos/">Install_Kerberos<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ldap/install_openldap/" class=""><a class="padding" href="../../../../systems/linux/ldap/install_openldap/">Install_OpenLDAP<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/kubernetes/" class="alwaysopen"><input type="checkbox" id="R-section-5c5867ab6fb998140913e96100f44665" aria-controls="R-subsections-5c5867ab6fb998140913e96100f44665" checked><label for="R-section-5c5867ab6fb998140913e96100f44665"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Kubernetes</span></label><a class="padding" href="../../../../systems/linux/kubernetes/">Kubernetes<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-5c5867ab6fb998140913e96100f44665" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/kubernetes/kubernetes_template/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/kubernetes_template/">Kubernetes_Template<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/kubernetes_command/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/kubernetes_command/">Kubernetes_Command<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_kubernetes/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_kubernetes/">Install_Kubernetes<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_rancher/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_rancher/">Install_K8s_Rancher<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_kubesphere/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_kubesphere/">Install_K8s_KubeSphere<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_harbor/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_harbor/">Install_K8s_Harbor<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_dashboard/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_dashboard/">Install_K8s_Dashboard<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_coredns/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_coredns/">Install_K8s_CoreDNS<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_argo_cd/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_argo_cd/">Install_K8s_Argo_CD<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_storage/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_storage/">Configure_K8s_Storage<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_rancher/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_rancher/">Configure_K8s_Rancher<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_jcr/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_jcr/">Configure_K8s_Jcr<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_helm/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_helm/">Configure_K8s_Helm<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_auth/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_auth/">Configure_K8s_Auth<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/keepalived/" class="alwaysopen"><input type="checkbox" id="R-section-3ca69c2a3ab36ad947b2dfaf7b98bf13" aria-controls="R-subsections-3ca69c2a3ab36ad947b2dfaf7b98bf13" checked><label for="R-section-3ca69c2a3ab36ad947b2dfaf7b98bf13"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Keepalived</span></label><a class="padding" href="../../../../systems/linux/keepalived/">Keepalived<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-3ca69c2a3ab36ad947b2dfaf7b98bf13" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/keepalived/install_keepalived/" class=""><a class="padding" href="../../../../systems/linux/keepalived/install_keepalived/">Install_Keepalived<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/jumpserver/" class="alwaysopen"><input type="checkbox" id="R-section-f322e41abfd5771d40b756709835fa3f" aria-controls="R-subsections-f322e41abfd5771d40b756709835fa3f" checked><label for="R-section-f322e41abfd5771d40b756709835fa3f"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu JumpServer</span></label><a class="padding" href="../../../../systems/linux/jumpserver/">JumpServer<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-f322e41abfd5771d40b756709835fa3f" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/jumpserver/use_jumpserver/" class=""><a class="padding" href="../../../../systems/linux/jumpserver/use_jumpserver/">Use_JumpServer<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/jumpserver/install_jumpserver/" class=""><a class="padding" href="../../../../systems/linux/jumpserver/install_jumpserver/">Install_JumpServer<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/jenkins/" class="alwaysopen"><input type="checkbox" id="R-section-f690c0dab88e64f38122fac9ce428cdf" aria-controls="R-subsections-f690c0dab88e64f38122fac9ce428cdf" checked><label for="R-section-f690c0dab88e64f38122fac9ce428cdf"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Jenkins</span></label><a class="padding" href="../../../../systems/linux/jenkins/">Jenkins<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-f690c0dab88e64f38122fac9ce428cdf" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/jenkins/use_jenkins/" class=""><a class="padding" href="../../../../systems/linux/jenkins/use_jenkins/">Use_Jenkins<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/jenkins/install_jenkins/" class=""><a class="padding" href="../../../../systems/linux/jenkins/install_jenkins/">Install_Jenkins<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/jdk/" class="alwaysopen"><input type="checkbox" id="R-section-36efe864ba441ecbd1a5221b646d395f" aria-controls="R-subsections-36efe864ba441ecbd1a5221b646d395f" checked><label for="R-section-36efe864ba441ecbd1a5221b646d395f"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu JDK</span></label><a class="padding" href="../../../../systems/linux/jdk/">JDK<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-36efe864ba441ecbd1a5221b646d395f" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/jdk/install_jdk_and_jar_run/" class=""><a class="padding" href="../../../../systems/linux/jdk/install_jdk_and_jar_run/">Install_Jdk_And_Jar_Run<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/install_system/" class="alwaysopen"><input type="checkbox" id="R-section-b49d7d5d0bcf33190967e60032a76ba5" aria-controls="R-subsections-b49d7d5d0bcf33190967e60032a76ba5" checked><label for="R-section-b49d7d5d0bcf33190967e60032a76ba5"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Install_System</span></label><a class="padding" href="../../../../systems/linux/install_system/">Install_System<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-b49d7d5d0bcf33190967e60032a76ba5" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/install_system/install_cobbler/" class=""><a class="padding" href="../../../../systems/linux/install_system/install_cobbler/">Install_Cobbler<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/install_system/install_kickstart/" class=""><a class="padding" href="../../../../systems/linux/install_system/install_kickstart/">Install_Kickstart<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/haproxy/" class="alwaysopen"><input type="checkbox" id="R-section-7bc7ce397a3c135c33a1fe515157e26b" aria-controls="R-subsections-7bc7ce397a3c135c33a1fe515157e26b" checked><label for="R-section-7bc7ce397a3c135c33a1fe515157e26b"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu HAProxy</span></label><a class="padding" href="../../../../systems/linux/haproxy/">HAProxy<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-7bc7ce397a3c135c33a1fe515157e26b" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/haproxy/install_proxy/" class=""><a class="padding" href="../../../../systems/linux/haproxy/install_proxy/">Install_Proxy<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/haproxy/install_haproxy/" class=""><a class="padding" href="../../../../systems/linux/haproxy/install_haproxy/">Install_HAProxy<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/gitlab/" class="alwaysopen"><input type="checkbox" id="R-section-eb6fb2d7fa852777afa9d0bd3d061e2f" aria-controls="R-subsections-eb6fb2d7fa852777afa9d0bd3d061e2f" checked><label for="R-section-eb6fb2d7fa852777afa9d0bd3d061e2f"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Gitlab</span></label><a class="padding" href="../../../../systems/linux/gitlab/">Gitlab<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-eb6fb2d7fa852777afa9d0bd3d061e2f" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/gitlab/use_gitrunner/" class=""><a class="padding" href="../../../../systems/linux/gitlab/use_gitrunner/">Use_Gitrunner<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/use_gitlab/" class=""><a class="padding" href="../../../../systems/linux/gitlab/use_gitlab/">Use_Gitlab<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/use_git_command/" class=""><a class="padding" href="../../../../systems/linux/gitlab/use_git_command/">Use_Git_Command<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/install_gogs/" class=""><a class="padding" href="../../../../systems/linux/gitlab/install_gogs/">Install_Gogs<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/install_gitlab/" class=""><a class="padding" href="../../../../systems/linux/gitlab/install_gitlab/">Install_Gitlab<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/install_gitlab_runner/" class=""><a class="padding" href="../../../../systems/linux/gitlab/install_gitlab_runner/">Install_Gitlab_Runner<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/install_gitea/" class=""><a class="padding" href="../../../../systems/linux/gitlab/install_gitea/">Install_Gitea<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/firewalld/" class="alwaysopen"><input type="checkbox" id="R-section-8a9c9b45fea025ec58be52ee30e98fab" aria-controls="R-subsections-8a9c9b45fea025ec58be52ee30e98fab" checked><label for="R-section-8a9c9b45fea025ec58be52ee30e98fab"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Firewalld</span></label><a class="padding" href="../../../../systems/linux/firewalld/">Firewalld<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-8a9c9b45fea025ec58be52ee30e98fab" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/firewalld/use_firewalld/" class=""><a class="padding" href="../../../../systems/linux/firewalld/use_firewalld/">Use_Firewalld<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/email/" class="alwaysopen"><input type="checkbox" id="R-section-89489275bf8e3d75bdaa43edad4e280b" aria-controls="R-subsections-89489275bf8e3d75bdaa43edad4e280b" checked><label for="R-section-89489275bf8e3d75bdaa43edad4e280b"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Email</span></label><a class="padding" href="../../../../systems/linux/email/">Email<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-89489275bf8e3d75bdaa43edad4e280b" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/email/install_iredmail/" class=""><a class="padding" href="../../../../systems/linux/email/install_iredmail/">Install_iRedMail<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/databases/" class="alwaysopen"><input type="checkbox" id="R-section-8d2e8b3049adc0e55fd190214593db4d" aria-controls="R-subsections-8d2e8b3049adc0e55fd190214593db4d" checked><label for="R-section-8d2e8b3049adc0e55fd190214593db4d"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Databases</span></label><a class="padding" href="../../../../systems/linux/databases/">Databases<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-8d2e8b3049adc0e55fd190214593db4d" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/databases/update_mysql5-7_to_mysql8/" class=""><a class="padding" href="../../../../systems/linux/databases/update_mysql5-7_to_mysql8/">Update_Mysql5 7_To_Mysql8<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_ydb/" class=""><a class="padding" href="../../../../systems/linux/databases/install_ydb/">Install_Ydb<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_postgresql/" class=""><a class="padding" href="../../../../systems/linux/databases/install_postgresql/">Install_PostgreSQL<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_otter/" class=""><a class="padding" href="../../../../systems/linux/databases/install_otter/">Install_Otter<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_mysql_pxc/" class=""><a class="padding" href="../../../../systems/linux/databases/install_mysql_pxc/">Install_Mysql_PXC<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_mysql_router/" class=""><a class="padding" href="../../../../systems/linux/databases/install_mysql_router/">Install_MySQL_Router<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_maxscale/" class=""><a class="padding" href="../../../../systems/linux/databases/install_maxscale/">Install_MaxScale<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_proxysql/" class=""><a class="padding" href="../../../../systems/linux/databases/install_proxysql/">Install_ProxySQL<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_manticore_search/" class=""><a class="padding" href="../../../../systems/linux/databases/install_manticore_search/">Install_Manticore_Search<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_canal/" class=""><a class="padding" href="../../../../systems/linux/databases/install_canal/">Install_Canal<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/use_mysql/" class=""><a class="padding" href="../../../../systems/linux/databases/use_mysql/">Use_Mysql<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_mysql/" class=""><a class="padding" href="../../../../systems/linux/databases/install_mysql/">Install_Mysql<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/daemon/" class="alwaysopen"><input type="checkbox" id="R-section-adb931a8154ce0d9ab51418f1e06b3ab" aria-controls="R-subsections-adb931a8154ce0d9ab51418f1e06b3ab" checked><label for="R-section-adb931a8154ce0d9ab51418f1e06b3ab"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Daemon</span></label><a class="padding" href="../../../../systems/linux/daemon/">Daemon<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-adb931a8154ce0d9ab51418f1e06b3ab" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/daemon/install_supervisord/" class=""><a class="padding" href="../../../../systems/linux/daemon/install_supervisord/">Install_Supervisord<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/crontab/" class="alwaysopen"><input type="checkbox" id="R-section-5dbcbf4ab907358eb8cdb15d3a6874c0" aria-controls="R-subsections-5dbcbf4ab907358eb8cdb15d3a6874c0" checked><label for="R-section-5dbcbf4ab907358eb8cdb15d3a6874c0"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Crontab</span></label><a class="padding" href="../../../../systems/linux/crontab/">Crontab<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-5dbcbf4ab907358eb8cdb15d3a6874c0" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/crontab/install_xxl_job/" class=""><a class="padding" href="../../../../systems/linux/crontab/install_xxl_job/">Install Xxl Job<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/codes/" class="alwaysopen"><input type="checkbox" id="R-section-b1a3b874591fa49fdbf0d03a3df78c1a" aria-controls="R-subsections-b1a3b874591fa49fdbf0d03a3df78c1a" checked><label for="R-section-b1a3b874591fa49fdbf0d03a3df78c1a"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Codes</span></label><a class="padding" href="../../../../systems/linux/codes/">Codes<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-b1a3b874591fa49fdbf0d03a3df78c1a" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/codes/configure_sonarqube/" class=""><a class="padding" href="../../../../systems/linux/codes/configure_sonarqube/">Configure_SonarQube<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/codes/install_sonarqube/" class=""><a class="padding" href="../../../../systems/linux/codes/install_sonarqube/">Install_SonarQube<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/cdn/" class=""><a class="padding" href="../../../../systems/linux/cdn/">CDN<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/backend/" class="alwaysopen"><input type="checkbox" id="R-section-a8a02cab0c95abb1fddb36006407a99c" aria-controls="R-subsections-a8a02cab0c95abb1fddb36006407a99c" checked><label for="R-section-a8a02cab0c95abb1fddb36006407a99c"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Backend</span></label><a class="padding" href="../../../../systems/linux/backend/">Backend<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-a8a02cab0c95abb1fddb36006407a99c" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/backend/tomcat/" class="alwaysopen"><input type="checkbox" id="R-section-a37d588e6abdd2fd4d9ed098f2480ef4" aria-controls="R-subsections-a37d588e6abdd2fd4d9ed098f2480ef4" checked><label for="R-section-a37d588e6abdd2fd4d9ed098f2480ef4"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Tomcat</span></label><a class="padding" href="../../../../systems/linux/backend/tomcat/">Tomcat<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-a37d588e6abdd2fd4d9ed098f2480ef4" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/backend/tomcat/configure_tomcat/" class=""><a class="padding" href="../../../../systems/linux/backend/tomcat/configure_tomcat/">Configure_Tomcat<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/backend/tomcat/install_tomcat/" class=""><a class="padding" href="../../../../systems/linux/backend/tomcat/install_tomcat/">Install_Tomcat<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/backend/php/" class="alwaysopen"><input type="checkbox" id="R-section-0f591cf97f2213fd2c12be6cea731d4e" aria-controls="R-subsections-0f591cf97f2213fd2c12be6cea731d4e" checked><label for="R-section-0f591cf97f2213fd2c12be6cea731d4e"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu PHP</span></label><a class="padding" href="../../../../systems/linux/backend/php/">PHP<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-0f591cf97f2213fd2c12be6cea731d4e" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/backend/php/configure_php_expand/" class=""><a class="padding" href="../../../../systems/linux/backend/php/configure_php_expand/">Configure_PHP_Expand<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/backend/php/install_php/" class=""><a class="padding" href="../../../../systems/linux/backend/php/install_php/">Install_PHP<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/systems/linux/ansible/" class="alwaysopen"><input type="checkbox" id="R-section-d91fd45339335865ca8b3da1c08c6f27" aria-controls="R-subsections-d91fd45339335865ca8b3da1c08c6f27" checked><label for="R-section-d91fd45339335865ca8b3da1c08c6f27"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Ansible</span></label><a class="padding" href="../../../../systems/linux/ansible/">Ansible<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-d91fd45339335865ca8b3da1c08c6f27" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/ansible/use_slatstack/" class=""><a class="padding" href="../../../../systems/linux/ansible/use_slatstack/">Use_Slatstack<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ansible/use_ansible/" class=""><a class="padding" href="../../../../systems/linux/ansible/use_ansible/">Use_Ansible<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ansible/install_slatstack/" class=""><a class="padding" href="../../../../systems/linux/ansible/install_slatstack/">Install_Slatstack<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ansible/install_ansible/" class=""><a class="padding" href="../../../../systems/linux/ansible/install_ansible/">Install_Ansible<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/systems/black-macos/" class=""><a class="padding" href="../../../../systems/black-macos/">Black MacOs<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/activation_key/" class="alwaysopen"><input type="checkbox" id="R-section-b7cd59ef441cb6c4b9b5d009ebd42017" aria-controls="R-subsections-b7cd59ef441cb6c4b9b5d009ebd42017" checked><label for="R-section-b7cd59ef441cb6c4b9b5d009ebd42017"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Activation Key</span></label><a class="padding" href="../../../../systems/activation_key/">Activation Key<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-b7cd59ef441cb6c4b9b5d009ebd42017" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/activation_key/windows/" class=""><a class="padding" href="../../../../systems/activation_key/windows/">Windows<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/activation_key/vmware/" class=""><a class="padding" href="../../../../systems/activation_key/vmware/">Vmware<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          </ul>
+        </div>
+        <div id="R-shortcuts">
+          <div class="nav-title padding">More</div>
+          <ul class="space">
+            <li><a class="padding" href="../../../../categories/"><i class='fa-fw fas fa-layer-group'></i> Categories</a></li>
+            <li><a class="padding" href="../../../../tags/"><i class='fa-fw fas fa-tags'></i> Tags</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-solid fa-box-archive'></i> Archive</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-solid fa-screwdriver-wrench'></i> Tools</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-fw fas fa-camera'></i> Showcases</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-fw fas fa-bullhorn'></i> Credits</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-brands fa-qq'></i> QQ</a></li>
+            <li><a class="padding" href="https://www.zhihu.com/people/lisenhui"><i class='fa-brands fa-zhihu'></i> 知乎</a></li>
+            <li><a class="padding" href="../../../../qq@qq.com"><i class='fa-solid fa-envelope'></i> E-Mail</a></li>
+            <li><a class="padding" href="https://weibo.com/yourname"><i class='fa-brands fa-weibo'></i> WeiBo</a></li>
+            <li><a class="padding" href="https://www.youtube.com/watch?v=RgKAFK5djSk"><i class='fa-brands fa-youtube'></i> Youtube</a></li>
+            <li><a class="padding" href="https://github.com/McShelby/hugo-theme-relearn"><i class='fa-fw fab fa-github'></i> GitHub repo</a></li>
+          </ul>
+        </div>
+        <div class="padding footermargin footerLangSwitch footerVariantSwitch footerVisitedLinks footerFooter showLangSwitch showVariantSwitch showVisitedLinks showFooter"></div>
+        <div id="R-menu-footer">
+          <hr class="padding default-animation footerLangSwitch footerVariantSwitch footerVisitedLinks footerFooter showLangSwitch showVariantSwitch showVisitedLinks showFooter">
+          <div id="R-prefooter" class="footerLangSwitch footerVariantSwitch footerVisitedLinks showLangSwitch showVariantSwitch showVisitedLinks">
+            <ul>
+              <li id="R-select-language-container" class="footerLangSwitch showLangSwitch">
+                <div class="padding menu-control">
+                  <i class="fa-fw fas fa-language"></i>
+                  <span>&nbsp;</span>
+                  <div class="control-style">
+                    <label class="a11y-only" for="R-select-language">Language</label>
+                    <select id="R-select-language" onchange="location = this.querySelector( this.value ).dataset.url;">
+                      <option id="R-select-language-en" value="#R-select-language-en" data-url="../../../../systems/linux/nosql/install_redis_cluster/" lang="en" selected>English</option>
+                    </select>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+              </li>
+              <li id="R-select-variant-container" class="footerVariantSwitch showVariantSwitch">
+                <div class="padding menu-control">
+                  <i class="fa-fw fas fa-paint-brush"></i>
+                  <span>&nbsp;</span>
+                  <div class="control-style">
+                    <label class="a11y-only" for="R-select-variant">Theme</label>
+                    <select id="R-select-variant" onchange="window.variants && variants.changeVariant( this.value );">
+                      <option id="R-select-variant-relearn-auto" value="relearn-auto" selected>Relearn Light/Dark</option>
+                      <option id="R-select-variant-relearn-light" value="relearn-light">Relearn Light</option>
+                      <option id="R-select-variant-relearn-dark" value="relearn-dark">Relearn Dark</option>
+                      <option id="R-select-variant-relearn-bright" value="relearn-bright">Relearn Bright</option>
+                      <option id="R-select-variant-zen-auto" value="zen-auto">Zen Light/Dark</option>
+                      <option id="R-select-variant-zen-light" value="zen-light">Zen Light</option>
+                      <option id="R-select-variant-zen-dark" value="zen-dark">Zen Dark</option>
+                      <option id="R-select-variant-retro-auto" value="retro-auto">Retro Learn/Neon</option>
+                      <option id="R-select-variant-neon" value="neon">Neon</option>
+                      <option id="R-select-variant-learn" value="learn">Learn</option>
+                      <option id="R-select-variant-blue" value="blue">Blue</option>
+                      <option id="R-select-variant-green" value="green">Green</option>
+                      <option id="R-select-variant-red" value="red">Red</option>
+                      <option id="R-select-variant-my-branding" value="my-branding">Your Branding</option>
+                    </select>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+                <script>window.variants && variants.markSelectedVariant();</script>
+              </li>
+              <li class="footerVisitedLinks showVisitedLinks">
+                <div class="padding menu-control">
+                  <i class="fa-fw fas fa-history"></i>
+                  <span>&nbsp;</span>
+                  <div class="control-style">
+                    <button onclick="clearHistory();">Clear History</button>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div id="R-footer" class="footerFooter showFooter">
+	    <p>Built with <a href="https://github.com/McShelby/hugo-theme-relearn" title="love"><i class="fas fa-heart"></i></a> by <a href="https://gohugo.io/">Hugo</a></p>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <script src="../../../../js/clipboard.min.js?1719329889" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329889" defer></script>
+    <script src="../../../../js/theme.js?1719329889" defer></script>
+  </body>
+</html>

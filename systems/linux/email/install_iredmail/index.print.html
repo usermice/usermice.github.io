@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="iReadMail 服务器必须开通端口25 硬件要求内存最少4G 确保服务器中UID/GID没有使用2000、2001、2002 安装dig $ sudo apt-get install dnsutils $ yum install bind-utils 确认服务器是否支持PTR Pointer Records $ dig -x ip地址 $ sudo nslookup set type=PTR ip地址 安装前准备、安装文档 设置主机名 $ sudo hostnamectl set-hostname email_name 添加到hosts $ cat &gt;/etc/hosts&lt;&lt;-EOF 127.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_iRedMail :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="iReadMail 服务器必须开通端口25 硬件要求内存最少4G 确保服务器中UID/GID没有使用2000、2001、2002 安装dig $ sudo apt-get install dnsutils $ yum install bind-utils 确认服务器是否支持PTR Pointer Records $ dig -x ip地址 $ sudo nslookup set type=PTR ip地址 安装前准备、安装文档 设置主机名 $ sudo hostnamectl set-hostname email_name 添加到hosts $ cat &gt;/etc/hosts&lt;&lt;-EOF 127.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/email/install_iredmail/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_iRedMail :: Hugo Relearn Theme">
+    <meta property="og:description" content="iReadMail 服务器必须开通端口25 硬件要求内存最少4G 确保服务器中UID/GID没有使用2000、2001、2002 安装dig $ sudo apt-get install dnsutils $ yum install bind-utils 确认服务器是否支持PTR Pointer Records $ dig -x ip地址 $ sudo nslookup set type=PTR ip地址 安装前准备、安装文档 设置主机名 $ sudo hostnamectl set-hostname email_name 添加到hosts $ cat &gt;/etc/hosts&lt;&lt;-EOF 127.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-17T22:21:02+08:00">
+    <meta property="article:modified_time" content="2024-06-17T22:21:02+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_iRedMail :: Hugo Relearn Theme">
+    <meta itemprop="description" content="iReadMail 服务器必须开通端口25 硬件要求内存最少4G 确保服务器中UID/GID没有使用2000、2001、2002 安装dig $ sudo apt-get install dnsutils $ yum install bind-utils 确认服务器是否支持PTR Pointer Records $ dig -x ip地址 $ sudo nslookup set type=PTR ip地址 安装前准备、安装文档 设置主机名 $ sudo hostnamectl set-hostname email_name 添加到hosts $ cat &gt;/etc/hosts&lt;&lt;-EOF 127.">
+    <meta itemprop="datePublished" content="2024-06-17T22:21:02+08:00">
+    <meta itemprop="dateModified" content="2024-06-17T22:21:02+08:00">
+    <meta itemprop="wordCount" content="158">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_iRedMail :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/email/install_iredmail/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/email/"><span itemprop="name">Email</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_iRedMail</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/email/" title="Email (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/databases/" title="Databases (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_iredmail">Install_iRedMail</h1>
+
+<h2 id="ireadmail"><code>iReadMail</code></h2>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->服务器必须开通端口<!-- raw HTML omitted --><code>25</code></li>
+<li><!-- raw HTML omitted -->硬件要求内存最少<!-- raw HTML omitted --><code>4G</code></li>
+<li><!-- raw HTML omitted -->确保服务器中<!-- raw HTML omitted --><code>UID/GID</code><!-- raw HTML omitted -->没有使用<!-- raw HTML omitted --><code>2000、2001、2002</code></li>
+<li><!-- raw HTML omitted -->安装<!-- raw HTML omitted --><code>dig</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo apt-get install dnsutils
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ yum install bind-utils  </span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->确认服务器是否支持<!-- raw HTML omitted --><code>PTR Pointer Records</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ dig -x ip地址
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sudo nslookup set type<span style="color:#f92672">=</span>PTR ip地址</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol>
+<li><a href="https://docs.iredmail.org/install.iredmail.on.debian.ubuntu.html#system-requirements" rel="external" target="_self">安装前准备、安装文档</a></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>设置主机名</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo hostnamectl set-hostname email_name</span></span></code></pre></div><ul>
+<li>添加到<code>hosts</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/etc/hosts<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">127.0.1.1	email.domain.com email
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ hostname <span style="color:#f92672">&amp;&amp;</span> hostname -f  	<span style="color:#75715e">#  确认是否修改</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li>下载安装包安装<code>iRedMail</code>服务</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo apt-get install -y gzip dialog  	<span style="color:#75715e"># 安装所需安装包</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ wget https://github.com/iredmail/iRedMail/archive/refs/tags/1.6.8.tar.gz
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ tar zxvf 1.6.8.tar.gz
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cd /opt/email/iRedMail-1.6.8/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sudo bash iRedMail.sh</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li>图形安装提示</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>欢迎并感谢您的使用</li>
+</ul>
+<p><a href="#R-image-6c6cd4e6b5b13bdc4500c37c2276a394" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-40-52.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-6c6cd4e6b5b13bdc4500c37c2276a394"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-40-52.png"></a></p>
+<ul>
+<li>
+<p>指定存储所有邮箱的位置。默认为<code>/var/vmail/</code></p>
+</li>
+<li>
+<p>是否使用<code>Web</code>服务</p>
+</li>
+</ul>
+<p><a href="#R-image-900d8c2605c757da8d2ec4268025a2dd" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-44-47.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-900d8c2605c757da8d2ec4268025a2dd"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-44-47.png"></a></p>
+<ul>
+<li>选择安装数据库</li>
+</ul>
+<p><a href="#R-image-225bf03b0f73599054f07e9ba747a8fb" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-46-17.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-225bf03b0f73599054f07e9ba747a8fb"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-46-17.png"></a></p>
+<ul>
+<li>设置数据库密码</li>
+</ul>
+<p><a href="#R-image-4a7634643c763adc4b6293ba35bfbc42" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-48-13.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-4a7634643c763adc4b6293ba35bfbc42"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-48-13.png"></a></p>
+<ul>
+<li>添加您的第一个邮件域名</li>
+</ul>
+<p><a href="#R-image-ec3a071dc31099f71c85615ac7ce3112" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-49-34.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-ec3a071dc31099f71c85615ac7ce3112"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-49-34.png"></a></p>
+<ul>
+<li>创建管理员密码</li>
+</ul>
+<p><a href="#R-image-46d438ea0959a013f302628943cc4cd0" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-51-25.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-46d438ea0959a013f302628943cc4cd0"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-51-25.png"></a></p>
+<ul>
+<li>选择组件</li>
+</ul>
+<p><a href="#R-image-8d425da04d0c4df152c60c4ca89f58d1" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-55-06.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-8d425da04d0c4df152c60c4ca89f58d1"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-55-06.png"></a></p>
+<ul>
+<li>确认选项是否无误，</li>
+</ul>
+<p><a href="#R-image-ffd175da06b7603b9d6b52d99bfd18d5" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-56-22.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-ffd175da06b7603b9d6b52d99bfd18d5"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Email_Server/iRedMail/Snipaste_2024-03-27_18-56-22.png"></a></p>
+<ul>
+<li><code>web</code>访问地址以及用户名密码</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://email.domain.com/mail/" rel="external" target="_self">**<code>Roundcube</code>**网络邮件登录地址</a></li>
+<li><a href="https://your_server/SOGo" rel="external" target="_self">**<code>SOGo</code>**组件</a></li>
+<li><a href="https://your_server/iredadmin/" rel="external" target="_self">网络后台管理面板**<code>iRedAdmin</code>**</a></li>
+<li><a href="https://email.domain.com/netdata/" rel="external" target="_self">**<code>netdata</code>**数据状态监控</a></li>
+<li>用户名：<code>postmaster@domain.com</code></li>
+<li>密码：<code>password</code></li>
+</ul>
+</blockquote>
+</blockquote>
+<ul>
+<li>
+<ol start="4">
+<li>优化配置项</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->建议您获取<!-- raw HTML omitted --><code>SSL</code><!-- raw HTML omitted -->证书，<!-- raw HTML omitted -->以避免在通过<code>HTTPS/IMAPS/POP3/SMTPS</code>访问邮箱时在<code>Web</code>浏览器或邮件客户端中出现烦人的警告消息</li>
+<li><!-- raw HTML omitted -->禁用<!-- raw HTML omitted --><code>iRedMail</code><!-- raw HTML omitted -->灰名单<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/opt/iredapd/settings.py<span style="color:#e6db74">&lt;&lt;-EOF  	# 必须root 用户
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">plugins = [&#34;reject_null_sender&#34;, &#34;wblist_rdns&#34;, &#34;reject_sender_login_mismatch&#34;, &#34;greylisting&#34;, &#34;throttle&#34;, &#34;amavisd_wblist&#34;, &#34;sql_alias_access_policy&#34;, &#34;sql_ml_access_policy&#34;]  	# 删除：greylisting 选项
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sudo systemctl restart iredapd</span></span></code></pre></div><blockquote>
+<ul>
+<li><!-- raw HTML omitted -->解析<!-- raw HTML omitted --><code>A</code><!-- raw HTML omitted -->记录，<!-- raw HTML omitted -->解析名为：<code>email</code>，  解析值为：<code>iRedMail</code>服务所在的服务器<code>IP</code></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->检测<!-- raw HTML omitted --><code>A</code><!-- raw HTML omitted -->记录：<!-- raw HTML omitted --><code>nslookup email.domain.com</code>  	# 更换：<code>domain.com</code>为对应域名</li>
+</ul>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->添加<!-- raw HTML omitted --><code>MX</code><!-- raw HTML omitted -->记录，<!-- raw HTML omitted -->解析名为：<code>@</code>，优先级值为：<code>10</code>，解析值为：<code>email.domain.com</code></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->检测<!-- raw HTML omitted --><code>MX</code><!-- raw HTML omitted -->记录：<!-- raw HTML omitted --><code>nslookup -type=mx domain.com</code></li>
+</ul>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->设置<!-- raw HTML omitted --><code>SPF</code><!-- raw HTML omitted -->记录，<!-- raw HTML omitted -->选择：<code>TXT</code>，解析名为：<code>@</code>，解析值为：<code>v=spf1 mx ~all</code></li>
+</ul>
+<blockquote>
+<p><!-- raw HTML omitted -->检测<!-- raw HTML omitted --><code>SPF</code><!-- raw HTML omitted -->记录：<!-- raw HTML omitted --><code>nslookup -type=txt domain.com</code></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->设置<!-- raw HTML omitted --><code>DKIM</code><!-- raw HTML omitted -->记录<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>查看安装包文件，复制过滤字段下方记录，<!-- raw HTML omitted -->去掉括号：<!-- raw HTML omitted --><code>()</code>，和<!-- raw HTML omitted -->双引号：<!-- raw HTML omitted --><code>&quot;&quot;</code>，<!-- raw HTML omitted -->使其变为一行<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat /opt/email/iRedMail-1.6.8/iRedMail.tips | grep -C <span style="color:#ae81ff">8</span> dkim._domainkey</span></span></code></pre></div><p>选择：<code>TXT</code>，解析值为：<code>dkim._domainkey</code>，解析值为：<code>v=DKIM1; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5gFOvR/IiKwqxWeVQXSpWppiW/Gezd3Kgt3JlvhZTL2KI+Za4pSKcaQqkNH9aM5dyAZHYHLKkeVoD5tgaHvBZRaoKN8erL2X2xOfRbkLFpiqpHfgPZB0ADssuCHSK+pGgSz3tVUus9sGaXR7WZoWL50McJnfEKM74dYqhwJ+/EcLsabprKaV+C60TaQS8gqnDfOh4B5dE7B5sPEE/kG23qHGYQhYbIU2LDV1BFgjanJkMbZSNhah2OmQPnXPq4MshaQx1Xld8iLSyKna6KV9Tsi+MIiXSdCM2zoRx5wN4X4i//gNX4jHgaQ56RhSkEybGDCS+g+0oQvDE7XOj6vbHQIDAQAB</code></p>
+<ul>
+<li><!-- raw HTML omitted -->检测<!-- raw HTML omitted --><code>DKIM</code><!-- raw HTML omitted -->记录：<!-- raw HTML omitted --><code>nslookup -type=txt dkim._domainkey.domain.com</code></li>
+</ul>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->设置<!-- raw HTML omitted --><code>DMARC</code><!-- raw HTML omitted -->记录，<!-- raw HTML omitted -->选择：<code>TXT</code>，解析名为：<code>_dmarc</code>，解析值为：<code>v=DMARC1; p=none; pct=100; rua=mailto:dmarc@domain.com</code>，<code>domain.com</code>换成对应域名</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->检测<!-- raw HTML omitted --><code>DMARC</code><!-- raw HTML omitted -->记录：<!-- raw HTML omitted --><code>nslookup -type=txt _dmarc.domain.com</code></li>
+</ul>
+</blockquote>
+</blockquote>
+</blockquote>
+<ul>
+<li>
+<ol start="5">
+<li>添加<code>iRedMail</code>用户</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+</blockquote>
+<ul>
+<li>
+<ol start="6">
+<li>测试<code>iRedMail</code>邮件服务</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://www.mail-tester.com/" rel="external" target="_self">测试邮件垃圾匹配度</a></li>
+</ul>
+</blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

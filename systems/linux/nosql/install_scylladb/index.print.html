@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="Scylladb部署 单节点部署Scylladb 名称地址 系统要求 ScyllaDB ScyllaDB文档 Github-Scylla Scylla使用端口 端口 协议 描述 9042 TCP CQL、本地传输端口： native_transport_port 9142 TCP SSL CQL使用加密方式由客户端到节点 7000 TCP Inter-node communication (RPC) 节点间通信 7001 TCP SSL inter-node communication (RPC) 使用SSL节点间通信 7199 TCP JMX management、JMX管理 10000 TCP Scylla REST API 9180 TCP Prometheus API普罗米修斯API 9100 TCP node_exporter (Optionally：可选) 9160 TCP Scylla client port (Thrift) Scylla客户端端口 19042 TCP Native shard-aware transport port本机分片感知传输端口 19142 TCP Native shard-aware transport port (ssl) 本机分片感知传输端口 (ssl) Install Openjdk 8 or 11 $ mkdir -p /etc/apt/keyrings $ gpg --homedir /tmp --no-default-keyring --keyring /etc/apt/keyrings/scylladb.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_Scylladb :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="Scylladb部署 单节点部署Scylladb 名称地址 系统要求 ScyllaDB ScyllaDB文档 Github-Scylla Scylla使用端口 端口 协议 描述 9042 TCP CQL、本地传输端口： native_transport_port 9142 TCP SSL CQL使用加密方式由客户端到节点 7000 TCP Inter-node communication (RPC) 节点间通信 7001 TCP SSL inter-node communication (RPC) 使用SSL节点间通信 7199 TCP JMX management、JMX管理 10000 TCP Scylla REST API 9180 TCP Prometheus API普罗米修斯API 9100 TCP node_exporter (Optionally：可选) 9160 TCP Scylla client port (Thrift) Scylla客户端端口 19042 TCP Native shard-aware transport port本机分片感知传输端口 19142 TCP Native shard-aware transport port (ssl) 本机分片感知传输端口 (ssl) Install Openjdk 8 or 11 $ mkdir -p /etc/apt/keyrings $ gpg --homedir /tmp --no-default-keyring --keyring /etc/apt/keyrings/scylladb.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/nosql/install_scylladb/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_Scylladb :: Hugo Relearn Theme">
+    <meta property="og:description" content="Scylladb部署 单节点部署Scylladb 名称地址 系统要求 ScyllaDB ScyllaDB文档 Github-Scylla Scylla使用端口 端口 协议 描述 9042 TCP CQL、本地传输端口： native_transport_port 9142 TCP SSL CQL使用加密方式由客户端到节点 7000 TCP Inter-node communication (RPC) 节点间通信 7001 TCP SSL inter-node communication (RPC) 使用SSL节点间通信 7199 TCP JMX management、JMX管理 10000 TCP Scylla REST API 9180 TCP Prometheus API普罗米修斯API 9100 TCP node_exporter (Optionally：可选) 9160 TCP Scylla client port (Thrift) Scylla客户端端口 19042 TCP Native shard-aware transport port本机分片感知传输端口 19142 TCP Native shard-aware transport port (ssl) 本机分片感知传输端口 (ssl) Install Openjdk 8 or 11 $ mkdir -p /etc/apt/keyrings $ gpg --homedir /tmp --no-default-keyring --keyring /etc/apt/keyrings/scylladb.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-21T19:14:18+08:00">
+    <meta property="article:modified_time" content="2024-06-21T19:14:18+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_Scylladb :: Hugo Relearn Theme">
+    <meta itemprop="description" content="Scylladb部署 单节点部署Scylladb 名称地址 系统要求 ScyllaDB ScyllaDB文档 Github-Scylla Scylla使用端口 端口 协议 描述 9042 TCP CQL、本地传输端口： native_transport_port 9142 TCP SSL CQL使用加密方式由客户端到节点 7000 TCP Inter-node communication (RPC) 节点间通信 7001 TCP SSL inter-node communication (RPC) 使用SSL节点间通信 7199 TCP JMX management、JMX管理 10000 TCP Scylla REST API 9180 TCP Prometheus API普罗米修斯API 9100 TCP node_exporter (Optionally：可选) 9160 TCP Scylla client port (Thrift) Scylla客户端端口 19042 TCP Native shard-aware transport port本机分片感知传输端口 19142 TCP Native shard-aware transport port (ssl) 本机分片感知传输端口 (ssl) Install Openjdk 8 or 11 $ mkdir -p /etc/apt/keyrings $ gpg --homedir /tmp --no-default-keyring --keyring /etc/apt/keyrings/scylladb.">
+    <meta itemprop="datePublished" content="2024-06-21T19:14:18+08:00">
+    <meta itemprop="dateModified" content="2024-06-21T19:14:18+08:00">
+    <meta itemprop="wordCount" content="681">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_Scylladb :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/nosql/install_scylladb/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/nosql/"><span itemprop="name">Nosql</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_Scylladb</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/nosql/" title="Nosql (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/nosql/install_redis/" title="Install_Redis (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_scylladb">Install_Scylladb</h1>
+
+<h2 id="scylladb部署"><code>Scylladb</code>部署</h2>
+<h3 id="单节点部署scylladb">单节点部署<code>Scylladb</code></h3>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://docs.scylladb.com/stable/getting-started/os-support.html" rel="external" target="_self">系统要求</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.scylladb.com/" rel="external" target="_self"><code>ScyllaDB</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.scylladb.com/download/?platform=ubuntu-22.04&version=scylla-5.1#open-source" rel="external" target="_self"><code>ScyllaDB</code>文档</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://github.com/scylladb/scylladb/" rel="external" target="_self"><code>Github-Scylla</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://docs.scylladb.com/stable/operating-scylla/admin.html#cqlsh-networking" rel="external" target="_self"><code>Scylla</code>使用端口</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>端口</th>
+<th>协议</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9042</td>
+<td><code>TCP</code></td>
+<td><code>CQL</code>、本地传输端口： <code>native_transport_port</code></td>
+</tr>
+<tr>
+<td>9142</td>
+<td><code>TCP</code></td>
+<td><code>SSL</code> <code>CQL</code>使用加密方式由客户端到节点</td>
+</tr>
+<tr>
+<td>7000</td>
+<td><code>TCP</code></td>
+<td><code>Inter-node communication</code> (<code>RPC</code>) 节点间通信</td>
+</tr>
+<tr>
+<td>7001</td>
+<td><code>TCP</code></td>
+<td><code>SSL inter-node communication</code> (<code>RPC</code>) 使用<code>SSL</code>节点间通信</td>
+</tr>
+<tr>
+<td>7199</td>
+<td><code>TCP</code></td>
+<td><code>JMX management</code>、<code>JMX</code>管理</td>
+</tr>
+<tr>
+<td>10000</td>
+<td><code>TCP</code></td>
+<td><code>Scylla REST API</code></td>
+</tr>
+<tr>
+<td>9180</td>
+<td><code>TCP</code></td>
+<td><code>Prometheus API</code>普罗米修斯<code>API</code></td>
+</tr>
+<tr>
+<td>9100</td>
+<td><code>TCP</code></td>
+<td><code>node_exporter</code> (<code>Optionally</code>：可选)</td>
+</tr>
+<tr>
+<td>9160</td>
+<td><code>TCP</code></td>
+<td><code>Scylla client port</code> (<code>Thrift</code>) <code>Scylla</code>客户端端口</td>
+</tr>
+<tr>
+<td>19042</td>
+<td><code>TCP</code></td>
+<td><code>Native shard-aware transport port</code>本机分片感知传输端口</td>
+</tr>
+<tr>
+<td>19142</td>
+<td><code>TCP</code></td>
+<td><code>Native shard-aware transport port</code> (<code>ssl</code>) 本机分片感知传输端口 (<code>ssl</code>)</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted --><code>Install Openjdk 8 or 11</code><!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mkdir -p /etc/apt/keyrings
+</span></span><span style="display:flex;"><span>$ gpg --homedir /tmp --no-default-keyring --keyring /etc/apt/keyrings/scylladb.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys d0a112e067426ab2
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ wget -O /etc/apt/sources.list.d/scylla.list http://downloads.scylladb.com/deb/debian/scylla-5.1.list</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->安装<!-- raw HTML omitted --><code>scylla</code><!-- raw HTML omitted -->安装包<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ apt-get update
+</span></span><span style="display:flex;"><span>$ apt-get install -y scylla </span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->列出可用安装包<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ apt-cache madison scylla</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->开始安装<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ apt-get install scylla<span style="color:#f92672">{</span>,-server,-jmx,-tools,-tools-core,-kernel-conf,-node-exporter,-conf,-python3<span style="color:#f92672">}=</span>4.6.1-0.20220328.2309d6b51-1  	<span style="color:#75715e"># 4.6.1-0.20220328.2309d6b51-1 为安装包</span></span></span></code></pre></div><ul>
+<li>1.4 <!-- raw HTML omitted -->将<!-- raw HTML omitted --><code>Java</code><!-- raw HTML omitted -->设置为<!-- raw HTML omitted --><code>1.8</code><!-- raw HTML omitted -->版本<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ apt-get update
+</span></span><span style="display:flex;"><span>$ apt-get install -y openjdk-8-jre-headless
+</span></span><span style="display:flex;"><span>$ update-java-alternatives --jre-headless -s java-1.8.0-openjdk-amd64</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->运行<!-- raw HTML omitted --><code>scylla_setup</code><!-- raw HTML omitted -->脚本来调整系统设置<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ scylla_setup
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you want to run check your kernel version?
+</span></span><span style="display:flex;"><span>Yes - runs a  script to verify that the kernel <span style="color:#66d9ef">for</span> this instance qualifies to run Scylla. No - skips the kernel check.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>YES/no<span style="color:#f92672">]</span>YES  	<span style="color:#75715e"># 是否检查内核版本</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you want to verify the ScyllaDB packages are installed?
+</span></span><span style="display:flex;"><span>Yes - runs a script to confirm that ScyllaDB is installed. No - skips the installation check.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>YES/no<span style="color:#f92672">]</span>YES  	<span style="color:#75715e"># 是否验证 ScyllaDB 软件包已安装</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you want the Scylla server service to automatically start when the Scylla node boots?
+</span></span><span style="display:flex;"><span>Yes - Scylla server service automatically starts on Scylla node boot. No - skips this step. Note you will have to start the Scylla Server service manually.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>YES/no<span style="color:#f92672">]</span>YES  	<span style="color:#75715e"># 是否允许Scylla开机自启</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Created symlink /etc/systemd/system/multi-user.target.wants/scylla-server.service → /lib/systemd/system/scylla-server.service.
+</span></span><span style="display:flex;"><span>Do you want to enable Scylla to check <span style="color:#66d9ef">if</span> there is a newer version of Scylla available?
+</span></span><span style="display:flex;"><span>Yes - start the Scylla-housekeeping service to check <span style="color:#66d9ef">for</span> a newer version. This check runs periodically. No - skips this step.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>YES/no<span style="color:#f92672">]</span>NO  	<span style="color:#75715e"># 是否检查Scylla 是不是最新版本</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you want to setup Network Time Protocol<span style="color:#f92672">(</span>NTP<span style="color:#f92672">)</span> to auto-synchronize the current time on the node?
+</span></span><span style="display:flex;"><span>Yes - enables time-synchronization. This keeps the correct time on the node. No - skips this step.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>YES/no<span style="color:#f92672">]</span>YES  	<span style="color:#75715e"># 是否启用NTP时间同步</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you want to setup RAID and XFS?
+</span></span><span style="display:flex;"><span>It is recommended to use RAID and XFS <span style="color:#66d9ef">for</span> Scylla data. If you <span style="color:#66d9ef">select</span> yes, you will be prompted to choose the unmounted disks to use <span style="color:#66d9ef">for</span> Scylla data. Selected disks are formatted as part of the process.
+</span></span><span style="display:flex;"><span>Yes - choose a disk/disks to format and setup <span style="color:#66d9ef">for</span> RAID and XFS. No - skip this step.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>YES/no<span style="color:#f92672">]</span>YES  	<span style="color:#75715e"># 是否设置RAID和XFS 是：将会格式化磁盘</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you want to enable coredumps?
+</span></span><span style="display:flex;"><span>Yes - sets up coredump to allow a post-mortem analysis of the Scylla state just prior to a crash. No - skips this step.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>YES/no<span style="color:#f92672">]</span>  	<span style="color:#75715e"># 是否允许coredump在崩溃之前对Scylla状态进行事后分析</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you want to setup a system-wide customized configuration <span style="color:#66d9ef">for</span> Scylla?
+</span></span><span style="display:flex;"><span>Yes - setup the sysconfig file. No - skips this step.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>YES/no<span style="color:#f92672">]</span>YES  <span style="color:#75715e"># 是否为Scylla设置系统范围自定义配置</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you want IOTune to study your disks IO profile and adapt Scylla to it? <span style="color:#f92672">(</span>*WARNING* Saying NO here means the node will not boot in production mode unless you configure the I/O Subsystem manually!<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>Yes - let iotune study my disk<span style="color:#f92672">(</span>s<span style="color:#f92672">)</span>. Note that this action will take a few minutes. No - skip this step.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>YES/no<span style="color:#f92672">]</span>YES  	<span style="color:#75715e"># 是否让IOTune研究您的磁盘IO配置文件并使Scylla适应它，否”意味着手动配置 I/O 子系统，否则节点将不会以生产模式启动</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you want to set the CPU scaling governor to Performance level on boot?
+</span></span><span style="display:flex;"><span>Yes - sets the CPU scaling governor to performance level. No - skip this step.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>YES/no<span style="color:#f92672">]</span>YES  	<span style="color:#75715e"># 是否允许在引导时将CPU缩放调控器设置为性能级别</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you want to enable fstrim service?
+</span></span><span style="display:flex;"><span>Yes - runs fstrim on your SSD. No - skip this step.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>yes/NO<span style="color:#f92672">]</span>YES  	<span style="color:#75715e"># 是否启用fstrim 服务</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Will Scylla be the only service on this host?
+</span></span><span style="display:flex;"><span>Answer yes to lock all memory to Scylla, to prevent swapout. Answer no to <span style="color:#66d9ef">do</span> nothing.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>YES/no<span style="color:#f92672">]</span>YES  	<span style="color:#75715e"># Scylla是不是该主机上的唯一服务，是：将内存锁定到Scylla，以防止换出</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you want to configure rsyslog to send log to a remote repository?
+</span></span><span style="display:flex;"><span>Answer yes to setup rsyslog to a remote server, Answer no to <span style="color:#66d9ef">do</span> nothing.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>YES/no<span style="color:#f92672">]</span>no  	<span style="color:#75715e"># 是否配置rsyslog将日志发送到远程存储库</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->启动<!-- raw HTML omitted --><code>Scylla</code><!-- raw HTML omitted -->数据库服务<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ systemctl start scylla-server
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 查看是否启动</span>
+</span></span><span style="display:flex;"><span>$ systemctl status scylla-server</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->检查节点状态<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ nodetool status
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 运行cqlsh 连接到数据库</span>
+</span></span><span style="display:flex;"><span>$ cqlsh
+</span></span><span style="display:flex;"><span>$ cqlsh&gt; help  	<span style="color:#75715e"># 使用help帮助命令</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 运行 cassandra-stress</span>
+</span></span><span style="display:flex;"><span>$ cqlsh&gt; cassandra-stress write -mode cql3 native</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="部署scylladb集群">部署<code>Scylladb</code>集群</h3>
+<h4 id="单数据中心scylla集群模式">单数据中心<code>Scylla</code>集群模式</h4>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://docs.scylladb.com/stable/operating-scylla/procedures/cluster-management/create-cluster.html" rel="external" target="_self">创建<code>Scylla</code>集群 - 单数据中心 <code>DC</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<hr>
+<h4 id="多数据中心scylla集群模式">多数据中心<code>Scylla</code>集群模式</h4>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://docs.scylladb.com/stable/operating-scylla/procedures/cluster-management/create-cluster-multidc.html" rel="external" target="_self">创建<code>Scylla</code>集群 - 多数据中心 <code>DC</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="NFS部署 安装服务 $ sudo apt-get install nfs-kernel-server # Debian系统 $ yum install -y nfs-utils rpcbind # CentOS系统 $ yum -y install nfs-utils # 目录挂载节点只安装不启动 修改使用的默认端口 # $ rpcinfo -p localhost # Centos $ cat &gt;&gt;/etc/sysconfig/nfs&lt;-EOF STATD_PORT=4004 MOUNTD_PORT=2049 RQUOTAD_PORT=4001 LOCKD_TCPPORT=32768 LOCKD_UDPPORT=32768 EOF $ systemctl restart nfs # Debian $ cat &gt;/etc/default/nfs-kernel-server&lt;&lt;-EOF RPCMOUNTDOPTS=&#34;--port 2045&#34; EOF $ systemctl restart rpcbind.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_NFS :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="NFS部署 安装服务 $ sudo apt-get install nfs-kernel-server # Debian系统 $ yum install -y nfs-utils rpcbind # CentOS系统 $ yum -y install nfs-utils # 目录挂载节点只安装不启动 修改使用的默认端口 # $ rpcinfo -p localhost # Centos $ cat &gt;&gt;/etc/sysconfig/nfs&lt;-EOF STATD_PORT=4004 MOUNTD_PORT=2049 RQUOTAD_PORT=4001 LOCKD_TCPPORT=32768 LOCKD_UDPPORT=32768 EOF $ systemctl restart nfs # Debian $ cat &gt;/etc/default/nfs-kernel-server&lt;&lt;-EOF RPCMOUNTDOPTS=&#34;--port 2045&#34; EOF $ systemctl restart rpcbind.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/storage/install_nfs/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_NFS :: Hugo Relearn Theme">
+    <meta property="og:description" content="NFS部署 安装服务 $ sudo apt-get install nfs-kernel-server # Debian系统 $ yum install -y nfs-utils rpcbind # CentOS系统 $ yum -y install nfs-utils # 目录挂载节点只安装不启动 修改使用的默认端口 # $ rpcinfo -p localhost # Centos $ cat &gt;&gt;/etc/sysconfig/nfs&lt;-EOF STATD_PORT=4004 MOUNTD_PORT=2049 RQUOTAD_PORT=4001 LOCKD_TCPPORT=32768 LOCKD_UDPPORT=32768 EOF $ systemctl restart nfs # Debian $ cat &gt;/etc/default/nfs-kernel-server&lt;&lt;-EOF RPCMOUNTDOPTS=&#34;--port 2045&#34; EOF $ systemctl restart rpcbind.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-25T00:33:54+08:00">
+    <meta property="article:modified_time" content="2024-06-25T00:33:54+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_NFS :: Hugo Relearn Theme">
+    <meta itemprop="description" content="NFS部署 安装服务 $ sudo apt-get install nfs-kernel-server # Debian系统 $ yum install -y nfs-utils rpcbind # CentOS系统 $ yum -y install nfs-utils # 目录挂载节点只安装不启动 修改使用的默认端口 # $ rpcinfo -p localhost # Centos $ cat &gt;&gt;/etc/sysconfig/nfs&lt;-EOF STATD_PORT=4004 MOUNTD_PORT=2049 RQUOTAD_PORT=4001 LOCKD_TCPPORT=32768 LOCKD_UDPPORT=32768 EOF $ systemctl restart nfs # Debian $ cat &gt;/etc/default/nfs-kernel-server&lt;&lt;-EOF RPCMOUNTDOPTS=&#34;--port 2045&#34; EOF $ systemctl restart rpcbind.">
+    <meta itemprop="datePublished" content="2024-06-25T00:33:54+08:00">
+    <meta itemprop="dateModified" content="2024-06-25T00:33:54+08:00">
+    <meta itemprop="wordCount" content="213">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_NFS :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/storage/install_nfs/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/storage/"><span itemprop="name">Storage</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_NFS</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/storage/" title="Storage (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/storage/install_moosefs/" title="Install_MooseFS (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_nfs">Install_NFS</h1>
+
+<h1 id="nfs部署"><code>NFS</code>部署</h1>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->安装服务<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo apt-get install nfs-kernel-server  	<span style="color:#75715e"># Debian系统</span>
+</span></span><span style="display:flex;"><span>$ yum install -y nfs-utils rpcbind  	<span style="color:#75715e"># CentOS系统</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ yum -y install nfs-utils  	<span style="color:#75715e"># 目录挂载节点只安装不启动</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->修改使用的默认端口<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># </span>
+</span></span><span style="display:flex;"><span>$ rpcinfo -p localhost
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Centos</span>
+</span></span><span style="display:flex;"><span>$ cat &gt;&gt;/etc/sysconfig/nfs&lt;-EOF
+</span></span><span style="display:flex;"><span>STATD_PORT<span style="color:#f92672">=</span><span style="color:#ae81ff">4004</span>
+</span></span><span style="display:flex;"><span>MOUNTD_PORT<span style="color:#f92672">=</span><span style="color:#ae81ff">2049</span>
+</span></span><span style="display:flex;"><span>RQUOTAD_PORT<span style="color:#f92672">=</span><span style="color:#ae81ff">4001</span>
+</span></span><span style="display:flex;"><span>LOCKD_TCPPORT<span style="color:#f92672">=</span><span style="color:#ae81ff">32768</span>
+</span></span><span style="display:flex;"><span>LOCKD_UDPPORT<span style="color:#f92672">=</span><span style="color:#ae81ff">32768</span>
+</span></span><span style="display:flex;"><span>EOF
+</span></span><span style="display:flex;"><span>$ systemctl restart nfs
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Debian</span>
+</span></span><span style="display:flex;"><span>$ cat &gt;/etc/default/nfs-kernel-server<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">RPCMOUNTDOPTS=&#34;--port 2045&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ systemctl restart rpcbind.service
+</span></span><span style="display:flex;"><span>$ systemctl restart nfs-server.service
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ systemctl restart nfs-kernel-server</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->准备挂载目录，授权<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mkdir -pv /opt/data/nfs   <span style="color:#75715e"># 准备共享目录</span>
+</span></span><span style="display:flex;"><span>$ chown -R user_naem:user_name /opt/data <span style="color:#f92672">&amp;&amp;</span> chmod <span style="color:#ae81ff">755</span> -R /opt/data/</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->挂载目录实现共享<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>访问权限设置</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>ro</code><!-- raw HTML omitted -->：设置输出目录：只读<!-- raw HTML omitted --></li>
+<li><code>rw</code><!-- raw HTML omitted -->：设置输出目录：读写<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<ul>
+<li>用户映射选项</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>all_squash</code><!-- raw HTML omitted -->：将远程访问的所有普通用户及所属组都映射为匿名用户或用户组<!-- raw HTML omitted --><code>nfsnobody</code></li>
+<li><code>no_all_squash</code><!-- raw HTML omitted -->：与<code>all_squash</code>取反：默认设置<!-- raw HTML omitted --></li>
+<li><code>root_squash</code><!-- raw HTML omitted -->：<code>root</code>用户对共享目录只有普通用户权限，限制<code>root</code>：默认设置<!-- raw HTML omitted --></li>
+<li><code>no_root_squash</code><!-- raw HTML omitted -->：有此选项，<code>root</code>用户对共享目录拥有至高权限，就像对本机目录一样操作<!-- raw HTML omitted --></li>
+<li><code>anonuid=xxx</code><!-- raw HTML omitted -->：将远程访问的所有用户都映射为匿名用户，并指定该用户为本地用户<!-- raw HTML omitted --><code>UID=xxx</code></li>
+<li><code>anongid=xxx</code><!-- raw HTML omitted -->：将远程访问的所有用户组都映射为匿名用户组账户，并指定该匿名用户组账户为本地用户组账户<!-- raw HTML omitted --><code>GID=xxx</code></li>
+</ul>
+</blockquote>
+<ul>
+<li>其他选项</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>secure</code><!-- raw HTML omitted -->：<code>NFS</code>通过<code>1024</code>以下的安全<code>TCP/IP</code>端口发送：默认设置<!-- raw HTML omitted --></li>
+<li><code>insecure</code><!-- raw HTML omitted -->：<code>NFS</code>通过<code>1024</code>以上端口发送<!-- raw HTML omitted --></li>
+<li><code>sync</code><!-- raw HTML omitted -->：同步模式，内存中的数据时时写入磁盘<!-- raw HTML omitted --></li>
+<li><code>async</code><!-- raw HTML omitted -->：不同步，把内存中的数据定期写入磁盘<!-- raw HTML omitted --></li>
+<li><code>wdelay</code><!-- raw HTML omitted -->：检查是否有相关的写操作，如果有则将这些写操作一起执行，这样可以提高效率：默认设置<!-- raw HTML omitted --></li>
+<li><code>no_wdelay</code><!-- raw HTML omitted -->：若有写操作则立即执行，应与<code>sync</code>配合使用<!-- raw HTML omitted --></li>
+<li><code>subtree</code><!-- raw HTML omitted -->：若输出目录是一个子目录，则<code>NFS</code>服务器将检查其父目录的权限：默认设置<!-- raw HTML omitted --></li>
+<li><code>no_subtree</code><!-- raw HTML omitted -->：即使输出目录是一个子目录，<code>NFS</code>服务器也不检查其父目录的权限，这样可以提高效率<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<ul>
+<li>授予多个<code>IP</code>网段访问<code>NFS</code>需要使用<!-- raw HTML omitted -->空格<!-- raw HTML omitted -->分隔<code>192.168.80.0/24 172.16.8.0/24</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;&gt;/etc/exports<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/opt/logs 192.168.80.0/32(rw,sync,no_root_squash,no_all_squash,no_subtree_check)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/opt/data/redis 192.168.80.0/24 172.16.8.0/24(rw,sync,no_root_squash,no_all_squash,no_subtree_check)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->加载配置、启动服务<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ exportfs -r  	<span style="color:#75715e"># 加载配置</span>
+</span></span><span style="display:flex;"><span>$ systemctl start rpcbind <span style="color:#f92672">&amp;&amp;</span> systemctl enable rpcbind
+</span></span><span style="display:flex;"><span>$ systemctl start nfs <span style="color:#f92672">&amp;&amp;</span> systemctl enable nfs  	<span style="color:#75715e"># 修改/etc/exports 配置文件后要重启nfs</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Debian 系统</span>
+</span></span><span style="display:flex;"><span>$ sudo systemctl restart nfs-server</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->检测是否挂载成功<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo showmount -e 192.168.18.100  	<span style="color:#75715e"># 测试目录是否挂载成功</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->高可用备份方式，在所有节点执行如下挂载命令<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mount -t nfs 192.168.18.100:/opt/data/redis /opt/data/redis
+</span></span><span style="display:flex;"><span>$ mount -t nfs 192.168.18.100:/opt/data/jenkins /opt/data/jenkins</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->网络远程挂载，然后再执行<code>mount</code>挂载命令<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;&gt;/etc/fstab<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">IP地址:/opt/nginx/logs   /opt/nginx/logs    nfs     defaults        0 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ mount -t  nfs 192.168.18.100:/opt/data/redis /opt/data/redis
+</span></span><span style="display:flex;"><span>$ mount -t  nfs 192.168.18.100:/opt/data/jenkins /opt/data/jenkins</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->查看挂载情况<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 以树结构方式列出：apt install util-linux</span>
+</span></span><span style="display:flex;"><span>$ findmnt  	<span style="color:#75715e"># -t：指定文件类型，例如：findmnt -t nfs4</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ lsblk -f
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ mount</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->卸载挂载的目录<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ umount -l /opt/data/jenkins  	<span style="color:#75715e"># -l：强制，加本地目录</span></span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

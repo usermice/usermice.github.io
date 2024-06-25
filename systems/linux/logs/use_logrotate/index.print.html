@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="logrotate日志切割 man logrotate查看logrodate使用详情 如果日志切割在：/usr, boot, /etc, efi等目录下时，会提示：error: error opening /usr/local/nginx/logs/nginx.log: Read-only file system这是因为启动文件配置：ProtectSystem=full 修改/lib/systemd/system/logrotate.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Use_Logrotate :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="logrotate日志切割 man logrotate查看logrodate使用详情 如果日志切割在：/usr, boot, /etc, efi等目录下时，会提示：error: error opening /usr/local/nginx/logs/nginx.log: Read-only file system这是因为启动文件配置：ProtectSystem=full 修改/lib/systemd/system/logrotate.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/logs/use_logrotate/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Use_Logrotate :: Hugo Relearn Theme">
+    <meta property="og:description" content="logrotate日志切割 man logrotate查看logrodate使用详情 如果日志切割在：/usr, boot, /etc, efi等目录下时，会提示：error: error opening /usr/local/nginx/logs/nginx.log: Read-only file system这是因为启动文件配置：ProtectSystem=full 修改/lib/systemd/system/logrotate.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-20T18:26:58+08:00">
+    <meta property="article:modified_time" content="2024-06-20T18:26:58+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Use_Logrotate :: Hugo Relearn Theme">
+    <meta itemprop="description" content="logrotate日志切割 man logrotate查看logrodate使用详情 如果日志切割在：/usr, boot, /etc, efi等目录下时，会提示：error: error opening /usr/local/nginx/logs/nginx.log: Read-only file system这是因为启动文件配置：ProtectSystem=full 修改/lib/systemd/system/logrotate.">
+    <meta itemprop="datePublished" content="2024-06-20T18:26:58+08:00">
+    <meta itemprop="dateModified" content="2024-06-20T18:26:58+08:00">
+    <meta itemprop="wordCount" content="152">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Use_Logrotate :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/logs/use_logrotate/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/logs/"><span itemprop="name">Logs</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Use_Logrotate</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/logs/" title="Logs (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/logs/install_quickwit/" title="Install_Quickwit (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="use_logrotate">Use_Logrotate</h1>
+
+<h2 id="logrotate日志切割"><code>logrotate</code>日志切割</h2>
+<blockquote>
+<ul>
+<li><code>man logrotate</code><!-- raw HTML omitted -->查看<!-- raw HTML omitted --><code>logrodate</code><!-- raw HTML omitted -->使用详情<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->如果日志切割在：<!-- raw HTML omitted --><code>/usr</code>, <code>boot</code>, <code>/etc</code>, <code>efi</code><!-- raw HTML omitted -->等目录下时，会提示：<!-- raw HTML omitted --><code>error: error opening /usr/local/nginx/logs/nginx.log: Read-only file system</code><!-- raw HTML omitted -->这是因为启动文件配置：<!-- raw HTML omitted --><code>ProtectSystem=full</code></li>
+</ul>
+<blockquote>
+<ul>
+<li>修改<code>/lib/systemd/system/logrotate.service</code>配置文件</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ systemctl status logrotate.service
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat &gt;/lib/systemd/system/logrotate.service<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ReadWritePaths=/usr/local/nginx/logs  	# 文件末尾添加此行
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ systemctl daemon-reload 
+</span></span><span style="display:flex;"><span>$ systemctl restart logrotate.service</span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h3 id="配置nginx日志切割">配置<code>Nginx</code>日志切割</h3>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://blog.csdn.net/weixin_45203131/article/details/113186186" rel="external" target="_self"><code>centos7 logrotate</code>日志切割</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.cnblogs.com/diantong/p/10717926.html" rel="external" target="_self"><code>CentOS</code>下使用<code>Logrotate</code>日志切割</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://bypass007.github.io/Emergency-Response-Notes/" rel="external" target="_self"><code>Logs</code>日志分析排查<code>GitBook</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://github.com/Bypass007/Emergency-Response-Notes" rel="external" target="_self"><code>Logs</code>日志分析排查<code>Github</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.cnblogs.com/kevingrace/p/6307298.html" rel="external" target="_self">日志切割方法小结<code>Logrotate、python、shell</code>脚本实现 </a></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ man logrotate
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 新增nginx log 每日切割</span>
+</span></span><span style="display:flex;"><span>$ grep <span style="color:#e6db74">&#34;nginx&#34;</span> /etc/logrotate.d/nginx  &amp;&gt;/dev/null  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat &gt;/etc/logrotate.d/nginx<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;/opt/apps/nginx/logs/*.jsonl&#34; /opt/apps/nginx/logs/*.log{
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">daily  	# 安日期轮转日志：hourly(小时)、daily(天)、weekly(月)、monthly(月)、yearly(年)，如果设置(size)则不用该参数
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">dateext  	# 文件后缀是日期格式,也就是切割后文件是:xxx.log-20150828，该设置可能和大小切割冲突，该设置按日期生成
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">size 100k	# 在日志大小大于 logsize（例如 100K，100M，100G）时轮换、minsize、maxsize，该选项与日期设置是互斥的
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">rotate 15  	# 指定日志文件删除之前转储的次数，0指没有备份，15指保留15个备份
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">compress  	# 通过gzip压缩转储以后的日志（gzip -d xxx.gz解压）
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">missingok  	# 如果日志不存在则忽略该警告信息
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">notifempty  	# 如果是空文件的话，不转储
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">copytruncate  	# 用于还在打开中的日志文件，把当前日志备份并截断
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">delaycompress  	# 和compress一起使用时，delaycompress选项指示logrotate不要将最近的归档压缩，压缩将在下一次轮循周期进行
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sharedscripts  	# 运行postrotate脚本，在所有日志都轮转后统一执行一次脚本。如果没配该选项，每个日志轮转后都会执行一次脚本
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">postrotate  	# 运行postrotate脚本，作用是在所有日志都轮转后统一执行一次脚本，如重启（kill -HUP）服务
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    [ -f /var/run/nginx.pid ] &amp;&amp; kill -USR1 `cat /var/run/nginx.pid`
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">endscript  	# 最通常的作用是让应用重启，以便切换到新的日志文件, 在所有其它指令完成后，postrotate和endscript里面指定的命令将被执行。在这种情况下，nginx 进程将立即再次读取其配置并继续运行
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">create 640 www root 	# 以指定的权限用户和组创建全新的日志文件，同时logrotate也会重命名原始日志文件
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">su root root
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">} 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 手动调试验证不执行：-d</span>
+</span></span><span style="display:flex;"><span>$ /usr/sbin/logrotate -d /etc/logrotate.d/nginx
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 手动强制执行：-f</span>
+</span></span><span style="display:flex;"><span>$ /usr/sbin/logrotate -f /etc/logrotate.d/nginx
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 新增刪除7天以前log定時腳本  </span>
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;###nginx超過七天log刪除
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">1 0 * * * /bin/bash /opt/scripts/DEL_NGINX.sh &gt;&gt; ~/del_tom.log 2&gt;&amp;1&#34;</span> &gt;&gt; /var/spool/cron/admin</span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

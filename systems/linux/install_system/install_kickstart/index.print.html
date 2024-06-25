@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="KICKSTART无人值守 指令作用介绍 pxe
+PXE使用DHCP（动态主机配置协议）和TFTP（普通文件传送协议）从网络上查找并装载引导程序。PXE环境从NIC（Network Interface Card）上的BIOS装载。预引导服务使用PXE来发现设备是否存在为其指定的预引导服务工作，并向设备提供执行指派工作所需的文件。通过使用预引导服务，可以自动将映像放置到设备上，即使设备的硬盘为空
+pxelinux.0
+主要作用是装载执行指派的预引导工作所需的操作系统。pxelinux.0文件是syslinux这一开放源代码项目的一部分的改进版本。虽然pxelinux.0主要是Linux加载器，但它也可以装载其他操作系统。它的工作方式是使用位于TFTP服务器上的配置文件来提供引导指令
+vmlinuz
+vmlinuz是Linux内核的镜像文件,可以被引导程序加载,从而启动Linux系统">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_Kickstart :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="KICKSTART无人值守 指令作用介绍 pxe
+PXE使用DHCP（动态主机配置协议）和TFTP（普通文件传送协议）从网络上查找并装载引导程序。PXE环境从NIC（Network Interface Card）上的BIOS装载。预引导服务使用PXE来发现设备是否存在为其指定的预引导服务工作，并向设备提供执行指派工作所需的文件。通过使用预引导服务，可以自动将映像放置到设备上，即使设备的硬盘为空
+pxelinux.0
+主要作用是装载执行指派的预引导工作所需的操作系统。pxelinux.0文件是syslinux这一开放源代码项目的一部分的改进版本。虽然pxelinux.0主要是Linux加载器，但它也可以装载其他操作系统。它的工作方式是使用位于TFTP服务器上的配置文件来提供引导指令
+vmlinuz
+vmlinuz是Linux内核的镜像文件,可以被引导程序加载,从而启动Linux系统">
+    <meta property="og:url" content="https://erge.blog/systems/linux/install_system/install_kickstart/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_Kickstart :: Hugo Relearn Theme">
+    <meta property="og:description" content="KICKSTART无人值守 指令作用介绍 pxe
+PXE使用DHCP（动态主机配置协议）和TFTP（普通文件传送协议）从网络上查找并装载引导程序。PXE环境从NIC（Network Interface Card）上的BIOS装载。预引导服务使用PXE来发现设备是否存在为其指定的预引导服务工作，并向设备提供执行指派工作所需的文件。通过使用预引导服务，可以自动将映像放置到设备上，即使设备的硬盘为空
+pxelinux.0
+主要作用是装载执行指派的预引导工作所需的操作系统。pxelinux.0文件是syslinux这一开放源代码项目的一部分的改进版本。虽然pxelinux.0主要是Linux加载器，但它也可以装载其他操作系统。它的工作方式是使用位于TFTP服务器上的配置文件来提供引导指令
+vmlinuz
+vmlinuz是Linux内核的镜像文件,可以被引导程序加载,从而启动Linux系统">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-18T12:58:59+08:00">
+    <meta property="article:modified_time" content="2024-06-18T12:58:59+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_Kickstart :: Hugo Relearn Theme">
+    <meta itemprop="description" content="KICKSTART无人值守 指令作用介绍 pxe
+PXE使用DHCP（动态主机配置协议）和TFTP（普通文件传送协议）从网络上查找并装载引导程序。PXE环境从NIC（Network Interface Card）上的BIOS装载。预引导服务使用PXE来发现设备是否存在为其指定的预引导服务工作，并向设备提供执行指派工作所需的文件。通过使用预引导服务，可以自动将映像放置到设备上，即使设备的硬盘为空
+pxelinux.0
+主要作用是装载执行指派的预引导工作所需的操作系统。pxelinux.0文件是syslinux这一开放源代码项目的一部分的改进版本。虽然pxelinux.0主要是Linux加载器，但它也可以装载其他操作系统。它的工作方式是使用位于TFTP服务器上的配置文件来提供引导指令
+vmlinuz
+vmlinuz是Linux内核的镜像文件,可以被引导程序加载,从而启动Linux系统">
+    <meta itemprop="datePublished" content="2024-06-18T12:58:59+08:00">
+    <meta itemprop="dateModified" content="2024-06-18T12:58:59+08:00">
+    <meta itemprop="wordCount" content="812">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_Kickstart :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/install_system/install_kickstart/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/install_system/"><span itemprop="name">Install_System</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_Kickstart</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/install_system/install_cobbler/" title="Install_Cobbler (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/haproxy/" title="HAProxy (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_kickstart">Install_Kickstart</h1>
+
+<h2 id="kickstart无人值守"><code>KICKSTART</code>无人值守</h2>
+<h3 id="指令作用介绍">指令作用介绍</h3>
+<blockquote>
+<ul>
+<li>
+<p><strong><code>pxe</code></strong></p>
+<p><code>PXE</code>使用<code>DHCP</code>（动态主机配置协议）和<code>TFTP</code>（普通文件传送协议）从网络上查找并装载引导程序。<code>PXE</code>环境从<code>NIC</code>（<code>Network Interface Card</code>）上的<code>BIOS</code>装载。预引导服务使用<code>PXE</code>来发现设备是否存在为其指定的预引导服务工作，并向设备提供执行指派工作所需的文件。通过使用预引导服务，可以自动将映像放置到设备上，即使设备的硬盘为空</p>
+</li>
+<li>
+<p><strong><code>pxelinux.0</code></strong></p>
+<p>主要作用是装载执行指派的预引导工作所需的操作系统。<code>pxelinux.0</code>文件是<code>syslinux</code>这一开放源代码项目的一部分的改进版本。虽然<code>pxelinux.0</code>主要是<code>Linux</code>加载器，但它也可以装载其他操作系统。它的工作方式是使用位于<code>TFTP</code>服务器上的配置文件来提供引导指令</p>
+</li>
+<li>
+<p><strong><code>vmlinuz</code></strong></p>
+<p><code>vmlinuz</code>是<code>Linux</code>内核的镜像文件,可以被引导程序加载,从而启动<code>Linux</code>系统</p>
+</li>
+<li>
+<p><strong><code>initrd</code></strong></p>
+<p><code>initrd</code>&mdash;-<code>boot loader initialized RAM disk</code>(全称)，是一种启动<code>Linux</code>系统的方式，当前流行的<code>Linux</code>版本一般都采用模块化的内核,这种方式可以在不重新编译构建内核的情形下增加功能模块，但是如果你的<code>Linux</code>的<code>root</code>文件系统所在设备的驱动是一个模块(没有编译进内核映象),就不能被引导程序(例如<code>loadlin</code>)直接加载，这时会用到<code>initrd</code>方式来启动你的<code>Linux</code>系统</p>
+<ul>
+<li>这种方式包括两个阶段:</li>
+</ul>
+<blockquote>
+<ol>
+<li>在一个<code>RAM disk</code>上建立一个临时的<code>root</code>文件系统,在这个<code>RAM disk</code>上包含着你需要的驱动模块</li>
+<li>载入所需驱动模块,挂载实际的<code>root</code>文件系统 ,启动<code>Linux</code></li>
+</ol>
+</blockquote>
+</li>
+<li>
+<p><strong><code>initrd.img</code></strong></p>
+<p>就是<code>RAM disk</code>的映象</p>
+</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="pxekickstart工作流程"><code>PXE</code>+<code>Kickstart</code>工作流程</h3>
+<blockquote>
+<ul>
+<li><code>Kickstart</code>是一种无人值守的安装方式。它的工作原理是在安装过程中记录典型的需要人工干预填写的各种参数，并生成一个名为<code>ks.cfg</code>的文件。如果在安装过程中（不只局限于生成<code>Kickstart</code>安装文件的机器）出现要填写参数的情况，安装程序首先会去查找<code>Kickstart</code>生成的文件，如果找到合适的参数，就采用所找到的参数；如果没有找到合适的参数，便需要安装者手工干预了。所以，如果<code>Kickstart</code>文件涵盖了安装过程中可能出现的所有需要填写的参数，那么安装者完全可以只告诉安装程序从何处取<code>ks.cfg</code>文件，然后就去忙自己的事情。等安装完毕，安装程序会根据<code>ks.cfg</code>中的设置重启系统，并结束安装</li>
+<li><code>PXE</code>+<code>Kickstart</code>无人值守安装操作系统完整过程如下</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-af2927e77c834fff037df082143f28cc" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Deploy_Server/PXE+Kickstart.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-af2927e77c834fff037df082143f28cc"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Deploy_Server/PXE+Kickstart.png"></a></p>
+</blockquote>
+<ul>
+<li>
+<p>**<code>PXE Client</code>向<code>DHCP</code>发送请求 **</p>
+<p><code>PXE Client</code>从自己的<code>PXE</code>网卡启动，通过<code>PXE BootROM</code>(自启动芯片)会以<code>UDP</code>(简单用户数据报协议)发送一个广播请求，向本网络中的<code>DHCP</code>服务器索取<code>IP</code></p>
+</li>
+<li>
+<p><strong><code>DHCP</code>服务器提供信息</strong></p>
+<p><code>DHCP</code>服务器收到客户端的请求，验证是否来至合法的<code>PXE Client</code>的请求，验证通过它将给客户端一个<code>提供</code>响应，这个<code>提供</code>响应中包含了为客户端分配的<code>IP</code>地址、<code>pxelinux</code>启动程序(<code>TFTP</code>)位置，以及配置文件所在位置</p>
+</li>
+<li>
+<p><strong><code>PXE</code>客户端请求下载启动文件</strong></p>
+<p>客户端收到服务器的<code>回应</code>后，会回应一个帧，以请求传送启动所需文件。这些启动文件包括：<code>pxelinux.0</code>、<code>pxelinux.cfg/default</code>、<code>vmlinuz</code>、<code>initrd.img</code>等文件</p>
+</li>
+<li>
+<p><strong><code>Boot Server</code>响应客户端请求并传送文件</strong></p>
+<p>当服务器收到客户端的请求后，他们之间之后将有更多的信息在客户端与服务器之间作应答, 用以决定启动参数。<code>BootROM</code>由<code>TFTP</code>通讯协议从<code>Boot Server</code>下载启动安装程序所必须的文件(<code>pxelinux.0</code>、<code>pxelinux.cfg/default</code>)。<code>default</code>文件下载完成后，会根据该文件中定义的引导顺序，启动<code>Linux</code>安装程序的引导内核</p>
+</li>
+<li>
+<p><strong>请求下载自动应答文件</strong></p>
+<p>客户端通过<code>pxelinux.cfg/default</code>文件成功的引导<code>Linux</code>安装内核后，安装程序首先必须确定你通过什么安装介质来安装<code>linux</code>，如果是通过网络安装(<code>NFS</code>, <code>FTP</code>, <code>HTTP</code>)，则会在这个时候初始化网络，并定位安装源位置。接着会读取<code>default</code>文件中指定的自动应答文件<code>ks.cfg</code>所在位置，根据该位置请求下载该文件</p>
+</li>
+<li>
+<p><strong>客户端安装操作系统</strong></p>
+<p>将<code>ks.cfg</code>文件下载回来后，通过该文件找到<code>OS Server</code>，并按照该文件的配置请求下载安装过程需要的软件包。</p>
+<p><code>OS Server</code>和客户端建立连接后，将开始传输软件包，客户端将开始安装操作系统。安装完成后，将提示重新引导计算机</p>
+</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="安装">安装</h3>
+<blockquote>
+<ul>
+<li><code>Kickstart</code>的安装方式有多种组合，<code>Kickstart</code>+<code>DHCP</code>+<code>TFTP</code>+<code>HTTP/NFS/FTP</code>等，不管是<code>HTTP、NFS</code>或者<code>FTP</code>，都是为了寻找到系统引导后需要安装的包组等文件。下面的安装方式是<code>Kickstart</code>+<code>DHCP</code>+<code>TFTP</code>+<code>HTTP</code></li>
+</ul>
+</blockquote>
+<hr>
+<h4 id="dhcp安装配置"><code>DHCP</code>安装配置</h4>
+<blockquote>
+<ul>
+<li>
+<p><code>/etc/dhcp/dhcpd.conf </code></p>
+</li>
+<li>
+<p><code>range 10.0.0.100 10.0.0.200;</code>  	# 可分配的起始<code>IP</code>-结束<code>IP</code></p>
+</li>
+<li>
+<p><code>option subnet-mask 255.255.255.0;</code>  	# 设定<code>netmask</code></p>
+</li>
+<li>
+<p><code>default-lease-time 21600;</code>  	# 设置默认的<code>IP</code>租用期限</p>
+</li>
+<li>
+<p><code>max-lease-time 43200;</code>  	# 设置最大的<code>IP</code>租用期限</p>
+</li>
+<li>
+<p><code>next-server 10.0.0.7;</code>       # 告知客户端<code>TFTP</code>服务器的<code>ip</code></p>
+</li>
+<li>
+<p><code>filename &quot;/pxelinux.0&quot;;</code>      # 告知客户端从<code>TFTP</code>根目录下载<code>pxelinux.0</code>文件</p>
+</li>
+<li>
+<p><strong>注意：</strong></p>
+<p>如果机器数量过多的话，注意<code>dhcp</code>服务器的地址池，不要因为耗尽<code>IP</code>而导致<code>dhcpd</code>服务器没有<code>IP</code>地址<code>release</code>的情况</p>
+<p>本来软件装完后都要加入开机自启动，但这个<code>Kickstart</code>系统就不能开机自启动，而且用完后服务都要关闭，防止未来重启服务器自动重装系统了</p>
+</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y install dhcp
+</span></span><span style="display:flex;"><span>$ vim /etc/dhcp/dhcpd.conf
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># DHCP Server Configuration file.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#  see /usr/share/doc/dhcp*/dhcpd.conf.sample</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#  see &#39;man 5 dhcpd.conf&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>subnet 10.0.0.0 netmask 255.255.255.0 <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>range 10.0.0.201 10.0.0.210;
+</span></span><span style="display:flex;"><span>option subnet-mask 255.255.255.0;
+</span></span><span style="display:flex;"><span>default-lease-time 21600;
+</span></span><span style="display:flex;"><span>max-lease-time 43200;
+</span></span><span style="display:flex;"><span>next-server 10.0.0.61;
+</span></span><span style="display:flex;"><span>filename <span style="color:#e6db74">&#34;/pxelinux.0&#34;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;/etc/dhcp/dhcpd.conf&#34;</span> 13L, 360C 已写入
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ /etc/init.d/dhcpd start
+</span></span><span style="display:flex;"><span>正在启动 dhcpd：                      <span style="color:#f92672">[</span>确定<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>$ netstat -lntup|grep dhcp
+</span></span><span style="display:flex;"><span>udp    <span style="color:#ae81ff">0</span>   <span style="color:#ae81ff">0</span> 0.0.0.0:67         0.0.0.0:*                2040/dhcpd</span></span></code></pre></div></blockquote>
+<hr>
+<h4 id="tftp安装配置"><code>TFTP</code>安装配置</h4>
+<blockquote>
+<ul>
+<li><code>TFTP</code>服务器提供文件使用简单文件传输协议。<code>TFTP</code>协议通常用于启动无盘工作站，下载配置文件到客户端，并开始对部分操作系统的安装过程</li>
+<li><code>server_args</code> = <code>-s /var/lib/tftpboot</code>  	# 指定<code>boot</code>启动目录，保持默认</li>
+<li><code>disable</code> = <code>yes</code>  # <code>no</code>改为<code>yes</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y install tftp.server
+</span></span><span style="display:flex;"><span>$ vim /etc/xinetd.d/tftp 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># default: off</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># description: The tftp server serves files using the trivial file transfer \</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#    protocol. The tftp protocol is often used to boot diskless \</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#    workstations, download configuration files to network-aware printers, \</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#    and to start the installation process for some operating systems.</span>
+</span></span><span style="display:flex;"><span>service tftp
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span> socket_type       <span style="color:#f92672">=</span> dgram
+</span></span><span style="display:flex;"><span> protocol        <span style="color:#f92672">=</span> udp
+</span></span><span style="display:flex;"><span> wait          <span style="color:#f92672">=</span> yes
+</span></span><span style="display:flex;"><span> user          <span style="color:#f92672">=</span> root
+</span></span><span style="display:flex;"><span> server         <span style="color:#f92672">=</span> /usr/sbin/in.tftpd
+</span></span><span style="display:flex;"><span> server_args       <span style="color:#f92672">=</span> -s /var/lib/tftpboot
+</span></span><span style="display:flex;"><span> disable         <span style="color:#f92672">=</span> no
+</span></span><span style="display:flex;"><span> per_source       <span style="color:#f92672">=</span> <span style="color:#ae81ff">11</span>
+</span></span><span style="display:flex;"><span> cps           <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span> flags          <span style="color:#f92672">=</span> IPv4
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;/etc/xinetd.d/tftp&#34;</span> 18L, 517C 已写入
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ /etc/init.d/xinetd restart
+</span></span><span style="display:flex;"><span>停止 xinetd：                       <span style="color:#f92672">[</span>确定<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>正在启动 xinetd：                     <span style="color:#f92672">[</span>确定<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ netstat -lntup|grep xinetd
+</span></span><span style="display:flex;"><span>udp    <span style="color:#ae81ff">0</span>   <span style="color:#ae81ff">0</span> 0.0.0.0:69         0.0.0.0:*                2066/xinetd</span></span></code></pre></div></blockquote>
+<hr>
+<h4 id="http安装配置"><code>HTTP</code>安装配置</h4>
+<blockquote>
+<ul>
+<li><code>ServerName</code>指定<code>Nginx</code>用于识别自身的名字和端口号。通常这个值是自动指定的，但是我们推荐你显式的指定它以防止启动时出错。如果你为你的主机指定了一个无效的<code>DNS</code>名，<code>server-generated</code>重定向将不能工作</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;277i ServerName 127.0.0.1:80&#34;</span> /etc/httpd/conf/httpd.conf</span></span></code></pre></div></blockquote>
+<ul>
+<li>将<code>CentOS-6.7</code>挂载到<code>http</code>服务下</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mount /dev/cdrom /var/www/html/CentOS-6.7/</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat extra/www.conf 
+</span></span><span style="display:flex;"><span>server <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>listen    80;
+</span></span><span style="display:flex;"><span>server_name www.ky.com;  	<span style="color:#75715e"># 域名设置</span>
+</span></span><span style="display:flex;"><span>autoindex on;  	<span style="color:#75715e"># 不找首页文件，展示目录结构</span>
+</span></span><span style="display:flex;"><span>location / <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>   root  /var/www/html/;  	<span style="color:#75715e"># 显示网页内容的文件目录路径</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span></span></span></code></pre></div></li>
+<li>
+<p>访问浏览器<code>10.0.0.61/CentOS-6.7/</code>查看配置是否正确</p>
+</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-ff719423d75a19c48359eed3e3e4ae6a" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Deploy_Server/Index.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-ff719423d75a19c48359eed3e3e4ae6a"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Deploy_Server/Index.png"></a></p>
+</blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y install httpd
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;277i ServerName 127.0.0.1:80&#34;</span> /etc/httpd/conf/httpd.conf
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ /etc/init.d/httpd start
+</span></span><span style="display:flex;"><span>正在启动 httpd：                      <span style="color:#f92672">[</span>确定<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ netstat -lntup|grep <span style="color:#e6db74">&#34;httpd&#34;</span>
+</span></span><span style="display:flex;"><span>tcp    <span style="color:#ae81ff">0</span>   <span style="color:#ae81ff">0</span> :::80            :::*            LISTEN   2085/httpd
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ mkdir /var/www/html/CentOS-6.7
+</span></span><span style="display:flex;"><span>$ mount /dev/cdrom /var/www/html/CentOS-6.7/
+</span></span><span style="display:flex;"><span>mount: block device /dev/sr0 is write-protected, mounting read-only
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ df -h
+</span></span><span style="display:flex;"><span>Filesystem   Size Used Avail Use% Mounted on
+</span></span><span style="display:flex;"><span>/dev/sda3    8.8G 1.5G 6.9G 18% /
+</span></span><span style="display:flex;"><span>tmpfs      495M   <span style="color:#ae81ff">0</span> 495M  0% /dev/shm
+</span></span><span style="display:flex;"><span>/dev/sda1    190M  36M 145M 20% /boot
+</span></span><span style="display:flex;"><span>/dev/sr0    3.7G 3.7G   <span style="color:#ae81ff">0</span> 100% /var/www/html/CentOS-6.7
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat nginx.conf
+</span></span><span style="display:flex;"><span>worker_processes 1;
+</span></span><span style="display:flex;"><span>events <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>worker_connections 1024;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>http <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>include    mime.types;
+</span></span><span style="display:flex;"><span>default_type application/octet-stream;
+</span></span><span style="display:flex;"><span>sendfile    on;
+</span></span><span style="display:flex;"><span>keepalive_timeout 65;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">\#</span>include set
+</span></span><span style="display:flex;"><span>include extra/www.conf;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat extra/www.conf 
+</span></span><span style="display:flex;"><span>server <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span> listen    80;
+</span></span><span style="display:flex;"><span> server_name www.ky.com;
+</span></span><span style="display:flex;"><span> autoindex on;
+</span></span><span style="display:flex;"><span> location / <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>   root  /var/www/html/;
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ fuser -k 80/tcp 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 杀死因前面开启httpd服务占用80的端口进程，然后就可以开启nginx服务</span></span></span></code></pre></div></blockquote>
+<hr>
+<h5 id="syslinux配置"><code>syslinux</code>配置</h5>
+<blockquote>
+<ul>
+<li><code>syslinux</code>是一个功能强大的引导加载程序，而且兼容各种介质。<code>SYSLINUX</code>是一个小型的<code>Linux</code>操作系统，它的目的是简化首次安装<code>Linux</code>的时间，并建立修护或其它特殊用途的启动盘。如果没有找到<code>pxelinux.0</code>这个文件,可以安装一下</li>
+<li>将<code>sysliunx</code>的<code>pxelinux.0</code>文件拷贝到<code>tftp</code>启动目录下</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cp /usr/share/syslinux/pxelinux.0 /var/lib/tftpboot/ </span></span></code></pre></div></blockquote>
+<ul>
+<li>将<code>/var/www/html/CentOS-6.7/isolinux/*</code>下的所有系统引导安装的文件拷贝到<code>tftp</code>启动目录下</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cp -a /var/www/html/CentOS-6.7/isolinux/* /var/lib/tftpboot/</span></span></code></pre></div></blockquote>
+<ul>
+<li>将<code>isolinux.cfg</code>文件拷贝到<code>tftp</code>启动目录下的<code>pxelinux.cfg</code>目录下并改名为<code>default</code></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mkdir -p /var/lib/tftpboot/pxelinux.cfg
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cp /var/www/html/CentOS-6.7/isolinux/isolinux.cfg /var/lib/tftpboot/pxelinux.cfg/default</span></span></code></pre></div></blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y install syslinux
+</span></span><span style="display:flex;"><span>$ cp /usr/share/syslinux/pxelinux.0 /var/lib/tftpboot/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cp -a /var/www/html/CentOS-6.7/isolinux/* /var/lib/tftpboot/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ mkdir -p /var/lib/tftpboot/pxelinux.cfg
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cp /var/www/html/CentOS-6.7/isolinux/isolinux.cfg /var/lib/tftpboot/pxelinux.cfg/default</span></span></code></pre></div><blockquote>
+<ul>
+<li><code>/var/www/html/CentOS-6.7/isolinux/isolinux.cfg</code>文件详解</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat /var/www/html/CentOS-6.7/isolinux/isolinux.cfg 
+</span></span><span style="display:flex;"><span>default vesamenu.c32 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 默认加载一个菜单</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># prompt 1 </span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 开启会显示命令行&#39;boot: &#39;提示符。prompt值为0时则不提示，将会直接启动&#39;default&#39;参数中指定的内容</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>timeout <span style="color:#ae81ff">600</span> 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># timeout时间是引导时等待用户手动选择的时间，设为1可直接引导，单位为1/10秒</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>display boot.msg 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 菜单背景图片、标题、颜色</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>menu background splash.jpg
+</span></span><span style="display:flex;"><span>menu title Welcome to CentOS 6.7!
+</span></span><span style="display:flex;"><span>menu color border <span style="color:#ae81ff">0</span> <span style="color:#75715e">#ffffffff #00000000</span>
+</span></span><span style="display:flex;"><span>menu color sel <span style="color:#ae81ff">7</span> <span style="color:#75715e">#ffffffff #ff000000</span>
+</span></span><span style="display:flex;"><span>menu color title <span style="color:#ae81ff">0</span> <span style="color:#75715e">#ffffffff #00000000</span>
+</span></span><span style="display:flex;"><span>menu color tabmsg <span style="color:#ae81ff">0</span> <span style="color:#75715e">#ffffffff #00000000</span>
+</span></span><span style="display:flex;"><span>menu color unsel <span style="color:#ae81ff">0</span> <span style="color:#75715e">#ffffffff #00000000</span>
+</span></span><span style="display:flex;"><span>menu color hotsel <span style="color:#ae81ff">0</span> <span style="color:#75715e">#ff000000 #ffffffff</span>
+</span></span><span style="display:flex;"><span>menu color hotkey <span style="color:#ae81ff">7</span> <span style="color:#75715e">#ffffffff #ff000000</span>
+</span></span><span style="display:flex;"><span>menu color scrollbar <span style="color:#ae81ff">0</span> <span style="color:#75715e">#ffffffff #00000000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>label linux
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># label指定在boot:提示符下输入的关键字，比如boot:linux[ENTER]，这个会启动label linux下标记的kernel和initrd.img文件</span>
+</span></span><span style="display:flex;"><span>menu label ^Install or upgrade an existing system
+</span></span><span style="display:flex;"><span>menu default
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 一个标签就是前面图片的一行选项</span>
+</span></span><span style="display:flex;"><span>kernel vmlinuz 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 指定要启动的内核。同样要注意路径，默认是/tftpboot目录</span>
+</span></span><span style="display:flex;"><span>append initrd<span style="color:#f92672">=</span>initrd.img 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 指定追加给内核的参数，initrd.img是一个最小的linux系统</span>
+</span></span><span style="display:flex;"><span>label vesa
+</span></span><span style="display:flex;"><span>menu label Install system with ^basic video driver
+</span></span><span style="display:flex;"><span>kernel vmlinuz
+</span></span><span style="display:flex;"><span>append initrd<span style="color:#f92672">=</span>initrd.img nomodeset
+</span></span><span style="display:flex;"><span>label rescue
+</span></span><span style="display:flex;"><span>menu label ^Rescue installed system
+</span></span><span style="display:flex;"><span>kernel vmlinuz
+</span></span><span style="display:flex;"><span>append initrd<span style="color:#f92672">=</span>initrd.img rescue
+</span></span><span style="display:flex;"><span>label local
+</span></span><span style="display:flex;"><span>menu label Boot from ^local drive
+</span></span><span style="display:flex;"><span>localboot 0xffff
+</span></span><span style="display:flex;"><span>label memtest86
+</span></span><span style="display:flex;"><span>menu label ^Memory test
+</span></span><span style="display:flex;"><span>kernel memtest
+</span></span><span style="display:flex;"><span>append -</span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h5 id="编辑default">编辑<code>default</code></h5>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/var/lib/tftpboot/pxelinux.cfg/default<span style="color:#e6db74">&lt;&lt;-EOF  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">default ks
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">prompt 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">label ks
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kernel vmlinuz
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">append initrd=initrd.img ks=http://10.0.0.61/ks_config/CentOS-6.7-ks.cfg ksdevice=eth0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li>这个文件就是实现下图这个界面的功能</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/var/lib/tftpboot/pxelinux.cfg/default<span style="color:#e6db74">&lt;&lt;-EOF  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">default ks
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">prompt 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">label linux
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kernel vmlinuz
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">append initrd=initrd.img ks=http://10.0.0.61/ks_config/CentOS-6.7-ks.cfg ksdevice=eth0  	# 告诉安装程序ks.cfg文件在哪里，ksdevice=eth0代表当客户端有多块网卡的时候，设置从eth0安装
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><p><a href="#R-image-9d8cf71fc8b4bf8f10d23a60b0fa7362" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Deploy_Server/Install-Centos6.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-9d8cf71fc8b4bf8f10d23a60b0fa7362"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Deploy_Server/Install-Centos6.png"></a></p>
+</blockquote>
+</blockquote>
+<hr>
+<h4 id="kscfg文件"><code>ks.cfg</code>文件</h4>
+<blockquote>
+<ul>
+<li>通常，我们在安装操作系统的过程中，需要大量的和服务器交互操作，为了减少这个交互过程，<code>kickstart</code>就诞生了。使用这种<code>kickstart</code>，只需事先定义好一个<code>Kickstart</code>自动应答配置文件<code>ks.cfg</code>（通常存放在安装服务器上），并让安装程序知道该配置文件的位置，在安装过程中安装程序就可以自己从该文件中读取安装配置，这样就避免了在安装过程中多次的人机交互，从而实现无人值守的自动化安装</li>
+<li>生成<code>kickstart</code>配置文件的三种方法：</li>
+</ul>
+<blockquote>
+<ul>
+<li>方法1、 每安装好一台<code>Centos</code>机器，<code>Centos</code>安装程序都会创建一个<code>kickstart</code>配置文件，记录你的真实安装配置。如果你希望实现和某系统类似的安装，可以基于该系统的<code>kickstart</code>配置文件来生成你自己的<code>kickstart</code>配置文件。（生成的文件名字叫<code>anaconda-ks.cfg位于/root/anaconda-ks.cfg</code>）</li>
+<li>方法2、<code>Centos</code>提供了一个图形化的<code>kickstart</code>配置工具。在任何一个安装好的<code>Linux</code>系统上运行该工具，就可以很容易地创建你自己的<code>kickstart</code>配置文件。<code>kickstart</code>配置工具命令为<code>redhat-config-kickstart</code>（<code>RHEL3</code>）或<code>system-config-kickstart</code>（<code>RHEL4</code>，<code>RHEL5</code>）.网上有很多用<code>CentOS</code>桌面版生成<code>ks</code>文件的文章，如果有现成的系统就没什么可说。但没有现成的，也没有必要去用桌面版，命令行也很简单</li>
+<li>方法3、阅读<code>kickstart</code>配置文件的手册。用任何一个文本编辑器都可以创建你自己的<code>kickstart</code>配置文件</li>
+</ul>
+</blockquote>
+<ul>
+<li>编写<code>ks.cfg</code>文件</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ grub-crypt 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 生成一个密码</span>
+</span></span><span style="display:flex;"><span>Password:
+</span></span><span style="display:flex;"><span>Retype password: 
+</span></span><span style="display:flex;"><span>$6$PqVOBDIH4wHJ.JyH$6/xoqOGnm3DnEJyyXgWxCdmscsWrGKbTmMYYE/lgVgzIep999j8z9s7Ci5V5TG16TALy/Grtk6Vh/jj2WLnEn1
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat /var/www/html/ks_config/CentOS-6.7-ks.cfg
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Kickstart Configurator for CentOS 6.7 by ky</span>
+</span></span><span style="display:flex;"><span>install
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 告知安装程序，这是一次全新安装，而不是升级upgrade</span>
+</span></span><span style="display:flex;"><span>url --url<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http://10.0.0.61/CentOS-6.7/&#34;</span>       
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 指定系统安装的包组等的路径</span>
+</span></span><span style="display:flex;"><span>text 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 文本模式安装</span>
+</span></span><span style="display:flex;"><span>lang en_US.UTF-8 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 安装使用的语言</span>
+</span></span><span style="display:flex;"><span>keyboard us 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 设置系统键盘类型</span>
+</span></span><span style="display:flex;"><span>zerombr
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 清楚mbr引导信息</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>bootloader --location<span style="color:#f92672">=</span>mbr --driveorder<span style="color:#f92672">=</span>sda --append<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;crashkernel=auto rhgb quiet&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --location=,指定引导记录被写入的位置.有效的值如下:mbr(缺省),partition(在包含内核的分区的第一个扇区安装引导装载程序)或none(不安装引导装载程序；--driveorder,指定在BIOS引导顺序中居首的驱动器；--append=,指定内核参数.要指定多个参数,使用空格分隔它们</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>network --bootproto<span style="color:#f92672">=</span>dhcp --device<span style="color:#f92672">=</span>eth0 --onboot<span style="color:#f92672">=</span>yes --noipv6 --hostname<span style="color:#f92672">=</span>CentOS6
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 指定ip地址为dhcp分发，网卡eth0启动，是否在引导时启用该设备，禁用此设备的IPv6安装的系统的主机名</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>timezone --utc Asia/Shanghai
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 设置系统时区</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>authconfig --enableshadow --passalgo<span style="color:#f92672">=</span>sha512
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 系统认证信息，设置密码加密方式为sha512 启用shadow文件</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>rootpw --iscrypted $6$X20eRtuZhkHznTb4$dK0BJByOSAWSDD8jccLVFz0CscijS9ldMWwpoCw/ZE
+</span></span><span style="display:flex;"><span>jYw2BTQYGWlgKsn945fFTjRC658UXjuocwJbAjVI5D6/
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># root密码</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>clearpart --all –initlabel
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 清空分区</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>part /boot --fstype<span style="color:#f92672">=</span>ext4 --asprimary --size<span style="color:#f92672">=</span><span style="color:#ae81ff">200</span>
+</span></span><span style="display:flex;"><span>part swap --size<span style="color:#f92672">=</span><span style="color:#ae81ff">800</span>
+</span></span><span style="display:flex;"><span>part / --fstype<span style="color:#f92672">=</span>ext4 --grow --asprimary --size<span style="color:#f92672">=</span><span style="color:#ae81ff">200</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># --fstype=,为分区设置文件系统类型.有效的类型，--asprimary,强迫把分区分配为主分区,否则提示分区失败，--size=,以MB为单位的分区最小值.在此处指定一个整数值,如500.不要在数字后面加MB</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>firstboot –disable
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 负责协助配置redhat一些重要的信息</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>selinux --disabled
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>firewall –disabled
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 关闭selinux、防火墙</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>logging --level<span style="color:#f92672">=</span>info
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 设置日志级别</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>reboot
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 设定安装完成后重启,此选项必须存在，不然kickstart显示一条消息，并等待用户按任意键后才重新引导，也可以选择halt关机</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>%packages
+</span></span><span style="display:flex;"><span>@base
+</span></span><span style="display:flex;"><span>@compat-libraries
+</span></span><span style="display:flex;"><span>@debugging
+</span></span><span style="display:flex;"><span>@development
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 要安装的包组</span>
+</span></span><span style="display:flex;"><span>tree
+</span></span><span style="display:flex;"><span>nmap
+</span></span><span style="display:flex;"><span>sysstat
+</span></span><span style="display:flex;"><span>lrzsz
+</span></span><span style="display:flex;"><span>telnet
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 要安装的软件</span>
+</span></span><span style="display:flex;"><span>%end</span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h4 id="无人值守安装系统">无人值守安装系统</h4>
+<ul>
+<li>
+<ol>
+<li>新建一个虚拟机加电，即可开始无人值守安装<code>linux</code>系统</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Rpm</code>打包</li>
+<li><code>Yum</code>仓库</li>
+</ul>
+<p><a href="#R-image-3d63cb361400fd25e1c29bd20b2e003b" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Deploy_Server/configure.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-3d63cb361400fd25e1c29bd20b2e003b"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Deploy_Server/configure.png"></a>
+<a href="#R-image-a061f1eca3ac52578f607aaaac0c8399" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Deploy_Server/Retrieving.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-a061f1eca3ac52578f607aaaac0c8399"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Deploy_Server/Retrieving.png"></a>
+<a href="#R-image-ef00b12882cbe9064267348b86a3ea45" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Deploy_Server/Packages.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-ef00b12882cbe9064267348b86a3ea45"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Deploy_Server/Packages.png"></a></p>
+</blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

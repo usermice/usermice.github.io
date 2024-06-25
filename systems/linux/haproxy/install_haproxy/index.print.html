@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="安装HAProxy 名称地址 描述 HAProxy官网 haproxy、nginx、proxy protocol获得客户真实IP方法 负载均衡
+HAProxy可以将入站请求分发到多个后端服务器，实现负载均衡。它支持多种负载均衡算法，如轮询round-robin、最小连接数leastconn、源IP哈希source、权重等
+高可用性
+HAProxy支持健康检查health checks，可以定期检查后端服务器的状态，并根据检查结果动态调整负载均衡策略。当后端服务器出现故障或不可用时，HAProxy可以自动将流量转移到健康的服务器上，从而提高系统的可用性">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_HAProxy :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="安装HAProxy 名称地址 描述 HAProxy官网 haproxy、nginx、proxy protocol获得客户真实IP方法 负载均衡
+HAProxy可以将入站请求分发到多个后端服务器，实现负载均衡。它支持多种负载均衡算法，如轮询round-robin、最小连接数leastconn、源IP哈希source、权重等
+高可用性
+HAProxy支持健康检查health checks，可以定期检查后端服务器的状态，并根据检查结果动态调整负载均衡策略。当后端服务器出现故障或不可用时，HAProxy可以自动将流量转移到健康的服务器上，从而提高系统的可用性">
+    <meta property="og:url" content="https://erge.blog/systems/linux/haproxy/install_haproxy/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_HAProxy :: Hugo Relearn Theme">
+    <meta property="og:description" content="安装HAProxy 名称地址 描述 HAProxy官网 haproxy、nginx、proxy protocol获得客户真实IP方法 负载均衡
+HAProxy可以将入站请求分发到多个后端服务器，实现负载均衡。它支持多种负载均衡算法，如轮询round-robin、最小连接数leastconn、源IP哈希source、权重等
+高可用性
+HAProxy支持健康检查health checks，可以定期检查后端服务器的状态，并根据检查结果动态调整负载均衡策略。当后端服务器出现故障或不可用时，HAProxy可以自动将流量转移到健康的服务器上，从而提高系统的可用性">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-18T12:41:18+08:00">
+    <meta property="article:modified_time" content="2024-06-18T12:41:18+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_HAProxy :: Hugo Relearn Theme">
+    <meta itemprop="description" content="安装HAProxy 名称地址 描述 HAProxy官网 haproxy、nginx、proxy protocol获得客户真实IP方法 负载均衡
+HAProxy可以将入站请求分发到多个后端服务器，实现负载均衡。它支持多种负载均衡算法，如轮询round-robin、最小连接数leastconn、源IP哈希source、权重等
+高可用性
+HAProxy支持健康检查health checks，可以定期检查后端服务器的状态，并根据检查结果动态调整负载均衡策略。当后端服务器出现故障或不可用时，HAProxy可以自动将流量转移到健康的服务器上，从而提高系统的可用性">
+    <meta itemprop="datePublished" content="2024-06-18T12:41:18+08:00">
+    <meta itemprop="dateModified" content="2024-06-18T12:41:18+08:00">
+    <meta itemprop="wordCount" content="373">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_HAProxy :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/haproxy/install_haproxy/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/haproxy/"><span itemprop="name">HAProxy</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_HAProxy</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/haproxy/install_proxy/" title="Install_Proxy (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/gitlab/" title="Gitlab (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_haproxy">Install_HAProxy</h1>
+
+<h2 id="安装haproxy">安装<code>HAProxy</code></h2>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="http://www.haproxy.org/#desc" rel="external" target="_self"><code>HAProxy</code>官网</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.cnblogs.com/hh2737/p/8951872.html" rel="external" target="_self"><code>haproxy、nginx、proxy protocol</code>获得客户真实<code>IP</code>方法</a></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p><strong>负载均衡</strong></p>
+<p><code>HAProxy</code>可以将入站请求分发到多个后端服务器，实现负载均衡。它支持多种负载均衡算法，如轮询<code>round-robin</code>、最小连接数<code>leastconn</code>、源IP哈希<code>source</code>、权重等</p>
+</li>
+<li>
+<p><strong>高可用性</strong></p>
+<p><code>HAProxy</code>支持健康检查<code>health checks</code>，可以定期检查后端服务器的状态，并根据检查结果动态调整负载均衡策略。当后端服务器出现故障或不可用时，<code>HAProxy</code>可以自动将流量转移到健康的服务器上，从而提高系统的可用性</p>
+</li>
+<li>
+<p><strong>SSL/TLS 终端</strong></p>
+<p><code>HAProxy</code>可以作为<code>SSL/TLS</code>的终端<code>Termination</code>，负责处理和管理传入和传出的加密流量。它支持<code>SSL</code>握手和证书管理，可以提供安全的<code>HTTPS</code>服务</p>
+</li>
+<li>
+<p><strong>反向代理</strong></p>
+<p><code>HAProxy</code>作为反向代理<code>reverse proxy</code>，可以隐藏后端服务器的实际<code>IP</code>地址和细节，提供更安全的服务访问接口。客户端请求首先到达<code>HAProxy</code>，再由<code>HAProxy</code>转发到后端服务器</p>
+</li>
+<li>
+<p><strong><code>TCP</code>和<code>HTTP</code>支持</strong></p>
+<p><code>HAProxy</code>不仅支持<code>HTTP</code>和<code>HTTPS</code>流量的负载均衡，还可以负责<code>TCP</code>流量的负载均衡。这使得它非常适合于支持<code>Web</code>应用程序、<code>API</code>和其他网络服务的高性能和高可用性部署</p>
+</li>
+<li>
+<p><strong>灵活配置和动态更新</strong></p>
+<p><code>HAProxy</code>的配置文件支持灵活的配置选项，可以根据需要调整负载均衡策略和参数。此外，<code>HAProxy</code>支持动态更新配置，可以在运行时重新加载配置文件，无需重启服务即可生效</p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->安装配置<!-- raw HTML omitted --><code>HAProxy</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum install -y haproxy</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->举例：监控<!-- raw HTML omitted --><code>Rabbit</code><!-- raw HTML omitted -->消息队列服务配置<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/etc/haproxy/haproxy.cfg<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">global
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # log /yougo/haproxy/home/log    local0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # log /yougo/haproxy/home/log    local1 notice
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # chroot /yougo/haproxy  	# 改变当前工作目录
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # stats socket /yougo/haproxy/home/admin.sock mode 660 level admin  	# 创建监控所用的套接字目录
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> pidfile  /var/run/haproxy.pid  	# haproxy的pid存放路径,启动进程的用户必须有权限访问此文件 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> maxconn  4000  	# 最大连接数，默认4000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> #  user   haproxy  	# 默认用户
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> #  group   haproxy  	# 默认用户组
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> daemon  	# 创建1个进程进入deamon模式运行。此参数要求将运行模式设置为&#34;daemon
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # Default SSL material locations
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # ca-base /etc/ssl/certs
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # crt-base /etc/ssl/private
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # Default ciphers to use on SSL-enabled listening sockets.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # For more information, see ciphers(1SSL). This list is from:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> #  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # ssl-default-bind-options no-sslv3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">###########默认配置#########
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">defaults
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> log global
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> mode    http  	# 默认的模式mode { tcp|http|health }，tcp是4层，http是7层，health只会返回OK
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> option  httplog  	# 采用http日志格式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> option  dontlognull  	# 启用该项，日志中将不会记录空连接。所谓空连接就是在上游的负载均衡器或者监控系统为了探测该服务是否存活可用时,需要定期的连接或者获取某一固定的组件或页面,或者探测扫描端口是否在监听或开放等动作被称为空连接;官方文档中标注，如果该服务上游没有其他的负载均衡器的话，建议不要使用该参数，因为互联网上的恶意扫描或其他动作就不会被记录下来
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> timeout connect 5000  	# 连接超时时间
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> timeout client  50000  	# 客户端连接超时时间
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> timeout server  50000  	# 服务器端连接超时时间
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> option  httpclose  	# 每次请求完毕后主动关闭http通道 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> option  httplog  	# 日志类别http日志格式 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> #option  forwardfor  	# 如果后端服务器需要获得客户端真实ip需要配置的参数，可以从Http Header中获得客户端ip  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> option  redispatch  	# serverId对应的服务器挂掉后,强制定向到其他健康的服务器
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> timeout connect 10000  	# default 10 second timeout if a backend is not found
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> maxconn     60000  	# 最大连接数
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> retries     3  	# 3次连接失败就认为服务不可用，也可以通过后面设置 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # errorfile 400 /yougo/haproxy/home/errors/400.http
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # errorfile 403 /yougo/haproxy/home/errors/403.http
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # errorfile 408 /yougo/haproxy/home/errors/408.http
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # errorfile 500 /yougo/haproxy/home/errors/500.http
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # errorfile 502 /yougo/haproxy/home/errors/502.http
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # errorfile 503 /yougo/haproxy/home/errors/503.http
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # errorfile 504 /yougo/haproxy/home/errors/504.http
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">################################################
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">listen http_front
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     bind 0.0.0.0:8888  	# HAProxy 服务端口  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     stats refresh 30s  	# 统计页面自动刷新时间  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     stats uri /haproxy?stats  	# 统计页面url  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     stats realm Haproxy Manager  	# 统计页面密码框上提示文本  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     stats auth admin:admin  	# 统计页面用户名和密码设置  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     #stats hide-version  	# 隐藏统计页面上HAProxy的版本信息
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">##########  RabbitMQ的管理界面也放在HAProxy后面了 ################
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#listen rabbitmq_admin 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#    bind 0.0.0.0:8004
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#   server node1 192.168.0.31:15672
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#    server node2 192.168.0.32:15672
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#    server node3 192.168.0.33:15672
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#################################################
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">listen rabbitmq_cluster
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> bind 0.0.0.0:8889  	# rabbitmq集群调用的端口
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> option tcplog
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> mode tcp
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> timeout client  3h
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> timeout server  3h
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> option          clitcpka
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> balance roundrobin  	# 负载均衡算法（#banlance roundrobin 轮询，balance source 保存session值，支持static-rr，leastconn，first，uri等参数）
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # balance url_param userid
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # balance url_param session_id check_post 64
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # balance hdr(User-Agent)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # balance hdr(host)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # balance hdr(Host) use_domain_only
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # balance rdp-cookie
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # balance leastconn
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # balance source //ip
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> server   rabbitmq1  172.16.0.30:5672 check inter 5s rise 2 fall 3  	# check inter 2000 是检测心跳频率，rise 2是2次正确认为服务器可用，fall 3是3次失败认为服务器不可用
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> server   rabbitmq2  172.16.0.31:5672 check inter 5s rise 2 fall 3  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> server   rabbitmq3  172.16.0.32:5672 check inter 5s rise 2 fall 3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span> </span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->启动<!-- raw HTML omitted --><code>HAProxy</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ systemctl enable haproxy <span style="color:#f92672">&amp;&amp;</span> systemctl start haproxy</span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

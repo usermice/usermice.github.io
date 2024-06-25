@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="配置Jenkins 升级Jenkins 定位jenkins.war包所在目录 Jenkins实践文档 $ ps -ef|grep jenkins # 定位jenkins.war包所在目录 root 1773 1 1 09:06 ?">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Use_Jenkins :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="配置Jenkins 升级Jenkins 定位jenkins.war包所在目录 Jenkins实践文档 $ ps -ef|grep jenkins # 定位jenkins.war包所在目录 root 1773 1 1 09:06 ?">
+    <meta property="og:url" content="https://erge.blog/systems/linux/jenkins/use_jenkins/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Use_Jenkins :: Hugo Relearn Theme">
+    <meta property="og:description" content="配置Jenkins 升级Jenkins 定位jenkins.war包所在目录 Jenkins实践文档 $ ps -ef|grep jenkins # 定位jenkins.war包所在目录 root 1773 1 1 09:06 ?">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-19T13:54:38+08:00">
+    <meta property="article:modified_time" content="2024-06-19T13:54:38+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Use_Jenkins :: Hugo Relearn Theme">
+    <meta itemprop="description" content="配置Jenkins 升级Jenkins 定位jenkins.war包所在目录 Jenkins实践文档 $ ps -ef|grep jenkins # 定位jenkins.war包所在目录 root 1773 1 1 09:06 ?">
+    <meta itemprop="datePublished" content="2024-06-19T13:54:38+08:00">
+    <meta itemprop="dateModified" content="2024-06-19T13:54:38+08:00">
+    <meta itemprop="wordCount" content="248">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Use_Jenkins :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329889" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329889" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329889" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329889" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329889" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329889" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329889" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329889" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329889" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329889" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329889" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329889" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329889" rel="stylesheet" media="print">
+    <script src="../../../../js/variant.js?1719329889"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support html disableInlineCopyToClipboard" data-url="../../../../systems/linux/jenkins/use_jenkins/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+            <div class="topbar-button topbar-button-toc" data-content-empty="hide" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleTopbarFlyout(this)" type="button" title="Table of Contents (CTRL&#43;ALT&#43;t)"><i class="fa-fw fas fa-list-alt"></i></button>
+              <div class="topbar-content">
+                <div class="topbar-content-wrapper"><nav class="TableOfContents">
+  <ul>
+    <li><a href="#配置jenkins">配置<code>Jenkins</code></a>
+      <ul>
+        <li><a href="#升级jenkins">升级<code>Jenkins</code></a></li>
+        <li><a href="#汉化jenkins">汉化<code>Jenkins</code></a></li>
+        <li><a href="#配置域名">配置域名</a></li>
+        <li><a href="#权限管理">权限管理</a></li>
+        <li><a href="#jenkins配置邮箱"><code>Jenkins</code>配置邮箱</a></li>
+        <li><a href="#jenkins服务器配置"><code>Jenkins</code>服务器配置</a></li>
+        <li><a href="#jenkins部署插件"><code>Jenkins</code>部署插件</a></li>
+        <li><a href="#jenkins回滚插件"><code>Jenkins</code>回滚插件</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/jenkins/"><span itemprop="name">Jenkins</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Use_Jenkins</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+            <div class="topbar-button topbar-button-print" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/jenkins/use_jenkins/index.print.html" title="Print whole chapter (CTRL&#43;ALT&#43;p)"><i class="fa-fw fas fa-print"></i></a>
+            </div>
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/jenkins/" title="Jenkins (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/jenkins/install_jenkins/" title="Install_Jenkins (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-more" data-content-empty="hide" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleTopbarFlyout(this)" type="button" title="More"><i class="fa-fw fas fa-ellipsis-v"></i></button>
+              <div class="topbar-content">
+                <div class="topbar-content-wrapper">
+                  <div class="topbar-area topbar-area-more" data-area="more">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="use_jenkins">Use_Jenkins</h1>
+
+<h2 id="配置jenkins">配置<code>Jenkins</code></h2>
+<h3 id="升级jenkins">升级<code>Jenkins</code></h3>
+<blockquote>
+<ul>
+<li>定位<code>jenkins.war</code>包所在目录</li>
+</ul>
+<blockquote>
+<ul>
+<li><a href="https://zeyangli.github.io/" rel="external" target="_self"><code>Jenkins</code>实践文档</a></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ps -ef|grep jenkins  	<span style="color:#75715e"># 定位jenkins.war包所在目录</span>
+</span></span><span style="display:flex;"><span>root       <span style="color:#ae81ff">1773</span>      <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">1</span> 09:06 ?        00:03:00 /usr/local/jdk1.8.0_221/bin/java -Djava.awt.headless<span style="color:#f92672">=</span>true -DJENKINS_HOME<span style="color:#f92672">=</span>/var/lib/jenkins -jar /usr/lib/jenkins/jenkins.war --logfile<span style="color:#f92672">=</span>/var/log/jenkins/jenkins.log --webroot<span style="color:#f92672">=</span>/var/cache/jenkins/war --httpPort<span style="color:#f92672">=</span><span style="color:#ae81ff">8080</span> --debug<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> --handlerCountMax<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span> --handlerCountMaxIdle<span style="color:#f92672">=</span><span style="color:#ae81ff">20</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cd /usr/lib/jenkins/
+</span></span><span style="display:flex;"><span>$ systemctl stop jenkins  	<span style="color:#75715e"># 停止Jenkins</span>
+</span></span><span style="display:flex;"><span>$ mv jenkins.war jenkins.war.bak  	<span style="color:#75715e"># 备份</span>
+</span></span><span style="display:flex;"><span>$ wget -P /usr/lib/jenkins/ http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+</span></span><span style="display:flex;"><span>$ systemctl start jenkins</span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h3 id="汉化jenkins">汉化<code>Jenkins</code></h3>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->登录<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->页面选择：<!-- raw HTML omitted --><code>Manage Jenkins</code>→<code>Manage Plugins</code></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-511c8759b1af1b5427bed544b96b3f9c" class="lightbox-link"><img alt="选择插件" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_18-55-47.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-511c8759b1af1b5427bed544b96b3f9c"><img alt="选择插件" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_18-55-47.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->在搜索框搜索：<!-- raw HTML omitted --><code>Locale</code><!-- raw HTML omitted -->选择安装并重启<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->页面<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->设置<!-- raw HTML omitted --><code>Local</code>：<code>Configure System</code><!-- raw HTML omitted -->(系统设置)→<!-- raw HTML omitted --><code> Locale</code><!-- raw HTML omitted -->(语言设置)→<!-- raw HTML omitted --><code>en_US</code><!-- raw HTML omitted -->(英文)、<!-- raw HTML omitted --><code>zh_CN</code><!-- raw HTML omitted -->(中文)<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-b10a1263faad5dc159e6575a294fb7e7" class="lightbox-link"><img alt="安装汉化插件" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_18-57-40.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-b10a1263faad5dc159e6575a294fb7e7"><img alt="安装汉化插件" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_18-57-40.png"></a></p>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="配置域名">配置域名</h3>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>Nginx</code><!-- raw HTML omitted -->配置文件方便使用域名访问<!-- raw HTML omitted --><code>Jenkins</code></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/usr/local/nginx/conf/vhosts/jenkins.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> listen       80;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> server_name  jenkins.ken.io; #监听的域名
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> access_log  /var/log/nginx/jenkins.access.log main;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> error_log  /var/log/nginx/jenkins.error.log error;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> location / {  	# 转发或处理
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     proxy_pass http://127.0.0.1:8080; 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> error_page   500 502 503 504  /50x.html;  	# 错误页
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> location = /50x.html {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     root   /usr/share/nginx/html;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h3 id="权限管理">权限管理</h3>
+<blockquote>
+<ul>
+<li><a href="https://blog.51cto.com/wzlinux/2160778" rel="external" target="_self">持续集成之<code>Jenkins</code>配置基于角色的项目权限管理(五)</a></li>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->权限管理<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Jenkins</code><!-- raw HTML omitted -->全局安装配置<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->系统管理→插件管理→安装插件:<!-- raw HTML omitted --><code>Role-based Authorization Strategy</code></li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Role-based Authorization Strategy</code></li>
+<li><code>Matrix Authorization Strategy</code></li>
+<li><code>Authorize Project</code></li>
+</ul>
+<p><a href="#R-image-361224896cc395ee0ddcda49b503c154" class="lightbox-link"><img alt="搜索Role-based Authorization Strategy" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-18-26.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-361224896cc395ee0ddcda49b503c154"><img alt="搜索Role-based Authorization Strategy" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-18-26.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->系统管理→全局安全配置勾选:<!-- raw HTML omitted --><code>Role-Based Strategy</code></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-1b08cb18dd1331941212199d255eec80" class="lightbox-link"><img alt="选择全局安装配置" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-22-20.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-1b08cb18dd1331941212199d255eec80"><img alt="选择全局安装配置" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-22-20.png"></a></p>
+<p><a href="#R-image-6e18afb6edac484656827ba02a454426" class="lightbox-link"><img alt="选择：Role-Based Strategy" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-24-08.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-6e18afb6edac484656827ba02a454426"><img alt="选择：Role-Based Strategy" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-24-08.png"></a></p>
+</blockquote>
+</blockquote>
+<ul>
+<li><code>Jenkisn</code><!-- raw HTML omitted -->角色分配权限<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->系统管理→管理和分配角色：<!-- raw HTML omitted --><code>Manage and Assign Roles</code></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-f05107cd3b8e38cf1faa6fb74ece70e3" class="lightbox-link"><img alt="配置Manage and Assign Roles" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-29-36.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f05107cd3b8e38cf1faa6fb74ece70e3"><img alt="配置Manage and Assign Roles" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-29-36.png"></a></p>
+<p><a href="#R-image-4e26f52ca94af13e3496240237d74bfa" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-31-29.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-4e26f52ca94af13e3496240237d74bfa"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-31-29.png"></a></p>
+</blockquote>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->先配置： 管理角色<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-f1e3591414aa378d2ebadff84b283773" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-34-09.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f1e3591414aa378d2ebadff84b283773"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-34-09.png"></a></p>
+<ul>
+<li><!-- raw HTML omitted -->添加<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->全局项目角色<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-0bdb86dd667820971153650e22f941a5" class="lightbox-link"><img alt="全局角色" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-38-52.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-0bdb86dd667820971153650e22f941a5"><img alt="全局角色" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-38-52.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->添加<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->项目角色<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><code>Role</code><!-- raw HTML omitted -->代表视图<!-- raw HTML omitted --></p>
+</li>
+<li>
+<p><code>Pattern</code><!-- raw HTML omitted -->代表视图下<!-- raw HTML omitted --><code>test*</code><!-- raw HTML omitted -->的任务名称<!-- raw HTML omitted --></p>
+</li>
+</ul>
+<p><a href="#R-image-9ddc693a8e2aea1610ef6d5afeb69e3a" class="lightbox-link"><img alt="项目角色" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-46-24.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-9ddc693a8e2aea1610ef6d5afeb69e3a"><img alt="项目角色" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-46-24.png"></a></p>
+</blockquote>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->给<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->角色分配执行权限<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-1805fe4c9314b03fa8c1bdb6ac712061" class="lightbox-link"><img alt="角色分配" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-54-57.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-1805fe4c9314b03fa8c1bdb6ac712061"><img alt="角色分配" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-54-57.png"></a></p>
+<ul>
+<li><code>Jenkins</code><!-- raw HTML omitted -->全局角色<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-da0d8c57c6a8c8f98eac7dd6229a2e2b" class="lightbox-link"><img alt="分配全局角色" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-58-06.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-da0d8c57c6a8c8f98eac7dd6229a2e2b"><img alt="分配全局角色" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-58-06.png"></a></p>
+</blockquote>
+<ul>
+<li><code>Jenkins</code><!-- raw HTML omitted -->项目角色<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-1eaec0e00625e6b3f26a09ced86d8715" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_20-02-46.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-1eaec0e00625e6b3f26a09ced86d8715"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_20-02-46.png"></a></p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="jenkins配置邮箱"><code>Jenkins</code>配置邮箱</h3>
+<blockquote>
+<ul>
+<li><a href="#R-image-da75ccd2e2a52809fa4c11743d99dac3" class="lightbox-link"><img alt="配置Jenkins邮箱" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_22-57-50.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-da75ccd2e2a52809fa4c11743d99dac3"><img alt="配置Jenkins邮箱" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_22-57-50.png"></a></li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="jenkins服务器配置"><code>Jenkins</code>服务器配置</h3>
+<h4 id="配置ssh管理服务器">配置<code>ssh</code>管理服务器</h4>
+<blockquote>
+<ul>
+<li><code>Jenkins</code><!-- raw HTML omitted -->使用<!-- raw HTML omitted --><code>ssh</code><!-- raw HTML omitted -->管理服务器<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->搜索<!-- raw HTML omitted --><code>ssh</code><!-- raw HTML omitted -->插件：系统管理→插件管理→搜索：<!-- raw HTML omitted --><code>Publish Over SSH</code></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-df66fb04c8cb5a3702325d0ddc0c5d44" class="lightbox-link"><img alt="搜索ssh插件" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-03-45.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-df66fb04c8cb5a3702325d0ddc0c5d44"><img alt="搜索ssh插件" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-03-45.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>ssh</code><!-- raw HTML omitted -->插件：系统管理→系统配置→<!-- raw HTML omitted --><code>Publish over SSH</code>→<code>SSH Servers</code></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-75735943fe46cf31a729a6600d5636e6" class="lightbox-link"><img alt="配置Publish over SSH插件" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-32-37.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-75735943fe46cf31a729a6600d5636e6"><img alt="配置Publish over SSH插件" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-32-37.png"></a></p>
+</blockquote>
+</blockquote>
+</blockquote>
+<hr>
+<h4 id="配置ansible管理服务器">配置<code>ansible</code>管理服务器</h4>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>ansible</code><!-- raw HTML omitted -->实现免密登录以便<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->批量处理<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->生成密钥对，拷贝公钥到目部主机<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /usr/bin/sed -i <span style="color:#e6db74">&#34;/host_key_checking/a\\host_key_checking = false&#34;</span> /etc/ansible/ansible.cfg  	<span style="color:#75715e"># 关闭主机密钥检查</span>
+</span></span><span style="display:flex;"><span>$ sudo su -s /bin/bash jenkins  	<span style="color:#75715e"># 如果Jenkins用户不是root需要切换用户  </span>
+</span></span><span style="display:flex;"><span>$ ssh-keygen  	<span style="color:#75715e"># 生成密钥对  </span>
+</span></span><span style="display:flex;"><span>$ ssh-copy-id root@<span style="color:#e6db74">&#34;目标IP&#34;</span>  	<span style="color:#75715e"># 拷贝公钥到目标主机  </span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>Ansible</code><!-- raw HTML omitted -->的<!-- raw HTML omitted --><code>hosts</code><!-- raw HTML omitted -->文件<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/etc/ansible/hosts<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">console # 自定义名称，  ansible_ssh_user=root # 用户， ansible_ssh_pass=&#34;a&#34; # 密码，ansible_ssh_port=22 # 端口， ansible_ssh_host=192.168.1.1 # 目部主机IP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->登录<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->页面，到插件管理界面搜索安装<!-- raw HTML omitted --><code>Ansible</code><!-- raw HTML omitted -->插件<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-5c994f665f04dbb9a02ca3ca0fcfa51e" class="lightbox-link"><img alt="搜索安装<code>ansible</code>插件" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-06-12.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-5c994f665f04dbb9a02ca3ca0fcfa51e"><img alt="搜索安装<code>ansible</code>插件" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-06-12.png"></a></p>
+</blockquote>
+<ul>
+<li><!-- raw HTML omitted -->安装好<!-- raw HTML omitted --><code>Ansible</code><!-- raw HTML omitted -->插件后重启<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->页面<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<p><a href="#R-image-125acffa6be9a9203f6c7188ffe7854b" class="lightbox-link"><img alt="安装好后重启页面" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-08-30.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-125acffa6be9a9203f6c7188ffe7854b"><img alt="安装好后重启页面" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_19-08-30.png"></a></p>
+</blockquote>
+<ul>
+<li>使用<code>Gitlab+Ansible</code>构建项目验证<code>Ansible</code>是否可用</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->选择：新建任务→输入任务名称：→选择：构建一个自由风格的软件项目→点击：确认<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-072f27a2caf7181cb7e5a3c90a3e4012" class="lightbox-link"><img alt="创建任务" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-54-08.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-072f27a2caf7181cb7e5a3c90a3e4012"><img alt="创建任务" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-54-08.png"></a></p>
+<ul>
+<li>添加<code>Ansible</code>构建</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-a45dd760ef211297c64ab5d29280e236" class="lightbox-link"><img alt="添加构建Ansible" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-56-00.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-a45dd760ef211297c64ab5d29280e236"><img alt="添加构建Ansible" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_21-56-00.png"></a></p>
+</blockquote>
+<ul>
+<li>配置<code>Ansible</code>构建</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-557fb0da4b01583b5c15f9b576c727e6" class="lightbox-link"><img alt="配置Jenkins的ansible" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_22-09-30.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-557fb0da4b01583b5c15f9b576c727e6"><img alt="配置Jenkins的ansible" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_22-09-30.png"></a></p>
+</blockquote>
+<ul>
+<li>测试<code>Ansible</code>构建</li>
+</ul>
+<blockquote>
+<p><a href="#R-image-0f715486152a089eeb5319330c15d7f6" class="lightbox-link"><img alt="测试Ansible构建" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_22-13-24.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-0f715486152a089eeb5319330c15d7f6"><img alt="测试Ansible构建" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-19_22-13-24.png"></a></p>
+</blockquote>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="jenkins部署插件"><code>Jenkins</code>部署插件</h3>
+<blockquote>
+<ul>
+<li><a href="https://plugins.jenkins.io/" rel="external" target="_self">部署插件</a></li>
+<li><code>General</code><!-- raw HTML omitted -->→<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/gogs-webhook/" rel="external" target="_self"><code>Gogs</code></a></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->允许用户使用<!-- raw HTML omitted --><code>Gogs Webhook</code></li>
+</ul>
+<p><a href="#R-image-f615f84bd8444f91eb601de3c9863612" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-04-17.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f615f84bd8444f91eb601de3c9863612"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-04-17.png"></a></p>
+</blockquote>
+<ul>
+<li><code>General</code><!-- raw HTML omitted -->→<!-- raw HTML omitted --><code>This project is parameterized</code><!-- raw HTML omitted -->(参数化构建过程)→<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/git-parameter/" rel="external" target="_self"><code>Git Parameter</code></a></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->该插件允许您在构建中分配<!-- raw HTML omitted --><code>Git</code><!-- raw HTML omitted -->分支、标签、拉取请求或修订号作为参数<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-2149b6fe4871fd7d727c92c37d54c382" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-09-44.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-2149b6fe4871fd7d727c92c37d54c382"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-09-44.png"></a></p>
+</blockquote>
+<ul>
+<li><code>Build Triggers</code><!-- raw HTML omitted -->(构建触发器)→安装<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/gitlab-plugin/" rel="external" target="_self"><code>GitLab Plugin</code></a><!-- raw HTML omitted -->或<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/generic-webhook-trigger/" rel="external" target="_self"><code>Generic Webhook Trigger</code></a><!-- raw HTML omitted -->自动部署插件<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->此插件允许<!-- raw HTML omitted --><code>GitLab</code><!-- raw HTML omitted -->在提交代码或打开/更新合并请求时触发<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->中的构建。它还可以将构建状态发送回<!-- raw HTML omitted --><code>GitLab</code></li>
+</ul>
+<p><a href="#R-image-262c058cd061cc66a082d89f343eed42" class="lightbox-link"><img alt="GitLab webhook Plugin" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-25_15-36-23.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-262c058cd061cc66a082d89f343eed42"><img alt="GitLab webhook Plugin" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-07-25_15-36-23.png"></a></p>
+</blockquote>
+<ul>
+<li><code>Build Environment</code><!-- raw HTML omitted -->(构建环境)→<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/ansicolor/" rel="external" target="_self"><code>AnsiColor</code></a></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->这个插件增加了对标准<!-- raw HTML omitted --><code>ANSI</code><!-- raw HTML omitted -->转义序列的支持，包括颜色，到控制台输出。 该插件可<!-- raw HTML omitted --><a href="http://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/ansicolor/" rel="external" target="_self">在此处</a><!-- raw HTML omitted -->获得，并且在<!-- raw HTML omitted --><code>Jenkins Wiki</code><!-- raw HTML omitted -->上有<!-- raw HTML omitted --><a href="https://wiki.jenkins-ci.org/display/JENKINS/AnsiColor+Plugin" rel="external" target="_self">一个页面</a></li>
+</ul>
+<p><a href="#R-image-44c5132b64ee1cae4b3530d9286d76d5" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-16-21.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-44c5132b64ee1cae4b3530d9286d76d5"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-16-21.png"></a></p>
+</blockquote>
+<ul>
+<li><code>Build Environment</code><!-- raw HTML omitted -->(构建环境)→<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/build-user-vars-plugin/" rel="external" target="_self"><code>Set jenkins user build variables</code></a></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->描述启动构建的用户的一组<strong>环境变量</strong><!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-337d033ac4fd92a63949eb4517aab20a" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-24-17.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-337d033ac4fd92a63949eb4517aab20a"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-24-17.png"></a></p>
+</blockquote>
+<ul>
+<li><code>Post-build Actions</code><!-- raw HTML omitted -->(构建后操作)→<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/postbuild-task/" rel="external" target="_self"><code>Post build task</code></a></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->此功能允许用户关联<!-- raw HTML omitted --><code>shell</code><!-- raw HTML omitted -->或批处理脚本，这些脚本根据构建日志输出在<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->上执行某些任务。如果日志文本在构建日志文件中的某个位置匹配，则脚本将执行并且构建后日志将附加到项目构建日志中。允许使用<!-- raw HTML omitted --><code>Java</code><!-- raw HTML omitted -->正则表达式<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-a814a8c4ee8e0eccd258b7d2791d274b" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-46-20.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-a814a8c4ee8e0eccd258b7d2791d274b"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_14-46-20.png"></a></p>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="jenkins回滚插件"><code>Jenkins</code>回滚插件</h3>
+<blockquote>
+<ul>
+<li><code>General</code><!-- raw HTML omitted -->→<!-- raw HTML omitted --><code>This project is parameterized</code><!-- raw HTML omitted -->(参数化构建过程)→<!-- raw HTML omitted --><a href="https://plugins.jenkins.io/uno-choice/" rel="external" target="_self"><code>Active Choices</code></a></li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Active Choices</code><!-- raw HTML omitted -->插件用于参数化的自由式<!-- raw HTML omitted --><code>Jenkins</code><!-- raw HTML omitted -->作业，以创建<strong>脚本化、动态和交互式作业参数</strong>。<!-- raw HTML omitted --><code>Active Choices</code><!-- raw HTML omitted --><strong>参数</strong>可以<strong>动态更新</strong>，并且可以<strong>呈现为组合框、复选框、单选按钮或丰富的<code>HTML UI</code>小部件</strong>。<!-- raw HTML omitted --><code>Active Choices</code>参数使用<code>Groovy</code>或（可选）<code>Scriptler Groovy</code>脚本编写脚本。这些自定义脚本支持使用<code>Jenkins Java API</code><!-- raw HTML omitted -->、系统环境变量、全局节点属性以及潜在的外部<code>Java</code>和<code>Javascript</code>库<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-6e37de955dfe135b741e5d78c6c08ab3" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_15-17-51.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-6e37de955dfe135b741e5d78c6c08ab3"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Jenkins_Server/Snipaste_2022-10-17_15-17-51.png"></a></p>
+</blockquote>
+</blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+        </div>
+      </main>
+    </div>
+    <aside id="R-sidebar" class="default-animation showVisitedLinks">
+      <div id="R-header-topbar" class="default-animation"></div>
+      <div id="R-header-wrapper" class="default-animation">
+        <div id="R-header" class="default-animation">
+          <style>
+            #R-logo svg,
+            #R-logo svg * {
+              color: #282828;
+              color: var(--MENU-SECTIONS-BG-color);
+              fill: #282828 !important;
+              fill: var(--MENU-SECTIONS-BG-color) !important;
+              opacity: .945;
+            }
+            a#R-logo {
+              color: #282828;
+              color: var(--MENU-SECTIONS-BG-color);
+              font-family: 'Work Sans', 'Helvetica', 'Tahoma', 'Geneva', 'Arial', sans-serif;
+              font-size: 1.875rem;
+              font-weight: 300;
+              margin-top: -.8125rem;
+              max-width: 60%;
+              text-transform: uppercase;
+              width: 14.125rem;
+              white-space: nowrap;
+            }
+            a#R-logo:hover {
+              color: #282828;
+              color: var(--MENU-SECTIONS-BG-color);
+            }
+            #R-logo svg {
+              margin-bottom: -1.25rem;
+              margin-inline-start: -1.47rem;
+              margin-inline-end: .5rem;
+              width: 40.5%;
+            }
+            @media only all and (max-width: 59.999rem) {
+              a#R-logo {
+                font-size: 1.5625rem;
+                margin-top: -.1875rem;
+              }
+              #R-logo svg {
+                margin-bottom: -.75rem;
+                margin-inline-start: -1.47rem;
+                margin-inline-end: .5rem;
+              }
+            }
+          </style>
+          <a id="R-logo" href="../../../../">
+            <img src="images/s2-1.png" alt="二哥">
+          </a>
+        </div>
+
+        <search><form action="../../../../search.html" method="get">
+          <div class="searchbox default-animation">
+            <button class="search-detail" type="submit" title="Search (CTRL+ALT+f)"><i class="fas fa-search"></i></button>
+            <label class="a11y-only" for="R-search-by">Search</label>
+            <input data-search-input id="R-search-by" name="search-by" class="search-by" type="search" placeholder="Search...">
+            <button class="search-clear" type="button" data-search-clear="" title="Clear search"><i class="fas fa-times" title="Clear search"></i></button>
+          </div>
+        </form></search>
+        <script>
+          var contentLangs=['en'];
+        </script>
+        <script src="../../../../js/auto-complete.js?1719329889" defer></script>
+        <script src="../../../../js/lunr/lunr.min.js?1719329889" defer></script>
+        <script src="../../../../js/lunr/lunr.stemmer.support.min.js?1719329889" defer></script>
+        <script src="../../../../js/lunr/lunr.multi.min.js?1719329889" defer></script>
+        <script src="../../../../js/lunr/lunr.en.min.js?1719329889" defer></script>
+        <script src="../../../../js/search.js?1719329889" defer></script>
+      </div>
+      <div id="R-homelinks" class="default-animation homelinks">
+        <ul>
+          <li><a class="padding" href="../../../../"><i class='fa-fw fas fa-home'></i> Home</a></li>
+        </ul>
+        <hr class="padding">
+      </div>
+      <div id="R-content-wrapper" class="highlightable">
+        <div id="R-topics">
+          <ul class="enlarge morespace collapsible-menu">
+          <li data-nav-id="/basics/" class=""><input type="checkbox" id="R-section-a6deabe447afe1b2e1405bfc57ca61ff" aria-controls="R-subsections-a6deabe447afe1b2e1405bfc57ca61ff"><label for="R-section-a6deabe447afe1b2e1405bfc57ca61ff"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Basics</span></label><a class="padding" href="../../../../basics/">Basics<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-a6deabe447afe1b2e1405bfc57ca61ff" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/hugo_theme_next/" class="alwaysopen"><input type="checkbox" id="R-section-4c48b58c6275cad2a97afb5c467cac99" aria-controls="R-subsections-4c48b58c6275cad2a97afb5c467cac99" checked><label for="R-section-4c48b58c6275cad2a97afb5c467cac99"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Hugo_Theme_Next</span></label><a class="padding" href="../../../../basics/hugo_theme_next/">Hugo_Theme_Next<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-4c48b58c6275cad2a97afb5c467cac99" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/hugo_theme_next/emoji_support/" class=""><a class="padding" href="../../../../basics/hugo_theme_next/emoji_support/">Emoji_Support<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/hugo_theme_next/custom_files/" class=""><a class="padding" href="../../../../basics/hugo_theme_next/custom_files/">Custom_Files<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/basics/video/" class="alwaysopen"><input type="checkbox" id="R-section-42af7fff84a4df6d7df07565c2262bba" aria-controls="R-subsections-42af7fff84a4df6d7df07565c2262bba" checked><label for="R-section-42af7fff84a4df6d7df07565c2262bba"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Video</span></label><a class="padding" href="../../../../basics/video/">Video<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-42af7fff84a4df6d7df07565c2262bba" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/video/video_download/" class=""><a class="padding" href="../../../../basics/video/video_download/">Video<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/basics/markdown/" class="alwaysopen"><input type="checkbox" id="R-section-8d81245d2120aff81556115f7666a5e0" aria-controls="R-subsections-8d81245d2120aff81556115f7666a5e0" checked><label for="R-section-8d81245d2120aff81556115f7666a5e0"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu MarkDown</span></label><a class="padding" href="../../../../basics/markdown/">MarkDown<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-8d81245d2120aff81556115f7666a5e0" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/markdown/markdown_syntax/" class=""><a class="padding" href="../../../../basics/markdown/markdown_syntax/">Markdown_Syntax<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/basics/ai/" class="alwaysopen"><input type="checkbox" id="R-section-cc50241241d2c4ea02a668bba6462573" aria-controls="R-subsections-cc50241241d2c4ea02a668bba6462573" checked><label for="R-section-cc50241241d2c4ea02a668bba6462573"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu AI</span></label><a class="padding" href="../../../../basics/ai/">AI<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-cc50241241d2c4ea02a668bba6462573" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/ai/chatgpt/" class=""><a class="padding" href="../../../../basics/ai/chatgpt/">ChatGPT<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/basics/template/" class="alwaysopen"><input type="checkbox" id="R-section-d35117bb3084276b1f0714ea8420a43e" aria-controls="R-subsections-d35117bb3084276b1f0714ea8420a43e" checked><label for="R-section-d35117bb3084276b1f0714ea8420a43e"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu template</span></label><a class="padding" href="../../../../basics/template/">template<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-d35117bb3084276b1f0714ea8420a43e" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/template/syntax_highlighting/" class=""><a class="padding" href="../../../../basics/template/syntax_highlighting/">Syntax_Highlighting<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/template/qrcode_manager/" class=""><a class="padding" href="../../../../basics/template/qrcode_manager/">QRcode_Manager<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/template/mermaid_charts/" class=""><a class="padding" href="../../../../basics/template/mermaid_charts/">Mermaid_Charts<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/template/math_formula/" class=""><a class="padding" href="../../../../basics/template/math_formula/">Math Formula<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/basics/template/github_repo_template/" class=""><a class="padding" href="../../../../basics/template/github_repo_template/"><i class='fab fa-github'></i> Github Repo Template<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/language/" class=""><input type="checkbox" id="R-section-84e0c5289a63136422908a7e4241adc6" aria-controls="R-subsections-84e0c5289a63136422908a7e4241adc6"><label for="R-section-84e0c5289a63136422908a7e4241adc6"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Languges</span></label><a class="padding" href="../../../../language/">Languges<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-84e0c5289a63136422908a7e4241adc6" class="morespace collapsible-menu">
+          <li data-nav-id="/language/lua/" class="alwaysopen"><input type="checkbox" id="R-section-9000cbd7e4710ffe5c3bf153d3bb1374" aria-controls="R-subsections-9000cbd7e4710ffe5c3bf153d3bb1374" checked><label for="R-section-9000cbd7e4710ffe5c3bf153d3bb1374"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Lua</span></label><a class="padding" href="../../../../language/lua/">Lua<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-9000cbd7e4710ffe5c3bf153d3bb1374" class="morespace collapsible-menu">
+          <li data-nav-id="/language/lua/language_lua/" class=""><a class="padding" href="../../../../language/lua/language_lua/">Lua<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/language/yaml/" class="alwaysopen"><input type="checkbox" id="R-section-7d1bf276ada0eceb02dd825b91e54998" aria-controls="R-subsections-7d1bf276ada0eceb02dd825b91e54998" checked><label for="R-section-7d1bf276ada0eceb02dd825b91e54998"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Yaml</span></label><a class="padding" href="../../../../language/yaml/">Yaml<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-7d1bf276ada0eceb02dd825b91e54998" class="morespace collapsible-menu">
+          <li data-nav-id="/language/yaml/language-yaml/" class=""><a class="padding" href="../../../../language/yaml/language-yaml/">Yaml<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/language/golang/" class="alwaysopen"><input type="checkbox" id="R-section-68528191e10f5bc742856b3bb35d9f34" aria-controls="R-subsections-68528191e10f5bc742856b3bb35d9f34" checked><label for="R-section-68528191e10f5bc742856b3bb35d9f34"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Golang</span></label><a class="padding" href="../../../../language/golang/">Golang<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-68528191e10f5bc742856b3bb35d9f34" class="morespace collapsible-menu">
+          <li data-nav-id="/language/golang/language-golang/" class=""><a class="padding" href="../../../../language/golang/language-golang/">Golang<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/language/python/" class="alwaysopen"><input type="checkbox" id="R-section-be2954e8559d07ab422f7ea1c72c5405" aria-controls="R-subsections-be2954e8559d07ab422f7ea1c72c5405" checked><label for="R-section-be2954e8559d07ab422f7ea1c72c5405"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Python</span></label><a class="padding" href="../../../../language/python/">Python<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-be2954e8559d07ab422f7ea1c72c5405" class="morespace collapsible-menu">
+          <li data-nav-id="/language/python/language-python-django/" class=""><a class="padding" href="../../../../language/python/language-python-django/">Django<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/language/python/language-python/" class=""><a class="padding" href="../../../../language/python/language-python/">Python<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/language/python/python-crawler/" class=""><a class="padding" href="../../../../language/python/python-crawler/">Crawler<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/services/" class=""><input type="checkbox" id="R-section-95afbf0e432a5495fcd79c6e50f92da5" aria-controls="R-subsections-95afbf0e432a5495fcd79c6e50f92da5"><label for="R-section-95afbf0e432a5495fcd79c6e50f92da5"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Services</span></label><a class="padding" href="../../../../services/">Services<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-95afbf0e432a5495fcd79c6e50f92da5" class="morespace collapsible-menu">
+          <li data-nav-id="/services/shopping/" class="alwaysopen"><input type="checkbox" id="R-section-e74c46d7456e8bcd8a5b287628f47e95" aria-controls="R-subsections-e74c46d7456e8bcd8a5b287628f47e95" checked><label for="R-section-e74c46d7456e8bcd8a5b287628f47e95"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Shopping</span></label><a class="padding" href="../../../../services/shopping/">Shopping<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-e74c46d7456e8bcd8a5b287628f47e95" class="morespace collapsible-menu">
+          <li data-nav-id="/services/shopping/install_prestashop/" class=""><a class="padding" href="../../../../services/shopping/install_prestashop/">PrestaShop<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/services/shopping/install_opencart/" class=""><a class="padding" href="../../../../services/shopping/install_opencart/">OpenCart<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/services/shopping/install_jeepay/" class=""><a class="padding" href="../../../../services/shopping/install_jeepay/">JeePay<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/services/certificate/" class=""><a class="padding" href="../../../../services/certificate/">Certificate<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/services/blog/" class="alwaysopen"><input type="checkbox" id="R-section-47d595cf5fa5000ee12b114cac976798" aria-controls="R-subsections-47d595cf5fa5000ee12b114cac976798" checked><label for="R-section-47d595cf5fa5000ee12b114cac976798"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Blog</span></label><a class="padding" href="../../../../services/blog/">Blog<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-47d595cf5fa5000ee12b114cac976798" class="morespace collapsible-menu">
+          <li data-nav-id="/services/blog/install-blog-hexo/" class=""><a class="padding" href="../../../../services/blog/install-blog-hexo/">Hexo<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/systems/" class="parent "><input type="checkbox" id="R-section-30e48890399c6ecdfb15937b01bd309a" aria-controls="R-subsections-30e48890399c6ecdfb15937b01bd309a" checked><label for="R-section-30e48890399c6ecdfb15937b01bd309a"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Systems</span></label><a class="padding" href="../../../../systems/">Systems<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-30e48890399c6ecdfb15937b01bd309a" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/" class="parent alwaysopen"><input type="checkbox" id="R-section-de656359c9ce2d10a06145d02d07bd35" aria-controls="R-subsections-de656359c9ce2d10a06145d02d07bd35" checked><label for="R-section-de656359c9ce2d10a06145d02d07bd35"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Linux</span></label><a class="padding" href="../../../../systems/linux/">Linux<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-de656359c9ce2d10a06145d02d07bd35" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/use_linux/" class="alwaysopen"><input type="checkbox" id="R-section-49f8f651101e295f3d007dbb41613e23" aria-controls="R-subsections-49f8f651101e295f3d007dbb41613e23" checked><label for="R-section-49f8f651101e295f3d007dbb41613e23"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Use_Linux</span></label><a class="padding" href="../../../../systems/linux/use_linux/">Use_Linux<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-49f8f651101e295f3d007dbb41613e23" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/use_linux/system_optimization/" class=""><a class="padding" href="../../../../systems/linux/use_linux/system_optimization/">System_Optimization<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/system_architecture_planning_diagram/" class=""><a class="padding" href="../../../../systems/linux/use_linux/system_architecture_planning_diagram/">System_Architecture_Planning_Diagram<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/regular_expression/" class=""><a class="padding" href="../../../../systems/linux/use_linux/regular_expression/">Regular_Expression<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/linux_document/" class=""><a class="padding" href="../../../../systems/linux/use_linux/linux_document/">Linux_Document<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/linux_conmmon_commands/" class=""><a class="padding" href="../../../../systems/linux/use_linux/linux_conmmon_commands/">Linux_Conmmon_Commands<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/use_linux/install_cloud_foundry/" class=""><a class="padding" href="../../../../systems/linux/use_linux/install_cloud_foundry/">Install_Cloud_Foundry<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/work_order/" class="alwaysopen"><input type="checkbox" id="R-section-2f07bd5be968f6cd5106cd8668cec86e" aria-controls="R-subsections-2f07bd5be968f6cd5106cd8668cec86e" checked><label for="R-section-2f07bd5be968f6cd5106cd8668cec86e"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Work_Order</span></label><a class="padding" href="../../../../systems/linux/work_order/">Work_Order<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-2f07bd5be968f6cd5106cd8668cec86e" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/work_order/install_ferry/" class=""><a class="padding" href="../../../../systems/linux/work_order/install_ferry/">Install_Ferry<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/web/" class="alwaysopen"><input type="checkbox" id="R-section-16667cef7ba079f56d077b0672418894" aria-controls="R-subsections-16667cef7ba079f56d077b0672418894" checked><label for="R-section-16667cef7ba079f56d077b0672418894"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Web</span></label><a class="padding" href="../../../../systems/linux/web/">Web<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-16667cef7ba079f56d077b0672418894" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/web/website_optimization_advertise/" class=""><a class="padding" href="../../../../systems/linux/web/website_optimization_advertise/">Website_Optimization_Advertise<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/web/website_http_status_messages/" class=""><a class="padding" href="../../../../systems/linux/web/website_http_status_messages/">Website_HTTP_Status_Messages<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/web/install-nginx/" class=""><a class="padding" href="../../../../systems/linux/web/install-nginx/">Install Nginx<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/web/install_nginx_third_party_modules/" class=""><a class="padding" href="../../../../systems/linux/web/install_nginx_third_party_modules/">Install_Nginx_Third_Party_Modules<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/web/configure_nginx/" class=""><a class="padding" href="../../../../systems/linux/web/configure_nginx/">Configure_Nginx<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/storage/" class="alwaysopen"><input type="checkbox" id="R-section-78cdb047edff213265dfa96259e7a4f9" aria-controls="R-subsections-78cdb047edff213265dfa96259e7a4f9" checked><label for="R-section-78cdb047edff213265dfa96259e7a4f9"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Storage</span></label><a class="padding" href="../../../../systems/linux/storage/">Storage<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-78cdb047edff213265dfa96259e7a4f9" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/storage/install_nfs/" class=""><a class="padding" href="../../../../systems/linux/storage/install_nfs/">Install_NFS<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/storage/install_moosefs/" class=""><a class="padding" href="../../../../systems/linux/storage/install_moosefs/">Install_MooseFS<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/storage/install_minio/" class=""><a class="padding" href="../../../../systems/linux/storage/install_minio/">Install_Minio<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/storage/install_fastdfs/" class=""><a class="padding" href="../../../../systems/linux/storage/install_fastdfs/">Install_FastDFS<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/storage/configur_storage/" class=""><a class="padding" href="../../../../systems/linux/storage/configur_storage/">Configur_Storage<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/service_management/" class="alwaysopen"><input type="checkbox" id="R-section-14edec8fa5c3e740a4fda2b953c2000b" aria-controls="R-subsections-14edec8fa5c3e740a4fda2b953c2000b" checked><label for="R-section-14edec8fa5c3e740a4fda2b953c2000b"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Service_Management</span></label><a class="padding" href="../../../../systems/linux/service_management/">Service_Management<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-14edec8fa5c3e740a4fda2b953c2000b" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/service_management/install_nacos/" class=""><a class="padding" href="../../../../systems/linux/service_management/install_nacos/">Install_Nacos<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/service_management/install_mesos/" class=""><a class="padding" href="../../../../systems/linux/service_management/install_mesos/">Install_Mesos<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/service_management/install_hive/" class=""><a class="padding" href="../../../../systems/linux/service_management/install_hive/">Install_Hive<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/service_management/install_consul/" class=""><a class="padding" href="../../../../systems/linux/service_management/install_consul/">Install_Consul<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/script/" class="alwaysopen"><input type="checkbox" id="R-section-03579ce96d17eb0c798805c4164837e4" aria-controls="R-subsections-03579ce96d17eb0c798805c4164837e4" checked><label for="R-section-03579ce96d17eb0c798805c4164837e4"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Script</span></label><a class="padding" href="../../../../systems/linux/script/">Script<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-03579ce96d17eb0c798805c4164837e4" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/script/how_to_write_shell_scripts/" class=""><a class="padding" href="../../../../systems/linux/script/how_to_write_shell_scripts/">How_To_Write_Shell_Scripts<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/rsyncd/" class="alwaysopen"><input type="checkbox" id="R-section-9e23d094a527b7c92407accf5be989fb" aria-controls="R-subsections-9e23d094a527b7c92407accf5be989fb" checked><label for="R-section-9e23d094a527b7c92407accf5be989fb"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Rsyncd</span></label><a class="padding" href="../../../../systems/linux/rsyncd/">Rsyncd<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-9e23d094a527b7c92407accf5be989fb" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/rsyncd/install_timesyncd/" class=""><a class="padding" href="../../../../systems/linux/rsyncd/install_timesyncd/">Install_TimeSyncd<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/rsyncd/install_rsync/" class=""><a class="padding" href="../../../../systems/linux/rsyncd/install_rsync/">Install_Rsync<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/rsyncd/install_lsyncd/" class=""><a class="padding" href="../../../../systems/linux/rsyncd/install_lsyncd/">Install_Lsyncd<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/nosql/" class="alwaysopen"><input type="checkbox" id="R-section-58e6fa2c18e9900c5034634874e76aa0" aria-controls="R-subsections-58e6fa2c18e9900c5034634874e76aa0" checked><label for="R-section-58e6fa2c18e9900c5034634874e76aa0"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Nosql</span></label><a class="padding" href="../../../../systems/linux/nosql/">Nosql<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-58e6fa2c18e9900c5034634874e76aa0" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/nosql/install_scylladb/" class=""><a class="padding" href="../../../../systems/linux/nosql/install_scylladb/">Install_Scylladb<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/install_redis/" class=""><a class="padding" href="../../../../systems/linux/nosql/install_redis/">Install_Redis<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/install_redis_cluster/" class=""><a class="padding" href="../../../../systems/linux/nosql/install_redis_cluster/">Install_Redis_Cluster<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/install_cassandra/" class=""><a class="padding" href="../../../../systems/linux/nosql/install_cassandra/">Install_Cassandra<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/install_aerospike/" class=""><a class="padding" href="../../../../systems/linux/nosql/install_aerospike/">Install_Aerospike<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/nosql/configure_redis/" class=""><a class="padding" href="../../../../systems/linux/nosql/configure_redis/">Configure_Redis<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/monitor/" class="alwaysopen"><input type="checkbox" id="R-section-abc3124cdccc835552a636499dd41a83" aria-controls="R-subsections-abc3124cdccc835552a636499dd41a83" checked><label for="R-section-abc3124cdccc835552a636499dd41a83"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Monitor</span></label><a class="padding" href="../../../../systems/linux/monitor/">Monitor<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-abc3124cdccc835552a636499dd41a83" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/monitor/install_zabbix/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_zabbix/">Install_Zabbix<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/install_prometheus/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_prometheus/">Install_Prometheus<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/install_open_falcon/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_open_falcon/">Install_Open_Falcon<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/install_nightingale/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_nightingale/">Install_Nightingale<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/install_grafana/" class=""><a class="padding" href="../../../../systems/linux/monitor/install_grafana/">Install_Grafana<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/configure_zabbix/" class=""><a class="padding" href="../../../../systems/linux/monitor/configure_zabbix/">Configure_Zabbix<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/configure_zabbix_grafana/" class=""><a class="padding" href="../../../../systems/linux/monitor/configure_zabbix_grafana/">Configure_Zabbix_Grafana<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/configure_prometheus/" class=""><a class="padding" href="../../../../systems/linux/monitor/configure_prometheus/">Configure_Prometheus<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/monitor/configure_open_falcon/" class=""><a class="padding" href="../../../../systems/linux/monitor/configure_open_falcon/">Configure_Open_Falcon<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/message_queue/" class="alwaysopen"><input type="checkbox" id="R-section-861d5d5af8f939283fc63038dd67e207" aria-controls="R-subsections-861d5d5af8f939283fc63038dd67e207" checked><label for="R-section-861d5d5af8f939283fc63038dd67e207"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Message_Queue</span></label><a class="padding" href="../../../../systems/linux/message_queue/">Message_Queue<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-861d5d5af8f939283fc63038dd67e207" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/message_queue/install_activemq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_activemq/">Install_ActiveMQ<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_rocketmq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_rocketmq/">Install_RocketMQ<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_redpanda/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_redpanda/">Install_Redpanda<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_rabbitmq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_rabbitmq/">Install_RabbitMQ<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_nsq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_nsq/">Install_Nsq<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/install_kafka/" class=""><a class="padding" href="../../../../systems/linux/message_queue/install_kafka/">Install_Kafka<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/message_queue/configure_rabbitmq/" class=""><a class="padding" href="../../../../systems/linux/message_queue/configure_rabbitmq/">Configure_Rabbitmq<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/logs/" class="alwaysopen"><input type="checkbox" id="R-section-78ebf403abc38403afe01438a8d427da" aria-controls="R-subsections-78ebf403abc38403afe01438a8d427da" checked><label for="R-section-78ebf403abc38403afe01438a8d427da"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Logs</span></label><a class="padding" href="../../../../systems/linux/logs/">Logs<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-78ebf403abc38403afe01438a8d427da" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/logs/use_logrotate/" class=""><a class="padding" href="../../../../systems/linux/logs/use_logrotate/">Use_Logrotate<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_quickwit/" class=""><a class="padding" href="../../../../systems/linux/logs/install_quickwit/">Install_Quickwit<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_logkit/" class=""><a class="padding" href="../../../../systems/linux/logs/install_logkit/">Install_Logkit<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_graylog/" class=""><a class="padding" href="../../../../systems/linux/logs/install_graylog/">Install_Graylog<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_fluentd/" class=""><a class="padding" href="../../../../systems/linux/logs/install_fluentd/">Install_Fluentd<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_finder/" class=""><a class="padding" href="../../../../systems/linux/logs/install_finder/">Install_Finder<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_es_head/" class=""><a class="padding" href="../../../../systems/linux/logs/install_es_head/">Install_Es_Head<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/install_elk/" class=""><a class="padding" href="../../../../systems/linux/logs/install_elk/">Install_ELK<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/logs/configure_elk/" class=""><a class="padding" href="../../../../systems/linux/logs/configure_elk/">Configure_ELK<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/ldap/" class="alwaysopen"><input type="checkbox" id="R-section-bad9f2f06d1b124e56b35ed49036dda2" aria-controls="R-subsections-bad9f2f06d1b124e56b35ed49036dda2" checked><label for="R-section-bad9f2f06d1b124e56b35ed49036dda2"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu LDAP</span></label><a class="padding" href="../../../../systems/linux/ldap/">LDAP<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-bad9f2f06d1b124e56b35ed49036dda2" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/ldap/config_openldap/" class=""><a class="padding" href="../../../../systems/linux/ldap/config_openldap/">Config_OpenLDAP<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ldap/install_kerberos/" class=""><a class="padding" href="../../../../systems/linux/ldap/install_kerberos/">Install_Kerberos<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ldap/install_openldap/" class=""><a class="padding" href="../../../../systems/linux/ldap/install_openldap/">Install_OpenLDAP<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/kubernetes/" class="alwaysopen"><input type="checkbox" id="R-section-5c5867ab6fb998140913e96100f44665" aria-controls="R-subsections-5c5867ab6fb998140913e96100f44665" checked><label for="R-section-5c5867ab6fb998140913e96100f44665"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Kubernetes</span></label><a class="padding" href="../../../../systems/linux/kubernetes/">Kubernetes<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-5c5867ab6fb998140913e96100f44665" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/kubernetes/kubernetes_template/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/kubernetes_template/">Kubernetes_Template<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/kubernetes_command/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/kubernetes_command/">Kubernetes_Command<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_kubernetes/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_kubernetes/">Install_Kubernetes<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_rancher/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_rancher/">Install_K8s_Rancher<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_kubesphere/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_kubesphere/">Install_K8s_KubeSphere<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_harbor/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_harbor/">Install_K8s_Harbor<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_dashboard/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_dashboard/">Install_K8s_Dashboard<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_coredns/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_coredns/">Install_K8s_CoreDNS<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/install_k8s_argo_cd/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/install_k8s_argo_cd/">Install_K8s_Argo_CD<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_storage/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_storage/">Configure_K8s_Storage<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_rancher/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_rancher/">Configure_K8s_Rancher<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_jcr/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_jcr/">Configure_K8s_Jcr<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_helm/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_helm/">Configure_K8s_Helm<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/kubernetes/configure_k8s_auth/" class=""><a class="padding" href="../../../../systems/linux/kubernetes/configure_k8s_auth/">Configure_K8s_Auth<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/keepalived/" class="alwaysopen"><input type="checkbox" id="R-section-3ca69c2a3ab36ad947b2dfaf7b98bf13" aria-controls="R-subsections-3ca69c2a3ab36ad947b2dfaf7b98bf13" checked><label for="R-section-3ca69c2a3ab36ad947b2dfaf7b98bf13"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Keepalived</span></label><a class="padding" href="../../../../systems/linux/keepalived/">Keepalived<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-3ca69c2a3ab36ad947b2dfaf7b98bf13" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/keepalived/install_keepalived/" class=""><a class="padding" href="../../../../systems/linux/keepalived/install_keepalived/">Install_Keepalived<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/jumpserver/" class="alwaysopen"><input type="checkbox" id="R-section-f322e41abfd5771d40b756709835fa3f" aria-controls="R-subsections-f322e41abfd5771d40b756709835fa3f" checked><label for="R-section-f322e41abfd5771d40b756709835fa3f"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu JumpServer</span></label><a class="padding" href="../../../../systems/linux/jumpserver/">JumpServer<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-f322e41abfd5771d40b756709835fa3f" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/jumpserver/use_jumpserver/" class=""><a class="padding" href="../../../../systems/linux/jumpserver/use_jumpserver/">Use_JumpServer<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/jumpserver/install_jumpserver/" class=""><a class="padding" href="../../../../systems/linux/jumpserver/install_jumpserver/">Install_JumpServer<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/jenkins/" class="parent alwaysopen"><input type="checkbox" id="R-section-f690c0dab88e64f38122fac9ce428cdf" aria-controls="R-subsections-f690c0dab88e64f38122fac9ce428cdf" checked><label for="R-section-f690c0dab88e64f38122fac9ce428cdf"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Jenkins</span></label><a class="padding" href="../../../../systems/linux/jenkins/">Jenkins<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-f690c0dab88e64f38122fac9ce428cdf" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/jenkins/use_jenkins/" class="active"><a class="padding" href="../../../../systems/linux/jenkins/use_jenkins/">Use_Jenkins<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/jenkins/install_jenkins/" class=""><a class="padding" href="../../../../systems/linux/jenkins/install_jenkins/">Install_Jenkins<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/jdk/" class="alwaysopen"><input type="checkbox" id="R-section-36efe864ba441ecbd1a5221b646d395f" aria-controls="R-subsections-36efe864ba441ecbd1a5221b646d395f" checked><label for="R-section-36efe864ba441ecbd1a5221b646d395f"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu JDK</span></label><a class="padding" href="../../../../systems/linux/jdk/">JDK<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-36efe864ba441ecbd1a5221b646d395f" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/jdk/install_jdk_and_jar_run/" class=""><a class="padding" href="../../../../systems/linux/jdk/install_jdk_and_jar_run/">Install_Jdk_And_Jar_Run<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/install_system/" class="alwaysopen"><input type="checkbox" id="R-section-b49d7d5d0bcf33190967e60032a76ba5" aria-controls="R-subsections-b49d7d5d0bcf33190967e60032a76ba5" checked><label for="R-section-b49d7d5d0bcf33190967e60032a76ba5"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Install_System</span></label><a class="padding" href="../../../../systems/linux/install_system/">Install_System<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-b49d7d5d0bcf33190967e60032a76ba5" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/install_system/install_cobbler/" class=""><a class="padding" href="../../../../systems/linux/install_system/install_cobbler/">Install_Cobbler<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/install_system/install_kickstart/" class=""><a class="padding" href="../../../../systems/linux/install_system/install_kickstart/">Install_Kickstart<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/haproxy/" class="alwaysopen"><input type="checkbox" id="R-section-7bc7ce397a3c135c33a1fe515157e26b" aria-controls="R-subsections-7bc7ce397a3c135c33a1fe515157e26b" checked><label for="R-section-7bc7ce397a3c135c33a1fe515157e26b"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu HAProxy</span></label><a class="padding" href="../../../../systems/linux/haproxy/">HAProxy<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-7bc7ce397a3c135c33a1fe515157e26b" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/haproxy/install_proxy/" class=""><a class="padding" href="../../../../systems/linux/haproxy/install_proxy/">Install_Proxy<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/haproxy/install_haproxy/" class=""><a class="padding" href="../../../../systems/linux/haproxy/install_haproxy/">Install_HAProxy<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/gitlab/" class="alwaysopen"><input type="checkbox" id="R-section-eb6fb2d7fa852777afa9d0bd3d061e2f" aria-controls="R-subsections-eb6fb2d7fa852777afa9d0bd3d061e2f" checked><label for="R-section-eb6fb2d7fa852777afa9d0bd3d061e2f"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Gitlab</span></label><a class="padding" href="../../../../systems/linux/gitlab/">Gitlab<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-eb6fb2d7fa852777afa9d0bd3d061e2f" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/gitlab/use_gitrunner/" class=""><a class="padding" href="../../../../systems/linux/gitlab/use_gitrunner/">Use_Gitrunner<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/use_gitlab/" class=""><a class="padding" href="../../../../systems/linux/gitlab/use_gitlab/">Use_Gitlab<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/use_git_command/" class=""><a class="padding" href="../../../../systems/linux/gitlab/use_git_command/">Use_Git_Command<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/install_gogs/" class=""><a class="padding" href="../../../../systems/linux/gitlab/install_gogs/">Install_Gogs<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/install_gitlab/" class=""><a class="padding" href="../../../../systems/linux/gitlab/install_gitlab/">Install_Gitlab<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/install_gitlab_runner/" class=""><a class="padding" href="../../../../systems/linux/gitlab/install_gitlab_runner/">Install_Gitlab_Runner<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/gitlab/install_gitea/" class=""><a class="padding" href="../../../../systems/linux/gitlab/install_gitea/">Install_Gitea<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/firewalld/" class="alwaysopen"><input type="checkbox" id="R-section-8a9c9b45fea025ec58be52ee30e98fab" aria-controls="R-subsections-8a9c9b45fea025ec58be52ee30e98fab" checked><label for="R-section-8a9c9b45fea025ec58be52ee30e98fab"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Firewalld</span></label><a class="padding" href="../../../../systems/linux/firewalld/">Firewalld<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-8a9c9b45fea025ec58be52ee30e98fab" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/firewalld/use_firewalld/" class=""><a class="padding" href="../../../../systems/linux/firewalld/use_firewalld/">Use_Firewalld<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/email/" class="alwaysopen"><input type="checkbox" id="R-section-89489275bf8e3d75bdaa43edad4e280b" aria-controls="R-subsections-89489275bf8e3d75bdaa43edad4e280b" checked><label for="R-section-89489275bf8e3d75bdaa43edad4e280b"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Email</span></label><a class="padding" href="../../../../systems/linux/email/">Email<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-89489275bf8e3d75bdaa43edad4e280b" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/email/install_iredmail/" class=""><a class="padding" href="../../../../systems/linux/email/install_iredmail/">Install_iRedMail<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/databases/" class="alwaysopen"><input type="checkbox" id="R-section-8d2e8b3049adc0e55fd190214593db4d" aria-controls="R-subsections-8d2e8b3049adc0e55fd190214593db4d" checked><label for="R-section-8d2e8b3049adc0e55fd190214593db4d"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Databases</span></label><a class="padding" href="../../../../systems/linux/databases/">Databases<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-8d2e8b3049adc0e55fd190214593db4d" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/databases/update_mysql5-7_to_mysql8/" class=""><a class="padding" href="../../../../systems/linux/databases/update_mysql5-7_to_mysql8/">Update_Mysql5 7_To_Mysql8<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_ydb/" class=""><a class="padding" href="../../../../systems/linux/databases/install_ydb/">Install_Ydb<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_postgresql/" class=""><a class="padding" href="../../../../systems/linux/databases/install_postgresql/">Install_PostgreSQL<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_otter/" class=""><a class="padding" href="../../../../systems/linux/databases/install_otter/">Install_Otter<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_mysql_pxc/" class=""><a class="padding" href="../../../../systems/linux/databases/install_mysql_pxc/">Install_Mysql_PXC<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_mysql_router/" class=""><a class="padding" href="../../../../systems/linux/databases/install_mysql_router/">Install_MySQL_Router<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_maxscale/" class=""><a class="padding" href="../../../../systems/linux/databases/install_maxscale/">Install_MaxScale<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_proxysql/" class=""><a class="padding" href="../../../../systems/linux/databases/install_proxysql/">Install_ProxySQL<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_manticore_search/" class=""><a class="padding" href="../../../../systems/linux/databases/install_manticore_search/">Install_Manticore_Search<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_canal/" class=""><a class="padding" href="../../../../systems/linux/databases/install_canal/">Install_Canal<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/use_mysql/" class=""><a class="padding" href="../../../../systems/linux/databases/use_mysql/">Use_Mysql<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/databases/install_mysql/" class=""><a class="padding" href="../../../../systems/linux/databases/install_mysql/">Install_Mysql<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/daemon/" class="alwaysopen"><input type="checkbox" id="R-section-adb931a8154ce0d9ab51418f1e06b3ab" aria-controls="R-subsections-adb931a8154ce0d9ab51418f1e06b3ab" checked><label for="R-section-adb931a8154ce0d9ab51418f1e06b3ab"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Daemon</span></label><a class="padding" href="../../../../systems/linux/daemon/">Daemon<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-adb931a8154ce0d9ab51418f1e06b3ab" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/daemon/install_supervisord/" class=""><a class="padding" href="../../../../systems/linux/daemon/install_supervisord/">Install_Supervisord<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/crontab/" class="alwaysopen"><input type="checkbox" id="R-section-5dbcbf4ab907358eb8cdb15d3a6874c0" aria-controls="R-subsections-5dbcbf4ab907358eb8cdb15d3a6874c0" checked><label for="R-section-5dbcbf4ab907358eb8cdb15d3a6874c0"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Crontab</span></label><a class="padding" href="../../../../systems/linux/crontab/">Crontab<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-5dbcbf4ab907358eb8cdb15d3a6874c0" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/crontab/install_xxl_job/" class=""><a class="padding" href="../../../../systems/linux/crontab/install_xxl_job/">Install Xxl Job<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/codes/" class="alwaysopen"><input type="checkbox" id="R-section-b1a3b874591fa49fdbf0d03a3df78c1a" aria-controls="R-subsections-b1a3b874591fa49fdbf0d03a3df78c1a" checked><label for="R-section-b1a3b874591fa49fdbf0d03a3df78c1a"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Codes</span></label><a class="padding" href="../../../../systems/linux/codes/">Codes<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-b1a3b874591fa49fdbf0d03a3df78c1a" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/codes/configure_sonarqube/" class=""><a class="padding" href="../../../../systems/linux/codes/configure_sonarqube/">Configure_SonarQube<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/codes/install_sonarqube/" class=""><a class="padding" href="../../../../systems/linux/codes/install_sonarqube/">Install_SonarQube<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/cdn/" class=""><a class="padding" href="../../../../systems/linux/cdn/">CDN<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/backend/" class="alwaysopen"><input type="checkbox" id="R-section-a8a02cab0c95abb1fddb36006407a99c" aria-controls="R-subsections-a8a02cab0c95abb1fddb36006407a99c" checked><label for="R-section-a8a02cab0c95abb1fddb36006407a99c"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Backend</span></label><a class="padding" href="../../../../systems/linux/backend/">Backend<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-a8a02cab0c95abb1fddb36006407a99c" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/backend/tomcat/" class="alwaysopen"><input type="checkbox" id="R-section-a37d588e6abdd2fd4d9ed098f2480ef4" aria-controls="R-subsections-a37d588e6abdd2fd4d9ed098f2480ef4" checked><label for="R-section-a37d588e6abdd2fd4d9ed098f2480ef4"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Tomcat</span></label><a class="padding" href="../../../../systems/linux/backend/tomcat/">Tomcat<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-a37d588e6abdd2fd4d9ed098f2480ef4" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/backend/tomcat/configure_tomcat/" class=""><a class="padding" href="../../../../systems/linux/backend/tomcat/configure_tomcat/">Configure_Tomcat<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/backend/tomcat/install_tomcat/" class=""><a class="padding" href="../../../../systems/linux/backend/tomcat/install_tomcat/">Install_Tomcat<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/systems/linux/backend/php/" class="alwaysopen"><input type="checkbox" id="R-section-0f591cf97f2213fd2c12be6cea731d4e" aria-controls="R-subsections-0f591cf97f2213fd2c12be6cea731d4e" checked><label for="R-section-0f591cf97f2213fd2c12be6cea731d4e"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu PHP</span></label><a class="padding" href="../../../../systems/linux/backend/php/">PHP<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-0f591cf97f2213fd2c12be6cea731d4e" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/backend/php/configure_php_expand/" class=""><a class="padding" href="../../../../systems/linux/backend/php/configure_php_expand/">Configure_PHP_Expand<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/backend/php/install_php/" class=""><a class="padding" href="../../../../systems/linux/backend/php/install_php/">Install_PHP<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/systems/linux/ansible/" class="alwaysopen"><input type="checkbox" id="R-section-d91fd45339335865ca8b3da1c08c6f27" aria-controls="R-subsections-d91fd45339335865ca8b3da1c08c6f27" checked><label for="R-section-d91fd45339335865ca8b3da1c08c6f27"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Ansible</span></label><a class="padding" href="../../../../systems/linux/ansible/">Ansible<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-d91fd45339335865ca8b3da1c08c6f27" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/ansible/use_slatstack/" class=""><a class="padding" href="../../../../systems/linux/ansible/use_slatstack/">Use_Slatstack<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ansible/use_ansible/" class=""><a class="padding" href="../../../../systems/linux/ansible/use_ansible/">Use_Ansible<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ansible/install_slatstack/" class=""><a class="padding" href="../../../../systems/linux/ansible/install_slatstack/">Install_Slatstack<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/ansible/install_ansible/" class=""><a class="padding" href="../../../../systems/linux/ansible/install_ansible/">Install_Ansible<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/systems/black-macos/" class=""><a class="padding" href="../../../../systems/black-macos/">Black MacOs<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/activation_key/" class="alwaysopen"><input type="checkbox" id="R-section-b7cd59ef441cb6c4b9b5d009ebd42017" aria-controls="R-subsections-b7cd59ef441cb6c4b9b5d009ebd42017" checked><label for="R-section-b7cd59ef441cb6c4b9b5d009ebd42017"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Activation Key</span></label><a class="padding" href="../../../../systems/activation_key/">Activation Key<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-b7cd59ef441cb6c4b9b5d009ebd42017" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/activation_key/windows/" class=""><a class="padding" href="../../../../systems/activation_key/windows/">Windows<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/activation_key/vmware/" class=""><a class="padding" href="../../../../systems/activation_key/vmware/">Vmware<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          </ul>
+        </div>
+        <div id="R-shortcuts">
+          <div class="nav-title padding">More</div>
+          <ul class="space">
+            <li><a class="padding" href="../../../../categories/"><i class='fa-fw fas fa-layer-group'></i> Categories</a></li>
+            <li><a class="padding" href="../../../../tags/"><i class='fa-fw fas fa-tags'></i> Tags</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-solid fa-box-archive'></i> Archive</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-solid fa-screwdriver-wrench'></i> Tools</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-fw fas fa-camera'></i> Showcases</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-fw fas fa-bullhorn'></i> Credits</a></li>
+            <li><a class="padding" href="../../../../"><i class='fa-brands fa-qq'></i> QQ</a></li>
+            <li><a class="padding" href="https://www.zhihu.com/people/lisenhui"><i class='fa-brands fa-zhihu'></i> 知乎</a></li>
+            <li><a class="padding" href="../../../../qq@qq.com"><i class='fa-solid fa-envelope'></i> E-Mail</a></li>
+            <li><a class="padding" href="https://weibo.com/yourname"><i class='fa-brands fa-weibo'></i> WeiBo</a></li>
+            <li><a class="padding" href="https://www.youtube.com/watch?v=RgKAFK5djSk"><i class='fa-brands fa-youtube'></i> Youtube</a></li>
+            <li><a class="padding" href="https://github.com/McShelby/hugo-theme-relearn"><i class='fa-fw fab fa-github'></i> GitHub repo</a></li>
+          </ul>
+        </div>
+        <div class="padding footermargin footerLangSwitch footerVariantSwitch footerVisitedLinks footerFooter showLangSwitch showVariantSwitch showVisitedLinks showFooter"></div>
+        <div id="R-menu-footer">
+          <hr class="padding default-animation footerLangSwitch footerVariantSwitch footerVisitedLinks footerFooter showLangSwitch showVariantSwitch showVisitedLinks showFooter">
+          <div id="R-prefooter" class="footerLangSwitch footerVariantSwitch footerVisitedLinks showLangSwitch showVariantSwitch showVisitedLinks">
+            <ul>
+              <li id="R-select-language-container" class="footerLangSwitch showLangSwitch">
+                <div class="padding menu-control">
+                  <i class="fa-fw fas fa-language"></i>
+                  <span>&nbsp;</span>
+                  <div class="control-style">
+                    <label class="a11y-only" for="R-select-language">Language</label>
+                    <select id="R-select-language" onchange="location = this.querySelector( this.value ).dataset.url;">
+                      <option id="R-select-language-en" value="#R-select-language-en" data-url="../../../../systems/linux/jenkins/use_jenkins/" lang="en" selected>English</option>
+                    </select>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+              </li>
+              <li id="R-select-variant-container" class="footerVariantSwitch showVariantSwitch">
+                <div class="padding menu-control">
+                  <i class="fa-fw fas fa-paint-brush"></i>
+                  <span>&nbsp;</span>
+                  <div class="control-style">
+                    <label class="a11y-only" for="R-select-variant">Theme</label>
+                    <select id="R-select-variant" onchange="window.variants && variants.changeVariant( this.value );">
+                      <option id="R-select-variant-relearn-auto" value="relearn-auto" selected>Relearn Light/Dark</option>
+                      <option id="R-select-variant-relearn-light" value="relearn-light">Relearn Light</option>
+                      <option id="R-select-variant-relearn-dark" value="relearn-dark">Relearn Dark</option>
+                      <option id="R-select-variant-relearn-bright" value="relearn-bright">Relearn Bright</option>
+                      <option id="R-select-variant-zen-auto" value="zen-auto">Zen Light/Dark</option>
+                      <option id="R-select-variant-zen-light" value="zen-light">Zen Light</option>
+                      <option id="R-select-variant-zen-dark" value="zen-dark">Zen Dark</option>
+                      <option id="R-select-variant-retro-auto" value="retro-auto">Retro Learn/Neon</option>
+                      <option id="R-select-variant-neon" value="neon">Neon</option>
+                      <option id="R-select-variant-learn" value="learn">Learn</option>
+                      <option id="R-select-variant-blue" value="blue">Blue</option>
+                      <option id="R-select-variant-green" value="green">Green</option>
+                      <option id="R-select-variant-red" value="red">Red</option>
+                      <option id="R-select-variant-my-branding" value="my-branding">Your Branding</option>
+                    </select>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+                <script>window.variants && variants.markSelectedVariant();</script>
+              </li>
+              <li class="footerVisitedLinks showVisitedLinks">
+                <div class="padding menu-control">
+                  <i class="fa-fw fas fa-history"></i>
+                  <span>&nbsp;</span>
+                  <div class="control-style">
+                    <button onclick="clearHistory();">Clear History</button>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div id="R-footer" class="footerFooter showFooter">
+	    <p>Built with <a href="https://github.com/McShelby/hugo-theme-relearn" title="love"><i class="fas fa-heart"></i></a> by <a href="https://gohugo.io/">Hugo</a></p>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <script src="../../../../js/clipboard.min.js?1719329889" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329889" defer></script>
+    <script src="../../../../js/theme.js?1719329889" defer></script>
+  </body>
+</html>

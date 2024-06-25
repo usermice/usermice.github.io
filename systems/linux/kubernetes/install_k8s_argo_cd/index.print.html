@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="Argo CD介绍 Argo CD是一个为Kubernetes而生的，遵循声明式GitOps理念的持续部署CD工具。Argo CD可在Git存储库更改时自动同步和部署应用程序 应用定义、配置和环境信息是声明式的，并可以进行版本控制 应用部署和生命周期管理是全自动化的、是可审计的，清晰易懂 安装Argo CD 创建ArgoCD命名空间 $ kubectl create namespace argocd 下载并启动ArgoCD $ kubectl apply -n argocd -f https://raw.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_K8s_Argo_CD :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="Argo CD介绍 Argo CD是一个为Kubernetes而生的，遵循声明式GitOps理念的持续部署CD工具。Argo CD可在Git存储库更改时自动同步和部署应用程序 应用定义、配置和环境信息是声明式的，并可以进行版本控制 应用部署和生命周期管理是全自动化的、是可审计的，清晰易懂 安装Argo CD 创建ArgoCD命名空间 $ kubectl create namespace argocd 下载并启动ArgoCD $ kubectl apply -n argocd -f https://raw.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/kubernetes/install_k8s_argo_cd/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_K8s_Argo_CD :: Hugo Relearn Theme">
+    <meta property="og:description" content="Argo CD介绍 Argo CD是一个为Kubernetes而生的，遵循声明式GitOps理念的持续部署CD工具。Argo CD可在Git存储库更改时自动同步和部署应用程序 应用定义、配置和环境信息是声明式的，并可以进行版本控制 应用部署和生命周期管理是全自动化的、是可审计的，清晰易懂 安装Argo CD 创建ArgoCD命名空间 $ kubectl create namespace argocd 下载并启动ArgoCD $ kubectl apply -n argocd -f https://raw.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-25T01:37:44+08:00">
+    <meta property="article:modified_time" content="2024-06-25T01:37:44+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_K8s_Argo_CD :: Hugo Relearn Theme">
+    <meta itemprop="description" content="Argo CD介绍 Argo CD是一个为Kubernetes而生的，遵循声明式GitOps理念的持续部署CD工具。Argo CD可在Git存储库更改时自动同步和部署应用程序 应用定义、配置和环境信息是声明式的，并可以进行版本控制 应用部署和生命周期管理是全自动化的、是可审计的，清晰易懂 安装Argo CD 创建ArgoCD命名空间 $ kubectl create namespace argocd 下载并启动ArgoCD $ kubectl apply -n argocd -f https://raw.">
+    <meta itemprop="datePublished" content="2024-06-25T01:37:44+08:00">
+    <meta itemprop="dateModified" content="2024-06-25T01:37:44+08:00">
+    <meta itemprop="wordCount" content="68">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_K8s_Argo_CD :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/kubernetes/install_k8s_argo_cd/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/kubernetes/"><span itemprop="name">Kubernetes</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_K8s_Argo_CD</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/kubernetes/install_k8s_coredns/" title="Install_K8s_CoreDNS (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/kubernetes/configure_k8s_storage/" title="Configure_K8s_Storage (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_k8s_argo_cd">Install_K8s_Argo_CD</h1>
+
+<h2 id="argo-cd介绍"><code>Argo CD</code>介绍</h2>
+<blockquote>
+<ul>
+<li><code>Argo CD</code>是一个为<code>Kubernetes</code>而生的，遵循声明式<code>GitOps</code>理念的持续部署<code>CD</code>工具。<code>Argo CD</code>可在<code>Git</code>存储库更改时自动同步和部署应用程序</li>
+<li>应用定义、配置和环境信息是声明式的，并可以进行版本控制</li>
+<li>应用部署和生命周期管理是全自动化的、是可审计的，清晰易懂</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="安装argo-cd">安装<code>Argo CD</code></h2>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->创建<!-- raw HTML omitted --><code>ArgoCD</code><!-- raw HTML omitted -->命名空间<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl create namespace argocd</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->下载并启动<!-- raw HTML omitted --><code>ArgoCD</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml  </span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->使用<!-- raw HTML omitted --><code>NodePort</code><!-- raw HTML omitted -->方式暴露<!-- raw HTML omitted --><code>argocd ui</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl patch service -n argocd argocd-server -p <span style="color:#e6db74">&#39;{&#34;spec&#34;: {&#34;type&#34;: &#34;NodePort&#34;}}&#39;</span>  </span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->获取<!-- raw HTML omitted --><code>ArgoCD</code><!-- raw HTML omitted -->的<!-- raw HTML omitted --><code>admin</code><!-- raw HTML omitted -->登陆密码<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.data.password}&#34;</span> | base64 -d</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->安装<!-- raw HTML omitted --><code>cli：CLI</code><!-- raw HTML omitted -->是用于管理<!-- raw HTML omitted --><code>Argo CD</code><!-- raw HTML omitted -->的命令行工具<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/v2.3.3/argocd-linux-amd64 <span style="color:#f92672">&amp;&amp;</span> chmod +x /usr/local/bin/argocd</span></span></code></pre></div></blockquote>
+<ol start="6">
+<li><!-- raw HTML omitted -->查看<!-- raw HTML omitted --><code>argocd-server</code><!-- raw HTML omitted -->暴露端口<!-- raw HTML omitted --></li>
+</ol>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get svc -n argocd</span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="Kafka部署 Kafka简介 名称地址 描述 Kafka官网 安装及快速入门 php安装kafka扩展 Kafka集群搭建过程和简单使用 使用zookeeper保存所有集群主机消息内容 开发语言：Java/Scala，支持协议：仿AMQP Kafka是分布式发布-订阅消息系统,它最初由LinkedIn公司开发，之后成为Apache项目的一部分 Kafka是一个分布式的，可划分的，冗余备份的持久性的日志服务，它主要用于处理活跃的流式数据 事务处理不支持、支持集群、支持负载均衡、支持zookeeper动态扩容 所有消息自动保存两天时间 Kafka为了避免随机写入带来的时间消耗，采取顺序写的方式存储数据 Kafka采用零拷贝技术，让数据传输更加迅速 批量读书数据，减少磁盘IO操作，可以提升性能 为了保证历史消息继续可以被消费，提供一个offset指向，通过指向来负责消息读取顺序 网络传输采用数据压缩格式，所以传输更快，占用带宽越少 Kafka中数据可以设置副本，可以在出现问题之后依然保证该数据的有效性 Kafka整体采用显示分布式架构，producers、broker(Kafka)和consumers都可以有多个 producer、consumer实现Kafka注册的接口，数据从producer发送到broker，broker承担一个中间缓存和分发的作用，broker分发注册到系统中的consumer broker的作用类似于缓存，即活跃的数据和离线处理系统之间的缓存，客户端和服务端的通信，是基于简单，高性能，且与编程语言无关的TCP协议 Topic：特指Kafka处理的消息源feeds of messages的不同分类 Partition：代表分区，单核CPU一个分区，多个CPU可以有多个分区。Topic物理上的分组，一个topic可以分为多个partition，每个partition是一个有序的队列，partition中的每条消息都会被分配一个有序的id(offset) Message：消息，是通信的基本单位，每个producer可以向一个topic(主题)发布一些消息 Producers：消息和数据产生着，向Kafka的一个topic发布消息的过程叫做producers Consumers：消息和数据消费者，订阅topics并处理其发布消息的过程叫做consumers Broker：缓存代理，Kafka集群中的一台或者多台服务器统称为broker offset与消息访问 消费者通过offset的方式来取得消息数据，利用offset偏移改变消息读取位置，可以实现历史消息读取 为了避免频繁的大量小数据磁盘IO操作，Kafka采用批量读取模式处理消息 在高负载状态下，为防止无效率的字节复制，Kafka采用由Producer，broker和consumer共享的标准化二进制消息格式，这样数据库就可以在它们之间自由传输，无需转换，降低了字节复制成本开销 Kafka图形化页面 名称地址 描述 Kafka图形化工具Eagle Apache Kafka的用户界面 Kafdrop – Kafka Web UI Eagle For Apache Kafka以前称为Kafka Eagle Kafka单节点部署 Kafka安装 单机部署单实例 下载、解压Kafka安装包 $ wget -P /usr/local/src/ https://archive.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_Kafka :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="Kafka部署 Kafka简介 名称地址 描述 Kafka官网 安装及快速入门 php安装kafka扩展 Kafka集群搭建过程和简单使用 使用zookeeper保存所有集群主机消息内容 开发语言：Java/Scala，支持协议：仿AMQP Kafka是分布式发布-订阅消息系统,它最初由LinkedIn公司开发，之后成为Apache项目的一部分 Kafka是一个分布式的，可划分的，冗余备份的持久性的日志服务，它主要用于处理活跃的流式数据 事务处理不支持、支持集群、支持负载均衡、支持zookeeper动态扩容 所有消息自动保存两天时间 Kafka为了避免随机写入带来的时间消耗，采取顺序写的方式存储数据 Kafka采用零拷贝技术，让数据传输更加迅速 批量读书数据，减少磁盘IO操作，可以提升性能 为了保证历史消息继续可以被消费，提供一个offset指向，通过指向来负责消息读取顺序 网络传输采用数据压缩格式，所以传输更快，占用带宽越少 Kafka中数据可以设置副本，可以在出现问题之后依然保证该数据的有效性 Kafka整体采用显示分布式架构，producers、broker(Kafka)和consumers都可以有多个 producer、consumer实现Kafka注册的接口，数据从producer发送到broker，broker承担一个中间缓存和分发的作用，broker分发注册到系统中的consumer broker的作用类似于缓存，即活跃的数据和离线处理系统之间的缓存，客户端和服务端的通信，是基于简单，高性能，且与编程语言无关的TCP协议 Topic：特指Kafka处理的消息源feeds of messages的不同分类 Partition：代表分区，单核CPU一个分区，多个CPU可以有多个分区。Topic物理上的分组，一个topic可以分为多个partition，每个partition是一个有序的队列，partition中的每条消息都会被分配一个有序的id(offset) Message：消息，是通信的基本单位，每个producer可以向一个topic(主题)发布一些消息 Producers：消息和数据产生着，向Kafka的一个topic发布消息的过程叫做producers Consumers：消息和数据消费者，订阅topics并处理其发布消息的过程叫做consumers Broker：缓存代理，Kafka集群中的一台或者多台服务器统称为broker offset与消息访问 消费者通过offset的方式来取得消息数据，利用offset偏移改变消息读取位置，可以实现历史消息读取 为了避免频繁的大量小数据磁盘IO操作，Kafka采用批量读取模式处理消息 在高负载状态下，为防止无效率的字节复制，Kafka采用由Producer，broker和consumer共享的标准化二进制消息格式，这样数据库就可以在它们之间自由传输，无需转换，降低了字节复制成本开销 Kafka图形化页面 名称地址 描述 Kafka图形化工具Eagle Apache Kafka的用户界面 Kafdrop – Kafka Web UI Eagle For Apache Kafka以前称为Kafka Eagle Kafka单节点部署 Kafka安装 单机部署单实例 下载、解压Kafka安装包 $ wget -P /usr/local/src/ https://archive.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/message_queue/install_kafka/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_Kafka :: Hugo Relearn Theme">
+    <meta property="og:description" content="Kafka部署 Kafka简介 名称地址 描述 Kafka官网 安装及快速入门 php安装kafka扩展 Kafka集群搭建过程和简单使用 使用zookeeper保存所有集群主机消息内容 开发语言：Java/Scala，支持协议：仿AMQP Kafka是分布式发布-订阅消息系统,它最初由LinkedIn公司开发，之后成为Apache项目的一部分 Kafka是一个分布式的，可划分的，冗余备份的持久性的日志服务，它主要用于处理活跃的流式数据 事务处理不支持、支持集群、支持负载均衡、支持zookeeper动态扩容 所有消息自动保存两天时间 Kafka为了避免随机写入带来的时间消耗，采取顺序写的方式存储数据 Kafka采用零拷贝技术，让数据传输更加迅速 批量读书数据，减少磁盘IO操作，可以提升性能 为了保证历史消息继续可以被消费，提供一个offset指向，通过指向来负责消息读取顺序 网络传输采用数据压缩格式，所以传输更快，占用带宽越少 Kafka中数据可以设置副本，可以在出现问题之后依然保证该数据的有效性 Kafka整体采用显示分布式架构，producers、broker(Kafka)和consumers都可以有多个 producer、consumer实现Kafka注册的接口，数据从producer发送到broker，broker承担一个中间缓存和分发的作用，broker分发注册到系统中的consumer broker的作用类似于缓存，即活跃的数据和离线处理系统之间的缓存，客户端和服务端的通信，是基于简单，高性能，且与编程语言无关的TCP协议 Topic：特指Kafka处理的消息源feeds of messages的不同分类 Partition：代表分区，单核CPU一个分区，多个CPU可以有多个分区。Topic物理上的分组，一个topic可以分为多个partition，每个partition是一个有序的队列，partition中的每条消息都会被分配一个有序的id(offset) Message：消息，是通信的基本单位，每个producer可以向一个topic(主题)发布一些消息 Producers：消息和数据产生着，向Kafka的一个topic发布消息的过程叫做producers Consumers：消息和数据消费者，订阅topics并处理其发布消息的过程叫做consumers Broker：缓存代理，Kafka集群中的一台或者多台服务器统称为broker offset与消息访问 消费者通过offset的方式来取得消息数据，利用offset偏移改变消息读取位置，可以实现历史消息读取 为了避免频繁的大量小数据磁盘IO操作，Kafka采用批量读取模式处理消息 在高负载状态下，为防止无效率的字节复制，Kafka采用由Producer，broker和consumer共享的标准化二进制消息格式，这样数据库就可以在它们之间自由传输，无需转换，降低了字节复制成本开销 Kafka图形化页面 名称地址 描述 Kafka图形化工具Eagle Apache Kafka的用户界面 Kafdrop – Kafka Web UI Eagle For Apache Kafka以前称为Kafka Eagle Kafka单节点部署 Kafka安装 单机部署单实例 下载、解压Kafka安装包 $ wget -P /usr/local/src/ https://archive.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-20T21:23:17+08:00">
+    <meta property="article:modified_time" content="2024-06-20T21:23:17+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_Kafka :: Hugo Relearn Theme">
+    <meta itemprop="description" content="Kafka部署 Kafka简介 名称地址 描述 Kafka官网 安装及快速入门 php安装kafka扩展 Kafka集群搭建过程和简单使用 使用zookeeper保存所有集群主机消息内容 开发语言：Java/Scala，支持协议：仿AMQP Kafka是分布式发布-订阅消息系统,它最初由LinkedIn公司开发，之后成为Apache项目的一部分 Kafka是一个分布式的，可划分的，冗余备份的持久性的日志服务，它主要用于处理活跃的流式数据 事务处理不支持、支持集群、支持负载均衡、支持zookeeper动态扩容 所有消息自动保存两天时间 Kafka为了避免随机写入带来的时间消耗，采取顺序写的方式存储数据 Kafka采用零拷贝技术，让数据传输更加迅速 批量读书数据，减少磁盘IO操作，可以提升性能 为了保证历史消息继续可以被消费，提供一个offset指向，通过指向来负责消息读取顺序 网络传输采用数据压缩格式，所以传输更快，占用带宽越少 Kafka中数据可以设置副本，可以在出现问题之后依然保证该数据的有效性 Kafka整体采用显示分布式架构，producers、broker(Kafka)和consumers都可以有多个 producer、consumer实现Kafka注册的接口，数据从producer发送到broker，broker承担一个中间缓存和分发的作用，broker分发注册到系统中的consumer broker的作用类似于缓存，即活跃的数据和离线处理系统之间的缓存，客户端和服务端的通信，是基于简单，高性能，且与编程语言无关的TCP协议 Topic：特指Kafka处理的消息源feeds of messages的不同分类 Partition：代表分区，单核CPU一个分区，多个CPU可以有多个分区。Topic物理上的分组，一个topic可以分为多个partition，每个partition是一个有序的队列，partition中的每条消息都会被分配一个有序的id(offset) Message：消息，是通信的基本单位，每个producer可以向一个topic(主题)发布一些消息 Producers：消息和数据产生着，向Kafka的一个topic发布消息的过程叫做producers Consumers：消息和数据消费者，订阅topics并处理其发布消息的过程叫做consumers Broker：缓存代理，Kafka集群中的一台或者多台服务器统称为broker offset与消息访问 消费者通过offset的方式来取得消息数据，利用offset偏移改变消息读取位置，可以实现历史消息读取 为了避免频繁的大量小数据磁盘IO操作，Kafka采用批量读取模式处理消息 在高负载状态下，为防止无效率的字节复制，Kafka采用由Producer，broker和consumer共享的标准化二进制消息格式，这样数据库就可以在它们之间自由传输，无需转换，降低了字节复制成本开销 Kafka图形化页面 名称地址 描述 Kafka图形化工具Eagle Apache Kafka的用户界面 Kafdrop – Kafka Web UI Eagle For Apache Kafka以前称为Kafka Eagle Kafka单节点部署 Kafka安装 单机部署单实例 下载、解压Kafka安装包 $ wget -P /usr/local/src/ https://archive.">
+    <meta itemprop="datePublished" content="2024-06-20T21:23:17+08:00">
+    <meta itemprop="dateModified" content="2024-06-20T21:23:17+08:00">
+    <meta itemprop="wordCount" content="338">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_Kafka :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/message_queue/install_kafka/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/message_queue/"><span itemprop="name">Message_Queue</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_Kafka</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/message_queue/install_nsq/" title="Install_Nsq (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/message_queue/configure_rabbitmq/" title="Configure_Rabbitmq (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_kafka">Install_Kafka</h1>
+
+<h2 id="kafka部署"><code>Kafka</code>部署</h2>
+<h3 id="kafka简介"><code>Kafka</code>简介</h3>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://kafka.apache.org/" rel="external" target="_self"><code>Kafka</code>官网</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://segmentfault.com/a/1190000012730949" rel="external" target="_self">安装及快速入门</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.cnblogs.com/gwyy/p/12206176.html" rel="external" target="_self"><code>php</code>安装<code>kafka</code>扩展</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://qii404.me/2018/02/02/kafka-cluster.html" rel="external" target="_self"><code>Kafka</code>集群搭建过程和简单使用</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><!-- raw HTML omitted -->使用<!-- raw HTML omitted --><code>zookeeper</code><!-- raw HTML omitted -->保存所有集群主机消息内容<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->开发语言：<!-- raw HTML omitted --><code>Java/Scala</code><!-- raw HTML omitted -->，支持协议：仿<!-- raw HTML omitted --><code>AMQP</code></li>
+<li><code>Kafka</code>是分布式发布-订阅消息系统,它最初由<code>LinkedIn</code>公司开发，之后成为<code>Apache</code>项目的一部分</li>
+<li><code>Kafka</code>是一个分布式的，可划分的，冗余备份的持久性的日志服务，它主要用于处理活跃的流式数据</li>
+<li>事务处理不支持、支持集群、支持负载均衡、支持<code>zookeeper</code>动态扩容</li>
+<li>所有消息自动保存两天时间</li>
+<li><code>Kafka</code>为了避免随机写入带来的时间消耗，采取顺序写的方式存储数据</li>
+<li><code>Kafka</code>采用零拷贝技术，让数据传输更加迅速</li>
+<li>批量读书数据，减少磁盘<code>IO</code>操作，可以提升性能</li>
+<li>为了保证历史消息继续可以被消费，提供一个<code>offset</code>指向，通过指向来负责消息读取顺序</li>
+<li>网络传输采用数据压缩格式，所以传输更快，占用带宽越少</li>
+<li><code>Kafka</code>中数据可以设置副本，可以在出现问题之后依然保证该数据的有效性</li>
+<li><code>Kafka</code><!-- raw HTML omitted -->整体采用显示分布式架构，<!-- raw HTML omitted --><code>producers</code>、<code>broker(Kafka)</code><!-- raw HTML omitted -->和<!-- raw HTML omitted --><code>consumers</code><!-- raw HTML omitted -->都可以有多个<!-- raw HTML omitted --></li>
+<li><code>producer</code>、<code>consumer</code><!-- raw HTML omitted -->实现<!-- raw HTML omitted --><code>Kafka</code><!-- raw HTML omitted -->注册的接口，数据从<!-- raw HTML omitted --><code>producer</code><!-- raw HTML omitted -->发送到<!-- raw HTML omitted --><code>broker</code>，<code>broker</code><!-- raw HTML omitted -->承担一个中间缓存和分发的作用，<!-- raw HTML omitted --><code>broker</code><!-- raw HTML omitted -->分发注册到系统中的<!-- raw HTML omitted --><code>consumer</code></li>
+<li><code>broker</code>的作用类似于缓存，即活跃的数据和离线处理系统之间的缓存，客户端和服务端的通信，是基于简单，高性能，且与编程语言无关的<code>TCP</code>协议</li>
+<li><code>Topic</code><!-- raw HTML omitted -->：特指<!-- raw HTML omitted --><code>Kafka</code><!-- raw HTML omitted -->处理的消息源<!-- raw HTML omitted --><code>feeds of messages</code><!-- raw HTML omitted -->的不同分类<!-- raw HTML omitted --></li>
+<li><code>Partition</code><!-- raw HTML omitted -->：代表分区，单核<!-- raw HTML omitted --><code>CPU</code><!-- raw HTML omitted -->一个分区，多个<!-- raw HTML omitted --><code>CPU</code><!-- raw HTML omitted -->可以有多个分区。<!-- raw HTML omitted --><code>Topic</code><!-- raw HTML omitted -->物理上的分组，一个<!-- raw HTML omitted --><code>topic</code><!-- raw HTML omitted -->可以分为多个<!-- raw HTML omitted --><code>partition</code><!-- raw HTML omitted -->，每个<!-- raw HTML omitted --><code>partition</code><!-- raw HTML omitted -->是一个有序的队列，<!-- raw HTML omitted --><code>partition</code><!-- raw HTML omitted -->中的每条消息都会被分配一个有序的<!-- raw HTML omitted --><code>id(offset)</code></li>
+<li><code>Message</code><!-- raw HTML omitted -->：消息，是通信的基本单位，每个<!-- raw HTML omitted --><code>producer</code><!-- raw HTML omitted -->可以向一个<!-- raw HTML omitted --><code>topic</code><!-- raw HTML omitted -->(主题)发布一些消息<!-- raw HTML omitted --></li>
+<li><code>Producers</code><!-- raw HTML omitted -->：消息和数据产生着，向<!-- raw HTML omitted --><code>Kafka</code>的一个<code>topic</code><!-- raw HTML omitted -->发布消息的过程叫做<!-- raw HTML omitted --><code>producers</code></li>
+<li><code>Consumers</code><!-- raw HTML omitted -->：消息和数据消费者，订阅<!-- raw HTML omitted --><code>topics</code><!-- raw HTML omitted -->并处理其发布消息的过程叫做<!-- raw HTML omitted --><code>consumers</code></li>
+<li><code>Broker</code><!-- raw HTML omitted -->：缓存代理，<!-- raw HTML omitted --><code>Kafka</code><!-- raw HTML omitted -->集群中的一台或者多台服务器统称为<!-- raw HTML omitted --><code>broker</code></li>
+<li><code>offset</code><!-- raw HTML omitted -->与消息访问<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li>消费者通过<code>offset</code>的方式来取得消息数据，利用<code>offset</code>偏移改变消息读取位置，可以实现历史消息读取</li>
+<li>为了避免频繁的大量小数据磁盘<code>IO</code>操作，<code>Kafka</code>采用批量读取模式处理消息</li>
+<li>在高负载状态下，为防止无效率的字节复制，<code>Kafka</code><!-- raw HTML omitted -->采用由<!-- raw HTML omitted --><code>Producer</code>，<code>broker</code><!-- raw HTML omitted -->和<!-- raw HTML omitted --><code>consumer</code>共享的标准化二进制消息格式，这样数据库就可以在它们之间自由传输，无需转换，降低了字节复制成本开销</li>
+</ul>
+</blockquote>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="kafka图形化页面"><code>Kafka</code>图形化页面</h3>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://juejin.cn/post/6971224791793532941#heading-4" rel="external" target="_self"><code>Kafka</code>图形化工具<code>Eagle</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://github.com/provectus/kafka-ui" rel="external" target="_self"><code>Apache Kafka</code>的用户界面</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://github.com/obsidiandynamics/kafdrop" rel="external" target="_self"><code>Kafdrop – Kafka Web UI</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://github.com/smartloli/EFAK" rel="external" target="_self"><code>Eagle For Apache Kafka</code>以前称为<code>Kafka Eagle</code></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<hr>
+<h3 id="kafka单节点部署"><code>Kafka</code>单节点部署</h3>
+<blockquote>
+<ul>
+<li><a href="https://kafka.apache.org/quickstart" rel="external" target="_self"><code>Kafka</code>安装</a></li>
+<li><!-- raw HTML omitted -->单机部署单实例<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->下载、解压<!-- raw HTML omitted --><code>Kafka</code><!-- raw HTML omitted -->安装包<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ wget -P /usr/local/src/ https://archive.apache.org/dist/kafka/2.8.1/kafka_2.13-2.8.1.tgz
+</span></span><span style="display:flex;"><span>$ tar -zxvf /usr/local/srckafka_2.13-2.8.1.tgz -C /opt/
+</span></span><span style="display:flex;"><span>$ cd /opt/
+</span></span><span style="display:flex;"><span>$ mv kafka_2.13-2.8.1/ kafka</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->单机单实例修改<!-- raw HTML omitted --><code>Kafka</code><!-- raw HTML omitted -->配置文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/^dataDir=/cdataDir=\/opt\/kafka\/zookeeper&#39;</span> /opt/kafka/config/zookeeper.properties
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/^broker.id=/cbroker.id=1&#39;</span> /opt/kafka/config/server.properties  	<span style="color:#75715e"># 集群设置不同id</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/^log.dirs=/clog.dirs=/opt/kafka/logs/logs-1&#39;</span> /opt/kafka/config/server.properties
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Kafka默认端口号：9092，如果要修改默认端口执行下面两条命令</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/#advertised.listeners/a port=9095&#39;</span> /opt/kafka/config/server.properties
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/#advertised.listeners/a advertised.listeners=PLAINTEXT://$IP:9095&#39;</span> /opt/kafka/config/server.properties
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ mkdir -p /opt/kafka/<span style="color:#f92672">{</span>zookeeper,logs<span style="color:#f92672">}</span>  	<span style="color:#75715e"># 创建持久化目录</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->单机启动单实例<!-- raw HTML omitted --><code>zookeeper</code><!-- raw HTML omitted -->和<!-- raw HTML omitted --><code>Kafka</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /opt/kafka/bin/zookeeper-server-start.sh -daemon /opt/kafka/config/zookeeper.properties  	<span style="color:#75715e"># 后台启动zookeeper进程</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ /opt/kafka/bin/kafka-server-start.sh -daemon /opt/kafka/config/server.properties</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->执行检查命令<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ jps
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">14050</span> Kafka
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">10042</span> QuorumPeerMain
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">15724</span> Jps</span></span></code></pre></div><p><a href="#R-image-1d4112b833979a7c3c432bbe0dc490a5" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kafka_Server/jps.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-1d4112b833979a7c3c432bbe0dc490a5"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kafka_Server/jps.png"></a></p>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="kafka单节点多实例"><code>Kafka</code>单节点多实例</h3>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->单机部署多实例集群模式<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>Kafka</code><!-- raw HTML omitted -->配置文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/^dataDir=/cdataDir=\/opt\/kafka\/zookeeper&#39;</span> /opt/kafka/config/zookeeper.properties
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 拷贝修改kafka配置文件</span>
+</span></span><span style="display:flex;"><span>$ cp /opt/kafka/config/server.properties /opt/kafka/config/server-2.properties
+</span></span><span style="display:flex;"><span>$ cp /opt/kafka/config/server.properties /opt/kafka/config/server-3.properties
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 修改第一个实例配置</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/^broker.id=/cbroker.id=1&#39;</span> /opt/kafka/config/server.properties  <span style="color:#75715e"># 集群设置不同id</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/^log.dirs=/clog.dirs=/opt/kafka/logs/logs-1&#39;</span> /opt/kafka/config/server.properties
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/#advertised.listeners/a advertised.listeners=PLAINTEXT://$IP:9092&#39;</span> /opt/kafka/config/server.properties
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 修改第二个实例</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/^broker.id=/cbroker.id=2&#39;</span> /opt/kafka/config/server.properties  <span style="color:#75715e"># 集群设置不同id</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/^log.dirs=/clog.dirs=/opt/kafka/logs/logs-2&#39;</span> /opt/kafka/config/server.properties
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/#advertised.listeners/a advertised.listeners=PLAINTEXT://$IP:9093&#39;</span> /opt/kafka/config/server.properties
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 修改第三个实例</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/^broker.id=/cbroker.id=3&#39;</span> /opt/kafka/config/server.properties  <span style="color:#75715e"># 集群设置不同id</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/^log.dirs=/clog.dirs=/opt/kafka/logs/logs-3&#39;</span> /opt/kafka/config/server.properties
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/#advertised.listeners/a advertised.listeners=PLAINTEXT://$IP:9094&#39;</span> /opt/kafka/config/server.properties</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->单机启动多实例<!-- raw HTML omitted --><code>zookeeper</code><!-- raw HTML omitted -->和<!-- raw HTML omitted --><code>Kafka</code></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /opt/kafka/bin/zookeeper-server-start.sh -daemon /opt/kafka/config/zookeeper.properties  	<span style="color:#75715e"># 后台启动zookeeper进程</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 启动Kafka多个实例</span>
+</span></span><span style="display:flex;"><span>$ /opt/kafka/bin/kafka-server-start.sh -daemon /opt/kafka/config/server.properties
+</span></span><span style="display:flex;"><span>$ /opt/kafka/bin/kafka-server-start.sh -daemon /opt/kafka/config/server-2.properties
+</span></span><span style="display:flex;"><span>$ /opt/kafka/bin/kafka-server-start.sh -daemon /opt/kafka/config/server-3.properties</span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h3 id="kafka集群模式"><code>Kafka</code>集群模式</h3>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->多<!-- raw HTML omitted --><code>zookeeper</code><!-- raw HTML omitted -->多<!-- raw HTML omitted --><code>Kafka</code><!-- raw HTML omitted -->实例<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->下载、解压<!-- raw HTML omitted --><code>Kafka</code><!-- raw HTML omitted -->安装包<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ wget -P /usr/local/src/ https://archive.apache.org/dist/kafka/2.8.1/kafka_2.13-2.8.1.tgz
+</span></span><span style="display:flex;"><span>$ tar -zxvf /usr/local/srckafka_2.13-2.8.1.tgz -C /opt/
+</span></span><span style="display:flex;"><span>$ cd /opt/
+</span></span><span style="display:flex;"><span>$ mv kafka_2.13-2.8.1/ kafka</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>zookeeper</code><!-- raw HTML omitted -->和<!-- raw HTML omitted --><code>Kafka</code><!-- raw HTML omitted -->配置文件<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mkdir -p /opt/kafka/<span style="color:#f92672">{</span>zookeeper,logs<span style="color:#f92672">}</span>  	<span style="color:#75715e"># 创建持久化目录</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/^dataDir=/cdataDir=\/opt\/kafka\/zookeeper&#39;</span> /opt/kafka/config/zookeeper.properties
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/^broker.id=/cbroker.id=1&#39;</span> /opt/kafka/config/server.properties  	<span style="color:#75715e"># 集群设置不同id</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/^log.dirs=/clog.dirs=/opt/kafka/logs/logs-1&#39;</span> /opt/kafka/config/server.properties
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;/^zookeeper.connect=/czookeeper.connect=${IP-1}:2128,${IP-2}:2128,${IP-3}:2128&#39;</span> /opt/kafka/config/server.properties</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->多<!-- raw HTML omitted --><code>zookeeper</code><!-- raw HTML omitted -->和多<!-- raw HTML omitted --><code>Kafka</code><!-- raw HTML omitted -->实例启动<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /opt/kafka/bin/zookeeper-server-start.sh -daemon /opt/kafka/config/zookeeper.properties  	<span style="color:#75715e"># 后台启动zookeeper进程</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ /opt/kafka/bin/kafka-server-start.sh -daemon /opt/kafka/config/server.properties</span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h3 id="创建topic测试">创建<code>Topic</code>测试</h3>
+<blockquote>
+<ul>
+<li><code>--create</code><!-- raw HTML omitted -->：创建<!-- raw HTML omitted --></li>
+<li><code>--zookeeper</code><!-- raw HTML omitted -->： 使用<!-- raw HTML omitted --><code>zookeeper</code></li>
+<li><code>--replication-factor 1</code><!-- raw HTML omitted -->： 使用<code>1</code>个副本<!-- raw HTML omitted --></li>
+<li><code>--partitions 1</code><!-- raw HTML omitted -->：启用分区数量<!-- raw HTML omitted --></li>
+<li><code>--topic test</code><!-- raw HTML omitted -->： 主题名字：<!-- raw HTML omitted --><code>test</code></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /opt/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test  	<span style="color:#75715e"># 使用kafka-console-producer.sh 产生消息，发送消息</span>
+</span></span><span style="display:flex;"><span>$ /opt/kafka/bin/kafka-console-consumer.sh --topic test --from-beginning --bootstrap-server localhost:9092  	<span style="color:#75715e"># 使用kafka-console-consumer.sh消费消息</span></span></span></code></pre></div><ul>
+<li><code>--from-beginning</code><!-- raw HTML omitted -->： 接受历史消息参数<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /opt/kafka/bin/kafka-topics.sh --describe --topic test --bootstrap-server localhost:9092  	<span style="color:#75715e"># 查看topics描述信息</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->第一行给出了所有分区的摘要，每个附加行给出了关于一个分区的信息。 由于我们只有一个分区，所以只有一行<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Leader</code><!-- raw HTML omitted -->：是负责给定分区的所有读取和写入的节点。 每个节点将成为分区随机选择部分的领导者<!-- raw HTML omitted --></li>
+<li><code>Replicas</code><!-- raw HTML omitted -->：是复制此分区日志的节点列表，无论它们是否是领导者，或者即使他们当前处于活动状态<!-- raw HTML omitted --></li>
+<li><code>Isr</code><!-- raw HTML omitted -->：是一组“同步”副本。这是复制品列表的子集，当前活着并被引导到领导者<!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-c69020179f43b7e9f06c364d3cec78fb" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kafka_Server/topics.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-c69020179f43b7e9f06c364d3cec78fb"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kafka_Server/topics.png"></a></p>
+</blockquote>
+</blockquote>
+</blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

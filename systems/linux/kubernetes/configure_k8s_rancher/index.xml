@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Configure_K8s_Rancher :: Hugo Relearn Theme</title>
+    <link>https://erge.blog/systems/linux/kubernetes/configure_k8s_rancher/</link>
+    <description>Rancher服务宕机情况下使用Kubernetes Cluster Rancher清理节点 #!/bin/bash KUBE_SVC=&#39; kubelet kube-scheduler kube-proxy kube-controller-manager kube-apiserver &#39; for kube_svc in ${KUBE_SVC}; do # 停止服务 if [[ `systemctl is-active ${kube_svc}` == &#39;active&#39; ]]; then systemctl stop ${kube_svc} fi # 禁止服务开机启动 if [[ `systemctl is-enabled ${kube_svc}` == &#39;enabled&#39; ]]; then systemctl disable ${kube_svc} fi done # 停止所有容器 docker stop $(docker ps -aq) # 删除所有容器 docker rm -f $(docker ps -qa) # 删除所有容器卷 docker volume rm $(docker volume ls -q) # 卸载mount目录 for mount in $(mount | grep tmpfs | grep &#39;/var/lib/kubelet&#39; | awk &#39;{ print $3 }&#39;) /var/lib/kubelet /var/lib/rancher; do umount $mount; done # 备份目录 mv /etc/kubernetes /etc/kubernetes-bak-$(date +&#34;%Y%m%d%H%M&#34;) mv /var/lib/etcd /var/lib/etcd-bak-$(date +&#34;%Y%m%d%H%M&#34;) mv /var/lib/rancher /var/lib/rancher-bak-$(date +&#34;%Y%m%d%H%M&#34;) mv /opt/rke /opt/rke-bak-$(date +&#34;%Y%m%d%H%M&#34;) # 删除残留路径 rm -rf /etc/ceph \ /etc/cni \ /opt/cni \ /run/secrets/kubernetes.</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <managingEditor>xxx@gmail.com (二哥)</managingEditor>
+    <webMaster>xxx@gmail.com (二哥)</webMaster>
+    <lastBuildDate></lastBuildDate>
+    <atom:link href="https://erge.blog/systems/linux/kubernetes/configure_k8s_rancher/index.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>

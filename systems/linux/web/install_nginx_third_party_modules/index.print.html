@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="安装Nginx GeoIP2IP定位模块 GeoIP2模块依赖libmaxminddb库 GeoIP Legacy Databases 安装libmaxminddb库 $ wget -c https://github.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_Nginx_Third_Party_Modules :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="安装Nginx GeoIP2IP定位模块 GeoIP2模块依赖libmaxminddb库 GeoIP Legacy Databases 安装libmaxminddb库 $ wget -c https://github.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/web/install_nginx_third_party_modules/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_Nginx_Third_Party_Modules :: Hugo Relearn Theme">
+    <meta property="og:description" content="安装Nginx GeoIP2IP定位模块 GeoIP2模块依赖libmaxminddb库 GeoIP Legacy Databases 安装libmaxminddb库 $ wget -c https://github.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-25T00:45:30+08:00">
+    <meta property="article:modified_time" content="2024-06-25T00:45:30+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_Nginx_Third_Party_Modules :: Hugo Relearn Theme">
+    <meta itemprop="description" content="安装Nginx GeoIP2IP定位模块 GeoIP2模块依赖libmaxminddb库 GeoIP Legacy Databases 安装libmaxminddb库 $ wget -c https://github.">
+    <meta itemprop="datePublished" content="2024-06-25T00:45:30+08:00">
+    <meta itemprop="dateModified" content="2024-06-25T00:45:30+08:00">
+    <meta itemprop="wordCount" content="418">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_Nginx_Third_Party_Modules :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/web/install_nginx_third_party_modules/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/web/"><span itemprop="name">Web</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_Nginx_Third_Party_Modules</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/web/install-nginx/" title="Install Nginx (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/web/configure_nginx/" title="Configure_Nginx (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_nginx_third_party_modules">Install_Nginx_Third_Party_Modules</h1>
+
+<h2 id="安装nginx-geoip2ip定位模块">安装<code>Nginx GeoIP2</code>IP定位模块</h2>
+<blockquote>
+<ul>
+<li><code>GeoIP2</code><!-- raw HTML omitted -->模块依赖<!-- raw HTML omitted --><code>libmaxminddb</code>库</li>
+<li><a href="https://www.miyuru.lk/geoiplegacy" rel="external" target="_self"><code>GeoIP Legacy Databases</code></a></li>
+</ul>
+</blockquote>
+<h3 id="安装libmaxminddb库">安装<code>libmaxminddb</code>库</h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$  wget -c https://github.com/maxmind/libmaxminddb/releases/download/1.7.1/libmaxminddb-1.7.1.tar.gz -P /usr/local/src  	<span style="color:#75715e"># 下载到指定目录下:-c断点续传、-P下载指定目录，  </span>
+</span></span><span style="display:flex;"><span>$ tar -zxvf /usr/local/src/libmaxminddb-1.7.1.tar.gz -C /usr/local/src/
+</span></span><span style="display:flex;"><span>$ cd /usr/local/src/libmaxminddb-1.7.1
+</span></span><span style="display:flex;"><span>$ ./configure
+</span></span><span style="display:flex;"><span>$ make -j6 <span style="color:#f92672">&amp;&amp;</span> make install</span></span></code></pre></div></blockquote>
+<h3 id="安装geoip2">安装<code>GeoIP2</code></h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git clone https://github.com/leev/ngx_http_geoip2_module.git /usr/local/nginx/ngx_http_geoip2_module
+</span></span><span style="display:flex;"><span>$ ./configure --prefix<span style="color:#f92672">=</span>/usr/local/nginx --add-module<span style="color:#f92672">=</span>/usr/local/nginx/ngx_http_geoip2_module</span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="安装ngx_brotli压缩算法">安装<code>ngx_brotli</code>压缩算法</h2>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 下载算法包，执行更新ngx_brotli依赖算法，算法依赖自动下载</span>
+</span></span><span style="display:flex;"><span>$ wget -c https://codeload.github.com/google/brotli/tar.gz/refs/tags/v1.1.0 -P /usr/local/src
+</span></span><span style="display:flex;"><span>$ tar zxvf /usr/local/src/brotli-1.1.0.tar.gz -C /usr/local/src/
+</span></span><span style="display:flex;"><span>$ mv /usr/local/src/brotli-1.1.0/* /usr/local/nginx/ngx_brotli/deps/brotli/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 下载安装模块</span>
+</span></span><span style="display:flex;"><span>$ git clone https://github.com/google/ngx_brotli /usr/local/nginx/ngx_brotli
+</span></span><span style="display:flex;"><span>$ cd /usr/local/nginx/ngx_brotli
+</span></span><span style="display:flex;"><span>$ git submodule update --init  	<span style="color:#75715e"># 更新ngx_brotli以来算法</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 动态编译</span>
+</span></span><span style="display:flex;"><span>$ cd /usr/local/src/nginx-1.20.2
+</span></span><span style="display:flex;"><span>$ ./configure --with-compat --add-dynamic-module<span style="color:#f92672">=</span>/usr/local/src/ngx_brotli --prefix<span style="color:#f92672">=</span>/usr/local/nginx
+</span></span><span style="display:flex;"><span>$ make modules
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 拷贝模块和主程序到Nginx安装目录下新创建的文件夹内：modules</span>
+</span></span><span style="display:flex;"><span>$ cp /usr/local/src/nginx-1.20.2/objs/ngx_http_brotli_static_module.so /usr/local/nginx/modules/ngx_http_brotli_static_module.so
+</span></span><span style="display:flex;"><span>$ cp /usr/local/src/nginx-1.20.2/objs/ngx_http_brotli_filter_module.so /usr/local/nginx/modules/ngx_http_brotli_filter_module.so
+</span></span><span style="display:flex;"><span>$ cp /usr/local/src/nginx-1.20.2/objs/nginx /usr/local/nginx/sbin/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 在ngixn.conf配置文件最上面动态加载模块</span>
+</span></span><span style="display:flex;"><span>$ cat &gt;/usr/local/nginx/conf/nginx.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">load_module /usr/local/nginx/modules/ngx_http_brotli_filter_module.so;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">load_module /usr/local/nginx/modules/ngx_http_brotli_static_module.so;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 静态编译</span>
+</span></span><span style="display:flex;"><span>$ cd /usr/local/src/nginx-1.20.2
+</span></span><span style="display:flex;"><span>$ ./configure --prefix<span style="color:#f92672">=</span>/usr/local/nginx --add-module<span style="color:#f92672">=</span>/usr/local/nginx/ngx_brotli</span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="安装upstream_check后端服务端口检测模块">安装<code>upstream_check</code>后端服务端口检测模块</h2>
+<blockquote>
+<ul>
+<li>
+<ol>
+<li>访问<code>http://ip/status</code><!-- raw HTML omitted -->就看到监控页面<!-- raw HTML omitted --></li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><a href="http://tengine.taobao.org/document_cn/http_upstream_check_cn.html" rel="external" target="_self"><code>Tengine.taobao ngx_http_upstream_check_module</code></a></li>
+</ol>
+</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git clone https://github.com/yaoweibin/nginx_upstream_check_module.git /usr/local/nginx/nginx_upstream_check_module  	<span style="color:#75715e"># 下载检测包  </span>
+</span></span><span style="display:flex;"><span>$ cd /usr/local/src/nginx-1.20.2/
+</span></span><span style="display:flex;"><span>$ ./configure --prefix<span style="color:#f92672">=</span>/usr/local/nginx --add-module<span style="color:#f92672">=</span>/usr/local/nginx/nginx_upstream_check_module</span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="安装concat合并请求模块">安装<code>concat</code>合并请求模块</h2>
+<blockquote>
+<ul>
+<li>
+<ol>
+<li><a href="https://github.com/alibaba/nginx-http-concat" rel="external" target="_self"><code>Alibaba Concat</code>请求合并模块</a></li>
+</ol>
+</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git clone https://github.com/alibaba/nginx-http-concat.git /usr/local/nginx/nginx-http-concat
+</span></span><span style="display:flex;"><span>$ cd /usr/local/src/nginx-1.20.2/
+</span></span><span style="display:flex;"><span>$ ./configure --prefix<span style="color:#f92672">=</span>/usr/local/nginx --add-module<span style="color:#f92672">=</span>/usr/local/nginx/nginx-http-concat</span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="安装ngx_cache_purge缓存清理模块">安装<code>ngx_cache_purge</code>缓存清理模块</h2>
+<blockquote>
+<ul>
+<li>
+<ol>
+<li><a href="https://github.com/FRICKLE/ngx_cache_purge" rel="external" target="_self"><code>Ngx_cache_purge</code></a></li>
+</ol>
+</li>
+<li><!-- raw HTML omitted -->相同位置语法<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>http <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    proxy_cache_path  /tmp/cache  keys_zone<span style="color:#f92672">=</span>tmpcache:10m;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    server <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        location / <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            proxy_pass         http://127.0.0.1:8000;
+</span></span><span style="display:flex;"><span>            proxy_cache        tmpcache;
+</span></span><span style="display:flex;"><span>            proxy_cache_key    $uri$is_args$args;
+</span></span><span style="display:flex;"><span>            proxy_cache_purge  PURGE from 127.0.0.1;
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->单独位置语法<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>http <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    proxy_cache_path  /tmp/cache  keys_zone<span style="color:#f92672">=</span>tmpcache:10m;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    server <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        location / <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            proxy_pass         http://127.0.0.1:8000;
+</span></span><span style="display:flex;"><span>            proxy_cache        tmpcache;
+</span></span><span style="display:flex;"><span>            proxy_cache_key    $uri$is_args$args;
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        location ~ /purge<span style="color:#f92672">(</span>/.*<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            allow              127.0.0.1;
+</span></span><span style="display:flex;"><span>            deny               all;
+</span></span><span style="display:flex;"><span>            proxy_cache_purge  tmpcache $1$is_args$args;
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span></span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="安装nginx-redis2">安装<code>Nginx-Redis2</code></h2>
+<blockquote>
+<ul>
+<li>
+<ol>
+<li><a href="https://github.com/openresty/redis2-nginx-module" rel="external" target="_self"><code>Redis2-Nginx-Module</code></a></li>
+</ol>
+</li>
+<li><!-- raw HTML omitted -->写入请求<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>location <span style="color:#f92672">=</span> /foo <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    default_type text/html;
+</span></span><span style="display:flex;"><span>    redis2_query auth password;
+</span></span><span style="display:flex;"><span>    set $value <span style="color:#e6db74">&#39;first&#39;</span>;  	<span style="color:#75715e"># 设置一个变量</span>
+</span></span><span style="display:flex;"><span>    redis2_query set one $value;  <span style="color:#75715e"># 变量写入值</span>
+</span></span><span style="display:flex;"><span>    redis2_pass 127.0.0.1:6379;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span></span></span></code></pre></div><ul>
+<li><code>get</code><!-- raw HTML omitted -->获取值<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>location <span style="color:#f92672">=</span> /get <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    default_type text/html;
+</span></span><span style="display:flex;"><span>    redis2_pass 127.0.0.1:6379;
+</span></span><span style="display:flex;"><span>    redis2_query auth password;
+</span></span><span style="display:flex;"><span>    set_unescape_uri $key $arg_key;  <span style="color:#75715e"># 第三方转义模块：ngx_set_misc 进行url编码转义</span>
+</span></span><span style="display:flex;"><span>    redis2_query get $key;  	<span style="color:#75715e"># 获取键值</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted --><!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="安装nginx会话保持模块sticky">安装<code>Nginx</code>会话保持模块<code>Sticky</code></h2>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://nginx.org/en/docs/http/ngx_http_upstream_module.html#sticky" rel="external" target="_self">官网<code>Sticky</code>文档</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://github.com/bymaximus/nginx-sticky-module-ng" rel="external" target="_self"><code>Github</code>代码托管<code>Sticky</code>文档</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng/src/master/" rel="external" target="_self"><code>Google</code>开发<code>Sticky</code>模块托管在<code>Bitbuckey</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git clone git clone https://huanggua1234@bitbucket.org/nginx-goodies/nginx-sticky-module-ng.git
+</span></span><span style="display:flex;"><span>$ ./configure --prefix<span style="color:#f92672">=</span>/usr/local/nginx --add-module<span style="color:#f92672">=</span>/usr/local/nginx/nginx_goodies-nginx-sticky-module-ng-c78b7dd79d0d
+</span></span><span style="display:flex;"><span>$ make
+</span></span><span style="display:flex;"><span>$ make upgrade  	<span style="color:#75715e"># 检测甄别第三方模块，检查好后拷贝替换make后的可执行文件</span></span></span></code></pre></div><ul>
+<li>
+<ol>
+<li><code>openssl</code><!-- raw HTML omitted -->编译报错修改原文件，在第12行添加一下两行内容<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;ngx_http_sticky_misc.c<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#include &lt;openssl/sha.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#include &lt;openssl/md5.h&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li>
+<ol start="2">
+<li>使用<code>Sticky</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>name=route</code><!-- raw HTML omitted -->下发<!-- raw HTML omitted --><code>cookie</code><!-- raw HTML omitted -->名称<!-- raw HTML omitted --></li>
+<li><code>expires=6h;</code><!-- raw HTML omitted -->定义过期时间<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;upstream.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    sticky;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    server 192.168.1.1:8080;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    server 192.168.1.2:8080;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h2 id="nginx配置json日志格式"><code>Nginx</code>配置<code>Json</code>日志格式</h2>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>变量名</th>
+<th>描述</th>
+<th>举例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>'&quot;@timestamp&quot;:&quot;$time_iso8601&quot;,'</code></td>
+<td><code>ISO 8601</code>标准格式的当地时间</td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;uri&quot;:&quot;$uri&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;args&quot;:&quot;$args&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;host&quot;:&quot;$host&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;https&quot;:&quot;$https&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;scheme&quot;:&quot;$scheme&quot;,' </code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;domain&quot;:&quot;$domain&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;status&quot;:&quot;$status&quot;,'</code></td>
+<td><code>HTTP</code>请求状态码</td>
+<td><code>200 403 499 502 503</code></td>
+</tr>
+<tr>
+<td><code>'&quot;request&quot;:&quot;$request&quot;,'</code></td>
+<td>请求的<code>URI</code>和<code>HTTP</code>协议</td>
+<td><code>&quot;GET /api/img/home/logo-aipay.png HTTP/1.1&quot;</code></td>
+</tr>
+<tr>
+<td><code>'&quot;hostname&quot;:&quot;$hostname&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;http_host&quot;:&quot;$http_host&quot;,'</code></td>
+<td>访问的域名或者<code>IP</code></td>
+<td><code>www.domain.com</code><!-- raw HTML omitted -->192.168.1.1</td>
+</tr>
+<tr>
+<td><code>'&quot;time_local&quot;:&quot;$time_local&quot;,'</code></td>
+<td>通用日志格式中的本地时间</td>
+<td><code>18/Jul/2021:13:00:00 +0800</code></td>
+</tr>
+<tr>
+<td><code>'&quot;ssl_cipher&quot;:&quot;$ssl_cipher&quot;,'</code></td>
+<td>交换数据中的算法</td>
+<td><code>RC4-SHA</code></td>
+</tr>
+<tr>
+<td><code>'&quot;requesturl&quot;:&quot;$request_uri&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;remote_addr&quot;:&quot;$remote_addr&quot;,'</code></td>
+<td>客户端地址</td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;remote_user&quot;:&quot;$remote_user&quot;,'</code></td>
+<td>客户端用户名称</td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;server_addr&quot;:&quot;$server_addr&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;http_cookie&quot;:&quot;$http_cookie&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;http_gp_xreal&quot;:&quot;$http_GP_IP&quot;,' </code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;ssl_protocol&quot;:&quot;$ssl_protocol&quot;,'</code></td>
+<td><code>SSL</code>协议版本</td>
+<td><code>TLSv1</code></td>
+</tr>
+<tr>
+<td><code>'&quot;request_body&quot;:&quot;$request_body&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;request_time&quot;:&quot;$request_time&quot;,' </code></td>
+<td>整个请求的总时间</td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;http_referer&quot;:&quot;$http_referer&quot;,' </code></td>
+<td>跳转来源</td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;client_realip&quot;:&quot;$clientRealIp&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;upstream_addr&quot;:&quot;$upstream_addr&quot;,'</code></td>
+<td><code>upstream</code>代理的后端服务地址</td>
+<td><code>java tomcat php</code></td>
+</tr>
+<tr>
+<td><code>'&quot;request_length&quot;:&quot;$request_length&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;upstream_status&quot;:&quot;$upstream_status&quot;,'</code></td>
+<td><code>upstream</code>状态码</td>
+<td><code>200 403 499 502 503</code></td>
+</tr>
+<tr>
+<td><code>'&quot;body_bytes_sent&quot;:&quot;$body_bytes_sent&quot;,'</code></td>
+<td>发送给客户的文件大小</td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;http_user_agent&quot;:&quot;$http_user_agent&quot;,'</code></td>
+<td>用户浏览器访问类型</td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;http_wangsu_xreal&quot;:&quot;$http_cdn_src_IP&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;http_ali_xreal&quot;:&quot;$http_Ali_CDN_Real_IP&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;http_cf_xreal&quot;:&quot;$http_CF_Connecting_IP&quot;,'</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>'&quot;http_x_forwarded_for&quot;:&quot;$http_x_forwarded_for&quot;,'</code></td>
+<td></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td><code>'&quot;upstream_response_time&quot;:&quot;$upstream_response_time&quot;,'</code></td>
+<td>请求过程中，<code>upstream</code>响应时间</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td><code>'&quot;proxy_add_x_forwarded_for&quot;:&quot;$proxy_add_x_forwarded_for&quot;,'</code></td>
+<td>&mdash;</td>
+<td>&mdash;</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>log_format json escape<span style="color:#f92672">=</span>json  <span style="color:#e6db74">&#39;{&#34;@timestamp&#34;:&#34;$time_iso8601&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;client_realip&#34;:&#34;$clientRealIp&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;remote_addr&#34;:&#34;$remote_addr&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;status&#34;:&#34;$status&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;upstream_status&#34;:&#34;$upstream_status&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;request_time&#34;:&#34;$request_time&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;upstream_response_time&#34;:&#34;$upstream_response_time&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;upstream_addr&#34;:&#34;$upstream_addr&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;host&#34;:&#34;$host&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;uri&#34;:&#34;$uri&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e"># &#39;&#34;request_body&#34;:&#34;$request_body&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;body_bytes_sent&#34;:&#34;$body_bytes_sent&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;request&#34;:&#34;$request&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;request_length&#34;:&#34;$request_length&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;http_referer&#34;:&#34;$http_referer&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;http_wangsu_xreal&#34;:&#34;$http_cdn_src_IP&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;http_ali_xreal&#34;:&#34;$http_Ali_CDN_Real_IP&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;http_cf_xreal&#34;:&#34;$http_CF_Connecting_IP&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;http_gp_xreal&#34;:&#34;$http_GP_IP&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;http_x_forwarded_for&#34;:&#34;$proxy_add_x_forwarded_for&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;&#34;http_user_agent&#34;:&#34;$http_user_agent&#34;,&#39;</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#e6db74">&#39;}&#39;</span>;
+</span></span><span style="display:flex;"><span>     <span style="color:#75715e"># 这里注意使用下划线，</span></span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

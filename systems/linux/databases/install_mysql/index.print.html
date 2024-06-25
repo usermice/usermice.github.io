@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="部署Mysql 5.7 从0开始搭建SQL Server AlwaysOn第四篇-配置异地机房节点 Mysql产品档案 安装扩展下载Mysql并解压安装包 # Debian系统 $ sudo apt-get install build-essential cmake bison libncurses5-dev libssl-dev pkg-config g&#43;&#43; libaio1 libnuma1 libncurses5 # CentOS $ yum -y remove mariadb* mariadb $ yum -y install numactl libaio* wget git epel-release $ yum -y install https://mirrors.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_Mysql :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="部署Mysql 5.7 从0开始搭建SQL Server AlwaysOn第四篇-配置异地机房节点 Mysql产品档案 安装扩展下载Mysql并解压安装包 # Debian系统 $ sudo apt-get install build-essential cmake bison libncurses5-dev libssl-dev pkg-config g&#43;&#43; libaio1 libnuma1 libncurses5 # CentOS $ yum -y remove mariadb* mariadb $ yum -y install numactl libaio* wget git epel-release $ yum -y install https://mirrors.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/databases/install_mysql/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_Mysql :: Hugo Relearn Theme">
+    <meta property="og:description" content="部署Mysql 5.7 从0开始搭建SQL Server AlwaysOn第四篇-配置异地机房节点 Mysql产品档案 安装扩展下载Mysql并解压安装包 # Debian系统 $ sudo apt-get install build-essential cmake bison libncurses5-dev libssl-dev pkg-config g&#43;&#43; libaio1 libnuma1 libncurses5 # CentOS $ yum -y remove mariadb* mariadb $ yum -y install numactl libaio* wget git epel-release $ yum -y install https://mirrors.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-17T19:41:15+08:00">
+    <meta property="article:modified_time" content="2024-06-17T19:41:15+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_Mysql :: Hugo Relearn Theme">
+    <meta itemprop="description" content="部署Mysql 5.7 从0开始搭建SQL Server AlwaysOn第四篇-配置异地机房节点 Mysql产品档案 安装扩展下载Mysql并解压安装包 # Debian系统 $ sudo apt-get install build-essential cmake bison libncurses5-dev libssl-dev pkg-config g&#43;&#43; libaio1 libnuma1 libncurses5 # CentOS $ yum -y remove mariadb* mariadb $ yum -y install numactl libaio* wget git epel-release $ yum -y install https://mirrors.">
+    <meta itemprop="datePublished" content="2024-06-17T19:41:15+08:00">
+    <meta itemprop="dateModified" content="2024-06-17T19:41:15+08:00">
+    <meta itemprop="wordCount" content="640">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_Mysql :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/databases/install_mysql/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/databases/"><span itemprop="name">Databases</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_Mysql</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/databases/use_mysql/" title="Use_Mysql (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/daemon/" title="Daemon (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_mysql">Install_Mysql</h1>
+
+<h2 id="部署mysql-57">部署<code>Mysql 5.7</code></h2>
+<blockquote>
+<ul>
+<li><a href="https://www.cnblogs.com/lyhabc/p/6136227.html" rel="external" target="_self">从0开始搭建<code>SQL Server AlwaysOn</code>第四篇-配置异地机房节点</a></li>
+<li><a href="https://downloads.mysql.com/archives/" rel="external" target="_self"><code>Mysql</code>产品档案</a></li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->安装扩展下载<code>Mysql</code>并解压安装包<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># Debian系统</span>
+</span></span><span style="display:flex;"><span>$ sudo apt-get install build-essential cmake bison libncurses5-dev libssl-dev pkg-config g++ libaio1 libnuma1 libncurses5
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># CentOS </span>
+</span></span><span style="display:flex;"><span>$ yum -y remove mariadb* mariadb
+</span></span><span style="display:flex;"><span>$ yum -y install numactl libaio* wget git epel-release
+</span></span><span style="display:flex;"><span>$ yum -y install  https://mirrors.cloud.tencent.com/percona/release/7/RPMS/noarch/percona-release-0.1-4.noarch.rpm
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;s/gpgcheck = 1/gpgcheck = 0/g&#34;</span> /etc/yum.repos.d/percona-release.repo
+</span></span><span style="display:flex;"><span>$ yum -y install percona-xtrabackup-24 qpress
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ wget -P /usr/local/src/ https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.28-linux-glibc2.12-x86_64.tar.gz
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ tar -zxvf /usr/local/src/mysql-5.7.28-linux-glibc2.12-x86_64.tar.gz -C /usr/local/src/
+</span></span><span style="display:flex;"><span>$ cp -r /usr/local/src/mysql-5.7.28-linux-glibc2.12-x86_64 /usr/local/mysql</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->设置权限<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ groupadd mysql
+</span></span><span style="display:flex;"><span>$ useradd -r -g mysql mysql
+</span></span><span style="display:flex;"><span>$ cd /usr/local/
+</span></span><span style="display:flex;"><span>$ chown -R mysql:mysql ./mysql</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->初始化数据库<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd /usr/local/mysql/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ bin/mysqld --initialize --user<span style="color:#f92672">=</span>mysql --basedir<span style="color:#f92672">=</span>/usr/local/mysql --datadir<span style="color:#f92672">=</span>/usr/local/mysql/data
+</span></span><span style="display:flex;"><span>$ bin/mysql_ssl_rsa_setup --datadir<span style="color:#f92672">=</span>/usr/local/mysql/data
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ chown -R mysql:mysql /usr/local/mysql</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->修改配置文件<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mysqld --verbose --help  	<span style="color:#75715e"># 查看完整列表</span>
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#39;[mysqld]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">character_set_server=utf8
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">init_connect=&#39;</span>SET NAMES utf8<span style="color:#e6db74">&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">basedir=/usr/local/mysql
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">datadir=/usr/local/mysql/data  	# 数据目录最好外挂
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">socket=/tmp/mysql.sock
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">## 开启binlog
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">log-bin = mysql-bin
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">binlog_format = ROW
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">expire_logs_days = 7
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server-id=3306110  	# 端口加本机IP最后几位
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">## 不区分大小写 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">lower_case_table_names = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">## 不开启sql严格模式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sql_mode = &#34;STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">log-error=/usr/local/mysql/data/mysqld.log
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">pid-file=/usr/local/mysql/data/mysqld.pid&#39;</span> &gt; /etc/my.cnf</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->修改启动文件配置参数并启动数据库<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mysqlconf<span style="color:#f92672">=</span>/etc/init.d/mysqld
+</span></span><span style="display:flex;"><span>$ cp /usr/local/mysql/support-files/mysql.server  $mysqlconf
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;46s,basedir=,basedir=/usr/local/mysql,&#39;</span> $mysqlconf
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;47s,datadir=,datadir=/usr/local/mysql/data,&#39;</span> $mysqlconf
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 启动数据库</span>
+</span></span><span style="display:flex;"><span>$ service mysqld start
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 添加软连接</span>
+</span></span><span style="display:flex;"><span>$ ln -s /usr/local/mysql/bin/mysql /usr/bin
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 查看端口号</span>
+</span></span><span style="display:flex;"><span>$ netstat -nuplt | grep :3306
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 防火墙开放端口</span>
+</span></span><span style="display:flex;"><span>$ firewall-cmd --permanent --new-ipset<span style="color:#f92672">=</span>db_whitelist --type<span style="color:#f92672">=</span>hash:ip  
+</span></span><span style="display:flex;"><span>$ firewall-cmd --permanent --add-rich-rule<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;rule family=&#39;ipv4&#39; source ipset=&#39;db_whitelist&#39; port port=&#39;16303&#39; protocol=&#39;tcp&#39; accept&#34;</span>  
+</span></span><span style="display:flex;"><span>$ firewall-cmd --reload</span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="安装mysql-8">安装<code>Mysql 8</code></h2>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->安装扩展下载<code>Mysql</code>并解压安装包<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y remove mariadb* mariadb
+</span></span><span style="display:flex;"><span>$ yum -y install ncurses-compat-libs wget git epel-release
+</span></span><span style="display:flex;"><span>$ yum -y install  https://mirrors.cloud.tencent.com/percona/release/7/RPMS/noarch/percona-release-0.1-4.noarch.rpm
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;s/gpgcheck = 1/gpgcheck = 0/g&#34;</span> /etc/yum.repos.d/percona-release.repo
+</span></span><span style="display:flex;"><span>$ yum -y install percona-xtrabackup-24 qpress numactl libaio*
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ wget -P /usr/local/src/ https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.21-linux-glibc2.12-x86_64.tar.xz
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ mkdir -p /usr/local/mysql <span style="color:#f92672">&amp;&amp;</span> tar -xvf /usr/local/src/mysql-8.0.21-linux-glibc2.12-x86_64.tar.xz -C /usr/local/mysql --strip-components <span style="color:#ae81ff">1</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->设置权限<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ groupadd mysql
+</span></span><span style="display:flex;"><span>$ useradd -r -g mysql mysql
+</span></span><span style="display:flex;"><span>$ cd /usr/local/
+</span></span><span style="display:flex;"><span>$ chown -R mysql:mysql ./mysql</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->初始化数据库<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /usr/local/mysql/bin/mysqld --initialize --user<span style="color:#f92672">=</span>mysql --basedir<span style="color:#f92672">=</span>/usr/local/mysql --datadir<span style="color:#f92672">=</span>/usr/local/mysql/data
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ /usr/local/mysql/bin/mysql_ssl_rsa_setup --datadir<span style="color:#f92672">=</span>/usr/local/mysql/data
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ /usr/local/mysql/bin/mysqld_safe --datadir<span style="color:#f92672">=</span>/usr/local/mysql/data
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ chown -R mysql:mysql /usr/local/mysql </span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->修改配置文件<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#39;[mysqld]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">character_set_server=utf8mb4
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">init_connect=&#39;</span>SET NAMES utf8<span style="color:#e6db74">&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">basedir=/usr/local/mysql
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">datadir=/usr/local/mysql/data
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">socket=/tmp/mysql.sock
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">## 开启binlog
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">log-bin = mysql-bin
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">binlog_format = ROW
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">expire_logs_days = 7
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server-id=3306110  	# 端口加本机IP最后几位
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">## 不区分大小写 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">lower_case_table_names = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">## 不开启sql严格模式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">## sql_mode = &#34;STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sql_mode=&#39;</span>STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION<span style="color:#e6db74">&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">default_authentication_plugin= mysql_native_password
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">log-error=/var/log/mysqld.log
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">pid-file=/usr/local/mysql/data/mysqld.pid&#39;</span> &gt;/etc/my.cnf</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->修改启动文件配置参数并启动数据库<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mysqlconf<span style="color:#f92672">=</span>/etc/init.d/mysqld
+</span></span><span style="display:flex;"><span>$ cp /usr/local/mysql/support-files/mysql.server $mysqlconf
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;46s,basedir=,basedir=/usr/local/mysql,&#39;</span> $mysqlconf
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;47s,datadir=,datadir=/usr/local/mysql/data,&#39;</span> $mysqlconf
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 启动数据库</span>
+</span></span><span style="display:flex;"><span>$ service mysqld start
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 添加软连接</span>
+</span></span><span style="display:flex;"><span>$ ln -s /usr/local/mysql/bin/mysql /usr/bin
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 查看端口号</span>
+</span></span><span style="display:flex;"><span>$ netstat -nuplt | grep :3306
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 防火墙开放端口</span>
+</span></span><span style="display:flex;"><span>$ firewall-cmd --permanent --new-ipset<span style="color:#f92672">=</span>db_whitelist --type<span style="color:#f92672">=</span>hash:ip  
+</span></span><span style="display:flex;"><span>$ firewall-cmd --permanent --add-rich-rule<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;rule family=&#39;ipv4&#39; source ipset=&#39;db_whitelist&#39; port port=&#39;16303&#39; protocol=&#39;tcp&#39; accept&#34;</span>  
+</span></span><span style="display:flex;"><span>$ firewall-cmd --reload</span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="普通用户部署mysql-8">普通用户部署<code>Mysql 8</code></h2>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->安装扩展<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># Linux8/Red Hat8(EL8)：这些平台默认不安装文件/lib64/libtinfo.so.5，MySQL客户端bin/mysql需要该文件来安装</span>
+</span></span><span style="display:flex;"><span>$ yum -y install ncurses-compat-libs wget git epel-release
+</span></span><span style="display:flex;"><span>$ yum -y install  http://www.percona.com/downloads/percona-release/redhat/0.1-4/percona-release-0.1-4.noarch.rpm  
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;s/gpgcheck = 1/gpgcheck = 0/g&#34;</span> /etc/yum.repos.d/percona-release.repo
+</span></span><span style="display:flex;"><span>$ yum -y install percona-xtrabackup-24 qpress numactl libaio*
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ wget -P /usr/local/src/ https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.21-linux-glibc2.12-x86_64.tar.xz</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->创建用户以及程序使用目录<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ groupadd myadmin <span style="color:#f92672">&amp;&amp;</span> useradd -g myadmin myadmin  	<span style="color:#75715e"># 创建程序运行用户  </span>
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;password&#34;</span>|passwd --stdin myadmin &amp;&gt;/dev/null
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ mkdir -p /opt/<span style="color:#f92672">{</span>apps,conf,src,backup,scripts,data，logs<span style="color:#f92672">}</span> /opt/data/<span style="color:#f92672">{</span>data_16303,data_16304<span style="color:#f92672">}</span> /opt/logs/mysql
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$echo <span style="color:#e6db74">&#34;#####  Start/Stop Service  #####
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Cmnd_Alias MYADMIN_START_SERVICES = /etc/init.d/mysql, /etc/init.d/mysql.server, /opt/*  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">swadmin ALL=(ALL)NOPASSWD:MYADMIN_START_SERVICES &#34;</span>&gt;/etc/sudoers.d/myadmin  
+</span></span><span style="display:flex;"><span>$ chmod <span style="color:#ae81ff">660</span> /etc/sudoers.d/myadmin  </span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->编写配置文件，方便使用配置文件初始化数据库<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#39;[mysqld]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">character_set_server=utf8mb4
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">init_connect=&#39;</span>SET NAMES utf8<span style="color:#e6db74">&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">basedir=/opt/apps/mysql
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">datadir=/opt/data/data_16303
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">socket=/tmp/mysql.sock
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 不区分大小写 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">lower_case_table_names = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 不开启sql严格模式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># sql_mode = &#34;STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">log-error=/opt/logs/mysql/mysqld.log
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">pid-file=/opt/data/data_16303/mysqld.pid&#39;</span> &gt; /opt/conf/mysql/mysql_master_16303.cnf
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ chown -R myadmin:myadmin /opt/*</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->使用普通用户下载安装<code>Mysql 8</code><!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ su myadmin -c <span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">wget -P /opt/src/ https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.21-linux-glibc2.12-x86_64.tar.xz
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">mkdir -p /opt/apps/mysql &amp;&amp; tar xvf /opt/src/mysql-8.0.21-linux-glibc2.12-x86_64.tar.xz -C /opt/apps/mysql --strip-components 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">chmod 750 /opt/apps/mysql
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/opt/apps/mysql/bin/mysqld --defaults-file=/opt/conf/mysql/my.cnf --initialize-insecure --user=myadmin
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sleep 8
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/opt/apps/mysql/bin/mysql_ssl_rsa_setup --defaults-file=/opt/conf/mysql/my.cnf
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sleep 5
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/opt/apps/mysql/bin/mysqld_safe --defaults-file=/opt/conf/mysql/my.cnf --user=myadmin &amp;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sleep 8
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->修改启动文件配置参数并启动数据库<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mysqlconf<span style="color:#f92672">=</span>/etc/init.d/mysqld
+</span></span><span style="display:flex;"><span>$ cp /opt/apps/mysql/support-files/mysql.serverr $mysqlconf
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;46s,basedir=,basedir=/opt/apps/mysql,&#39;</span> $mysqlconf
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#39;47s,datadir=,datadir=/opt/data/data_16303,&#39;</span> $mysqlconf
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;alias nginx=&#39;sudo /etc/init.d/nginx&#39;  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">alias tomcat=&#39;sudo /etc/init.d/tomcat&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">alias mysqld=&#39;sudo /etc/init.d/mysqld&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">alias redis=&#39;sudo /etc/init.d/redis&#39; &#34;</span>&gt;&gt;/home/myadmin/.bashrc
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 启动数据库</span>
+</span></span><span style="display:flex;"><span>$ service mysqld start
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 添加软连接</span>
+</span></span><span style="display:flex;"><span>$ ln -s /usr/local/mysql/bin/mysql /usr/bin
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 查看端口号</span>
+</span></span><span style="display:flex;"><span>$ netstat -nuplt | grep :3306
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 防火墙开放端口</span>
+</span></span><span style="display:flex;"><span>$ firewall-cmd --permanent --new-ipset<span style="color:#f92672">=</span>db_whitelist --type<span style="color:#f92672">=</span>hash:ip  
+</span></span><span style="display:flex;"><span>$ firewall-cmd --permanent --add-rich-rule<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;rule family=&#39;ipv4&#39; source ipset=&#39;db_whitelist&#39; port port=&#39;16303&#39; protocol=&#39;tcp&#39; accept&#34;</span>  
+</span></span><span style="display:flex;"><span>$ firewall-cmd --reload</span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

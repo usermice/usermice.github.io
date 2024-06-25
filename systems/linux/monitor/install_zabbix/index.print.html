@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="部署Zabbix监控系统 基础配置环境要求 名称地址 描述 Zabbix部署文档 下载安装Zabbix 部署Zabbix硬件要求 名称 平台 CPU/内存 数据库 受监控的主机 小型 CentOS 虚拟设备 MySQL InnoDB 100 中型 CentOS 2个CPU内核/2GB MySQL InnoDB 500 大型 RedHat Enterprise Linux 4个CPU内核/8GB RAID10 MySQL InnoDB或 PostgreSQL &gt;1000 超大型 RedHat Enterprise Linux 8个CPU内核/16GB RAID10 MySQL InnoDB或 PostgreSQL &gt;10000 部署Zabbix数据库版本要求 数据库 支持版本 推荐版本 备注 MySQL/Percona 5.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_Zabbix :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="部署Zabbix监控系统 基础配置环境要求 名称地址 描述 Zabbix部署文档 下载安装Zabbix 部署Zabbix硬件要求 名称 平台 CPU/内存 数据库 受监控的主机 小型 CentOS 虚拟设备 MySQL InnoDB 100 中型 CentOS 2个CPU内核/2GB MySQL InnoDB 500 大型 RedHat Enterprise Linux 4个CPU内核/8GB RAID10 MySQL InnoDB或 PostgreSQL &gt;1000 超大型 RedHat Enterprise Linux 8个CPU内核/16GB RAID10 MySQL InnoDB或 PostgreSQL &gt;10000 部署Zabbix数据库版本要求 数据库 支持版本 推荐版本 备注 MySQL/Percona 5.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/monitor/install_zabbix/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_Zabbix :: Hugo Relearn Theme">
+    <meta property="og:description" content="部署Zabbix监控系统 基础配置环境要求 名称地址 描述 Zabbix部署文档 下载安装Zabbix 部署Zabbix硬件要求 名称 平台 CPU/内存 数据库 受监控的主机 小型 CentOS 虚拟设备 MySQL InnoDB 100 中型 CentOS 2个CPU内核/2GB MySQL InnoDB 500 大型 RedHat Enterprise Linux 4个CPU内核/8GB RAID10 MySQL InnoDB或 PostgreSQL &gt;1000 超大型 RedHat Enterprise Linux 8个CPU内核/16GB RAID10 MySQL InnoDB或 PostgreSQL &gt;10000 部署Zabbix数据库版本要求 数据库 支持版本 推荐版本 备注 MySQL/Percona 5.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-21T14:22:10+08:00">
+    <meta property="article:modified_time" content="2024-06-21T14:22:10+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_Zabbix :: Hugo Relearn Theme">
+    <meta itemprop="description" content="部署Zabbix监控系统 基础配置环境要求 名称地址 描述 Zabbix部署文档 下载安装Zabbix 部署Zabbix硬件要求 名称 平台 CPU/内存 数据库 受监控的主机 小型 CentOS 虚拟设备 MySQL InnoDB 100 中型 CentOS 2个CPU内核/2GB MySQL InnoDB 500 大型 RedHat Enterprise Linux 4个CPU内核/8GB RAID10 MySQL InnoDB或 PostgreSQL &gt;1000 超大型 RedHat Enterprise Linux 8个CPU内核/16GB RAID10 MySQL InnoDB或 PostgreSQL &gt;10000 部署Zabbix数据库版本要求 数据库 支持版本 推荐版本 备注 MySQL/Percona 5.">
+    <meta itemprop="datePublished" content="2024-06-21T14:22:10+08:00">
+    <meta itemprop="dateModified" content="2024-06-21T14:22:10+08:00">
+    <meta itemprop="wordCount" content="908">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_Zabbix :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/monitor/install_zabbix/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/monitor/"><span itemprop="name">Monitor</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_Zabbix</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/monitor/" title="Monitor (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/monitor/install_prometheus/" title="Install_Prometheus (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_zabbix">Install_Zabbix</h1>
+
+<h2 id="部署zabbix监控系统">部署<code>Zabbix</code>监控系统</h2>
+<h3 id="基础配置环境要求">基础配置环境要求</h3>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.zabbix.com/manuals" rel="external" target="_self"><code>Zabbix</code>部署文档</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.zabbix.com/cn/download" rel="external" target="_self">下载安装<code>Zabbix</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->部署<!-- raw HTML omitted --><code>Zabbix</code><!-- raw HTML omitted -->硬件要求<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>平台</th>
+<th>CPU/内存</th>
+<th>数据库</th>
+<th>受监控的主机</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>小型</td>
+<td><code>CentOS</code></td>
+<td>虚拟设备</td>
+<td><code>MySQL InnoDB</code></td>
+<td>100</td>
+</tr>
+<tr>
+<td>中型</td>
+<td><code>CentOS</code></td>
+<td><code>2个CPU内核/2GB</code></td>
+<td><code>MySQL InnoDB</code></td>
+<td>500</td>
+</tr>
+<tr>
+<td>大型</td>
+<td><code>RedHat Enterprise Linux</code></td>
+<td><code>4个CPU内核/8GB RAID10</code></td>
+<td><code>MySQL InnoDB</code>或 <code>PostgreSQL</code></td>
+<td>&gt;1000</td>
+</tr>
+<tr>
+<td>超大型</td>
+<td><code>RedHat Enterprise Linux</code></td>
+<td><code>8个CPU内核/16GB RAID10</code></td>
+<td><code>MySQL InnoDB</code>或 <code>PostgreSQL</code></td>
+<td>&gt;10000</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->部署<!-- raw HTML omitted --><code>Zabbix</code><!-- raw HTML omitted -->数据库版本要求<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>数据库</th>
+<th>支持版本</th>
+<th>推荐版本</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MySQL/Percona</code></td>
+<td><code>5.7.28-8.0.X</code></td>
+<td><code>8.0.X</code></td>
+<td>如果<code>MySQL</code>或<code>Percona</code>用作<code>Zabbix</code>后端数据库，则需要。需要<code>InnoDB</code>引擎。我们建议使用<code>MariaDB Connector/C</code>库来构建服务器/代理</td>
+</tr>
+<tr>
+<td><code>MariaDB</code></td>
+<td><code>10.0.37-10.6.X</code></td>
+<td><code>10.5.X</code></td>
+<td><code>InnoDB</code>引擎是必需的。我们建议使用<code>MariaDB Connector/C</code> 库来构建服务器/代理</td>
+</tr>
+<tr>
+<td><code>PostgreSQL</code></td>
+<td><code>10.9-13.X</code></td>
+<td><code>12.X.X</code>或更新</td>
+<td>使用<code>PostgreSQL</code>作为<code>Zabbix</code>后端数据库。<!-- raw HTML omitted -->建议使用<code>PostgreSQL 8.3</code>以上的版本, 以 <a href="http://www.postgresql.org/docs/8.3/static/release-8-3.html" rel="external" target="_self">提供更好的VACUUM性能</a>。</td>
+</tr>
+<tr>
+<td><code>SQLite</code></td>
+<td><code>3.3.5-3.34.X</code></td>
+<td><code>3.3X.X</code></td>
+<td>仅支持<code>Zabbix</code>代理。如果<code>SQLite</code>用作<code>Zabbix</code>代理数据库</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ systemctl start mariadb
+</span></span><span style="display:flex;"><span>$ mysql -uroot -e <span style="color:#e6db74">&#34;create database zabbix character set utf8mb4 collate utf8mb4_bin;&#34;</span> 
+</span></span><span style="display:flex;"><span>$ mysql -uroot -e <span style="color:#e6db74">&#34;create user &#39;zabbix&#39;@&#39;localhost&#39; identified by &#39;zabbix&#39;;&#34;</span>   
+</span></span><span style="display:flex;"><span>$ mysql -uroot -e <span style="color:#e6db74">&#34;grant all privileges on zabbix.* to &#39;zabbix&#39;@&#39;localhost&#39;;&#34;</span>
+</span></span><span style="display:flex;"><span>$ mysql -uroot -e <span style="color:#e6db74">&#34;flush privileges;&#34;</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->安装<!-- raw HTML omitted --><code>Zabbix</code><!-- raw HTML omitted -->前准备<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->卸载原有数据库，安装高版本<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum remove -y mariadb*</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->创建用户<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ groupadd --system zabbix
+</span></span><span style="display:flex;"><span>$ useradd --system -g zabbix -d /usr/lib/zabbix -s /sbin/nologin -c <span style="color:#e6db74">&#34;Zabbix Monitoring System&#34;</span> zabbix</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->创建所需目录<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mkdir /opt/<span style="color:#f92672">{</span>src,zabbix<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>$ chown zabbix:zabbix /opt/*</span></span></code></pre></div><ul>
+<li>3.4 <!-- raw HTML omitted -->安装依赖<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y install epel-release wget unixODBC-devel net-snmp-devel libevent-devel <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>libxml2-devel libcurl-devel java-1.6.0-openjdk-devel gcc gcc-c++ <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>mariadb mariadb-server mariadb-devel
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ yum -y install go
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Debian 系统</span>
+</span></span><span style="display:flex;"><span>$ sudo apt-get install libxml2 libxml2-dev libsnmp-dev libevent-dev openjdk-11-jdk <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>libcurl4-openssl-dev </span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="安装zabbix-server">安装<code>Zabbix Server</code></h3>
+<ul>
+<li>
+<ol>
+<li><a href="https://cdn.zabbix.com/zabbix/sources/stable/" rel="external" target="_self">下载<code>Zabbix Server</code>编译安装包</a></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ wget -P /opt/src/ https://cdn.zabbix.com/zabbix/sources/stable/6.0/zabbix-6.0.14.tar.gz</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->解压配置<!-- raw HTML omitted --><code>Zabbix Server</code><!-- raw HTML omitted -->安装包<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ tar -zxvf /opt/src/zabbix-6.0.14.tar.gz -C /opt/src/
+</span></span><span style="display:flex;"><span>$ cd /opt/src/zabbix-6.0.14/
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 编译安装路径</span>
+</span></span><span style="display:flex;"><span>$ ./configure --prefix<span style="color:#f92672">=</span>/opt/zabbix --enable-server --enable-agent --enable-ipv6 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--with-net-snmp --with-libcurl --with-libxml2 --enable-java --with-openssl <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--with-mysql<span style="color:#f92672">=</span>/usr/local/mysql/bin/mysql_config
+</span></span><span style="display:flex;"><span>$ make -j2 <span style="color:#f92672">&amp;&amp;</span> make install</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->拷贝<!-- raw HTML omitted --><code>Zabbix Server</code><!-- raw HTML omitted -->启动文件给予执行权限<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cp /opt/src/zabbix-6.0.14/misc/init.d/fedora/core/zabbix_* /etc/init.d/  
+</span></span><span style="display:flex;"><span>$ chmod +x /etc/init.d/zabbix_*</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->启动数据库导入<!-- raw HTML omitted --><code>Zabbix SQL</code><!-- raw HTML omitted -->文件后再启动<!-- raw HTML omitted --><code>Zabbix Server</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ll /opt/src/zabbix-6.0.14/database/mysql/ | grep *.sql
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ mysql -uzabbix -p<span style="color:#e6db74">&#39;zabbix&#39;</span> zabbix &lt; /opt/src/zabbix-6.0.14/database/mysql/schema.sql
+</span></span><span style="display:flex;"><span>$ mysql -uzabbix -p<span style="color:#e6db74">&#39;zabbix&#39;</span> zabbix &lt; /opt/src/zabbix-6.0.14/database/mysql/images.sql
+</span></span><span style="display:flex;"><span>$ mysql -uzabbix -p<span style="color:#e6db74">&#39;zabbix&#39;</span> zabbix &lt; /opt/src/zabbix-6.0.14/database/mysql/data.sql
+</span></span><span style="display:flex;"><span>$ mysql -uzabbix -p<span style="color:#e6db74">&#39;zabbix&#39;</span> zabbix &lt; /opt/src/zabbix-6.0.14/database/mysql/double.sql
+</span></span><span style="display:flex;"><span>$ mysql -uzabbix -p<span style="color:#e6db74">&#39;zabbix&#39;</span> zabbix &lt; /opt/src/zabbix-6.0.14/database/mysql/history_pk_prepare.sql</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>zabbix_server</code><!-- raw HTML omitted -->配置文件<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/opt/zabbix/etc/zabbix_server.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">DBHost=localhost  	# 数据库地址
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">DBName=zabbix  	# 数据库名
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">DBUser=root  	# 连接数据库的用户
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">DBPassword=123456  	# 密码
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">DBSocket=/home/ops/opt/mysql/mysql.sock  	# 数据库sock文件路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">DBPort=3306  	# 端口
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">LogFile=/opt/zabbix_server/logs/zabbix_server.log  	# 日志文件
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">PidFile=/opt/zabbix_server/logs/zabbix_server.pid  	# 保存pid的文件
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">SocketDir=/opt/zabbix/logs
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="6">
+<li><!-- raw HTML omitted -->拷贝<!-- raw HTML omitted --><code>Zabbix</code><!-- raw HTML omitted -->前端文件，到<!-- raw HTML omitted --><code>Nginx</code>的<code>web</code><!-- raw HTML omitted -->目录<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo cp -rf /opt/src/zabbix-6.0.14/ui/* /usr/local/nginx/html/zabbix/</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="docker安装zabbix-server"><code>Docker</code>安装<code>Zabbix Server</code></h3>
+<blockquote>
+<ul>
+<li><a href="https://www.zabbix.com/documentation/6.0/en/manual/installation/containers" rel="external" target="_self">从<code>Docker</code>容器安装</a>、<a href="https://www.leeks.info/zh_CN/latest/index.html" rel="external" target="_self">欢迎使用<code>Leeks</code>的笔记</a></li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li>创建专用于<code>Zabbix</code>组件容器的网络</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ docker network create --subnet 172.20.0.0/16 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--ip-range 172.20.100.0/20 zabbix-net</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li>启动空<code>MySQL</code>服务器实例数据库<code>8.0</code>以上</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ docker run -v /etc/localtime:/etc/localtime <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   --name mysql-server -t <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   -e MYSQL_DATABASE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;zabbix&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   -e MYSQL_USER<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;zabbix&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   -e MYSQL_PASSWORD<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>zabbix_pwd<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   -e MYSQL_ROOT_PASSWORD<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>root_pwd<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   --network<span style="color:#f92672">=</span>zabbix-net <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   --restart unless-stopped <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   -d mysql:8.0 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   --character-set-server<span style="color:#f92672">=</span>utf8 --collation-server<span style="color:#f92672">=</span>utf8_bin <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   --default-authentication-plugin<span style="color:#f92672">=</span>mysql_native_password</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li>启动<code>Zabbix Java</code>网关实例</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ docker run -v /etc/localtime:/etc/localtime <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   --name zabbix-java-gateway -t <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   --network<span style="color:#f92672">=</span>zabbix-net <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   --restart unless-stopped <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   -d zabbix/zabbix-java-gateway:alpine-6.0-latest</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li>启动<code>Zabbix</code>服务器实例并将该实例与创建的<code>MySQL</code>服务器实例链接</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>启动<code>Zabbix</code>服务器实例并将该实例与创建的<code>MySQL</code>服务器实例链接</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ docker volume create zabbix-server-volume
+</span></span><span style="display:flex;"><span>$ docker run -v /etc/localtime:/etc/localtime <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --name zabbix-server-mysql -t <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --link zabbix-web-service:zabbix-web-service <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e DB_SERVER_HOST<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mysql-server&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e MYSQL_DATABASE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;zabbix&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e MYSQL_USER<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;zabbix&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e MYSQL_PASSWORD<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>zabbix_pwd<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e MYSQL_ROOT_PASSWORD<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>root_pwd<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e ZBX_JAVAGATEWAY<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;zabbix-java-gateway&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e ZBX_STARTREPORTWRITERS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;2&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e ZBX_WEBSERVICEURL<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http://zabbix-web-service:10053/report&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -v zabbix-server-volume:/etc/zabbix <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -v <span style="color:#e6db74">${</span>server_dir<span style="color:#e6db74">}</span>/server/alertscripts:/usr/lib/zabbix/alertscripts <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -v <span style="color:#e6db74">${</span>server_dir<span style="color:#e6db74">}</span>/server/externalscripts:/usr/lib/zabbix/externalscripts <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -v <span style="color:#e6db74">${</span>server_dir<span style="color:#e6db74">}</span>/server/modules:/usr/lib/zabbix/modules <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --network<span style="color:#f92672">=</span>zabbix-net <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -p 10051:10051 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --restart unless-stopped <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -d zabbix/zabbix-server-mysql:alpine-6.0-latest</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="5">
+<li>启动<code>Zabbix Web</code>界面并将实例与创建的<code>MySQL</code>服务器和<code>Zabbix</code>服务器实例链接</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>Zabbix Web</code>界面实例向主机公开<code>80/TCP</code>端口 <code>HTTP</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ docker run -v /etc/localtime:/etc/localtime <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --name zabbix-web-nginx-mysql -t <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e ZBX_SERVER_HOST<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;zabbix-server-mysql&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e DB_SERVER_HOST<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mysql-server&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e MYSQL_DATABASE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;zabbix&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e MYSQL_USER<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;zabbix&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e MYSQL_PASSWORD<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>zabbix_pwd<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e MYSQL_ROOT_PASSWORD<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>root_pwd<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -e ZBX_SERVER_NAME<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>zabbix_server_name<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --network<span style="color:#f92672">=</span>zabbix-net <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -p 8080:8080 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      --restart unless-stopped <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -d zabbix/zabbix-web-nginx-mysql:alpine-6.0-latest</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="6">
+<li>安装<code>Zabbix Proxy</code>服务</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ docker run --name zabbix-proxy-mysql <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   -e DB_SERVER_HOST<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mysql-server&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   -e MYSQL_USER<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;user&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   -e MYSQL_PASSWORD<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;some-password&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   -e ZBX_HOSTNAME<span style="color:#f92672">=</span>some-hostname <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   -e ZBX_SERVER_HOST<span style="color:#f92672">=</span>some-zabbix-server <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   -d zabbix/zabbix-proxy-mysql:alpine-6.0-latest</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="配置nginx使浏览器访问zabbix">配置<code>Nginx</code>使浏览器访问<code>Zabbix</code></h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo cat &gt;/usr/local/nginx/conf/vhosts/zabbix.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">server{
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> listen 80;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> server_name zabbix.com;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> location / {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     root   /usr/local/nginx/html/zabbix;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     index  index.php index.html index.htm;  	# 添加&#34;index.php&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # tcp socket 通信模式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> location ~ \.php$ {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     root	/usr/local/nginx/html/zabbix;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     fastcgi_pass  127.0.0.1:9000;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     fastcgi_index index.php;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;  	# fastcgi_param行改成这个。
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     include  fastcgi_params;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> # Unix socke 通信模式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> location ~ \.php(.*)$ {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     root	/usr/local/nginx/html/zabbix;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     fastcgi_pass unix:/tmp/php7.sock;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     fastcgi_index index.php;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     fastcgi_split_path_info ^((?U).+\.php)(/?.+)$;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     fastcgi_param PATH_INFO $fastcgi_path_info;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     include  fastcgi_params;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> } 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> error_page 404 http://zabbix.com;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> access_log  /usr/local/nginx/logs/zabbix-access.log  main;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> error_log   /usr/local/nginx/logs/zabbix-error.log  info;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="启动zabbix服务端和客户端">启动<code>Zabbix</code>服务端和客户端</h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># Debian 系统需执行</span>
+</span></span><span style="display:flex;"><span>$ sudo ln -s /usr/local/mysql/lib/libmysqlclient.so.20 /usr/lib/libmysqlclient.so.20
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ /opt/zabbix/sbin/zabbix_server  	<span style="color:#75715e"># 启动 Zabbix Server</span>
+</span></span><span style="display:flex;"><span>$ /opt/zabbix/sbin/zabbix_agentd  	<span style="color:#75715e"># 启动 Zabbix Agentd</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="处理访问页面后没有中文选项">处理访问页面后没有中文选项</h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 列出说有支持的语言</span>
+</span></span><span style="display:flex;"><span>$ locale -a
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 如果没有想要的语言环境，打开下方文件找到需要的语言取消注释</span>
+</span></span><span style="display:flex;"><span>$ sudo cat &gt;/etc/locale.gen<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># zh_CN.UTF-8 UTF-8
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 重载语言环境</span>
+</span></span><span style="display:flex;"><span>$ sudo locale-gen
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 重启PHP使配置生效，然后刷新浏览器</span>
+</span></span><span style="display:flex;"><span>$ sudo /etc/init.d/php-fpm restart</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="web页面配置zabbix"><code>web</code>页面配置<code>zabbix</code></h3>
+<blockquote>
+<p><a href="#R-image-34fd8da58efd0a335bbdc5fa0ee3bc13" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-08-45.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-34fd8da58efd0a335bbdc5fa0ee3bc13"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-08-45.png"></a></p>
+<ul>
+<li><!-- raw HTML omitted -->下方图片显示要修改的<!-- raw HTML omitted --><code>PHP</code><!-- raw HTML omitted -->配置文件,修改后重启<!-- raw HTML omitted --><code>php-fpm</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;s/post_max_size = 8M/post_max_size = 16M/g&#34;</span> /usr/local/php/etc/php.ini  
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;s/max_execution_time = 30/max_execution_time = 300/g&#34;</span> /usr/local/php/etc/php.ini  
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;s/max_input_time = 60/max_input_time = 300/g&#34;</span> /usr/local/php/etc/php.ini </span></span></code></pre></div><p><a href="#R-image-1909ebfcf972a95ccbb0e45b2664e64f" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-11-47.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-1909ebfcf972a95ccbb0e45b2664e64f"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-11-47.png"></a></p>
+<ul>
+<li><!-- raw HTML omitted -->连接数据库报错<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ln -s /var/lib/mysql/mysql.sock /tmp/</span></span></code></pre></div><p><a href="#R-image-1b68a955726400e04616c44064aac496" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-13-46.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-1b68a955726400e04616c44064aac496"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-13-46.png"></a></p>
+<p><a href="#R-image-36e31cc41479f84a5998dde2b86991ff" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-15-02.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-36e31cc41479f84a5998dde2b86991ff"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-15-02.png"></a></p>
+<p><a href="#R-image-1cb192f25e6bb8f320d18cc4f478fb1d" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-15-52.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-1cb192f25e6bb8f320d18cc4f478fb1d"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-15-52.png"></a></p>
+<p><a href="#R-image-30b62333c108071d3a37522fa61a3f21" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-16-37.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-30b62333c108071d3a37522fa61a3f21"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-16-37.png"></a></p>
+<p><a href="#R-image-2447369485ff2cfdb897f6da2fec8244" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-17-40.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-2447369485ff2cfdb897f6da2fec8244"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-17-40.png"></a></p>
+<p><a href="#R-image-f4f9c12451e9f88e6b886371c1a8d757" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-18-45.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f4f9c12451e9f88e6b886371c1a8d757"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-18-45.png"></a></p>
+<ul>
+<li><!-- raw HTML omitted --><strong>默认帐户：</strong><!-- raw HTML omitted --><code>Admin</code><!-- raw HTML omitted -->，<strong>默认密码：</strong><!-- raw HTML omitted --><code>zabbix</code></li>
+</ul>
+<p><a href="#R-image-7ab1398276db79639dc43672676b6cb3" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-20-31.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-7ab1398276db79639dc43672676b6cb3"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Monitor_Server/Zabbix_Server/Snipaste_2022-09-14_23-20-31.png"></a></p>
+<ul>
+<li><!-- raw HTML omitted -->处理图形汉字乱码<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ rz /usr/local/nginx/html/assets/fonts
+</span></span><span style="display:flex;"><span>$ mv simhei.ttf DejaVuSans.ttf</span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="编译安装zabbix-agent">编译安装<code>Zabbix Agent</code></h2>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->部署前准备<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mkdir /opt/<span style="color:#f92672">{</span>src,zabbix-agent<span style="color:#f92672">}</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted --><a href="https://cdn.zabbix.com/zabbix/binaries/stable/" rel="external" target="_self">下载安装包</a><!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y install wget
+</span></span><span style="display:flex;"><span>$ wget -P /opt/src/ 
+</span></span><span style="display:flex;"><span>https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.14/zabbix_agent-6.0.14-linux-3.0-amd64-static.tar.gz
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ tar -zxvf /opt/src/zabbix_agent-6.0.14-linux-3.0-amd64-static.tar.gz -C /opt/zabbix-agent </span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>Zabbix Agent</code><!-- raw HTML omitted -->配置文件<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/opt/zabbix-agent/conf/zabbix_agentd.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Server=127.0.0.1  	# 添加Zabbix Server服务器IP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ServerActive=127.0.0.1  	# 替换为Zabbix Server服务器IP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Hostname=本机主机名  	# 被监控端自己的主机名
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">AllowKey=system.run[*]  	# 监控异常后，是否允许服务器远程过来执行命令，如重启某个服务
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">UnsafeUserParameters=1  	# 是否允许自定义key监控
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->启动<!-- raw HTML omitted --><code>Zabbix Agent</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /opt/zabbix-agent/sbin/zabbix_agentd -c /opt/zabbix-agent/conf/zabbix_agentd.conf</span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="配置zabbix通信加密">配置<code>Zabbix</code>通信加密</h2>
+<ul>
+<li>
+<ol>
+<li>申请证书</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 生成ca私钥</span>
+</span></span><span style="display:flex;"><span>$ openssl genrsa <span style="color:#ae81ff">2048</span> &gt; ca.key
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 使用ca私钥建立ca证书</span>
+</span></span><span style="display:flex;"><span>$ openssl req -new -x509 -nodes -days <span style="color:#ae81ff">1000</span> -key ca.key -subj /CN<span style="color:#f92672">=</span>Signing<span style="color:#ae81ff">\ </span>CA/OU<span style="color:#f92672">=</span>Development<span style="color:#ae81ff">\ </span>group/O<span style="color:#f92672">=</span>Zabbix<span style="color:#ae81ff">\ </span>SIA/DC<span style="color:#f92672">=</span>zabbix/DC<span style="color:#f92672">=</span>com &gt; ca.crt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 生成服务器csr证书请求文件</span>
+</span></span><span style="display:flex;"><span>$ openssl req -newkey rsa:2048 -days <span style="color:#ae81ff">1000</span> -nodes -keyout server.key -subj /CN<span style="color:#f92672">=</span>server/OU<span style="color:#f92672">=</span>Development<span style="color:#ae81ff">\ </span>group/O<span style="color:#f92672">=</span>Zabbix<span style="color:#ae81ff">\ </span>SIA/DC<span style="color:#f92672">=</span>zabbix/DC<span style="color:#f92672">=</span>com &gt; server.csr
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 使用ca证书与私钥签发服务器证书</span>
+</span></span><span style="display:flex;"><span>$ openssl x509 -req -in server.csr -days <span style="color:#ae81ff">1000</span> -CA ca.crt -CAkey ca.key -set_serial <span style="color:#ae81ff">01</span> &gt; server.crt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 生成客户端csr证书请求文件</span>
+</span></span><span style="display:flex;"><span>$ openssl req -newkey rsa:2048 -days <span style="color:#ae81ff">1000</span> -nodes -keyout client.key -subj /CN<span style="color:#f92672">=</span>client/OU<span style="color:#f92672">=</span>Development<span style="color:#ae81ff">\ </span>group/O<span style="color:#f92672">=</span>Zabbix<span style="color:#ae81ff">\ </span>SIA/DC<span style="color:#f92672">=</span>zabbix/DC<span style="color:#f92672">=</span>com &gt; client.csr
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 使用ca证书与私钥签发客户端证书</span>
+</span></span><span style="display:flex;"><span>$ openssl x509 -req -in client.csr -days <span style="color:#ae81ff">1000</span> -CA ca.crt -CAkey ca.key -set_serial <span style="color:#ae81ff">01</span> &gt; client.crt</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li>配置<code>Zabbix Server</code>服务端</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/opt/zabbix/etc/zabbix_server.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 修改TLSCAFile配置
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">TLSCAFile=/opt/zabbix_server/zabbix_crt/ca.crt
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 修改TLSCertFile配置
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">TLSCertFile=/opt/zabbix_server/zabbix_crt/server.crt
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 修改TLSKeyFile配置
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">TLSKeyFile=/opt/zabbix_server/zabbix_crt/server.key
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li>配置<code>Zabbix Agent</code>端</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>配置<code>PSK</code>加密</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/opt/zabbix-agent/conf/zabbix_agentd.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">TLSPSKIdentity= PSK Name  	# 一致性共享密钥名称
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">TLSPSKFile= PSK File  	# PSK 共享密钥文件存放路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div><ul>
+<li>配置证书加密</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/opt/zabbix-agent/conf/zabbix_agentd.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 修改agent连接模式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">TLSConnect=cert
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 修改传入数据连接模式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">TLSAccept=cert
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 修改TLSCAFile配置
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">TLSCAFile=/opt/zabbix_agent/zabbix_crt/ca.crt
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 修改TLSCertFile配置
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">TLSCertFile=/opt/zabbix_agent/zabbix_crt/client.crt
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 修改TLSKeyFile配置
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">TLSKeyFile=/opt/zabbix_agent/zabbix_crt/client.key
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

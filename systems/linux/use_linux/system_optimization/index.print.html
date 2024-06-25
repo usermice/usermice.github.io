@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="Linux系统优化 系统初始化 $ yum -y install vim lrzsz epel-release $ yum -y update $ setenforce 0 &amp;&amp; sed -i &#34;s/SELINUX=enforcing/SELINUX=disabled/g&#34; /etc/selinux/config 优化系统内核 系统控制 $ echo &#34;# 所有配置都是：0：为关闭，1：为开启 # 关闭ipv6 net.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="System_Optimization :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="Linux系统优化 系统初始化 $ yum -y install vim lrzsz epel-release $ yum -y update $ setenforce 0 &amp;&amp; sed -i &#34;s/SELINUX=enforcing/SELINUX=disabled/g&#34; /etc/selinux/config 优化系统内核 系统控制 $ echo &#34;# 所有配置都是：0：为关闭，1：为开启 # 关闭ipv6 net.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/use_linux/system_optimization/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="System_Optimization :: Hugo Relearn Theme">
+    <meta property="og:description" content="Linux系统优化 系统初始化 $ yum -y install vim lrzsz epel-release $ yum -y update $ setenforce 0 &amp;&amp; sed -i &#34;s/SELINUX=enforcing/SELINUX=disabled/g&#34; /etc/selinux/config 优化系统内核 系统控制 $ echo &#34;# 所有配置都是：0：为关闭，1：为开启 # 关闭ipv6 net.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-25T01:08:43+08:00">
+    <meta property="article:modified_time" content="2024-06-25T01:08:43+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="System_Optimization :: Hugo Relearn Theme">
+    <meta itemprop="description" content="Linux系统优化 系统初始化 $ yum -y install vim lrzsz epel-release $ yum -y update $ setenforce 0 &amp;&amp; sed -i &#34;s/SELINUX=enforcing/SELINUX=disabled/g&#34; /etc/selinux/config 优化系统内核 系统控制 $ echo &#34;# 所有配置都是：0：为关闭，1：为开启 # 关闭ipv6 net.">
+    <meta itemprop="datePublished" content="2024-06-25T01:08:43+08:00">
+    <meta itemprop="dateModified" content="2024-06-25T01:08:43+08:00">
+    <meta itemprop="wordCount" content="899">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>System_Optimization :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/use_linux/system_optimization/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/use_linux/"><span itemprop="name">Use_Linux</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">System_Optimization</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/use_linux/" title="Use_Linux (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/use_linux/system_architecture_planning_diagram/" title="System_Architecture_Planning_Diagram (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="system_optimization">System_Optimization</h1>
+
+<h2 id="linux系统优化"><code>Linux</code>系统优化</h2>
+<h3 id="系统初始化">系统初始化</h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y install vim lrzsz epel-release
+</span></span><span style="display:flex;"><span>$ yum -y update
+</span></span><span style="display:flex;"><span>$ setenforce <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> sed -i <span style="color:#e6db74">&#34;s/SELINUX=enforcing/SELINUX=disabled/g&#34;</span> /etc/selinux/config</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="优化系统内核">优化系统内核</h3>
+<ul>
+<li>
+<ol>
+<li><a href="https://wiki.archlinux.org/title/sysctl#Installation" rel="external" target="_self">系统控制</a></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo  <span style="color:#e6db74">&#34;# 所有配置都是：0：为关闭，1：为开启
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 关闭ipv6
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv6.conf.all.disable_ipv6 = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv6.conf.default.disable_ipv6 = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 调整 IPv6
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv6.conf.default.router_solicitations = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv6.conf.default.accept_ra_rtr_pref = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv6.conf.default.accept_ra_pinfo = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv6.conf.default.accept_ra_defrtr = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv6.conf.default.autoconf = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv6.conf.default.dad_transmits = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv6.conf.default.max_addresses = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 忽略 ICMP 回显请求、设置服务器禁ping
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.icmp_echo_ignore_all = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv6.icmp.echo_ignore_all = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 避免放大攻击
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.icmp_echo_ignore_broadcasts = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 开启恶意icmp错误消息保护
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.icmp_ignore_bogus_error_responses = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 开启/关闭路由转发 1：为开启，0：为关闭
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.ip_forward = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.conf.all.forwarding = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv6.conf.all.forwarding = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 开启反向路径过滤、通过启用反向路径过滤，内核将对从机器上所有接口接收到的数据包进行源验证。这可以防止攻击者使用 IP 欺骗方法造成伤害
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.conf.default.rp_filter = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.conf.all.rp_filter = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 打开并记录欺骗、源路由和重定向数据包
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.conf.default.log_martians = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.conf.all.log_martians = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 处理无源路由的包
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.conf.all.accept_source_route = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.conf.default.accept_source_route = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 关闭sysrq功能
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kernel.sysrq = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># core文件名中添加pid作为扩展名
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kernel.core_uses_pid = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># TCP/IP 堆栈加固、开启SYNCookies,当出现SYN等待队列溢出时,启用cookies 来处理
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_syncookies = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 修改消息队列长度
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kernel.msgmnb = 65536
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kernel.msgmax = 65536
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 优化 LB 端口使用 增加系统文件描述符限制
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">fs.file-max = 65535
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 允许更多的 PID（以减少翻转问题）； 可能会破坏某些程序 32768
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kernel.pid_max = 65535
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 设置最大内存共享段大小bytes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kernel.shmmax = 68719476736
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kernel.shmall = 4294967296
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 启用timewait快速回收
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_tw_recycle = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_sack = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_window_scaling = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 增加专用于网络接口的内存
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.core.rmem_default = 1048576
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.core.rmem_max = 16777216
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.core.wmem_default = 1048576
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.core.wmem_max = 16777216
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.core.optmem_max = 65536
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_rmem = 4096 1048576 2097152
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_wmem = 4096 65536 16777216
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.udp_rmem_min = 8192
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.udp_wmem_min = 8192
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 启用 TCP 快速打开、通过在发送方的初始 TCP SYN 期间启用数据交换来帮助减少网络延迟。使用该值3而不是默认值1允许
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_fastopen = 3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 增加最大连接数、警告：增加此值可能只会提高高负载服务器的性能，并可能导致处理速度变慢（例如单线程阻塞服务器）或工作线程/进程数量不足
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># net.core.somaxconn = 8192
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 下述内存单位是页，而不是字节。可参考的优化值是:786432 1048576 1572864
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># net.ipv4.tcp_tw_len = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 增加接收队列的大小、每个网络接口接收数据包的速率比内核处理这些包的速率快时，允许送到队列的数据包的最大数目
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.core.netdev_max_backlog = 262144
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 限制仅仅是为了防止简单的DoS 攻击
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_max_orphans = 3276800
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 调整挂起的连接处理、未收到客户端确认信息的连接请求的最大值
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_max_syn_backlog = 8192
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 等待时间，默认是:180000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_max_tw_buckets = 6000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 开启重用。允许将TIME-WAIT sockets 重新用于新的TCP 连接
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_tw_reuse = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_fin_timeout = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_slow_start_after_idle = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># TCP 时间戳
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_timestamps = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 内核放弃建立连接之前发送SYNACK 包的数量
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_synack_retries = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 内核放弃建立连接之前发送SYN 包的数量
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_syn_retries = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_mem = 94500000 915000000 927000000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 启用 MTU 探测、最大传输单元 (MTU)越长，性能越好，但可靠性越差
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># net.ipv4.tcp_mtu_probing = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 更改 TCP 保活参数、当keepalive 起用的时候，TCP 发送keepalive 消息的频度。缺省是2 小时
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_keepalive_time = 60
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_keepalive_intvl = 10
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_keepalive_probes = 6
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_keepalive_time = 30
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 增加临时端口范围、允许系统打开的端口范围
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.ip_local_port_range = 1024 65000
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 修改防火墙表大小，默认65536
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># net.netfilter.nf_conntrack_max=655350
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># net.netfilter.nf_conntrack_tcp_timeout_established=1200
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 可选值：0、1、2，1， 表示内核允许分配所有的物理内存，而不管当前的内存状态如何
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">vm.overcommit_memory=1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">vm.swappiness = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 禁用 ICMP 重定向、确保无人能修改路由表
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.conf.all.accept_redirects = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.conf.default.accept_redirects = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.conf.all.secure_redirects = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.conf.default.secure_redirects = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv6.conf.all.accept_redirects = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv6.conf.default.accept_redirects = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 在非路由器上禁用 ICMP 重定向发送
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.conf.all.send_redirects = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.conf.default.send_redirects = 0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># Other tunings
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">net.ipv4.tcp_no_metrics_save = 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">vm.min_free_kbytes = 65536
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 启用 BBR 拥塞控制算法可以帮助实现更高的带宽和更低的互联网流量延迟。首先，加载模块tcp_bbr。
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># net.core.default_qdisc = cake
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># net.ipv4.tcp_congestion_control = bbr
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 将脏字节设置为足够小的值、例如 4M
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># vm.dirty_background_bytes = 4194304
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># vm.dirty_bytes = 4194304
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 磁盘IO配置，linux会设置40%的可用内存用来做系统cache，当flush数据时这40%内存中的数据由于和IO同步问题导致超时(120s)，所将40%减小到10%，避免超时
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># vm.dirty_ratio=10
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># vm.dirty_background_ratio=5
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># nfs
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">fs.nfs.nfs_callback_tcpport = 32764
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">fs.nfs.nlm_tcpport = 32768
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">fs.nfs.nlm_udpport = 32768 &#34;</span> &gt;&gt; /etc/sysctl.conf
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sysctl -p  	<span style="color:#75715e"># 重载使之生效</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="修改系统ulimit">修改系统<code>Ulimit</code></h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 临时修改</span>
+</span></span><span style="display:flex;"><span>$ ulimit -n <span style="color:#ae81ff">65535</span>  	
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 写到配置文件永久生效</span>
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">* soft nproc 65535  	# soft 软限制
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">* hard nproc 65535  	# hard 硬限制
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">root soft nofile 65535  	# 针对用户单独做限制
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">root hard nofile 65535
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">* soft nofile 25535
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">* hard nofile 25535
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">* soft memlock unlimited
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">* soft memlock unlimited &#34;</span> &gt;&gt;/etc/security/limits.conf</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="修改sshd">修改<code>sshd</code></h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;AllowUsers myadmin@0.0.0.0/0&#34;</span> &gt;&gt;/etc/ssh/sshd_config
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;AllowUsers myadmin@192.168.0.115&#34;</span> &gt;&gt;/etc/ssh/sshd_config  	<span style="color:#75715e"># 限制用指定IP登录</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 禁止root用户远程登录服务器</span>
+</span></span><span style="display:flex;"><span>$ sed -i <span style="color:#e6db74">&#34;s/#PermitRootLogin yes/PermitRootLogin no/g&#34;</span> /etc/ssh/sshd_config
+</span></span><span style="display:flex;"><span>$ systemctl restart sshd  </span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="优化系统服务cgroup">优化系统服务<code>Cgroup</code></h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 限制CPU</span>
+</span></span><span style="display:flex;"><span>$ mkdir /sys/fs/cgroup/cpu,cpuacct/cgroup_mysql
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;30000&#34;</span> &gt;/sys/fs/cgroup/cpu,cpuacct/cgroup_mysql/cpu.cfs_quota_us
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;mysql pid&#34;</span> &gt;/sys/fs/cgroup/cpu,cpuacct/cgroup_mysql/task
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 限制内存， 限制单位为：字节(Bytes)</span>
+</span></span><span style="display:flex;"><span>$ mkdir /sys/fs/cgroup/memory/cgroup_mysql
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;1073741824&#34;</span> &gt;/sys/fs/cgroup/memory/cgroup_mysql/memory.limit_in_bytes  	<span style="color:#75715e"># 1G 为：1073741824Bytes(字节)</span>
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;mysql pid&#34;</span> &gt;/sys/fs/cgroup/memory/cgroup_mysql/task</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="优化histsize显示操作时间连接ip以及用户">优化<code>HISTSIZE</code>显示操作时间、连接<code>IP</code>以及用户</h3>
+<ul>
+<li>
+<ol>
+<li><a href="https://www.51cto.com/article/639680.html" rel="external" target="_self">谁动了我的主机? 之活用<code>History</code>命令</a></li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><a href="https://ftp.gnu.org/gnu/" rel="external" target="_self">下载<code>GNU</code>软件</a></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 监控登陆过系统的用户、IP地址、操作命令以及操作时间</span>
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;export HISTTIMEFORMAT=&#34;</span>%F %T <span style="color:#e6db74">`</span>who <span style="color:#ae81ff">\-</span>u am i 2&gt;/dev/null | awk <span style="color:#e6db74">&#39;{print $NF}&#39;</span> | sed <span style="color:#ae81ff">\-</span>e <span style="color:#e6db74">&#39;s/[()]//g&#39;</span><span style="color:#e6db74">`</span> <span style="color:#e6db74">`</span>whoami<span style="color:#e6db74">`</span> <span style="color:#e6db74">&#34;&#34;</span> &gt;&gt;/etc/profile.d/history.sh</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted --><code>Ubuntu</code>安装<code>messages</code><!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo apt-get install --reinstall rsyslog
+</span></span><span style="display:flex;"><span>$ cat &gt;/etc/rsyslog.d/50-default.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">*.=info;*.=notice;*.=warn;\  	# 31 行左右取消注释
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     auth,authpriv.none;\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     cron,daemon.none;\
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     mail,news.none          -/var/log/messages
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>$ sudo service rsyslog restart</span></span></code></pre></div><ul>
+<li>3.1 <!-- raw HTML omitted --><code>Ubuntu</code>安装<code>bash</code><!-- raw HTML omitted --></li>
+</ul>
+<p><a href="#R-image-f5511c58247449e2cf7af9fca1fa9351" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/System-Architecture-Planning-Diagram/Snipaste_2023-03-02_18-13-52.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-f5511c58247449e2cf7af9fca1fa9351"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/System-Architecture-Planning-Diagram/Snipaste_2023-03-02_18-13-52.png"></a></p>
+<p><a href="#R-image-312abd5ffe070731898f6632715026a4" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/imgs/master/System-Architecture-Planning-Diagram/Snipaste_2023-03-02_18-15-53.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-312abd5ffe070731898f6632715026a4"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/imgs/master/System-Architecture-Planning-Diagram/Snipaste_2023-03-02_18-15-53.png"></a></p>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo wget https://ftp.gnu.org/gnu/bash/bash-5.2.tar.gz
+</span></span><span style="display:flex;"><span>$ sudo tar zxvf bash-5.2.tar.gz
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 修改配置文件</span>
+</span></span><span style="display:flex;"><span>$ cat &gt;/usr/local/src/bash-5.2/bashhist.c<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">hdrlen = snprintf (loghdr, sizeof(loghdr), &#34;HISTORY: PID=%d UID=%d User=%s &#34;, getpid(), current_user.uid, current_user.user_name, line);  	# 843 行左右添加 User=%s current_user.user_name, line
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat &gt;/usr/local/src/bash-5.2/config-top.h<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/* #define SSH_SOURCE_BASHRC */  	# 113 行左右复制一份 去掉注释
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#define SSH_SOURCE_BASHRC
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/* #define SYSLOG_HISTORY */  	# 128 行左右复制一份 去掉注释
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#define SYSLOG_HISTORY
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 配置、编译、安装</span>
+</span></span><span style="display:flex;"><span>$ sudo ./configure --prefix<span style="color:#f92672">=</span>/usr/local/bash
+</span></span><span style="display:flex;"><span>$ sudo make
+</span></span><span style="display:flex;"><span>$ sudo make install
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 修改用户环境文件</span>
+</span></span><span style="display:flex;"><span>$ cat &gt;/etc/passwd<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">user_name:x:1000:1000:user_name:/home/user_name:/usr/local/bash/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="安装配置linux系统的irq均衡工具irqbalance-">安装配置<code>Linux</code>系统的<code>IRQ</code>均衡工具<code>Irqbalance </code></h3>
+<ul>
+<li>
+<ol>
+<li>安装配置</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo apt-get update
+</span></span><span style="display:flex;"><span>$ sudo apt-get install irqbalance
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sudo cat &gt;&gt;/etc/default/irqbalance<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">ENABLED=&#34;1&#34;  	# ENABLED=1 表示启用
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">BALANCE_INTERVAL=1  	# BALANCE_INTERVAL=1 表示每秒进行一次 IRQ 均衡
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sudo systemctl restart irqbalance.service
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 检查是否生效</span>
+</span></span><span style="display:flex;"><span>$ cat /proc/interrupts</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="关闭透明大页">关闭透明大页</h3>
+<ul>
+<li>
+<ol>
+<li>修改<code>grub.conf</code>文件</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 确实是否开启</span>
+</span></span><span style="display:flex;"><span>$ cat /sys/kernel/mm/redhat_transparent_hugepage/enabled
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>always<span style="color:#f92672">]</span> madvise never  	<span style="color:#75715e"># [always] 表示开启</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ grep HugePage /proc/meminfo
+</span></span><span style="display:flex;"><span>AnonHugePages:    <span style="color:#ae81ff">585728</span> kB  	<span style="color:#75715e"># 不是 0 就代表启动</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 修改grub.conf文件</span>
+</span></span><span style="display:flex;"><span>$ cat &gt;&gt;/etc/grub.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kernel /vmlinuz-2.6.32-431.el6.x86_64 ro root=/dev/mapper/vg_linuxbase-lv_root rd_NO_LUKS LANG=en_US.UTF-8 rd_LVM_LV=vg_linuxbase/lv_root rd_NO_MD rd_LVM_LV=vg_linuxbase/lv_swap SYSFONT=latarcyrheb-sun16 crashkernel=auto  KEYBOARDTYPE=pc KEYTABLE=us rd_NO_DM rhgb quiet transparent_hugepage=never  	# 在kernel 行新添参数配置
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 重启主机</span>
+</span></span><span style="display:flex;"><span>$ shutdown -Fr now</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li>使用脚本方式</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> test -f /sys/kernel/mm/transparent_hugepage/enabled; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span> echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> test -f /sys/kernel/mm/transparent_hugepage/defrag; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span> echo never &gt; /sys/kernel/mm/transparent_hugepage/defrag
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="调节cpu频率">调节CPU频率</h3>
+<ul>
+<li>
+<ol>
+<li>不安装工具方式</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo cat /proc/cpuinfo | sudo grep MHz
+</span></span><span style="display:flex;"><span>$ sudo echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor &gt;/dev/null</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li>使用<code>cpupower</code>工具</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo apt-get install linux-cpupower -y 或者 apt-get install -y linux-tools-<span style="color:#66d9ef">$(</span>uname -r<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>$ sudo cpupower -c all frequency-set -g performance  	<span style="color:#75715e"># 设置所有CPU为性能模式</span>
+</span></span><span style="display:flex;"><span>$ sudo cpupower -c all frequency-set -g powersave  	<span style="color:#75715e"># 设置所有CPU为节能模式</span>
+</span></span><span style="display:flex;"><span>$ sudo cpupower -c all frequency-info  	<span style="color:#75715e"># 查看当前所有CPU的信息</span>
+</span></span><span style="display:flex;"><span>$ sudo watch -n <span style="color:#ae81ff">1</span> cpupower monitor  	<span style="color:#75715e"># CPU实时频率查看</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="修改系统io调度算法">修改系统<code>I/O</code>调度算法</h3>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo cat /sys/block/sda/queue/scheduler  	<span style="color:#75715e"># sda 磁盘名称 </span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>mq-deadline<span style="color:#f92672">]</span> none  	<span style="color:#75715e"># 代表使用得是 [mq-deadline]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 临时修改为：noop 算法</span>
+</span></span><span style="display:flex;"><span>$ echo noop &gt;/sys/block/sda/queue/scheduler
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 永久生效</span>
+</span></span><span style="display:flex;"><span>$ cp -p /boot/grub/menu.lst /boot/grub/menu.lst-backup  	<span style="color:#75715e"># 提前备份配置文件</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sudo cat &gt;&gt;/boot/grub/menu.lst<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">kernel /vmlinuz-2.6.16.60-0.91.1-smp root=/dev/sysvg/root splash=silent splash=off showopts elevator=noop  	# 行最后添加
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

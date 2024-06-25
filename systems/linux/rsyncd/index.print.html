@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Rsyncd :: Hugo Relearn Theme">
+    <meta property="og:url" content="https://erge.blog/systems/linux/rsyncd/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Rsyncd :: Hugo Relearn Theme">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Rsyncd :: Hugo Relearn Theme">
+    <meta itemprop="datePublished" content="2024-06-13T00:34:54+08:00">
+    <meta itemprop="dateModified" content="2024-06-13T00:34:54+08:00">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Rsyncd :: Hugo Relearn Theme</title>
+    <link href="../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../systems/linux/rsyncd/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Rsyncd</span><meta itemprop="position" content="3"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../systems/linux/script/how_to_write_shell_scripts/" title="How_To_Write_Shell_Scripts (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../systems/linux/rsyncd/install_timesyncd/" title="Install_TimeSyncd (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="rsyncd">Rsyncd</h1>
+
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+          <section>
+            <h1 class="a11y-only">Subsections of Rsyncd</h1>
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_timesyncd">Install_TimeSyncd</h1>
+
+<h2 id="部署时间同步服务">部署时间同步服务</h2>
+<h3 id="部署ntp时间同步服务">部署<code>NTP</code>时间同步服务</h3>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->下载安装包、解压、配置、安装<!-- raw HTML omitted --><a href="http://www.ntp.org/" rel="external" target="_self"><code>NTP</code>官网</a></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd /usr/local/src/
+</span></span><span style="display:flex;"><span>$ curl -O https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2.8p13.tar.gz
+</span></span><span style="display:flex;"><span>$ tar zxvf ntp-4.2.8p13.tar.gz
+</span></span><span style="display:flex;"><span>$ cd ntp-4.2.8p13
+</span></span><span style="display:flex;"><span>$ ./configure --prefix<span style="color:#f92672">=</span>/usr/local/ntp --enable-all-clocks --enable-parse-clocks
+</span></span><span style="display:flex;"><span>$ make <span style="color:#f92672">&amp;&amp;</span> make install
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 注：如以上下载地址无法访问,请从ntp官方手动下载：http://www.ntp.org/downloads.html</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>ntp.conf</code><!-- raw HTML omitted -->配置文件<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>restrict default nomodify notrap noquery</code><!-- raw HTML omitted -->替换为<!-- raw HTML omitted --><code>restrict default nomodify</code><!-- raw HTML omitted -->允许任何客户机<!-- raw HTML omitted --><code>IP</code><!-- raw HTML omitted -->进行时间同步<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->在<!-- raw HTML omitted --><code>restrict default nomodify notrap noquery</code><!-- raw HTML omitted -->默认拒绝所有之后增加一行：<!-- raw HTML omitted --><code>restrict 192.168.18.0 mask 255.255.255.0 nomodify</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ vim /etc/ntp.conf
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 方式一、使用域名连接，要经过DNS解析，速度慢。</span>
+</span></span><span style="display:flex;"><span>ntpdate pool.ntp.org
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 方式二、使用IP连接，超级快。</span>
+</span></span><span style="display:flex;"><span>ntpdate 120.24.81.91</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->以守护进程启动<!-- raw HTML omitted --><code>ntpd</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><code>ntpd</code><!-- raw HTML omitted -->启动后，客户机要等几分钟再与其进行时间同步，否则会提示<!-- raw HTML omitted --><code>no server suitable for synchronization found</code><!-- raw HTML omitted -->错误<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /usr/local/ntp/bin/ntpd -c /etc/ntp.conf -p /tmp/ntpd.pid</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->在客户机器配置计划任务<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->每天的5点13分、9点13分、14点13分、19点13分与时间同步服务器进行同步<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum install -y ntpdate
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;13 5,9,14,19 * * * /usr/sbin/ntpdate 192.168.18.2&#34;</span> &gt;&gt;/var/spool/cron/root</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="部署chrony时间同步服务将替代ntp服务">部署<code>Chrony</code>时间同步服务。将替代<code>NTP</code>服务</h3>
+<ul>
+<li>
+<ol>
+<li><a href="https://chrony.tuxfamily.org/" rel="external" target="_self"><code>Chrony</code></a></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y install chrony
+</span></span><span style="display:flex;"><span>$ systemctl enable chronyd.service <span style="color:#f92672">&amp;&amp;</span> systemctl start chronyd.service</span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_rsync">Install_Rsync</h1>
+
+<h2 id="rsync部署"><code>Rsync</code>部署</h2>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->注意：<!-- raw HTML omitted -->两台服务器<!-- raw HTML omitted -->都需要安装<!-- raw HTML omitted --><code>Rsync</code><!-- raw HTML omitted -->服务， 只启动源服务器上的<!-- raw HTML omitted --><code>Rsync</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-a</code></td>
+<td>包含：<code>-rtplgoD</code> 等选项</td>
+</tr>
+<tr>
+<td><code>-r</code></td>
+<td>同步目录选项</td>
+</tr>
+<tr>
+<td><code>-v</code></td>
+<td>显示同步的目录文件信息</td>
+</tr>
+<tr>
+<td><code>-l</code></td>
+<td>保留软连接</td>
+</tr>
+<tr>
+<td><code>-L</code></td>
+<td>同步软链接时把源文件也给同步</td>
+</tr>
+<tr>
+<td><code>-p</code></td>
+<td>保持文件权限属性</td>
+</tr>
+<tr>
+<td><code>-o</code></td>
+<td>保持文件属主</td>
+</tr>
+<tr>
+<td><code>-g</code></td>
+<td>保持文件属组</td>
+</tr>
+<tr>
+<td><code>-D</code></td>
+<td>保持设备文件信息</td>
+</tr>
+<tr>
+<td><code>-t</code></td>
+<td>保持文件时间属性</td>
+</tr>
+<tr>
+<td><code>-delete</code></td>
+<td>删除<!-- raw HTML omitted -->目标服务器<!-- raw HTML omitted -->目录中<!-- raw HTML omitted -->源服务器<!-- raw HTML omitted -->没有的文件</td>
+</tr>
+<tr>
+<td><code>-exclude</code></td>
+<td>忽略不需要同步的目录文件</td>
+</tr>
+<tr>
+<td><code>-P</code></td>
+<td>显示同步过程，速率等，比<code>-v</code>更加详细</td>
+</tr>
+<tr>
+<td><code>-u</code></td>
+<td>如果<!-- raw HTML omitted -->目标服务器<!-- raw HTML omitted -->比<!-- raw HTML omitted -->源服务器<!-- raw HTML omitted -->目录文件新<!-- raw HTML omitted -->则不同步<!-- raw HTML omitted --></td>
+</tr>
+<tr>
+<td><code>-z</code></td>
+<td>同步时压缩目录文件</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<hr>
+<h3 id="源服务器">源服务器</h3>
+<blockquote>
+<ul>
+<li></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;username:password&#34;</span> &gt;&gt;/etc/rsyncd.namelist  	<span style="color:#75715e"># 创建一个虚拟用户密码</span>
+</span></span><span style="display:flex;"><span>$ cat &gt;/etc/rsyncd.conf<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># sample rsyncd.conf configuration file
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># GLOBAL OPTIONS 全局配置
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># motd file=/etc/motd
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># log file=/var/log/rsyncd
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># for pid file, do not use /var/run/rsync.pid if
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># you are going to run rsync out of the init.d script.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># The init.d script does its own pid file handling,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># so omit the &#34;pid file&#34; line completely in that case.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># pid file=/var/run/rsyncd.pid
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># syslog facility=daemon
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># socket options=
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># MODULE OPTIONS 按组配置选项
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[ftp]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	comment = public archive
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# 要同步的目录
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	path = /var/www/pub
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	use chroot = yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    # max connections=10
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	lock file = /var/lock/rsyncd
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    # 默认只读，如果源要推送目录文件到目标服务器， 目标服务器上需要修改为：
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	read only = yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	list = yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	uid = nobody
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	gid = nogroup
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# exclude = 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# exclude from = 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# include =
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# include from =
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# 授权访问的用户名
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# auth users = username
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# 授权访问的用户的密码文件
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# secrets file = /etc/rsyncd.secrets
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	strict modes = yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# hosts allow =
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# hosts deny =
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ignore errors = no
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	ignore nonreadable = yes
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	transfer logging = no
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	# log format = %t: host %h (%a) %o %f (%l bytes). Total %b bytes.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	timeout = 600
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	refuse options = checksum dry-run
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	dont compress = *.gz *.tgz *.zip *.z *.rpm *.deb *.iso *.bz2 *.tbz
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 权限一定要限制为最小，</span>
+</span></span><span style="display:flex;"><span>$ chmod <span style="color:#ae81ff">600</span> /etc/rsyncd.namelist
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># kill进程重启</span>
+</span></span><span style="display:flex;"><span>$ kill -9 rsync
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 依后台运行方式启动</span>
+</span></span><span style="display:flex;"><span>$ rsync --daemon</span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="目标服务器">目标服务器</h3>
+<blockquote>
+<ul>
+<li>查看源服务器下目录资源</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ rsync --list-only 源服务器IP::ftp/  	<span style="color:#75715e"># ftp 为组名</span></span></span></code></pre></div><ul>
+<li>同步源目录下资源</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ rsync -avz 源服务器IP::ftp/ /usr/local/nginx/html</span></span></code></pre></div><ul>
+<li>使用用户密码方式查看源服务器资源</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ rsync --list-only username@源服务器IP::ftp/  	<span style="color:#75715e"># ftp 为组名</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 客户端保存密码</span>
+</span></span><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;password&#34;</span> &gt;&gt;/etc/rsyncd.passwordlist 
+</span></span><span style="display:flex;"><span>$ chmod <span style="color:#ae81ff">600</span> /etc/rsyncd.passwordlist 
+</span></span><span style="display:flex;"><span>$ rsync --list-only --password-file<span style="color:#f92672">=</span>/etc/rsyncd.passwordlist username@源服务器IP::ftp/  	<span style="color:#75715e"># ftp 为组名</span></span></span></code></pre></div></blockquote>
+<hr>
+<h3 id="安装配置inotify时时检测服务">安装配置<code>Inotify</code>时时检测服务</h3>
+<blockquote>
+<ul>
+<li>
+<ol>
+<li>安装以及配置监控目录</li>
+</ol>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>完整参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-r</code></td>
+<td><code>--recursive</code></td>
+<td>递归查询目录</td>
+</tr>
+<tr>
+<td><code>-q</code></td>
+<td><code>--qulet</code></td>
+<td>只打印监控事件信息</td>
+</tr>
+<tr>
+<td><code>-m</code></td>
+<td><code>--monitor</code></td>
+<td>始终保持监控状态</td>
+</tr>
+<tr>
+<td><code>--excludel</code></td>
+<td></td>
+<td>排除文件或目录，不区分大小写</td>
+</tr>
+<tr>
+<td><code>--timefmt</code></td>
+<td></td>
+<td>指定事件输出格式</td>
+</tr>
+<tr>
+<td><code>--format</code></td>
+<td></td>
+<td>使用指定的输出类似字符串格式</td>
+</tr>
+<tr>
+<td><code>-e</code></td>
+<td>`&ndash;event[-e</td>
+<td>&ndash;event &hellip;]accessmodifyattrb`</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ wget https://github.com/inotify-tools/inotify-tools/releases/download/3.20.2.2/inotify-tools-3.20.2.2.tar.gz
+</span></span><span style="display:flex;"><span>$ tar zxvf inotify-tools-3.20.2.2.tar.gz
+</span></span><span style="display:flex;"><span>$ cd inotify-tools-3.20.2.2/
+</span></span><span style="display:flex;"><span>$ ./configure --prefix<span style="color:#f92672">=</span>/usr/local/inotify
+</span></span><span style="display:flex;"><span>$ make <span style="color:#f92672">&amp;&amp;</span> make install
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 监控目录</span>
+</span></span><span style="display:flex;"><span>$ inotifywait -mrq --timefmt <span style="color:#e6db74">&#39;%Y-%m-%d %H:%M:%S&#39;</span> --format <span style="color:#e6db74">&#39;%T %w%f %e&#39;</span> -e close_write,modify,delete,create,attrib,move //usr/local/nginx/html/</span></span></code></pre></div><ul>
+<li>使用脚本监控</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;inotifywait_rsync.sh<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 监控目录， 有变化推送到目标服务器
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">inotifywait -mrq --timefmt &#39;%Y-%m-%d %H:%M:%S&#39; --format &#39;%T %w%f %e&#39; -e close_write,modify,delete,create,attrib,move //usr/local/nginx/html/ | while read file
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">do
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     rsync -az --delete --password-file=/etc/rsyncd.passwordlist /usr/local/nginx/html username@源服务器IP::ftp/
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">done
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_lsyncd">Install_Lsyncd</h1>
+
+<h2 id="lsyncd部署"><code>Lsyncd</code>部署</h2>
+<blockquote>
+<ul>
+<li>**<code>Lsyncd</code>**是一个实时文件同步工具，它可以监视指定的目录树，一旦文件发生变化（如创建、修改、删除），就会立即将这些变化同步到另一个目标位置。它主要用于在多个服务器之间保持文件夹内容同步，并且可以实现高效的增量同步</li>
+<li><strong>主要特点和用途：</strong></li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><strong>实时监控和同步</strong>：</p>
+<p><code>Lsyncd</code>使用轮询或文件系统的通知机制（如<code>inotify</code>）来实时监控文件系统的变化。</p>
+<p>当监控的目录发生变化时，它可以快速响应并将变更内容同步到目标位置。</p>
+</li>
+<li>
+<p><strong>增量同步</strong>：</p>
+<p><code>Lsyncd</code>不会简单地全量复制文件，而是通过增量方式同步文件变更，提高了同步效率。</p>
+</li>
+<li>
+<p><strong>灵活的配置</strong>：</p>
+<p>可以通过简单的配置文件定义监控源目录和目标位置，以及定义同步规则和行为。</p>
+<p>支持通过<code>Lua</code>脚本来自定义处理逻辑，如过滤器、排除规则等。</p>
+</li>
+<li>
+<p><strong>跨平台支持</strong>：</p>
+<p><code>Lsyncd</code>可以运行在多种操作系统上，包括<code>Linux</code>、<code>BSD</code>和<code>macOS</code>等。</p>
+</li>
+<li>
+<p><strong>高可靠性和可扩展性</strong>：</p>
+<p><code>Lsyncd</code>设计用于高可靠性的文件同步，可以处理大量的文件系统变更和同步任务。</p>
+<p>可以配置成为集群环境下的一部分，以实现更复杂的同步和备份策略。</p>
+</li>
+</ul>
+</blockquote>
+<ul>
+<li><strong>使用场景：</strong></li>
+</ul>
+<blockquote>
+<ul>
+<li>
+<p><strong>分布式系统的文件同步</strong>：</p>
+<p>在多台服务器之间同步重要文件，确保文件内容的一致性和可用性。</p>
+</li>
+<li>
+<p><strong>实时备份和数据保护</strong>：</p>
+<p>将重要数据即时备份到另一个位置，以应对意外数据丢失或损坏的情况。</p>
+</li>
+<li>
+<p><strong>网站和应用程序部署</strong>：</p>
+<p>在不同的服务器上部署相同的网站或应用程序代码，确保所有服务器上的内容始终保持同步。</p>
+</li>
+</ul>
+</blockquote>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->安装扩展工具<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ yum -y install expect epel-release lsyncd</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->生成密钥实现绵密登录<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ssh-keygen -t rsa -P <span style="color:#e6db74">&#34;&#34;</span> -f ~/.ssh/id_rsa  	<span style="color:#75715e"># -t指定SSH密钥的算法为RSA算法，-P设置密码为空，-f指定生成的密钥文件存放位置</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->使用<!-- raw HTML omitted --><code>expect</code><!-- raw HTML omitted -->工具使脚本推送密钥<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ expect <span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">spawn ssh-copy-id myadmin@$IP
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">expect &#34;(yes/no)?&#34; {send &#34;yes\r&#34;}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">expect &#34;password:&#34; {send &#34;$passwd\r&#34;}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">expect &#34;#&#34; {send &#34;exit\r&#34;}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->给予普通用户授权，使普通用户可以使用<!-- raw HTML omitted --><code>Lsyncd</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;#####  	Start/Stop Service  	#####
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Cmnd_Alias MYADMIN_START_SERVICES = /etc/lsyncd.conf, /usr/bin/lsyncd, /bin/rsync, /var/log/lsyncd/*
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">myadmin ALL=(ALL)NOPASSWD:MYADMIN_START_SERVICES 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;</span> &gt;&gt;/etc/sudoers.d/myadmin
+</span></span><span style="display:flex;"><span>$ chmod <span style="color:#ae81ff">660</span> /etc/sudoers.d/myadmin</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->编写<!-- raw HTML omitted --><code>Lsyncd.conf</code><!-- raw HTML omitted -->文件<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;--insist：继续运行，即使有失败的目标。
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">--statusInterval：多少秒写入文件，默认是10s
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">--sync为同步配置，部分参数如下：
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">--source：本地文件目录
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">--host：远程服务器地址
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">--targetdir：远程目标目录
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">--port：目前主机SSH端口号，默认为22
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">settings {  --settings为全局配置
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> logfile = &#34;</span>/var/log/lsyncd/lsyncd.log<span style="color:#e6db74">&#34;,  --logfile：日志文件路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> statusFile = &#34;</span>/var/log/lsyncd/lsyncd.status<span style="color:#e6db74">&#34;, --statusFile：进程路径
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> inotifyMode = &#34;</span>CloseWrite or Modify<span style="color:#e6db74">&#34;,   
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> maxProcesses = 100, --ssh同步修改为&#34;</span>1<span style="color:#e6db74">&#34; 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> maxDelays    = 10,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sync {  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> default.rsyncssh,  --# ssh同步方式
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> source = &#34;</span>/opt/backup<span style="color:#e6db74">&#34;,  --源服务器目录
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> host=&#34;</span>192.168.40.198<span style="color:#e6db74">&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> targetdir=&#34;</span>/opt/backup/<span style="color:#e6db74">&#34;, --目标服务器目录，源服务器和目标服务器相同
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> delay = 1,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> rsync = {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     binary = &#34;</span>/usr/bin/rsync<span style="color:#e6db74">&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     archive = true,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     compress = false,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     verbose = true,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sync {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> default.rsync,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> source = &#34;</span>/data/nginx/cache<span style="color:#e6db74">&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> target =&#34;</span>root@192.168.32.11:/data/nginx/cache<span style="color:#e6db74">&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> delay  = 1,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> rsync = {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     binary = &#34;</span>/usr/bin/rsync<span style="color:#e6db74">&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     archive = true,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     compress = false,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     verbose = true
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">} &#34;</span>&gt;&gt;/etc/lsyncd.conf</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="6">
+<li><!-- raw HTML omitted -->给予权限， 启动<!-- raw HTML omitted --><code>Lsyncd</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ chown -R myadmin. /var/log/lsyncd
+</span></span><span style="display:flex;"><span>$ lsyncd -nodaemon /etc/lsyncd.conf  	<span style="color:#75715e"># 运行查看下是否有报错  </span>
+</span></span><span style="display:flex;"><span>$ systemctl enable lsyncd <span style="color:#f92672">&amp;&amp;</span> systemctl start lsyncd</span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+          </section>
+        </div>
+      </main>
+    </div>
+    <script src="../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>

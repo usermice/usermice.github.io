@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="部署Dashboard(端口映射，可以用于web访问) 名称地址 描述 Kubernetes Dashboard 官方可视化界面 KubeSphere 青云 Rancher Kuboard kubernetes官方开发了一个基于web的用户界面DashBoard。用户可以使用DashBoard部署容器化的应用，而且还可以监控应用的状态，执行故障排查以及管理kubernetes中的各种资源。 下载用于部署DashBoard的yaml文件修改并运行 下载部署文件 $ cd /opt/kubernetes/cfg/ $ wget https://raw.">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Install_K8s_Dashboard :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="部署Dashboard(端口映射，可以用于web访问) 名称地址 描述 Kubernetes Dashboard 官方可视化界面 KubeSphere 青云 Rancher Kuboard kubernetes官方开发了一个基于web的用户界面DashBoard。用户可以使用DashBoard部署容器化的应用，而且还可以监控应用的状态，执行故障排查以及管理kubernetes中的各种资源。 下载用于部署DashBoard的yaml文件修改并运行 下载部署文件 $ cd /opt/kubernetes/cfg/ $ wget https://raw.">
+    <meta property="og:url" content="https://erge.blog/systems/linux/kubernetes/install_k8s_dashboard/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Install_K8s_Dashboard :: Hugo Relearn Theme">
+    <meta property="og:description" content="部署Dashboard(端口映射，可以用于web访问) 名称地址 描述 Kubernetes Dashboard 官方可视化界面 KubeSphere 青云 Rancher Kuboard kubernetes官方开发了一个基于web的用户界面DashBoard。用户可以使用DashBoard部署容器化的应用，而且还可以监控应用的状态，执行故障排查以及管理kubernetes中的各种资源。 下载用于部署DashBoard的yaml文件修改并运行 下载部署文件 $ cd /opt/kubernetes/cfg/ $ wget https://raw.">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-25T02:00:15+08:00">
+    <meta property="article:modified_time" content="2024-06-25T02:00:15+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Install_K8s_Dashboard :: Hugo Relearn Theme">
+    <meta itemprop="description" content="部署Dashboard(端口映射，可以用于web访问) 名称地址 描述 Kubernetes Dashboard 官方可视化界面 KubeSphere 青云 Rancher Kuboard kubernetes官方开发了一个基于web的用户界面DashBoard。用户可以使用DashBoard部署容器化的应用，而且还可以监控应用的状态，执行故障排查以及管理kubernetes中的各种资源。 下载用于部署DashBoard的yaml文件修改并运行 下载部署文件 $ cd /opt/kubernetes/cfg/ $ wget https://raw.">
+    <meta itemprop="datePublished" content="2024-06-25T02:00:15+08:00">
+    <meta itemprop="dateModified" content="2024-06-25T02:00:15+08:00">
+    <meta itemprop="wordCount" content="195">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Install_K8s_Dashboard :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719329888" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719329890" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719329890" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719329890" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719329890" rel="stylesheet">
+    <link href="../../../../css/print.css?1719329890" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719329890" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719329890"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/kubernetes/install_k8s_dashboard/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/kubernetes/"><span itemprop="name">Kubernetes</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Install_K8s_Dashboard</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/kubernetes/install_k8s_harbor/" title="Install_K8s_Harbor (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/kubernetes/install_k8s_coredns/" title="Install_K8s_CoreDNS (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="install_k8s_dashboard">Install_K8s_Dashboard</h1>
+
+<h2 id="部署dashboard端口映射可以用于web访问">部署<code>Dashboard</code>(端口映射，可以用于<code>web</code>访问)</h2>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>名称地址</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/kubernetes/dashboard" rel="external" target="_self"><code>Kubernetes Dashboard</code></a></td>
+<td>官方可视化界面</td>
+</tr>
+<tr>
+<td><a href="https://kubesphere.io/zh/" rel="external" target="_self"><code>KubeSphere</code></a></td>
+<td>青云</td>
+</tr>
+<tr>
+<td><a href="https://www.rancher.com/" rel="external" target="_self"><code>Rancher</code></a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://kuboard.cn/" rel="external" target="_self"><code>Kuboard</code></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>kubernetes</code>官方开发了一个基于<code>web</code>的用户界面<code>DashBoard</code>。用户可以使用<code>DashBoard</code>部署容器化的应用，而且还可以监控应用的状态，执行故障排查以及管理<code>kubernetes</code>中的各种资源。</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->下载用于部署<!-- raw HTML omitted --><code>DashBoard</code><!-- raw HTML omitted -->的<!-- raw HTML omitted --><code>yaml</code><!-- raw HTML omitted -->文件修改并运行<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>下载部署文件</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd /opt/kubernetes/cfg/
+</span></span><span style="display:flex;"><span>$ wget https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->修改<!-- raw HTML omitted --><code>recommended.yaml</code><!-- raw HTML omitted -->文件的<!-- raw HTML omitted --><code>Service</code><!-- raw HTML omitted -->类型<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">k8s-app</span>: <span style="color:#ae81ff">kubernetes-dashboard</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#ae81ff">kubernetes-dashboard</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">kubernetes-dashboard</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span> - <span style="color:#f92672">port</span>: <span style="color:#ae81ff">443</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">targetPort</span>: <span style="color:#ae81ff">8443</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">nodePort</span>: <span style="color:#ae81ff">30001</span>       <span style="color:#75715e"># 此处新增</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">type</span>: <span style="color:#ae81ff">NodePort      		# 此处新增</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">k8s-app</span>: <span style="color:#ae81ff">kubernetes-dashboard</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>---</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->部署<!-- raw HTML omitted --><code>DashBoard</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl create -f recommended.yaml</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->查看<!-- raw HTML omitted --><code>namespace</code><!-- raw HTML omitted -->下名为<!-- raw HTML omitted --><code>kubernetes-dashboard</code><!-- raw HTML omitted -->下的资源<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl get pods,svc -n kubernetes-dashboard
+</span></span><span style="display:flex;"><span>NAME                                             READY   STATUS    RESTARTS   AGE
+</span></span><span style="display:flex;"><span>pod/dashboard-metrics-scraper-694557449d-mvnc8   1/1     Running   <span style="color:#ae81ff">0</span>          21s
+</span></span><span style="display:flex;"><span>pod/kubernetes-dashboard-9774cc786-fm748         1/1     Running   <span style="color:#ae81ff">0</span>          21s
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>NAME                                TYPE        CLUSTER-IP   EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>         AGE
+</span></span><span style="display:flex;"><span>service/dashboard-metrics-scraper   ClusterIP   10.0.0.248   &lt;none&gt;        8000/TCP        21s
+</span></span><span style="display:flex;"><span>service/kubernetes-dashboard        NodePort    10.0.0.15    &lt;none&gt;        443:30001/TCP   22s</span></span></code></pre></div><ul>
+<li><code>dashboard-admin.yaml</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ServiceAccount</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#ae81ff">dashboard-admin</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">kubernetes-dashboard</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">kubernetes-dashboard</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ClusterRoleBinding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#ae81ff">dashboard-admin</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">roleRef</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ClusterRole</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#ae81ff">cluster-admin</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">subjects</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ServiceAccount</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#ae81ff">dashboard-admin</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">kubernetes-dashboard</span></span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->创建<!-- raw HTML omitted --><code>service account</code><!-- raw HTML omitted -->并绑定默认<!-- raw HTML omitted --><code>cluster-admin</code><!-- raw HTML omitted -->管理员集群角色：<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl create serviceaccount dashboard-admin -n kubernetes-dashboard</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->授权：<!-- raw HTML omitted --></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ kubectl create clusterrolebinding dashboard-admin <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--clusterrole<span style="color:#f92672">=</span>cluster-admin <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--serviceaccount<span style="color:#f92672">=</span>kubernetes-dashboard:dashboard-admin</span></span></code></pre></div><ul>
+<li><!-- raw HTML omitted -->获取账号<!-- raw HTML omitted --><code>token</code></li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 第一种方式</span>
+</span></span><span style="display:flex;"><span>$ kubectl describe secrets -n kubernetes-dashboard <span style="color:#66d9ef">$(</span>kubectl -n kubernetes-dashboard get secret | awk <span style="color:#e6db74">&#39;/dashboard-admin/{print $1}&#39;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 第二种方式</span>
+</span></span><span style="display:flex;"><span>$ kubectl get secrets -n kubernetes-dashboard | grep dashboard-admin
+</span></span><span style="display:flex;"><span>$ kubectl describe secrets dashboard-admin-token-b992l -n kubernetes-dashboard</span></span></code></pre></div></blockquote>
+<hr>
+<h2 id="通过浏览器访问dashboard的ui">通过浏览器访问<code>DashBoard</code>的<code>UI</code></h2>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->打开浏览器访问：<!-- raw HTML omitted --><code>https://NodeIP:30001</code></li>
+<li><!-- raw HTML omitted -->打开谷歌浏览器提示：<!-- raw HTML omitted --><code>NET::ERR_CERT_INVALID</code></li>
+<li><!-- raw HTML omitted -->在<!-- raw HTML omitted --><code>chrome</code><!-- raw HTML omitted -->该页面上，直接键盘敲入这12个字符：<!-- raw HTML omitted --><code>thisisunsafe</code></li>
+<li><!-- raw HTML omitted --><strong>注意：</strong><!-- raw HTML omitted -->鼠标点击当前页面任意位置，让页面处于最上层即可输入</li>
+<li><!-- raw HTML omitted -->复制创建<!-- raw HTML omitted --><code>cluster-admin</code><!-- raw HTML omitted -->生成的<!-- raw HTML omitted --><code>token</code><!-- raw HTML omitted -->到浏览器登录<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719329890" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719329890" defer></script>
+    <script src="../../../../js/theme.js?1719329890" defer></script>
+  </body>
+</html>
