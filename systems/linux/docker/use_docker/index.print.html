@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="使用Docker Docker命令 现有启动中容器打包成镜像 $ docker commit f61b39f3bb7e flanneld:$(date &#34;&#43;%Y%m%d%H%M%S&#34;) 构建镜像 $ docker build -t container_name/nginx:$(date &#43;%Y%m%d%H%M) --rm .">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:title" content="Use_Docker :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="使用Docker Docker命令 现有启动中容器打包成镜像 $ docker commit f61b39f3bb7e flanneld:$(date &#34;&#43;%Y%m%d%H%M%S&#34;) 构建镜像 $ docker build -t container_name/nginx:$(date &#43;%Y%m%d%H%M) --rm .">
+    <meta property="og:url" content="https://erge.blog/systems/linux/docker/use_docker/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Use_Docker :: Hugo Relearn Theme">
+    <meta property="og:description" content="使用Docker Docker命令 现有启动中容器打包成镜像 $ docker commit f61b39f3bb7e flanneld:$(date &#34;&#43;%Y%m%d%H%M%S&#34;) 构建镜像 $ docker build -t container_name/nginx:$(date &#43;%Y%m%d%H%M) --rm .">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-28T19:27:30+08:00">
+    <meta property="article:modified_time" content="2024-06-28T19:27:30+08:00">
+    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="name" content="Use_Docker :: Hugo Relearn Theme">
+    <meta itemprop="description" content="使用Docker Docker命令 现有启动中容器打包成镜像 $ docker commit f61b39f3bb7e flanneld:$(date &#34;&#43;%Y%m%d%H%M%S&#34;) 构建镜像 $ docker build -t container_name/nginx:$(date &#43;%Y%m%d%H%M) --rm .">
+    <meta itemprop="datePublished" content="2024-06-28T19:27:30+08:00">
+    <meta itemprop="dateModified" content="2024-06-28T19:27:30+08:00">
+    <meta itemprop="wordCount" content="498">
+    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <title>Use_Docker :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1719590742" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719590743" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719590743" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719590743" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719590743" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719590743" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719590743" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719590743" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719590743" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719590743" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719590743" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719590743" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719590743" rel="stylesheet">
+    <link href="../../../../css/print.css?1719590743" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1719590743" rel="stylesheet">
+    <script src="../../../../js/variant.js?1719590743"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/docker/use_docker/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/docker/"><span itemprop="name">Docker</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Use_Docker</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/docker/" title="Docker (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/docker/install_docker/" title="Install_Docker (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="use_docker">Use_Docker</h1>
+
+<h2 id="使用docker">使用<code>Docker</code></h2>
+<h3 id="docker命令"><code>Docker</code>命令</h3>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->现有启动中容器打包成镜像<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ docker commit f61b39f3bb7e flanneld:<span style="color:#66d9ef">$(</span>date  <span style="color:#e6db74">&#34;+%Y%m%d%H%M%S&#34;</span><span style="color:#66d9ef">)</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->构建镜像<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ docker build -t container_name/nginx:<span style="color:#66d9ef">$(</span>date +%Y%m%d%H%M<span style="color:#66d9ef">)</span> --rm .</span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->打标签<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 查看 tag 使用帮助</span>
+</span></span><span style="display:flex;"><span>$ docker tag -h
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ docker tag nginx:v1 container_name/nginx:<span style="color:#e6db74">`</span>date +%Y%m%d%H%M<span style="color:#e6db74">`</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->推送到远程仓库<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ docker push container_name/nginx:tagname
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 推送到自建harbor</span>
+</span></span><span style="display:flex;"><span>$ docker tag SOURCE_IMAGE<span style="color:#f92672">[</span>:TAG<span style="color:#f92672">]</span> 192.168.35.128:9527/test/IMAGE<span style="color:#f92672">[</span>:TAG<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 推送镜像到当前项目</span>
+</span></span><span style="display:flex;"><span>$ docker push 192.168.35.128:9527/test/IMAGE<span style="color:#f92672">[</span>:TAG<span style="color:#f92672">]</span></span></span></code></pre></div></blockquote>
+<ul>
+<li><!-- raw HTML omitted -->启动停止命令<!-- raw HTML omitted --></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ docker-compose -f /opt/docker-compose.yml down &gt;&gt; $log 2&gt;&amp;<span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>$ docker-compose -f /opt/docker-compose.yml up -d &gt;&gt; $log 2&gt;&amp;<span style="color:#ae81ff">1</span></span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h3 id="dockerfile文件"><code>Dockerfile</code>文件</h3>
+<blockquote>
+<ul>
+<li>d</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dockerfile" data-lang="dockerfile"><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> nginx  	# 构建镜像基于哪个镜像</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">MAINTAINER</span><span style="color:#e6db74">：镜像维护者姓名或邮箱地址</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> yum -y install wget <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    <span style="color:#f92672">&amp;&amp;</span> wget -O redis.tar.gz <span style="color:#e6db74">&#34;http://download.redis.io/releases/redis-5.0.3.tar.gz&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    <span style="color:#f92672">&amp;&amp;</span> tar -xvf redis.tar.gz  	<span style="color:#75715e"># 是在 docker build。构建镜像执行的命令，每一次RUN都会构建一层</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">CMD</span> [<span style="color:#e6db74">&#34;/etc/nginx/nginx.conf&#34;</span>] <span style="color:#75715e"># 变参，运行容器时执行的shell环境，如果有多个则以最后一个为准，也可以为ENTRYPOINT提供参数</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">VOLUME</span><span style="color:#e6db74">：指定容器挂载点到宿主机自动生成的目录或其他容器，如果没有定义则使用默认</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">USER</span><span style="color:#e6db74"> &lt;用户名&gt;[:&lt;用户组&gt;]  	# 为RUN、CMD、和 ENTRYPOINT 执行命令指定运行用户和如果没有定义则使用默认</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> &lt;工作目录路径&gt;  # 为 RUN、CMD、ENTRYPOINT、COPY 和 ADD 设置工作目录，就是切换目录</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>HEALTHCHECH：健康检查<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ARG</span>：变量属性值，不在容器内部起作用，只有 docker build 的过程中有效<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 80 443  	# 声明容器的服务端口（仅仅是声明），使用端口需要做映射</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span>：设置容器环境变量<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ADD</span>：拷贝文件或目录到容器中，如果是URL或压缩包便会自动下载或自动解压<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> hom?.txt /opt/data/  	<span style="color:#75715e"># 拷贝文件或目录到容器中，跟ADD类似，但不具备自动下载或解压的功能</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;nginx&#34;</span>, <span style="color:#e6db74">&#34;-c&#34;</span>] <span style="color:#75715e"># 定参，运行容器时执行的shell命令，如果存在多个 ENTRYPOINT 指令，仅最后一个生效</span></span></span></code></pre></div></blockquote>
+</blockquote>
+<hr>
+<h3 id="docker-compose文件"><code>docker-compose</code>文件</h3>
+<blockquote>
+<ul>
+<li><code>docker-compose-test.yml</code></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">version</span>: <span style="color:#e6db74">&#34;3&#34;</span>    <span style="color:#75715e"># docker-compose版本</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">services</span>:   <span style="color:#75715e"># 定义container</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">mysql</span>:    <span style="color:#75715e"># container名称-相当于--name web</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">mysql </span> <span style="color:#75715e"># 启动后名称</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">network_mode</span>: <span style="color:#ae81ff">bridge</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">mysql:8     </span> <span style="color:#75715e"># image来源</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">MYSQL_ROOT_PASSWORD</span>: <span style="color:#e6db74">&#34;root&#34;</span>   <span style="color:#75715e"># 设置root账号密码</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">MYSQL_USER</span>: <span style="color:#e6db74">&#34;user_name&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">MYSQL_PASSWORD</span>: <span style="color:#e6db74">&#34;password&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">MYSQL_DATABASE</span>: <span style="color:#e6db74">&#34;databases_name&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">MYSQL_ALLOW_EMPTY_PASSWORD</span>: <span style="color:#e6db74">&#34;true&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">TZ</span>: <span style="color:#ae81ff">Asia/Shanghai          </span> <span style="color:#75715e"># 指定东八时区</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">user</span>: <span style="color:#e6db74">&#34;1001:1001&#34;</span>   <span style="color:#75715e"># 启动后容器中用户id和组id，也可以指定用户名和组名</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ulimits</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">memlock</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">soft</span>: -<span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">hard</span>: -<span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:    <span style="color:#75715e"># 设置持久化映射关系，</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">../data/mysql:/var/lib/mysql</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">../conf/mysql/conf.d:/etc/mysql/conf.d</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">../conf/mysql/my.cnf:/etc/mysql/my.cnf</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;/etc/localtime:/etc/localtime:ro&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:      <span style="color:#75715e"># 指定端口映射</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;3306:3306&#34;</span>     <span style="color:#75715e"># 端口映射关系 和ports一起相当于-p 9001:9989</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:   <span style="color:#75715e"># 指定network-相当于--network springboot</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">overlay</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">springboot</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ipv4_address</span>: <span style="color:#ae81ff">172.20.0.6</span>    <span style="color:#75715e"># 指定容器ip地址-相当于--ip 172.20.0.6</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">command</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;--lower_case_table_names=1&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#      - &#34;--init-connect=&#39;SET NAMES UTF8MB4;&#39;&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;--character-set-server=utf8mb4&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;--collation-server=utf8mb4_unicode_ci&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#####  	第二个容器es参数配置  	#####</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">es</span>:   <span style="color:#75715e"># container名称-相当于--name es</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">docker.elastic.co/elasticsearch/elasticsearch:7.11.1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">es</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">discovery.type=single-node</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;ES_JAVA_OPTS=-Xms512m -Xmx512m&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ulimits</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">memlock</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">soft</span>: -<span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">hard</span>: -<span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;../data/es:/usr/share/elasticsearch/data&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;/etc/localtime:/etc/localtime:ro&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;../conf/es/ik:/usr/share/elasticsearch/plugins/ik&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">9100</span>:<span style="color:#ae81ff">9100</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">9200</span>:<span style="color:#ae81ff">9200</span>   <span style="color:#75715e"># 前面为宿主机映射端口，后面为容器内端口</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">overlay</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rabbit</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">rabbit</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">rabbitmq:3-management</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">RABBITMQ_DEFAULT_USER</span>: <span style="color:#e6db74">&#34;user_name&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">RABBITMQ_DEFAULT_PASS</span>: <span style="color:#e6db74">&#34;password&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">RABBITMQ_DEFAULT_VHOST</span>: <span style="color:#e6db74">&#34;develop&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;5672:5672&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;15672:15672&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;/etc/localtime:/etc/localtime:ro&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">overlay</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#####  	第三个容器redis参数配置  	##### </span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">redis</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">redis</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">redis:6</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;6379:6379&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">command</span>: <span style="color:#e6db74">&#34;redis-server --requirepass password&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;/etc/localtime:/etc/localtime:ro&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">overlay</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;7474:7474&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;7687:7687&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">overlay</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#####  	第四个容器参数配置  	#####</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">javaapp</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name </span>: <span style="color:#ae81ff">javaapp</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image </span>: <span style="color:#ae81ff">javaapp</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">build</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">context</span>: <span style="color:#ae81ff">./</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">dockerfile</span>: <span style="color:#ae81ff">./javaapp</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;/etc/localtime:/etc/localtime:ro&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;/tmp/logs:/opt/logs&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;../service/javaapp-0.0.1-SNAPSHOT.jar:/javaapp-0.0.1-SNAPSHOT.jar&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">LOCAL_TEST</span>: <span style="color:#e6db74">&#34;true&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">MYSQL_URL</span>: <span style="color:#e6db74">&#34;jdbc:mysql://mysql:3306/gcgdata?characterEncoding=utf-8&amp;useSSL=true&amp;serverTimezone=GMT&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">MYSQL_USER</span>: <span style="color:#e6db74">&#34;user_name&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">MYSQL_PASSWD</span>: <span style="color:#e6db74">&#34;password&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">REDIS_HOST</span>: <span style="color:#e6db74">&#34;redis&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">REDIS_PORT</span>: <span style="color:#e6db74">&#34;6379&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">REDIS_PASSWD</span>: <span style="color:#e6db74">&#34;password&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">RABBITMQ_HOST</span>: <span style="color:#e6db74">&#34;rabbit&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">RABBITMQ_PORT</span>: <span style="color:#e6db74">&#34;5672&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">RABBITMQ_USER</span>: <span style="color:#e6db74">&#34;user_name&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">RABBITMQ_PASSWD</span>: <span style="color:#e6db74">&#34;password&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">RABBITMQ_VHOST</span>: <span style="color:#e6db74">&#34;develop&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">RABBITMQ_SSL_ENABLED</span>: <span style="color:#e6db74">&#34;false&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">ES_SCHEME</span>: <span style="color:#e6db74">&#34;http&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">ES_HOSTS</span>: <span style="color:#e6db74">&#34;es:9200&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">ES_USER</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">ES_PASSWD</span>: <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">XXXAPP_USER_DEFAULTAVATAR</span>: <span style="color:#e6db74">&#34;https://oss.domain.com/xxx/default/icon_user_default.png&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">XXXAPP_USER_NICKNAMEPREFIX</span>: <span style="color:#e6db74">&#34;xxx_&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">XXXAPP_URL_PREFIX</span>: <span style="color:#e6db74">&#34;http://domain.com/appApi&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">XXXAPP_SHARE_URL</span>: <span style="color:#e6db74">&#39;{scheme}://domain.com/{inviteCode}&#39;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">XXXAPP_DOWNLOAD_URL_IOS_STORE</span>: <span style="color:#e6db74">&#34;http://fir.domain.com/downapple?randStr=3psgechs0g&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">CN_MSG_URL</span>: <span style="color:#e6db74">&#39;http://IP:8000&#39;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">DEFAUTL_SMS_URL</span>: <span style="color:#e6db74">&#34;http://IP:80001&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">DEFAULT_SMS_CONTENT</span>: <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">XXX_DOMAINS</span>: <span style="color:#e6db74">&#34;http://domain.com,http://domain.vip&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">XXX_API_DOMAINS</span>: <span style="color:#e6db74">&#34;http://domain.com,http://domain.vip&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">FORBID_MOBILE</span>: <span style="color:#e6db74">&#34;165,171,172,1700,1701,1702,162,1703,1705,1706,1704,1707,1708,1709,167&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">DATA_CENTER_ID</span>: <span style="color:#e6db74">&#34;1&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">XXX_SHARE_DOMAINS</span>: <span style="color:#e6db74">&#34;domain.vip&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">QINIU_AK</span>: <span style="color:#e6db74">&#34;gXAT245FwtyTFqutHpouoc7oKg8tsfOUaawjTkqe&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">QINIU_KK</span>: <span style="color:#e6db74">&#34;YCMdEVi2cdZPqKm6N5dHv8H6UNdGAtDJ2OQBwI9G&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">QINIU_BUCKET</span>: <span style="color:#e6db74">&#34;ossprod&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">depends_on</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">mysql</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">es</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">rabbit</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">redis</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">overlay</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#####  	第五个容器参数配置  	##### </span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">nginx</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">always</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;/etc/localtime:/etc/localtime:ro&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;../conf/nginx/nginx.conf:/etc/nginx/nginx.conf&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;../conf/nginx/mime.types:/etc/nginx/mime.types&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;../conf/nginx/conf.d:/etc/nginx/conf.d&#34;</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;../html:/usr/share/nginx/html&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#e6db74">&#34;80:80&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#    depends_on:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#ae81ff">overlay</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">networks</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">overlay</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">networks</span>:   <span style="color:#75715e"># 定义network-相当于 docker network create --subnet=172.20.0.0/24 springboot 该命令创建的network默认也是桥接模式</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">springboot</span>:   <span style="color:#75715e"># network名称</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">driver</span>: <span style="color:#ae81ff">bridge     </span> <span style="color:#75715e"># 定义network类型为桥接模式</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ipam</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">driver</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">config</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">subnet</span>: <span style="color:#ae81ff">172.20.0.0</span><span style="color:#ae81ff">/24    </span> <span style="color:#75715e"># 指定网段信息</span></span></span></code></pre></div></blockquote>
+</blockquote>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1719590743" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719590743" defer></script>
+    <script src="../../../../js/theme.js?1719590743" defer></script>
+  </body>
+</html>

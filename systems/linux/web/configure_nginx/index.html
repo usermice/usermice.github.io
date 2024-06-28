@@ -26,21 +26,21 @@
     <meta itemprop="description" content="配置Nginx 名称地址 描述 免费域名申请 Vercel CDN 工信部备案查询 查找便宜服务器 随笔分类 - Nginx fly.">
     <meta itemprop="datePublished" content="2024-06-25T00:41:02+08:00">
     <meta itemprop="dateModified" content="2024-06-25T00:41:02+08:00">
-    <meta itemprop="wordCount" content="2187">
+    <meta itemprop="wordCount" content="2177">
     <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
     <title>Configure_Nginx :: Hugo Relearn Theme</title>
-    <link href="../../../../images/favicon.ico?1719333223" rel="icon" type="image/x-icon" sizes="any">
-    <link href="../../../../css/fontawesome-all.min.css?1719333224" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719333224" rel="stylesheet"></noscript>
-    <link href="../../../../css/nucleus.css?1719333224" rel="stylesheet">
-    <link href="../../../../css/auto-complete.css?1719333224" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719333224" rel="stylesheet"></noscript>
-    <link href="../../../../css/perfect-scrollbar.min.css?1719333224" rel="stylesheet">
-    <link href="../../../../css/fonts.css?1719333224" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719333224" rel="stylesheet"></noscript>
-    <link href="../../../../css/theme.css?1719333224" rel="stylesheet">
-    <link href="../../../../css/theme-relearn-auto.css?1719333224" rel="stylesheet" id="R-variant-style">
-    <link href="../../../../css/chroma-relearn-auto.css?1719333224" rel="stylesheet" id="R-variant-chroma-style">
-    <link href="../../../../css/variant.css?1719333224" rel="stylesheet">
-    <link href="../../../../css/print.css?1719333224" rel="stylesheet" media="print">
-    <script src="../../../../js/variant.js?1719333224"></script>
+    <link href="../../../../images/favicon.ico?1719590742" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1719590743" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1719590743" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1719590743" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1719590743" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1719590743" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1719590743" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1719590743" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1719590743" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1719590743" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1719590743" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1719590743" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1719590743" rel="stylesheet">
+    <link href="../../../../css/print.css?1719590743" rel="stylesheet" media="print">
+    <script src="../../../../js/variant.js?1719590743"></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.relBasePath='..\/..\/..\/..';
@@ -92,6 +92,7 @@
         <li><a href="#配置nginx用于下载查看日志">配置<code>Nginx</code>用于下载查看日志</a></li>
         <li><a href="#配置nginx代理gitlab">配置<code>Nginx</code>代理<code>Gitlab</code></a></li>
         <li><a href="#nginx集群反向代理"><code>nginx</code>集群，反向代理</a></li>
+        <li><a href="#过滤登录和状态码">过滤登录和状态码</a></li>
       </ul>
     </li>
   </ul>
@@ -209,18 +210,18 @@
 </span></span><span style="display:flex;"><span>$ ab -n <span style="color:#ae81ff">50</span> -c <span style="color:#ae81ff">20</span> http://127.0.0.1/index.html  	<span style="color:#75715e"># -n：总共发起的请求数，这里设置为50、</span>
 </span></span><span style="display:flex;"><span>								<span style="color:#75715e"># -c：同时并发的请求，这里设置为20个、</span>
 </span></span><span style="display:flex;"><span>								<span style="color:#75715e"># -k：是否开启长连接</span></span></span></code></pre></div><ul>
-<li>1.1 <code>ab</code><!-- raw HTML omitted -->探测到性能指标<!-- raw HTML omitted --></li>
+<li><code>ab</code><!-- raw HTML omitted -->探测到性能指标<!-- raw HTML omitted --></li>
 </ul>
 <blockquote>
 <ul>
-<li>1.1.1 <code>Concurrency Level</code><!-- raw HTML omitted -->：设定的并发数<!-- raw HTML omitted --></li>
-<li>1.1.2 <code>Time taken for tests</code><!-- raw HTML omitted -->：压测总共花费的时间<!-- raw HTML omitted --></li>
-<li>1.1.3 <code>Complete requests</code><!-- raw HTML omitted -->：总请求数<!-- raw HTML omitted --></li>
-<li>1.1.4 <code>Failed requests</code><!-- raw HTML omitted -->：失败的个数<!-- raw HTML omitted --></li>
-<li>1.1.5 <code>Requests per second</code><!-- raw HTML omitted -->：每秒请求数<!-- raw HTML omitted --><code>TPS</code></li>
-<li>1.1.6 <code>Time per request</code><!-- raw HTML omitted -->：从客户端来看，一个请求需要用到的时间<!-- raw HTML omitted --></li>
-<li>1.1.7 <code>Time per request</code><!-- raw HTML omitted -->：从服务端来看，处理一个请求要花费的时间<!-- raw HTML omitted --></li>
-<li>1.1.8 <code>Transfer rate</code><!-- raw HTML omitted -->：传输的速率<!-- raw HTML omitted --></li>
+<li><code>Concurrency Level</code><!-- raw HTML omitted -->：设定的并发数<!-- raw HTML omitted --></li>
+<li><code>Time taken for tests</code><!-- raw HTML omitted -->：压测总共花费的时间<!-- raw HTML omitted --></li>
+<li><code>Complete requests</code><!-- raw HTML omitted -->：总请求数<!-- raw HTML omitted --></li>
+<li><code>Failed requests</code><!-- raw HTML omitted -->：失败的个数<!-- raw HTML omitted --></li>
+<li><code>Requests per second</code><!-- raw HTML omitted -->：每秒请求数<!-- raw HTML omitted --><code>TPS</code></li>
+<li><code>Time per request</code><!-- raw HTML omitted -->：从客户端来看，一个请求需要用到的时间<!-- raw HTML omitted --></li>
+<li>Time per request`<!-- raw HTML omitted -->：从服务端来看，处理一个请求要花费的时间<!-- raw HTML omitted --></li>
+<li><code>Transfer rate</code><!-- raw HTML omitted -->：传输的速率<!-- raw HTML omitted --></li>
 </ul>
 </blockquote>
 </blockquote>
@@ -233,7 +234,7 @@
 </ul>
 <blockquote>
 <ul>
-<li>2.1 <a href="https://github.com/loveshell/ngx_lua_waf" rel="external" target="_self"><code>ngx_lua_waf</code></a></li>
+<li><a href="https://github.com/loveshell/ngx_lua_waf" rel="external" target="_self"><code>ngx_lua_waf</code></a></li>
 </ul>
 </blockquote>
 <hr>
@@ -285,7 +286,12 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>$ sed -n <span style="color:#e6db74">&#39;/01\/Oct\/2021/,/01\/Oct\/2021p&#39;</span> access.log &gt;/tmp/access.log
 </span></span><span style="display:flex;"><span>$ sed -n ‘/2010-11-17 09:25:55/,/2010-11-17 09:25:55/p’
-</span></span><span style="display:flex;"><span>$ tail -n1000  /opt/lucky/logs/nginx/web_access.log |awk <span style="color:#e6db74">&#39;{print $1}&#39;</span>  |sort -rn |uniq -c |sort -rn |head
+</span></span><span style="display:flex;"><span>$ tail -n100  /opt/lucky/logs/nginx/web_access.log |awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> |sort -rn |uniq -c |sort -rn |head
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ awk <span style="color:#e6db74">&#39;$0 &gt;= &#34;2023/12/01 00:00:00&#34; &amp;&amp; $0 &lt;= &#34;2023/12/01 23:59:59&#34;&#39;</span> gitlab.log &gt; 2023-12-01_gitlab.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat /var/log/nginx/gitlab_access.log | awk -F <span style="color:#e6db74">&#39;&#34;&#39;</span> <span style="color:#e6db74">&#39;{if($3 == &#34;x.x.x.x&#34; &amp;&amp; $6 != &#34;403&#34;) {print $0}}&#39;</span> | jq
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># 命令行跨域测试 -i：被允许跨域域名，-H：访问跨域域名</span>
 </span></span><span style="display:flex;"><span>$ curl -i https://baidu.com/text.txt -H <span style="color:#e6db74">&#34;Origin: http://www.example.com&#34;</span></span></span></code></pre></div><ul>
@@ -1232,189 +1238,180 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
 </span></span><span style="display:flex;"><span><span style="color:#f92672">}</span></span></span></code></pre></div><div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>check interval<span style="color:#f92672">=</span><span style="color:#ae81ff">3000</span> rise<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span> fall<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span> type<span style="color:#f92672">=</span>http;
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># check interval=3000 rise=2 fall=5 timeout=1000 type=http;</span>
-</span></span><span style="display:flex;"><span>上面配置的意思是，对static、upload、这个负载均衡条目中的所有节点，每隔3秒检测一次，请求2次正常则标记realserver状态为up，如果检测5次都失败，则标记realserver的状态为down，超时时间为1秒，检查的协议是http。</span></span></code></pre></div><p><a href="#R-image-a5ec254f8ebce65d3853794a6c83cb27" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/37fcolxnhiou5s9t0pb0vm8l/image_1akuo4vrcpke1vb010f3rdd14gi9.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-a5ec254f8ebce65d3853794a6c83cb27"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/37fcolxnhiou5s9t0pb0vm8l/image_1akuo4vrcpke1vb010f3rdd14gi9.png"></a></p>
-<p><a href="#R-image-1413b528e481f84234bf4f8f4e5ce958" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/xd2ms7ck0a33wxf36vwwktgs/image_1akv2ig1519723ljs261b4d1kbo9.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-1413b528e481f84234bf4f8f4e5ce958"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/xd2ms7ck0a33wxf36vwwktgs/image_1akv2ig1519723ljs261b4d1kbo9.png"></a></p>
-<p><a href="#R-image-f8ed5b2a3997cff63d83debaf1545cef" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/7dalazu3amny9rg192ing2l9/image_1akv2hcu286b1piavpv9jdsunm.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-f8ed5b2a3997cff63d83debaf1545cef"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/7dalazu3amny9rg192ing2l9/image_1akv2hcu286b1piavpv9jdsunm.png"></a></p>
-<p><a href="#R-image-9166acac3ee218fa24766ecc013dc341" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/c4i7xy39l9tymsjbb0fem2l1/image_1akv8kcjorbhsq917bq9h382t13.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-9166acac3ee218fa24766ecc013dc341"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/c4i7xy39l9tymsjbb0fem2l1/image_1akv8kcjorbhsq917bq9h382t13.png"></a></p>
-<p><a href="#R-image-08155354d2210c1469325a281e1e7783" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/f3esrb2do4bgexfvltp6l9im/%E5%8F%82%E6%95%B01.jpg" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-08155354d2210c1469325a281e1e7783"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/f3esrb2do4bgexfvltp6l9im/%E5%8F%82%E6%95%B01.jpg"></a></p>
-<p><a href="#R-image-db7eeb05e365ffe71a738ab9b2baa475" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/x676usyjxgo3idhklzrkqaz5/%E5%8F%82%E6%95%B02.jpg" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-db7eeb05e365ffe71a738ab9b2baa475"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/x676usyjxgo3idhklzrkqaz5/%E5%8F%82%E6%95%B02.jpg"></a></p>
-<p><a href="#R-image-347f40c87fb0afd8069b618c4c695aa2" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/i9cazzd6tqyik5hpa0opxjuc/image_1akvc4rs112et1noc12s3d711h49.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-347f40c87fb0afd8069b618c4c695aa2"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/i9cazzd6tqyik5hpa0opxjuc/image_1akvc4rs112et1noc12s3d711h49.png"></a></p>
+</span></span><span style="display:flex;"><span>上面配置的意思是，对static、upload、这个负载均衡条目中的所有节点，每隔3秒检测一次，请求2次正常则标记realserver状态为up，如果检测5次都失败，则标记realserver的状态为down，超时时间为1秒，检查的协议是http。</span></span></code></pre></div><p><a href="#R-image-62d9214e6a6ec9b7d2d45e4927e117e4" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/37fcolxnhiou5s9t0pb0vm8l/image_1akuo4vrcpke1vb010f3rdd14gi9.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-62d9214e6a6ec9b7d2d45e4927e117e4"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/37fcolxnhiou5s9t0pb0vm8l/image_1akuo4vrcpke1vb010f3rdd14gi9.png"></a></p>
+<p><a href="#R-image-91c21002f3a28503e6978fc629468524" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/xd2ms7ck0a33wxf36vwwktgs/image_1akv2ig1519723ljs261b4d1kbo9.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-91c21002f3a28503e6978fc629468524"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/xd2ms7ck0a33wxf36vwwktgs/image_1akv2ig1519723ljs261b4d1kbo9.png"></a></p>
+<p><a href="#R-image-adb809235df7527eecbc461569a4439e" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/7dalazu3amny9rg192ing2l9/image_1akv2hcu286b1piavpv9jdsunm.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-adb809235df7527eecbc461569a4439e"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/7dalazu3amny9rg192ing2l9/image_1akv2hcu286b1piavpv9jdsunm.png"></a></p>
+<p><a href="#R-image-0567f02f4954aa392a4bc09434303587" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/c4i7xy39l9tymsjbb0fem2l1/image_1akv8kcjorbhsq917bq9h382t13.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-0567f02f4954aa392a4bc09434303587"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/c4i7xy39l9tymsjbb0fem2l1/image_1akv8kcjorbhsq917bq9h382t13.png"></a></p>
+<p><a href="#R-image-9eea732fc6bb49d1db129e4a2351f2c7" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/f3esrb2do4bgexfvltp6l9im/%E5%8F%82%E6%95%B01.jpg" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-9eea732fc6bb49d1db129e4a2351f2c7"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/f3esrb2do4bgexfvltp6l9im/%E5%8F%82%E6%95%B01.jpg"></a></p>
+<p><a href="#R-image-18ad81e65259919d59a2029cc0dcf290" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/x676usyjxgo3idhklzrkqaz5/%E5%8F%82%E6%95%B02.jpg" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-18ad81e65259919d59a2029cc0dcf290"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/x676usyjxgo3idhklzrkqaz5/%E5%8F%82%E6%95%B02.jpg"></a></p>
+<p><a href="#R-image-be70ae1f1b61cb7963749031a865c47e" class="lightbox-link"><img class="border lazy lightbox noshadow figure-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/i9cazzd6tqyik5hpa0opxjuc/image_1akvc4rs112et1noc12s3d711h49.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-be70ae1f1b61cb7963749031a865c47e"><img class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="http://static.zybuluo.com/WindWhisperer/i9cazzd6tqyik5hpa0opxjuc/image_1akvc4rs112et1noc12s3d711h49.png"></a></p>
 </blockquote>
 </blockquote>
 <hr>
-<h1 id="过滤登录和状态码">过滤登录和状态码</h1>
-<p><strong>Human:</strong>
-使用shell写一个 后台登陆过滤脚本  过滤登录域名和状态码 并且和列表中做对比</p>
+<h3 id="过滤登录和状态码">过滤登录和状态码</h3>
+<blockquote>
+<ul>
+<li>脚本使用<code>nslookup</code>命令获取用户<code>IP</code>地址的远程主机名，并使用<code>curl</code>命令获取远程主机的状态码。然后，它将检查远程主机的域名和状态码是否在允许的列表中。如果是，则显示<code>Access granted</code>否则显示<code>Access denied</code></li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 定义允许登录的域名和状态码</span>
+</span></span><span style="display:flex;"><span>ALLOWED_DOMAINS<span style="color:#f92672">=(</span><span style="color:#e6db74">&#34;example.com&#34;</span> <span style="color:#e6db74">&#34;example.org&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>ALLOWED_STATUS_CODES<span style="color:#f92672">=(</span><span style="color:#e6db74">&#34;200&#34;</span> <span style="color:#e6db74">&#34;301&#34;</span> <span style="color:#e6db74">&#34;302&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 获取用户IP地址</span>
+</span></span><span style="display:flex;"><span>USER_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo $SSH_CLIENT | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 获取用户登录时远程主机的域名和状态码</span>
+</span></span><span style="display:flex;"><span>REMOTE_DOMAIN<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>nslookup $USER_IP | awk -F<span style="color:#e6db74">&#39;=&#39;</span> <span style="color:#e6db74">&#39;/name/{print $2}&#39;</span> | sed <span style="color:#e6db74">&#39;s/\.$//&#39;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>REMOTE_STATUS_CODE<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>curl -s -o /dev/null -I -w <span style="color:#e6db74">&#34;%{http_code}&#34;</span> http://$REMOTE_DOMAIN<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 检查远程主机的域名和状态码是否被允许</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> <span style="color:#e6db74">&#34; </span><span style="color:#e6db74">${</span>ALLOWED_DOMAINS[*]<span style="color:#e6db74">}</span><span style="color:#e6db74"> &#34;</span> <span style="color:#f92672">=</span>~ <span style="color:#e6db74">&#34; </span><span style="color:#e6db74">${</span>REMOTE_DOMAIN<span style="color:#e6db74">}</span><span style="color:#e6db74"> &#34;</span> <span style="color:#f92672">]]</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">[[</span> <span style="color:#e6db74">&#34; </span><span style="color:#e6db74">${</span>ALLOWED_STATUS_CODES[*]<span style="color:#e6db74">}</span><span style="color:#e6db74"> &#34;</span> <span style="color:#f92672">=</span>~ <span style="color:#e6db74">&#34; </span><span style="color:#e6db74">${</span>REMOTE_STATUS_CODE<span style="color:#e6db74">}</span><span style="color:#e6db74"> &#34;</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;Access granted to </span>$REMOTE_DOMAIN<span style="color:#e6db74"> with status code </span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;Access denied to </span>$REMOTE_DOMAIN<span style="color:#e6db74"> with status code </span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>示例脚本，它会过滤网站后台登录的<code>IP</code>地址和状态码，将不在预定义文件列表中的IP地址发送到<code>Telegram</code>通知组。</li>
+</ul>
+<blockquote>
+<ul>
+<li>脚本会检查远程主机的状态码是否为<code>200</code>。如果是，则它将从文件中检查远程主机的IP地址是否在允许的列表中。如果是，则显示<code>Access granted</code>，否则将发送<code>Telegram</code>告警，并显示<code>Access denied</code>。请注意，您需要将<code>YOUR_TELEGRAM_API_TOKEN</code>和<code>YOUR_TELEGRAM_CHAT_ID</code>替换为您自己的<code>Telegram API Token</code>和<code>Chat ID</code>。</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 预定义允许登录的IP地址列表文件</span>
+</span></span><span style="display:flex;"><span>ALLOWED_IP_LIST<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;allowed_ips.txt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 定义Telegram通知组的API Token和Chat ID</span>
+</span></span><span style="display:flex;"><span>TELEGRAM_API_TOKEN<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YOUR_TELEGRAM_API_TOKEN&#34;</span>
+</span></span><span style="display:flex;"><span>TELEGRAM_CHAT_ID<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YOUR_TELEGRAM_CHAT_ID&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 获取用户IP地址</span>
+</span></span><span style="display:flex;"><span>USER_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo $SSH_CLIENT | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 获取用户登录时远程主机的状态码</span>
+</span></span><span style="display:flex;"><span>REMOTE_STATUS_CODE<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>curl -s -o /dev/null -I -w <span style="color:#e6db74">&#34;%{http_code}&#34;</span> http://example.com/login<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 检查远程主机的状态码是否为200</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> <span style="color:#e6db74">&#34;</span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span> -eq <span style="color:#e6db74">&#34;200&#34;</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 检查远程主机的IP地址是否在允许的列表中</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> grep -Fxq <span style="color:#e6db74">&#34;</span>$USER_IP<span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span>$ALLOWED_IP_LIST<span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        echo <span style="color:#e6db74">&#34;Access granted to </span>$USER_IP<span style="color:#e6db74"> with status code </span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        exit <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 发送Telegram告警</span>
+</span></span><span style="display:flex;"><span>        MESSAGE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Unauthorized login attempt from IP </span>$USER_IP<span style="color:#e6db74"> with status code </span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        URL<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://api.telegram.org/bot</span>$TELEGRAM_API_TOKEN<span style="color:#e6db74">/sendMessage&#34;</span>
+</span></span><span style="display:flex;"><span>        curl -s -X POST $URL -d chat_id<span style="color:#f92672">=</span>$TELEGRAM_CHAT_ID -d text<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$MESSAGE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        echo <span style="color:#e6db74">&#34;Access denied to </span>$USER_IP<span style="color:#e6db74"> with status code </span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;Access denied to </span>$USER_IP<span style="color:#e6db74"> with status code </span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>示例脚本，用于过滤网站后台登录<code>URL</code>的<code>IP</code>地址和状态码，将不在预定义文件列表中的<code>IP</code>地址发送到<code>Telegram</code>通知组。</li>
+</ul>
+<blockquote>
+<ul>
+<li>脚本会发送一个<code>HTTP</code>请求来检查网站后台登录<code>URL</code>的<code>IP</code>地址和状态码。如果状态码为<code>200</code>，则它将从<code>HTTP</code>响应中提取远程主机的IP地址，并从文件中检查它是否在允许的列表中。如果是，则显示<code>Access granted</code>，否则将发送<code>Telegram</code>告警，并显示<code>Access denied</code>。请注意，您需要将<code>YOUR_TELEGRAM_API_TOKEN</code>和<code>YOUR_TELEGRAM_CHAT_ID</code>替换为您自己的<code>Telegram API Token</code>和<code>Chat ID</code>，并根据需要修改<code>LOGIN_URL</code>和<code>REQUEST_HEADERS</code>。</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 预定义允许登录的IP地址列表文件</span>
+</span></span><span style="display:flex;"><span>ALLOWED_IP_LIST<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;allowed_ips.txt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 定义需要检查的网站后台登录URL和请求头信息</span>
+</span></span><span style="display:flex;"><span>LOGIN_URL<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http://example.com/admin/login&#34;</span>
+</span></span><span style="display:flex;"><span>REQUEST_HEADERS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-H &#39;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0&#39; -H &#39;Accept-Language: en-US,en;q=0.5&#39;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 定义Telegram通知组的API Token和Chat ID</span>
+</span></span><span style="display:flex;"><span>TELEGRAM_API_TOKEN<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YOUR_TELEGRAM_API_TOKEN&#34;</span>
+</span></span><span style="display:flex;"><span>TELEGRAM_CHAT_ID<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YOUR_TELEGRAM_CHAT_ID&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 获取用户IP地址</span>
+</span></span><span style="display:flex;"><span>USER_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>curl -s -o /dev/null -w <span style="color:#e6db74">&#34;%{http_code}:%{remote_ip}&#34;</span> $LOGIN_URL -H <span style="color:#e6db74">&#34;</span>$REQUEST_HEADERS<span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 获取远程主机的状态码</span>
+</span></span><span style="display:flex;"><span>REMOTE_STATUS_CODE<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo <span style="color:#e6db74">&#34;</span>$USER_IP<span style="color:#e6db74">&#34;</span> | cut -d<span style="color:#e6db74">&#39;:&#39;</span> -f1<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 检查远程主机的状态码是否为200</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> <span style="color:#e6db74">&#34;</span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span> -eq <span style="color:#e6db74">&#34;200&#34;</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 获取远程主机的IP地址</span>
+</span></span><span style="display:flex;"><span>    REMOTE_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo <span style="color:#e6db74">&#34;</span>$USER_IP<span style="color:#e6db74">&#34;</span> | cut -d<span style="color:#e6db74">&#39;:&#39;</span> -f2<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 检查远程主机的IP地址是否在允许的列表中</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> grep -Fxq <span style="color:#e6db74">&#34;</span>$REMOTE_IP<span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span>$ALLOWED_IP_LIST<span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        echo <span style="color:#e6db74">&#34;Access granted to </span>$REMOTE_IP<span style="color:#e6db74"> with status code </span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        exit <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 发送Telegram告警</span>
+</span></span><span style="display:flex;"><span>        MESSAGE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Unauthorized login attempt from IP </span>$REMOTE_IP<span style="color:#e6db74"> with status code </span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        URL<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://api.telegram.org/bot</span>$TELEGRAM_API_TOKEN<span style="color:#e6db74">/sendMessage&#34;</span>
+</span></span><span style="display:flex;"><span>        curl -s -X POST $URL -d chat_id<span style="color:#f92672">=</span>$TELEGRAM_CHAT_ID -d text<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$MESSAGE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        echo <span style="color:#e6db74">&#34;Access denied to </span>$REMOTE_IP<span style="color:#e6db74"> with status code </span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;Access denied with status code </span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>稍微修改的脚本，用于过滤网站后台登录日志文件中的<code>URL</code>、<code>IP</code>地址和状态码，将不在预定义文件列表中的<code>IP</code>地址发送到<code>Telegram</code>通知组：</li>
+</ul>
+<blockquote>
+<ul>
+<li>该脚本会从日志文件中过滤出登录<code>URL</code>、<code>IP</code>地址和状态码信息，并遍历这些信息。对于每个<code>IP</code>地址和状态码，它将检查状态码是否为<code>200</code>，然后检查<code>IP</code>地址是否在允许的列表中。如果是，则显示<code>Access granted</code>，否则将发送<code>Telegram</code>告警，并显示<code>Access denied</code>。请注意，您需要将<code>YOUR_TELEGRAM_API_TOKEN</code>和<code>YOUR_TELEGRAM_CHAT_ID</code>替换为您自己的<code>Telegram API Token</code>和<code>Chat ID</code>，并根据需要修改<code>ALLOWED_IP_LIST</code>和<code>LOG_FILE</code>。</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 预定义允许登录的IP地址列表文件</span>
+</span></span><span style="display:flex;"><span>ALLOWED_IP_LIST<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;allowed_ips.txt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 定义需要检查的网站后台登录日志文件</span>
+</span></span><span style="display:flex;"><span>LOG_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/var/log/nginx/access.log&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 定义Telegram通知组的API Token和Chat ID</span>
+</span></span><span style="display:flex;"><span>TELEGRAM_API_TOKEN<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YOUR_TELEGRAM_API_TOKEN&#34;</span>
+</span></span><span style="display:flex;"><span>TELEGRAM_CHAT_ID<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YOUR_TELEGRAM_CHAT_ID&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 使用grep命令从日志文件中过滤出登录URL、IP地址和状态码</span>
+</span></span><span style="display:flex;"><span>LOG_FILTER<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>grep -E <span style="color:#e6db74">&#39;\/admin\/login.*HTTP\/1\.[01]&#34; 200&#39;</span> $LOG_FILE | awk <span style="color:#e6db74">&#39;{print $1, $7, $9}&#39;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 遍历过滤出的日志信息</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> read -r log_info; <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 分别提取IP地址和状态码</span>
+</span></span><span style="display:flex;"><span>    REMOTE_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo <span style="color:#e6db74">&#34;</span>$log_info<span style="color:#e6db74">&#34;</span> | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>    REMOTE_STATUS_CODE<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo <span style="color:#e6db74">&#34;</span>$log_info<span style="color:#e6db74">&#34;</span> | awk <span style="color:#e6db74">&#39;{print $2}&#39;</span><span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 检查状态码是否为200</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[[</span> <span style="color:#e6db74">&#34;</span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span> -eq <span style="color:#e6db74">&#34;200&#34;</span> <span style="color:#f92672">]]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 检查IP地址是否在允许的列表中</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> grep -Fxq <span style="color:#e6db74">&#34;</span>$REMOTE_IP<span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span>$ALLOWED_IP_LIST<span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>            echo <span style="color:#e6db74">&#34;Access granted to </span>$REMOTE_IP<span style="color:#e6db74"> with status code </span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 发送Telegram告警</span>
+</span></span><span style="display:flex;"><span>            MESSAGE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Unauthorized login attempt from IP </span>$REMOTE_IP<span style="color:#e6db74"> with status code </span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>            URL<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://api.telegram.org/bot</span>$TELEGRAM_API_TOKEN<span style="color:#e6db74">/sendMessage&#34;</span>
+</span></span><span style="display:flex;"><span>            curl -s -X POST $URL -d chat_id<span style="color:#f92672">=</span>$TELEGRAM_CHAT_ID -d text<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$MESSAGE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>            echo <span style="color:#e6db74">&#34;Access denied to </span>$REMOTE_IP<span style="color:#e6db74"> with status code </span>$REMOTE_STATUS_CODE<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span> <span style="color:#f92672">&lt;&lt;&lt;</span> <span style="color:#e6db74">&#34;</span>$LOG_FILTER<span style="color:#e6db74">&#34;</span></span></span></code></pre></div></blockquote>
+</blockquote>
 <hr>
-<p><strong>Assistant:</strong></p>
-<p>以下是一个示例脚本，它会在后台运行，并在用户尝试登录时过滤登录域名和状态码，然后将结果与预定义的列表进行比较。</p>
-<div class="highlight wrap-code"><pre tabindex="0"><code>#!/bin/bash
-
-# 定义允许登录的域名和状态码
-ALLOWED_DOMAINS=(&#34;example.com&#34; &#34;example.org&#34;)
-ALLOWED_STATUS_CODES=(&#34;200&#34; &#34;301&#34; &#34;302&#34;)
-
-# 获取用户IP地址
-USER_IP=$(echo $SSH_CLIENT | awk &#39;{print $1}&#39;)
-
-# 获取用户登录时远程主机的域名和状态码
-REMOTE_DOMAIN=$(nslookup $USER_IP | awk -F&#39;=&#39; &#39;/name/{print $2}&#39; | sed &#39;s/\.$//&#39;)
-REMOTE_STATUS_CODE=$(curl -s -o /dev/null -I -w &#34;%{http_code}&#34; http://$REMOTE_DOMAIN)
-
-# 检查远程主机的域名和状态码是否被允许
-if [[ &#34; ${ALLOWED_DOMAINS[*]} &#34; =~ &#34; ${REMOTE_DOMAIN} &#34; ]] &amp;&amp; [[ &#34; ${ALLOWED_STATUS_CODES[*]} &#34; =~ &#34; ${REMOTE_STATUS_CODE} &#34; ]]; then
-    echo &#34;Access granted to $REMOTE_DOMAIN with status code $REMOTE_STATUS_CODE&#34;
-    exit 0
-else
-    echo &#34;Access denied to $REMOTE_DOMAIN with status code $REMOTE_STATUS_CODE&#34;
-    exit 1
-fi</code></pre></div><p>该脚本使用nslookup命令获取用户IP地址的远程主机名，并使用curl命令获取远程主机的状态码。然后，它将检查远程主机的域名和状态码是否在允许的列表中。如果是，则显示“Access granted”，否则显示“Access denied”。</p>
-<hr>
-<p><strong>Human:</strong>
-不是我要的， 要的是过滤网站后台登陆的IP和状态码， 过滤出来的IP和文件列表中的IP对比， 不在文件列表中的IP发送Telegram告警</p>
-<hr>
-<p><strong>Assistant:</strong></p>
-<p>非常抱歉，我理解有误。以下是一个示例脚本，它会过滤网站后台登录的IP地址和状态码，将不在预定义文件列表中的IP地址发送到Telegram通知组。</p>
-<div class="highlight wrap-code"><pre tabindex="0"><code>#!/bin/bash
-
-# 预定义允许登录的IP地址列表文件
-ALLOWED_IP_LIST=&#34;allowed_ips.txt&#34;
-
-# 定义Telegram通知组的API Token和Chat ID
-TELEGRAM_API_TOKEN=&#34;YOUR_TELEGRAM_API_TOKEN&#34;
-TELEGRAM_CHAT_ID=&#34;YOUR_TELEGRAM_CHAT_ID&#34;
-
-# 获取用户IP地址
-USER_IP=$(echo $SSH_CLIENT | awk &#39;{print $1}&#39;)
-
-# 获取用户登录时远程主机的状态码
-REMOTE_STATUS_CODE=$(curl -s -o /dev/null -I -w &#34;%{http_code}&#34; http://example.com/login)
-
-# 检查远程主机的状态码是否为200
-if [[ &#34;$REMOTE_STATUS_CODE&#34; -eq &#34;200&#34; ]]; then
-    # 检查远程主机的IP地址是否在允许的列表中
-    if grep -Fxq &#34;$USER_IP&#34; &#34;$ALLOWED_IP_LIST&#34;; then
-        echo &#34;Access granted to $USER_IP with status code $REMOTE_STATUS_CODE&#34;
-        exit 0
-    else
-        # 发送Telegram告警
-        MESSAGE=&#34;Unauthorized login attempt from IP $USER_IP with status code $REMOTE_STATUS_CODE&#34;
-        URL=&#34;https://api.telegram.org/bot$TELEGRAM_API_TOKEN/sendMessage&#34;
-        curl -s -X POST $URL -d chat_id=$TELEGRAM_CHAT_ID -d text=&#34;$MESSAGE&#34;
-        echo &#34;Access denied to $USER_IP with status code $REMOTE_STATUS_CODE&#34;
-        exit 1
-    fi
-else
-    echo &#34;Access denied to $USER_IP with status code $REMOTE_STATUS_CODE&#34;
-    exit 1
-fi</code></pre></div><p>该脚本会检查远程主机的状态码是否为200。如果是，则它将从文件中检查远程主机的IP地址是否在允许的列表中。如果是，则显示“Access granted”，否则将发送Telegram告警，并显示“Access denied”。请注意，您需要将<code>YOUR_TELEGRAM_API_TOKEN</code>和<code>YOUR_TELEGRAM_CHAT_ID</code>替换为您自己的Telegram API Token和Chat ID。</p>
-<hr>
-<p><strong>Human:</strong>
-是网站后台URL，不是服务器的登录IP</p>
-<hr>
-<p><strong>Assistant:</strong></p>
-<p>非常抱歉我的理解错误，以下是一个示例脚本，用于过滤网站后台登录URL的IP地址和状态码，将不在预定义文件列表中的IP地址发送到Telegram通知组。</p>
-<div class="highlight wrap-code"><pre tabindex="0"><code>#!/bin/bash
-
-# 预定义允许登录的IP地址列表文件
-ALLOWED_IP_LIST=&#34;allowed_ips.txt&#34;
-
-# 定义需要检查的网站后台登录URL和请求头信息
-LOGIN_URL=&#34;http://example.com/admin/login&#34;
-REQUEST_HEADERS=&#34;-H &#39;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0&#39; -H &#39;Accept-Language: en-US,en;q=0.5&#39;&#34;
-
-# 定义Telegram通知组的API Token和Chat ID
-TELEGRAM_API_TOKEN=&#34;YOUR_TELEGRAM_API_TOKEN&#34;
-TELEGRAM_CHAT_ID=&#34;YOUR_TELEGRAM_CHAT_ID&#34;
-
-# 获取用户IP地址
-USER_IP=$(curl -s -o /dev/null -w &#34;%{http_code}:%{remote_ip}&#34; $LOGIN_URL -H &#34;$REQUEST_HEADERS&#34;)
-
-# 获取远程主机的状态码
-REMOTE_STATUS_CODE=$(echo &#34;$USER_IP&#34; | cut -d&#39;:&#39; -f1)
-
-# 检查远程主机的状态码是否为200
-if [[ &#34;$REMOTE_STATUS_CODE&#34; -eq &#34;200&#34; ]]; then
-    # 获取远程主机的IP地址
-    REMOTE_IP=$(echo &#34;$USER_IP&#34; | cut -d&#39;:&#39; -f2)
-    # 检查远程主机的IP地址是否在允许的列表中
-    if grep -Fxq &#34;$REMOTE_IP&#34; &#34;$ALLOWED_IP_LIST&#34;; then
-        echo &#34;Access granted to $REMOTE_IP with status code $REMOTE_STATUS_CODE&#34;
-        exit 0
-    else
-        # 发送Telegram告警
-        MESSAGE=&#34;Unauthorized login attempt from IP $REMOTE_IP with status code $REMOTE_STATUS_CODE&#34;
-        URL=&#34;https://api.telegram.org/bot$TELEGRAM_API_TOKEN/sendMessage&#34;
-        curl -s -X POST $URL -d chat_id=$TELEGRAM_CHAT_ID -d text=&#34;$MESSAGE&#34;
-        echo &#34;Access denied to $REMOTE_IP with status code $REMOTE_STATUS_CODE&#34;
-        exit 1
-    fi
-else
-    echo &#34;Access denied with status code $REMOTE_STATUS_CODE&#34;
-    exit 1
-fi</code></pre></div><p>该脚本会发送一个HTTP请求来检查网站后台登录URL的IP地址和状态码。如果状态码为200，则它将从HTTP响应中提取远程主机的IP地址，并从文件中检查它是否在允许的列表中。如果是，则显示“Access granted”，否则将发送Telegram告警，并显示“Access denied”。请注意，您需要将<code>YOUR_TELEGRAM_API_TOKEN</code>和<code>YOUR_TELEGRAM_CHAT_ID</code>替换为您自己的Telegram API Token和Chat ID，并根据需要修改<code>LOGIN_URL</code>和<code>REQUEST_HEADERS</code>。</p>
-<hr>
-<p><strong>Human:</strong>
-对就是这样，你很棒</p>
-<hr>
-<p><strong>Assistant:</strong></p>
-<p>非常感谢您的赞扬和支持，我会继续努力为您提供更好的帮助和服务。如果您有任何其他问题或需要进一步的帮助，请随时告诉我。</p>
-<hr>
-<p><strong>Human:</strong>
-需要再稍微修改下  过滤网站后台登陆日志文件中的URL IP 状态码， 把过滤出来的IP和文件列表中的IP对比，如果该IP状态码是200又不在文件列表中，发送Telagram告警</p>
-<hr>
-<p><strong>Assistant:</strong></p>
-<p>好的，以下是根据您的要求稍微修改的脚本，用于过滤网站后台登录日志文件中的URL、IP地址和状态码，将不在预定义文件列表中的IP地址发送到Telegram通知组：</p>
-<div class="highlight wrap-code"><pre tabindex="0"><code>#!/bin/bash
-
-# 预定义允许登录的IP地址列表文件
-ALLOWED_IP_LIST=&#34;allowed_ips.txt&#34;
-
-# 定义需要检查的网站后台登录日志文件
-LOG_FILE=&#34;/var/log/nginx/access.log&#34;
-
-# 定义Telegram通知组的API Token和Chat ID
-TELEGRAM_API_TOKEN=&#34;YOUR_TELEGRAM_API_TOKEN&#34;
-TELEGRAM_CHAT_ID=&#34;YOUR_TELEGRAM_CHAT_ID&#34;
-
-# 使用grep命令从日志文件中过滤出登录URL、IP地址和状态码
-LOG_FILTER=$(grep -E &#39;\/admin\/login.*HTTP\/1\.[01]&#34; 200&#39; $LOG_FILE | awk &#39;{print $1, $7, $9}&#39;)
-
-# 遍历过滤出的日志信息
-while read -r log_info; do
-    # 分别提取IP地址和状态码
-    REMOTE_IP=$(echo &#34;$log_info&#34; | awk &#39;{print $1}&#39;)
-    REMOTE_STATUS_CODE=$(echo &#34;$log_info&#34; | awk &#39;{print $2}&#39;)
-
-    # 检查状态码是否为200
-    if [[ &#34;$REMOTE_STATUS_CODE&#34; -eq &#34;200&#34; ]]; then
-        # 检查IP地址是否在允许的列表中
-        if grep -Fxq &#34;$REMOTE_IP&#34; &#34;$ALLOWED_IP_LIST&#34;; then
-            echo &#34;Access granted to $REMOTE_IP with status code $REMOTE_STATUS_CODE&#34;
-        else
-            # 发送Telegram告警
-            MESSAGE=&#34;Unauthorized login attempt from IP $REMOTE_IP with status code $REMOTE_STATUS_CODE&#34;
-            URL=&#34;https://api.telegram.org/bot$TELEGRAM_API_TOKEN/sendMessage&#34;
-            curl -s -X POST $URL -d chat_id=$TELEGRAM_CHAT_ID -d text=&#34;$MESSAGE&#34;
-            echo &#34;Access denied to $REMOTE_IP with status code $REMOTE_STATUS_CODE&#34;
-        fi
-    fi
-done &lt;&lt;&lt; &#34;$LOG_FILTER&#34;</code></pre></div><p>该脚本会从日志文件中过滤出登录URL、IP地址和状态码信息，并遍历这些信息。对于每个IP地址和状态码，它将检查状态码是否为200，然后检查IP地址是否在允许的列表中。如果是，则显示“Access granted”，否则将发送Telegram告警，并显示“Access denied”。请注意，您需要将<code>YOUR_TELEGRAM_API_TOKEN</code>和<code>YOUR_TELEGRAM_CHAT_ID</code>替换为您自己的Telegram API Token和Chat ID，并根据需要修改<code>ALLOWED_IP_LIST</code>和<code>LOG_FILE</code>。</p>
-<hr>
-<p><strong>Human:</strong>
-你很棒 要的就是这个效果</p>
-<hr>
-<p><strong>Assistant:</strong></p>
-<p>感谢您的肯定，我很高兴能够为您提供帮助。如果您有任何其他问题或需要进一步的帮助，请随时告诉我。</p>
-<hr>
-<p>Exported on 2023年3月27日 下午3:25.</p>
 
             <footer class="footline">
             </footer>
@@ -1485,12 +1482,12 @@ done &lt;&lt;&lt; &#34;$LOG_FILTER&#34;</code></pre></div><p>该脚本会从日�
         <script>
           var contentLangs=['en'];
         </script>
-        <script src="../../../../js/auto-complete.js?1719333224" defer></script>
-        <script src="../../../../js/lunr/lunr.min.js?1719333224" defer></script>
-        <script src="../../../../js/lunr/lunr.stemmer.support.min.js?1719333224" defer></script>
-        <script src="../../../../js/lunr/lunr.multi.min.js?1719333224" defer></script>
-        <script src="../../../../js/lunr/lunr.en.min.js?1719333224" defer></script>
-        <script src="../../../../js/search.js?1719333224" defer></script>
+        <script src="../../../../js/auto-complete.js?1719590743" defer></script>
+        <script src="../../../../js/lunr/lunr.min.js?1719590743" defer></script>
+        <script src="../../../../js/lunr/lunr.stemmer.support.min.js?1719590743" defer></script>
+        <script src="../../../../js/lunr/lunr.multi.min.js?1719590743" defer></script>
+        <script src="../../../../js/lunr/lunr.en.min.js?1719590743" defer></script>
+        <script src="../../../../js/search.js?1719590743" defer></script>
       </div>
       <div id="R-homelinks" class="default-animation homelinks">
         <ul>
@@ -1501,43 +1498,45 @@ done &lt;&lt;&lt; &#34;$LOG_FILTER&#34;</code></pre></div><p>该脚本会从日�
       <div id="R-content-wrapper" class="highlightable">
         <div id="R-topics">
           <ul class="enlarge morespace collapsible-menu">
-          <li data-nav-id="/basics/" class=""><input type="checkbox" id="R-section-a6deabe447afe1b2e1405bfc57ca61ff" aria-controls="R-subsections-a6deabe447afe1b2e1405bfc57ca61ff"><label for="R-section-a6deabe447afe1b2e1405bfc57ca61ff"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Basics</span></label><a class="padding" href="../../../../basics/">Basics<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-a6deabe447afe1b2e1405bfc57ca61ff" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/" class=""><input type="checkbox" id="R-section-a6deabe447afe1b2e1405bfc57ca61ff" aria-controls="R-subsections-a6deabe447afe1b2e1405bfc57ca61ff"><label for="R-section-a6deabe447afe1b2e1405bfc57ca61ff"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Basics</span></label><a class="padding" href="../../../../basics/"><i class="fa-solid fa-bars"></i> Basics<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-a6deabe447afe1b2e1405bfc57ca61ff" class="morespace collapsible-menu">
           <li data-nav-id="/basics/hugo_theme_next/" class="alwaysopen"><input type="checkbox" id="R-section-4c48b58c6275cad2a97afb5c467cac99" aria-controls="R-subsections-4c48b58c6275cad2a97afb5c467cac99" checked><label for="R-section-4c48b58c6275cad2a97afb5c467cac99"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Hugo_Theme_Next</span></label><a class="padding" href="../../../../basics/hugo_theme_next/">Hugo_Theme_Next<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-4c48b58c6275cad2a97afb5c467cac99" class="morespace collapsible-menu">
           <li data-nav-id="/basics/hugo_theme_next/emoji_support/" class=""><a class="padding" href="../../../../basics/hugo_theme_next/emoji_support/">Emoji_Support<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/basics/hugo_theme_next/custom_files/" class=""><a class="padding" href="../../../../basics/hugo_theme_next/custom_files/">Custom_Files<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
-          <li data-nav-id="/basics/video/" class="alwaysopen"><input type="checkbox" id="R-section-42af7fff84a4df6d7df07565c2262bba" aria-controls="R-subsections-42af7fff84a4df6d7df07565c2262bba" checked><label for="R-section-42af7fff84a4df6d7df07565c2262bba"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Video</span></label><a class="padding" href="../../../../basics/video/">Video<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-42af7fff84a4df6d7df07565c2262bba" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/video/" class="alwaysopen"><input type="checkbox" id="R-section-42af7fff84a4df6d7df07565c2262bba" aria-controls="R-subsections-42af7fff84a4df6d7df07565c2262bba" checked><label for="R-section-42af7fff84a4df6d7df07565c2262bba"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Video</span></label><a class="padding" href="../../../../basics/video/"><i class="fa-solid fa-video"></i> Video<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-42af7fff84a4df6d7df07565c2262bba" class="morespace collapsible-menu">
           <li data-nav-id="/basics/video/video_download/" class=""><a class="padding" href="../../../../basics/video/video_download/">Video<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
-          <li data-nav-id="/basics/markdown/" class="alwaysopen"><input type="checkbox" id="R-section-8d81245d2120aff81556115f7666a5e0" aria-controls="R-subsections-8d81245d2120aff81556115f7666a5e0" checked><label for="R-section-8d81245d2120aff81556115f7666a5e0"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu MarkDown</span></label><a class="padding" href="../../../../basics/markdown/">MarkDown<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-8d81245d2120aff81556115f7666a5e0" class="morespace collapsible-menu">
-          <li data-nav-id="/basics/markdown/markdown_syntax/" class=""><a class="padding" href="../../../../basics/markdown/markdown_syntax/">Markdown_Syntax<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
+          <li data-nav-id="/basics/markdown/" class="alwaysopen"><input type="checkbox" id="R-section-8d81245d2120aff81556115f7666a5e0" aria-controls="R-subsections-8d81245d2120aff81556115f7666a5e0" checked><label for="R-section-8d81245d2120aff81556115f7666a5e0"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu MarkDown</span></label><a class="padding" href="../../../../basics/markdown/"><i class="fa-brands fa-markdown"></i> MarkDown<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-8d81245d2120aff81556115f7666a5e0" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/markdown/markdown_syntax/" class=""><a class="padding" href="../../../../basics/markdown/markdown_syntax/"><i class="fa-brands fa-markdown"></i> Markdown_Syntax<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
           <li data-nav-id="/basics/ai/" class="alwaysopen"><input type="checkbox" id="R-section-cc50241241d2c4ea02a668bba6462573" aria-controls="R-subsections-cc50241241d2c4ea02a668bba6462573" checked><label for="R-section-cc50241241d2c4ea02a668bba6462573"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu AI</span></label><a class="padding" href="../../../../basics/ai/">AI<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-cc50241241d2c4ea02a668bba6462573" class="morespace collapsible-menu">
           <li data-nav-id="/basics/ai/chatgpt/" class=""><a class="padding" href="../../../../basics/ai/chatgpt/">ChatGPT<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
           <li data-nav-id="/basics/template/" class="alwaysopen"><input type="checkbox" id="R-section-d35117bb3084276b1f0714ea8420a43e" aria-controls="R-subsections-d35117bb3084276b1f0714ea8420a43e" checked><label for="R-section-d35117bb3084276b1f0714ea8420a43e"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu template</span></label><a class="padding" href="../../../../basics/template/">template<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-d35117bb3084276b1f0714ea8420a43e" class="morespace collapsible-menu">
           <li data-nav-id="/basics/template/syntax_highlighting/" class=""><a class="padding" href="../../../../basics/template/syntax_highlighting/">Syntax_Highlighting<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/basics/template/qrcode_manager/" class=""><a class="padding" href="../../../../basics/template/qrcode_manager/">QRcode_Manager<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/basics/template/mermaid_charts/" class=""><a class="padding" href="../../../../basics/template/mermaid_charts/">Mermaid_Charts<i class="fa-fw fas fa-check read-icon"></i></a></li>
-          <li data-nav-id="/basics/template/math_formula/" class=""><a class="padding" href="../../../../basics/template/math_formula/">Math Formula<i class="fa-fw fas fa-check read-icon"></i></a></li>
-          <li data-nav-id="/basics/template/github_repo_template/" class=""><a class="padding" href="../../../../basics/template/github_repo_template/"><i class='fab fa-github'></i> Github Repo Template<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
-          <li data-nav-id="/language/" class=""><input type="checkbox" id="R-section-84e0c5289a63136422908a7e4241adc6" aria-controls="R-subsections-84e0c5289a63136422908a7e4241adc6"><label for="R-section-84e0c5289a63136422908a7e4241adc6"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Languges</span></label><a class="padding" href="../../../../language/">Languges<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-84e0c5289a63136422908a7e4241adc6" class="morespace collapsible-menu">
+          <li data-nav-id="/basics/template/math_formula/" class=""><a class="padding" href="../../../../basics/template/math_formula/">Math Formula<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
+          <li data-nav-id="/language/" class=""><input type="checkbox" id="R-section-84e0c5289a63136422908a7e4241adc6" aria-controls="R-subsections-84e0c5289a63136422908a7e4241adc6"><label for="R-section-84e0c5289a63136422908a7e4241adc6"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Languges</span></label><a class="padding" href="../../../../language/"><i class="fa-solid fa-language"></i> Languges<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-84e0c5289a63136422908a7e4241adc6" class="morespace collapsible-menu">
           <li data-nav-id="/language/lua/" class="alwaysopen"><input type="checkbox" id="R-section-9000cbd7e4710ffe5c3bf153d3bb1374" aria-controls="R-subsections-9000cbd7e4710ffe5c3bf153d3bb1374" checked><label for="R-section-9000cbd7e4710ffe5c3bf153d3bb1374"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Lua</span></label><a class="padding" href="../../../../language/lua/">Lua<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-9000cbd7e4710ffe5c3bf153d3bb1374" class="morespace collapsible-menu">
           <li data-nav-id="/language/lua/language_lua/" class=""><a class="padding" href="../../../../language/lua/language_lua/">Lua<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
           <li data-nav-id="/language/yaml/" class="alwaysopen"><input type="checkbox" id="R-section-7d1bf276ada0eceb02dd825b91e54998" aria-controls="R-subsections-7d1bf276ada0eceb02dd825b91e54998" checked><label for="R-section-7d1bf276ada0eceb02dd825b91e54998"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Yaml</span></label><a class="padding" href="../../../../language/yaml/">Yaml<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-7d1bf276ada0eceb02dd825b91e54998" class="morespace collapsible-menu">
           <li data-nav-id="/language/yaml/language-yaml/" class=""><a class="padding" href="../../../../language/yaml/language-yaml/">Yaml<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
-          <li data-nav-id="/language/golang/" class="alwaysopen"><input type="checkbox" id="R-section-68528191e10f5bc742856b3bb35d9f34" aria-controls="R-subsections-68528191e10f5bc742856b3bb35d9f34" checked><label for="R-section-68528191e10f5bc742856b3bb35d9f34"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Golang</span></label><a class="padding" href="../../../../language/golang/">Golang<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-68528191e10f5bc742856b3bb35d9f34" class="morespace collapsible-menu">
+          <li data-nav-id="/language/golang/" class="alwaysopen"><input type="checkbox" id="R-section-68528191e10f5bc742856b3bb35d9f34" aria-controls="R-subsections-68528191e10f5bc742856b3bb35d9f34" checked><label for="R-section-68528191e10f5bc742856b3bb35d9f34"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Golang</span></label><a class="padding" href="../../../../language/golang/"><i class="fa-brands fa-golang"></i> Golang<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-68528191e10f5bc742856b3bb35d9f34" class="morespace collapsible-menu">
           <li data-nav-id="/language/golang/language-golang/" class=""><a class="padding" href="../../../../language/golang/language-golang/">Golang<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
-          <li data-nav-id="/language/python/" class="alwaysopen"><input type="checkbox" id="R-section-be2954e8559d07ab422f7ea1c72c5405" aria-controls="R-subsections-be2954e8559d07ab422f7ea1c72c5405" checked><label for="R-section-be2954e8559d07ab422f7ea1c72c5405"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Python</span></label><a class="padding" href="../../../../language/python/">Python<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-be2954e8559d07ab422f7ea1c72c5405" class="morespace collapsible-menu">
+          <li data-nav-id="/language/python/" class="alwaysopen"><input type="checkbox" id="R-section-be2954e8559d07ab422f7ea1c72c5405" aria-controls="R-subsections-be2954e8559d07ab422f7ea1c72c5405" checked><label for="R-section-be2954e8559d07ab422f7ea1c72c5405"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Python</span></label><a class="padding" href="../../../../language/python/"><i class="fa-brands fa-python"></i> Python<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-be2954e8559d07ab422f7ea1c72c5405" class="morespace collapsible-menu">
           <li data-nav-id="/language/python/language-python-django/" class=""><a class="padding" href="../../../../language/python/language-python-django/">Django<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/language/python/language-python/" class=""><a class="padding" href="../../../../language/python/language-python/">Python<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/language/python/python-crawler/" class=""><a class="padding" href="../../../../language/python/python-crawler/">Crawler<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
-          <li data-nav-id="/services/" class=""><input type="checkbox" id="R-section-95afbf0e432a5495fcd79c6e50f92da5" aria-controls="R-subsections-95afbf0e432a5495fcd79c6e50f92da5"><label for="R-section-95afbf0e432a5495fcd79c6e50f92da5"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Services</span></label><a class="padding" href="../../../../services/">Services<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-95afbf0e432a5495fcd79c6e50f92da5" class="morespace collapsible-menu">
-          <li data-nav-id="/services/shopping/" class="alwaysopen"><input type="checkbox" id="R-section-e74c46d7456e8bcd8a5b287628f47e95" aria-controls="R-subsections-e74c46d7456e8bcd8a5b287628f47e95" checked><label for="R-section-e74c46d7456e8bcd8a5b287628f47e95"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Shopping</span></label><a class="padding" href="../../../../services/shopping/">Shopping<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-e74c46d7456e8bcd8a5b287628f47e95" class="morespace collapsible-menu">
+          <li data-nav-id="/services/" class=""><input type="checkbox" id="R-section-95afbf0e432a5495fcd79c6e50f92da5" aria-controls="R-subsections-95afbf0e432a5495fcd79c6e50f92da5"><label for="R-section-95afbf0e432a5495fcd79c6e50f92da5"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Services</span></label><a class="padding" href="../../../../services/"><i class="fa-solid fa-server"></i> Services<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-95afbf0e432a5495fcd79c6e50f92da5" class="morespace collapsible-menu">
+          <li data-nav-id="/services/shopping/" class="alwaysopen"><input type="checkbox" id="R-section-e74c46d7456e8bcd8a5b287628f47e95" aria-controls="R-subsections-e74c46d7456e8bcd8a5b287628f47e95" checked><label for="R-section-e74c46d7456e8bcd8a5b287628f47e95"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Shopping</span></label><a class="padding" href="../../../../services/shopping/"><i class="fa-solid fa-shop"></i> Shopping<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-e74c46d7456e8bcd8a5b287628f47e95" class="morespace collapsible-menu">
           <li data-nav-id="/services/shopping/install_prestashop/" class=""><a class="padding" href="../../../../services/shopping/install_prestashop/">PrestaShop<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/services/shopping/install_opencart/" class=""><a class="padding" href="../../../../services/shopping/install_opencart/">OpenCart<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/services/shopping/install_jeepay/" class=""><a class="padding" href="../../../../services/shopping/install_jeepay/">JeePay<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
-          <li data-nav-id="/services/certificate/" class=""><a class="padding" href="../../../../services/certificate/">Certificate<i class="fa-fw fas fa-check read-icon"></i></a></li>
-          <li data-nav-id="/services/blog/" class="alwaysopen"><input type="checkbox" id="R-section-47d595cf5fa5000ee12b114cac976798" aria-controls="R-subsections-47d595cf5fa5000ee12b114cac976798" checked><label for="R-section-47d595cf5fa5000ee12b114cac976798"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Blog</span></label><a class="padding" href="../../../../services/blog/">Blog<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-47d595cf5fa5000ee12b114cac976798" class="morespace collapsible-menu">
+          <li data-nav-id="/services/certificate/" class=""><a class="padding" href="../../../../services/certificate/"><i class="fa-solid fa-certificate"></i> Certificate<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/services/blog/" class="alwaysopen"><input type="checkbox" id="R-section-47d595cf5fa5000ee12b114cac976798" aria-controls="R-subsections-47d595cf5fa5000ee12b114cac976798" checked><label for="R-section-47d595cf5fa5000ee12b114cac976798"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Blog</span></label><a class="padding" href="../../../../services/blog/"><i class="fa-solid fa-blog"></i> Blog<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-47d595cf5fa5000ee12b114cac976798" class="morespace collapsible-menu">
           <li data-nav-id="/services/blog/install-blog-hexo/" class=""><a class="padding" href="../../../../services/blog/install-blog-hexo/">Hexo<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
-          <li data-nav-id="/systems/" class="parent "><input type="checkbox" id="R-section-30e48890399c6ecdfb15937b01bd309a" aria-controls="R-subsections-30e48890399c6ecdfb15937b01bd309a" checked><label for="R-section-30e48890399c6ecdfb15937b01bd309a"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Systems</span></label><a class="padding" href="../../../../systems/">Systems<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-30e48890399c6ecdfb15937b01bd309a" class="morespace collapsible-menu">
-          <li data-nav-id="/systems/linux/" class="parent alwaysopen"><input type="checkbox" id="R-section-de656359c9ce2d10a06145d02d07bd35" aria-controls="R-subsections-de656359c9ce2d10a06145d02d07bd35" checked><label for="R-section-de656359c9ce2d10a06145d02d07bd35"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Linux</span></label><a class="padding" href="../../../../systems/linux/">Linux<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-de656359c9ce2d10a06145d02d07bd35" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/" class="parent "><input type="checkbox" id="R-section-30e48890399c6ecdfb15937b01bd309a" aria-controls="R-subsections-30e48890399c6ecdfb15937b01bd309a" checked><label for="R-section-30e48890399c6ecdfb15937b01bd309a"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Systems</span></label><a class="padding" href="../../../../systems/"><i class="fa-solid fa-gear"></i> Systems<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-30e48890399c6ecdfb15937b01bd309a" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/" class="parent alwaysopen"><input type="checkbox" id="R-section-de656359c9ce2d10a06145d02d07bd35" aria-controls="R-subsections-de656359c9ce2d10a06145d02d07bd35" checked><label for="R-section-de656359c9ce2d10a06145d02d07bd35"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Linux</span></label><a class="padding" href="../../../../systems/linux/"><i class="fa-brands fa-linux"></i> Linux<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-de656359c9ce2d10a06145d02d07bd35" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/docker/" class="alwaysopen"><input type="checkbox" id="R-section-1116a6327fd893a27b6817bb1d1bbc1b" aria-controls="R-subsections-1116a6327fd893a27b6817bb1d1bbc1b" checked><label for="R-section-1116a6327fd893a27b6817bb1d1bbc1b"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Docker</span></label><a class="padding" href="../../../../systems/linux/docker/">Docker<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-1116a6327fd893a27b6817bb1d1bbc1b" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/docker/use_docker/" class=""><a class="padding" href="../../../../systems/linux/docker/use_docker/">Use_Docker<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/linux/docker/install_docker/" class=""><a class="padding" href="../../../../systems/linux/docker/install_docker/">Install_Docker<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
           <li data-nav-id="/systems/linux/use_linux/" class="alwaysopen"><input type="checkbox" id="R-section-49f8f651101e295f3d007dbb41613e23" aria-controls="R-subsections-49f8f651101e295f3d007dbb41613e23" checked><label for="R-section-49f8f651101e295f3d007dbb41613e23"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Use_Linux</span></label><a class="padding" href="../../../../systems/linux/use_linux/">Use_Linux<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-49f8f651101e295f3d007dbb41613e23" class="morespace collapsible-menu">
           <li data-nav-id="/systems/linux/use_linux/system_optimization/" class=""><a class="padding" href="../../../../systems/linux/use_linux/system_optimization/">System_Optimization<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/linux/use_linux/system_architecture_planning_diagram/" class=""><a class="padding" href="../../../../systems/linux/use_linux/system_architecture_planning_diagram/">System_Architecture_Planning_Diagram<i class="fa-fw fas fa-check read-icon"></i></a></li>
@@ -1629,7 +1628,7 @@ done &lt;&lt;&lt; &#34;$LOG_FILTER&#34;</code></pre></div><p>该脚本会从日�
           <li data-nav-id="/systems/linux/jumpserver/" class="alwaysopen"><input type="checkbox" id="R-section-f322e41abfd5771d40b756709835fa3f" aria-controls="R-subsections-f322e41abfd5771d40b756709835fa3f" checked><label for="R-section-f322e41abfd5771d40b756709835fa3f"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu JumpServer</span></label><a class="padding" href="../../../../systems/linux/jumpserver/">JumpServer<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-f322e41abfd5771d40b756709835fa3f" class="morespace collapsible-menu">
           <li data-nav-id="/systems/linux/jumpserver/use_jumpserver/" class=""><a class="padding" href="../../../../systems/linux/jumpserver/use_jumpserver/">Use_JumpServer<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/linux/jumpserver/install_jumpserver/" class=""><a class="padding" href="../../../../systems/linux/jumpserver/install_jumpserver/">Install_JumpServer<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
-          <li data-nav-id="/systems/linux/jenkins/" class="alwaysopen"><input type="checkbox" id="R-section-f690c0dab88e64f38122fac9ce428cdf" aria-controls="R-subsections-f690c0dab88e64f38122fac9ce428cdf" checked><label for="R-section-f690c0dab88e64f38122fac9ce428cdf"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Jenkins</span></label><a class="padding" href="../../../../systems/linux/jenkins/">Jenkins<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-f690c0dab88e64f38122fac9ce428cdf" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/jenkins/" class="alwaysopen"><input type="checkbox" id="R-section-f690c0dab88e64f38122fac9ce428cdf" aria-controls="R-subsections-f690c0dab88e64f38122fac9ce428cdf" checked><label for="R-section-f690c0dab88e64f38122fac9ce428cdf"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Jenkins</span></label><a class="padding" href="../../../../systems/linux/jenkins/"><i class="fa-brands fa-jenkins"></i> Jenkins<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-f690c0dab88e64f38122fac9ce428cdf" class="morespace collapsible-menu">
           <li data-nav-id="/systems/linux/jenkins/use_jenkins/" class=""><a class="padding" href="../../../../systems/linux/jenkins/use_jenkins/">Use_Jenkins<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/linux/jenkins/install_jenkins/" class=""><a class="padding" href="../../../../systems/linux/jenkins/install_jenkins/">Install_Jenkins<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
           <li data-nav-id="/systems/linux/jdk/" class="alwaysopen"><input type="checkbox" id="R-section-36efe864ba441ecbd1a5221b646d395f" aria-controls="R-subsections-36efe864ba441ecbd1a5221b646d395f" checked><label for="R-section-36efe864ba441ecbd1a5221b646d395f"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu JDK</span></label><a class="padding" href="../../../../systems/linux/jdk/">JDK<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-36efe864ba441ecbd1a5221b646d395f" class="morespace collapsible-menu">
@@ -1640,7 +1639,7 @@ done &lt;&lt;&lt; &#34;$LOG_FILTER&#34;</code></pre></div><p>该脚本会从日�
           <li data-nav-id="/systems/linux/haproxy/" class="alwaysopen"><input type="checkbox" id="R-section-7bc7ce397a3c135c33a1fe515157e26b" aria-controls="R-subsections-7bc7ce397a3c135c33a1fe515157e26b" checked><label for="R-section-7bc7ce397a3c135c33a1fe515157e26b"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu HAProxy</span></label><a class="padding" href="../../../../systems/linux/haproxy/">HAProxy<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-7bc7ce397a3c135c33a1fe515157e26b" class="morespace collapsible-menu">
           <li data-nav-id="/systems/linux/haproxy/install_proxy/" class=""><a class="padding" href="../../../../systems/linux/haproxy/install_proxy/">Install_Proxy<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/linux/haproxy/install_haproxy/" class=""><a class="padding" href="../../../../systems/linux/haproxy/install_haproxy/">Install_HAProxy<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
-          <li data-nav-id="/systems/linux/gitlab/" class="alwaysopen"><input type="checkbox" id="R-section-eb6fb2d7fa852777afa9d0bd3d061e2f" aria-controls="R-subsections-eb6fb2d7fa852777afa9d0bd3d061e2f" checked><label for="R-section-eb6fb2d7fa852777afa9d0bd3d061e2f"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Gitlab</span></label><a class="padding" href="../../../../systems/linux/gitlab/">Gitlab<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-eb6fb2d7fa852777afa9d0bd3d061e2f" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/gitlab/" class="alwaysopen"><input type="checkbox" id="R-section-eb6fb2d7fa852777afa9d0bd3d061e2f" aria-controls="R-subsections-eb6fb2d7fa852777afa9d0bd3d061e2f" checked><label for="R-section-eb6fb2d7fa852777afa9d0bd3d061e2f"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Gitlab</span></label><a class="padding" href="../../../../systems/linux/gitlab/"><i class="fa-brands fa-gitlab"></i> Gitlab<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-eb6fb2d7fa852777afa9d0bd3d061e2f" class="morespace collapsible-menu">
           <li data-nav-id="/systems/linux/gitlab/use_gitrunner/" class=""><a class="padding" href="../../../../systems/linux/gitlab/use_gitrunner/">Use_Gitrunner<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/linux/gitlab/use_gitlab/" class=""><a class="padding" href="../../../../systems/linux/gitlab/use_gitlab/">Use_Gitlab<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/linux/gitlab/use_git_command/" class=""><a class="padding" href="../../../../systems/linux/gitlab/use_git_command/">Use_Git_Command<i class="fa-fw fas fa-check read-icon"></i></a></li>
@@ -1650,9 +1649,9 @@ done &lt;&lt;&lt; &#34;$LOG_FILTER&#34;</code></pre></div><p>该脚本会从日�
           <li data-nav-id="/systems/linux/gitlab/install_gitea/" class=""><a class="padding" href="../../../../systems/linux/gitlab/install_gitea/">Install_Gitea<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
           <li data-nav-id="/systems/linux/firewalld/" class="alwaysopen"><input type="checkbox" id="R-section-8a9c9b45fea025ec58be52ee30e98fab" aria-controls="R-subsections-8a9c9b45fea025ec58be52ee30e98fab" checked><label for="R-section-8a9c9b45fea025ec58be52ee30e98fab"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Firewalld</span></label><a class="padding" href="../../../../systems/linux/firewalld/">Firewalld<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-8a9c9b45fea025ec58be52ee30e98fab" class="morespace collapsible-menu">
           <li data-nav-id="/systems/linux/firewalld/use_firewalld/" class=""><a class="padding" href="../../../../systems/linux/firewalld/use_firewalld/">Use_Firewalld<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
-          <li data-nav-id="/systems/linux/email/" class="alwaysopen"><input type="checkbox" id="R-section-89489275bf8e3d75bdaa43edad4e280b" aria-controls="R-subsections-89489275bf8e3d75bdaa43edad4e280b" checked><label for="R-section-89489275bf8e3d75bdaa43edad4e280b"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Email</span></label><a class="padding" href="../../../../systems/linux/email/">Email<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-89489275bf8e3d75bdaa43edad4e280b" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/email/" class="alwaysopen"><input type="checkbox" id="R-section-89489275bf8e3d75bdaa43edad4e280b" aria-controls="R-subsections-89489275bf8e3d75bdaa43edad4e280b" checked><label for="R-section-89489275bf8e3d75bdaa43edad4e280b"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Email</span></label><a class="padding" href="../../../../systems/linux/email/"><i class="fa-solid fa-envelope"></i> Email<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-89489275bf8e3d75bdaa43edad4e280b" class="morespace collapsible-menu">
           <li data-nav-id="/systems/linux/email/install_iredmail/" class=""><a class="padding" href="../../../../systems/linux/email/install_iredmail/">Install_iRedMail<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
-          <li data-nav-id="/systems/linux/databases/" class="alwaysopen"><input type="checkbox" id="R-section-8d2e8b3049adc0e55fd190214593db4d" aria-controls="R-subsections-8d2e8b3049adc0e55fd190214593db4d" checked><label for="R-section-8d2e8b3049adc0e55fd190214593db4d"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Databases</span></label><a class="padding" href="../../../../systems/linux/databases/">Databases<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-8d2e8b3049adc0e55fd190214593db4d" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/databases/" class="alwaysopen"><input type="checkbox" id="R-section-8d2e8b3049adc0e55fd190214593db4d" aria-controls="R-subsections-8d2e8b3049adc0e55fd190214593db4d" checked><label for="R-section-8d2e8b3049adc0e55fd190214593db4d"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Databases</span></label><a class="padding" href="../../../../systems/linux/databases/"><i class="fa-solid fa-database"></i> Databases<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-8d2e8b3049adc0e55fd190214593db4d" class="morespace collapsible-menu">
           <li data-nav-id="/systems/linux/databases/update_mysql5-7_to_mysql8/" class=""><a class="padding" href="../../../../systems/linux/databases/update_mysql5-7_to_mysql8/">Update_Mysql5 7_To_Mysql8<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/linux/databases/install_ydb/" class=""><a class="padding" href="../../../../systems/linux/databases/install_ydb/">Install_Ydb<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/linux/databases/install_postgresql/" class=""><a class="padding" href="../../../../systems/linux/databases/install_postgresql/">Install_PostgreSQL<i class="fa-fw fas fa-check read-icon"></i></a></li>
@@ -1669,7 +1668,7 @@ done &lt;&lt;&lt; &#34;$LOG_FILTER&#34;</code></pre></div><p>该脚本会从日�
           <li data-nav-id="/systems/linux/daemon/install_supervisord/" class=""><a class="padding" href="../../../../systems/linux/daemon/install_supervisord/">Install_Supervisord<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
           <li data-nav-id="/systems/linux/crontab/" class="alwaysopen"><input type="checkbox" id="R-section-5dbcbf4ab907358eb8cdb15d3a6874c0" aria-controls="R-subsections-5dbcbf4ab907358eb8cdb15d3a6874c0" checked><label for="R-section-5dbcbf4ab907358eb8cdb15d3a6874c0"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Crontab</span></label><a class="padding" href="../../../../systems/linux/crontab/">Crontab<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-5dbcbf4ab907358eb8cdb15d3a6874c0" class="morespace collapsible-menu">
           <li data-nav-id="/systems/linux/crontab/install_xxl_job/" class=""><a class="padding" href="../../../../systems/linux/crontab/install_xxl_job/">Install Xxl Job<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
-          <li data-nav-id="/systems/linux/codes/" class="alwaysopen"><input type="checkbox" id="R-section-b1a3b874591fa49fdbf0d03a3df78c1a" aria-controls="R-subsections-b1a3b874591fa49fdbf0d03a3df78c1a" checked><label for="R-section-b1a3b874591fa49fdbf0d03a3df78c1a"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Codes</span></label><a class="padding" href="../../../../systems/linux/codes/">Codes<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-b1a3b874591fa49fdbf0d03a3df78c1a" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/codes/" class="alwaysopen"><input type="checkbox" id="R-section-b1a3b874591fa49fdbf0d03a3df78c1a" aria-controls="R-subsections-b1a3b874591fa49fdbf0d03a3df78c1a" checked><label for="R-section-b1a3b874591fa49fdbf0d03a3df78c1a"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Codes</span></label><a class="padding" href="../../../../systems/linux/codes/"><i class="fa-solid fa-code"></i> Codes<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-b1a3b874591fa49fdbf0d03a3df78c1a" class="morespace collapsible-menu">
           <li data-nav-id="/systems/linux/codes/configure_sonarqube/" class=""><a class="padding" href="../../../../systems/linux/codes/configure_sonarqube/">Configure_SonarQube<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/linux/codes/install_sonarqube/" class=""><a class="padding" href="../../../../systems/linux/codes/install_sonarqube/">Install_SonarQube<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
           <li data-nav-id="/systems/linux/cdn/" class=""><a class="padding" href="../../../../systems/linux/cdn/">CDN<i class="fa-fw fas fa-check read-icon"></i></a></li>
@@ -1677,16 +1676,16 @@ done &lt;&lt;&lt; &#34;$LOG_FILTER&#34;</code></pre></div><p>该脚本会从日�
           <li data-nav-id="/systems/linux/backend/tomcat/" class="alwaysopen"><input type="checkbox" id="R-section-a37d588e6abdd2fd4d9ed098f2480ef4" aria-controls="R-subsections-a37d588e6abdd2fd4d9ed098f2480ef4" checked><label for="R-section-a37d588e6abdd2fd4d9ed098f2480ef4"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Tomcat</span></label><a class="padding" href="../../../../systems/linux/backend/tomcat/">Tomcat<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-a37d588e6abdd2fd4d9ed098f2480ef4" class="morespace collapsible-menu">
           <li data-nav-id="/systems/linux/backend/tomcat/configure_tomcat/" class=""><a class="padding" href="../../../../systems/linux/backend/tomcat/configure_tomcat/">Configure_Tomcat<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/linux/backend/tomcat/install_tomcat/" class=""><a class="padding" href="../../../../systems/linux/backend/tomcat/install_tomcat/">Install_Tomcat<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li>
-          <li data-nav-id="/systems/linux/backend/php/" class="alwaysopen"><input type="checkbox" id="R-section-0f591cf97f2213fd2c12be6cea731d4e" aria-controls="R-subsections-0f591cf97f2213fd2c12be6cea731d4e" checked><label for="R-section-0f591cf97f2213fd2c12be6cea731d4e"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu PHP</span></label><a class="padding" href="../../../../systems/linux/backend/php/">PHP<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-0f591cf97f2213fd2c12be6cea731d4e" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/backend/php/" class="alwaysopen"><input type="checkbox" id="R-section-0f591cf97f2213fd2c12be6cea731d4e" aria-controls="R-subsections-0f591cf97f2213fd2c12be6cea731d4e" checked><label for="R-section-0f591cf97f2213fd2c12be6cea731d4e"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu PHP</span></label><a class="padding" href="../../../../systems/linux/backend/php/"><i class="fa-brands fa-php"></i> PHP<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-0f591cf97f2213fd2c12be6cea731d4e" class="morespace collapsible-menu">
           <li data-nav-id="/systems/linux/backend/php/configure_php_expand/" class=""><a class="padding" href="../../../../systems/linux/backend/php/configure_php_expand/">Configure_PHP_Expand<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/linux/backend/php/install_php/" class=""><a class="padding" href="../../../../systems/linux/backend/php/install_php/">Install_PHP<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
-          <li data-nav-id="/systems/linux/ansible/" class="alwaysopen"><input type="checkbox" id="R-section-d91fd45339335865ca8b3da1c08c6f27" aria-controls="R-subsections-d91fd45339335865ca8b3da1c08c6f27" checked><label for="R-section-d91fd45339335865ca8b3da1c08c6f27"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Ansible</span></label><a class="padding" href="../../../../systems/linux/ansible/">Ansible<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-d91fd45339335865ca8b3da1c08c6f27" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/linux/ansible/" class="alwaysopen"><input type="checkbox" id="R-section-d91fd45339335865ca8b3da1c08c6f27" aria-controls="R-subsections-d91fd45339335865ca8b3da1c08c6f27" checked><label for="R-section-d91fd45339335865ca8b3da1c08c6f27"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Ansible</span></label><a class="padding" href="../../../../systems/linux/ansible/"> Ansible<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-d91fd45339335865ca8b3da1c08c6f27" class="morespace collapsible-menu">
           <li data-nav-id="/systems/linux/ansible/use_slatstack/" class=""><a class="padding" href="../../../../systems/linux/ansible/use_slatstack/">Use_Slatstack<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/linux/ansible/use_ansible/" class=""><a class="padding" href="../../../../systems/linux/ansible/use_ansible/">Use_Ansible<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/linux/ansible/install_slatstack/" class=""><a class="padding" href="../../../../systems/linux/ansible/install_slatstack/">Install_Slatstack<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/linux/ansible/install_ansible/" class=""><a class="padding" href="../../../../systems/linux/ansible/install_ansible/">Install_Ansible<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
-          <li data-nav-id="/systems/black-macos/" class=""><a class="padding" href="../../../../systems/black-macos/">Black MacOs<i class="fa-fw fas fa-check read-icon"></i></a></li>
-          <li data-nav-id="/systems/activation_key/" class="alwaysopen"><input type="checkbox" id="R-section-b7cd59ef441cb6c4b9b5d009ebd42017" aria-controls="R-subsections-b7cd59ef441cb6c4b9b5d009ebd42017" checked><label for="R-section-b7cd59ef441cb6c4b9b5d009ebd42017"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Activation Key</span></label><a class="padding" href="../../../../systems/activation_key/">Activation Key<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-b7cd59ef441cb6c4b9b5d009ebd42017" class="morespace collapsible-menu">
+          <li data-nav-id="/systems/black-macos/" class=""><a class="padding" href="../../../../systems/black-macos/"><i class="fa-brands fa-apple"></i> Black MacOs<i class="fa-fw fas fa-check read-icon"></i></a></li>
+          <li data-nav-id="/systems/activation_key/" class="alwaysopen"><input type="checkbox" id="R-section-b7cd59ef441cb6c4b9b5d009ebd42017" aria-controls="R-subsections-b7cd59ef441cb6c4b9b5d009ebd42017" checked><label for="R-section-b7cd59ef441cb6c4b9b5d009ebd42017"><i class="fa-fw fas fa-chevron-down"></i><i class="fa-fw fas fa-chevron-right"></i><span class="a11y-only">Submenu Activation Key</span></label><a class="padding" href="../../../../systems/activation_key/"><i class="fa-solid fa-key"></i> Activation Key<i class="fa-fw fas fa-check read-icon"></i></a><ul id="R-subsections-b7cd59ef441cb6c4b9b5d009ebd42017" class="morespace collapsible-menu">
           <li data-nav-id="/systems/activation_key/windows/" class=""><a class="padding" href="../../../../systems/activation_key/windows/">Windows<i class="fa-fw fas fa-check read-icon"></i></a></li>
           <li data-nav-id="/systems/activation_key/vmware/" class=""><a class="padding" href="../../../../systems/activation_key/vmware/">Vmware<i class="fa-fw fas fa-check read-icon"></i></a></li></ul></li></ul></li>
           </ul>
@@ -1771,8 +1770,8 @@ done &lt;&lt;&lt; &#34;$LOG_FILTER&#34;</code></pre></div><p>该脚本会从日�
         </div>
       </div>
     </aside>
-    <script src="../../../../js/clipboard.min.js?1719333224" defer></script>
-    <script src="../../../../js/perfect-scrollbar.min.js?1719333224" defer></script>
-    <script src="../../../../js/theme.js?1719333224" defer></script>
+    <script src="../../../../js/clipboard.min.js?1719590743" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1719590743" defer></script>
+    <script src="../../../../js/theme.js?1719590743" defer></script>
   </body>
 </html>
