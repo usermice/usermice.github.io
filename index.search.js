@@ -8,12 +8,260 @@ var relearn_search_index = [
     "uri": "/basics/"
   },
   {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Ansible",
+    "uri": "/systems/linux/ansible/"
+  },
+  {
+    "breadcrumb": "Systems",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Activation Key",
+    "uri": "/systems/activation_key/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Backend",
+    "uri": "/systems/linux/backend/"
+  },
+  {
+    "breadcrumb": "Systems",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Black MacOs",
+    "uri": "/systems/black-macos/"
+  },
+  {
     "breadcrumb": "",
     "content": "",
     "description": "",
     "tags": [],
     "title": "Languges",
     "uri": "/language/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "CDN",
+    "uri": "/systems/linux/cdn/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Codes",
+    "uri": "/systems/linux/codes/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Crontab",
+    "uri": "/systems/linux/crontab/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Daemon",
+    "uri": "/systems/linux/daemon/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Databases",
+    "uri": "/systems/linux/databases/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Email",
+    "uri": "/systems/linux/email/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Firewalld",
+    "uri": "/systems/linux/firewalld/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Gitlab",
+    "uri": "/systems/linux/gitlab/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "HAProxy",
+    "uri": "/systems/linux/haproxy/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Install_System",
+    "uri": "/systems/linux/install_system/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "JDK",
+    "uri": "/systems/linux/jdk/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Jenkins",
+    "uri": "/systems/linux/jenkins/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "JumpServer",
+    "uri": "/systems/linux/jumpserver/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Keepalived",
+    "uri": "/systems/linux/keepalived/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Kubernetes",
+    "uri": "/systems/linux/kubernetes/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "LDAP",
+    "uri": "/systems/linux/ldap/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Logs",
+    "uri": "/systems/linux/logs/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Message_Queue",
+    "uri": "/systems/linux/message_queue/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Monitor",
+    "uri": "/systems/linux/monitor/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Nosql",
+    "uri": "/systems/linux/nosql/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Rsyncd",
+    "uri": "/systems/linux/rsyncd/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Script",
+    "uri": "/systems/linux/script/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Storage",
+    "uri": "/systems/linux/storage/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Service_Management",
+    "uri": "/systems/linux/service_management/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Web",
+    "uri": "/systems/linux/web/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux",
+    "content": "",
+    "description": "",
+    "tags": [],
+    "title": "Work_Order",
+    "uri": "/systems/linux/work_order/"
+  },
+  {
+    "breadcrumb": "Systems \u003e Linux \u003e Service_Management",
+    "content": "Apollo部署 Apollo ",
+    "description": "Apollo部署 Apollo ",
+    "tags": [],
+    "title": "Install_Apollo",
+    "uri": "/systems/linux/service_management/install_apollo/"
   },
   {
     "breadcrumb": "Systems \u003e Linux \u003e Docker",
@@ -289,8 +537,8 @@ var relearn_search_index = [
   },
   {
     "breadcrumb": "Systems \u003e Linux \u003e Service_Management",
-    "content": "Nacos部署 Apollo\nNacos下载地址\n环境准备\nNacos依赖Java环境来运行。如果您是从代码开始构建并运行Nacos，还需要为此配置 Maven环境，请确保是在以下版本环境中安装使用:\n64 bit OS，支持Linux/Unix/Mac/Windows，推荐选用Linux/Unix/Mac。 64 bit JDK 1.8+下载 \u0026 配置。 Maven 3.2.x+下载\u0026配置。 下载安装包、解压、配置 $ wget https://github.com/alibaba/nacos/releases/download/2.0.4/nacos-server-2.0.4.tar.gz $ tar -zxvf nacos-server-2.0.4.tar.gz # 创建数据库、导入模板数据 mysql\u003e source nacos/conf/nacos-mysql.sql # 修改配置 $ vim nacos/conf/application.properties db.url.0=jdbc:mysql://127.0.0.1:16303/nacos?characterEncoding=utf8\u0026connectTimeout=1000\u0026socketTimeout=3000\u0026autoReconnect=true\u0026useUnicode=true\u0026useSSL=false\u0026serverTimezone=UTC # 配置连接数据库地址 db.user=nacos # 连接数据库用户 db.password=password # 连接数据库密码 Nacos单节点启动 # 单节点启动(standalone代表着单机模式运行) $ sh startup.sh -m standalone # 服务注册 $ curl -X POST 'http://127.0.0.1:8848/nacos/v1/ns/instance?serviceName=nacos.naming.serviceName\u0026ip=20.18.7.10\u0026port=8080' # 服务发现 $ curl -X GET 'http://127.0.0.1:8848/nacos/v1/ns/instance/list?serviceName=nacos.naming.serviceName' # 发布配置 $ curl -X POST \"http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=nacos.cfg.dataId\u0026group=test\u0026content=HelloWorld\" # 获取配置 $ curl -X GET \"http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=nacos.cfg.dataId\u0026group=test\" # 关闭服务器 $ sh shutdown.sh Nacos集群部署 节点之间防火墙开放9849、8848、7848、1001端口， 9849、1001服务端gRPC请求服务端端口，用于服务间同步等 修改nacos集群配置文件 $ vim nacos/conf/cluster.conf 192.168.1.10:8848 192.168.1.11:8848 192.168.1.12:8848 修改配置文件以及配置数据库连接 $ vim nacos/conf/application.properties ### Specify local server's IP: nacos.inetutils.ip-address=192.168.30.144 # 本机服务器IP #*************** Config Module Related Configurations ***************# ### If user MySQL as datasource: spring.datasource.platform=mysql ### Count of DB: db.num=1 db.url.0=jdbc:mysql://127.0.0.1:16303/nacos?characterEncoding=utf8\u0026connectTimeout=1000\u0026socketTimeout=3000\u0026autoReconnect=true\u0026useUnicode=true\u0026useSSL=false\u0026serverTimezone=UTC # 配置连接数据库地址 db.user=nacos # 连接数据库用户 db.password=password # 连接数据库密码 集群启动（使用外置数据库） $ bash startup.sh Kubernetes部署Nacos Kubernetes部署Nacos ",
-    "description": "Nacos部署 Apollo\nNacos下载地址\n环境准备\nNacos依赖Java环境来运行。如果您是从代码开始构建并运行Nacos，还需要为此配置 Maven环境，请确保是在以下版本环境中安装使用:\n64 bit OS，支持Linux/Unix/Mac/Windows，推荐选用Linux/Unix/Mac。 64 bit JDK 1.",
+    "content": "Nacos部署 Nacos下载地址\n环境准备\nNacos依赖Java环境来运行。如果您是从代码开始构建并运行Nacos，还需要为此配置 Maven环境，请确保是在以下版本环境中安装使用:\n64 bit OS，支持Linux/Unix/Mac/Windows，推荐选用Linux/Unix/Mac。 64 bit JDK 1.8+下载 \u0026 配置。 Maven 3.2.x+下载\u0026配置。 下载安装包、解压、配置 $ wget https://github.com/alibaba/nacos/releases/download/2.0.4/nacos-server-2.0.4.tar.gz $ tar -zxvf nacos-server-2.0.4.tar.gz # 创建数据库、导入模板数据 mysql\u003e source nacos/conf/nacos-mysql.sql # 修改配置 $ vim nacos/conf/application.properties db.url.0=jdbc:mysql://127.0.0.1:16303/nacos?characterEncoding=utf8\u0026connectTimeout=1000\u0026socketTimeout=3000\u0026autoReconnect=true\u0026useUnicode=true\u0026useSSL=false\u0026serverTimezone=UTC # 配置连接数据库地址 db.user=nacos # 连接数据库用户 db.password=password # 连接数据库密码 Nacos单节点启动 # 单节点启动(standalone代表着单机模式运行) $ sh startup.sh -m standalone # 服务注册 $ curl -X POST 'http://127.0.0.1:8848/nacos/v1/ns/instance?serviceName=nacos.naming.serviceName\u0026ip=20.18.7.10\u0026port=8080' # 服务发现 $ curl -X GET 'http://127.0.0.1:8848/nacos/v1/ns/instance/list?serviceName=nacos.naming.serviceName' # 发布配置 $ curl -X POST \"http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=nacos.cfg.dataId\u0026group=test\u0026content=HelloWorld\" # 获取配置 $ curl -X GET \"http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=nacos.cfg.dataId\u0026group=test\" # 关闭服务器 $ sh shutdown.sh Nacos集群部署 节点之间防火墙开放9849、8848、7848、1001端口， 9849、1001服务端gRPC请求服务端端口，用于服务间同步等 修改nacos集群配置文件 $ vim nacos/conf/cluster.conf 192.168.1.10:8848 192.168.1.11:8848 192.168.1.12:8848 修改配置文件以及配置数据库连接 $ vim nacos/conf/application.properties ### Specify local server's IP: nacos.inetutils.ip-address=192.168.30.144 # 本机服务器IP #*************** Config Module Related Configurations ***************# ### If user MySQL as datasource: spring.datasource.platform=mysql ### Count of DB: db.num=1 db.url.0=jdbc:mysql://127.0.0.1:16303/nacos?characterEncoding=utf8\u0026connectTimeout=1000\u0026socketTimeout=3000\u0026autoReconnect=true\u0026useUnicode=true\u0026useSSL=false\u0026serverTimezone=UTC # 配置连接数据库地址 db.user=nacos # 连接数据库用户 db.password=password # 连接数据库密码 集群启动（使用外置数据库） $ bash startup.sh Kubernetes部署Nacos Kubernetes部署Nacos ",
+    "description": "Nacos部署 Nacos下载地址\n环境准备\nNacos依赖Java环境来运行。如果您是从代码开始构建并运行Nacos，还需要为此配置 Maven环境，请确保是在以下版本环境中安装使用:\n64 bit OS，支持Linux/Unix/Mac/Windows，推荐选用Linux/Unix/Mac。 64 bit JDK 1.",
     "tags": [],
     "title": "Install_Nacos",
     "uri": "/systems/linux/service_management/install_nacos/"
@@ -1104,214 +1352,6 @@ var relearn_search_index = [
     "uri": "/basics/ai/"
   },
   {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Work_Order",
-    "uri": "/systems/linux/work_order/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Web",
-    "uri": "/systems/linux/web/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Storage",
-    "uri": "/systems/linux/storage/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Service_Management",
-    "uri": "/systems/linux/service_management/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Script",
-    "uri": "/systems/linux/script/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Rsyncd",
-    "uri": "/systems/linux/rsyncd/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Nosql",
-    "uri": "/systems/linux/nosql/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Monitor",
-    "uri": "/systems/linux/monitor/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Message_Queue",
-    "uri": "/systems/linux/message_queue/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Logs",
-    "uri": "/systems/linux/logs/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "LDAP",
-    "uri": "/systems/linux/ldap/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Kubernetes",
-    "uri": "/systems/linux/kubernetes/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Keepalived",
-    "uri": "/systems/linux/keepalived/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "JumpServer",
-    "uri": "/systems/linux/jumpserver/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Jenkins",
-    "uri": "/systems/linux/jenkins/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "JDK",
-    "uri": "/systems/linux/jdk/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Install_System",
-    "uri": "/systems/linux/install_system/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "HAProxy",
-    "uri": "/systems/linux/haproxy/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Gitlab",
-    "uri": "/systems/linux/gitlab/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Firewalld",
-    "uri": "/systems/linux/firewalld/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Email",
-    "uri": "/systems/linux/email/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Databases",
-    "uri": "/systems/linux/databases/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Daemon",
-    "uri": "/systems/linux/daemon/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Crontab",
-    "uri": "/systems/linux/crontab/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Codes",
-    "uri": "/systems/linux/codes/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "CDN",
-    "uri": "/systems/linux/cdn/"
-  },
-  {
     "breadcrumb": "Systems \u003e Linux \u003e Backend",
     "content": "",
     "description": "",
@@ -1326,22 +1366,6 @@ var relearn_search_index = [
     "tags": [],
     "title": "PHP",
     "uri": "/systems/linux/backend/php/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Backend",
-    "uri": "/systems/linux/backend/"
-  },
-  {
-    "breadcrumb": "Systems \u003e Linux",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Ansible",
-    "uri": "/systems/linux/ansible/"
   },
   {
     "breadcrumb": "Systems",
@@ -1376,28 +1400,12 @@ var relearn_search_index = [
     "uri": "/systems/activation_key/vmware/"
   },
   {
-    "breadcrumb": "Systems",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Black MacOs",
-    "uri": "/systems/black-macos/"
-  },
-  {
     "breadcrumb": "",
     "content": "",
     "description": "",
     "tags": [],
     "title": "Services",
     "uri": "/services/"
-  },
-  {
-    "breadcrumb": "Systems",
-    "content": "",
-    "description": "",
-    "tags": [],
-    "title": "Activation Key",
-    "uri": "/systems/activation_key/"
   },
   {
     "breadcrumb": "",
