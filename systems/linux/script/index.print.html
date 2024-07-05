@@ -22,19 +22,19 @@
     <meta itemprop="dateModified" content="2024-06-13T00:35:43+08:00">
     <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
     <title>Script :: Hugo Relearn Theme</title>
-    <link href="../../../images/favicon.ico?1719632497" rel="icon" type="image/x-icon" sizes="any">
-    <link href="../../../css/fontawesome-all.min.css?1719632499" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/fontawesome-all.min.css?1719632499" rel="stylesheet"></noscript>
-    <link href="../../../css/nucleus.css?1719632499" rel="stylesheet">
-    <link href="../../../css/auto-complete.css?1719632499" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/auto-complete.css?1719632499" rel="stylesheet"></noscript>
-    <link href="../../../css/perfect-scrollbar.min.css?1719632499" rel="stylesheet">
-    <link href="../../../css/fonts.css?1719632499" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/fonts.css?1719632499" rel="stylesheet"></noscript>
-    <link href="../../../css/theme.css?1719632499" rel="stylesheet">
-    <link href="../../../css/theme-relearn-auto.css?1719632499" rel="stylesheet" id="R-variant-style">
-    <link href="../../../css/chroma-relearn-auto.css?1719632499" rel="stylesheet" id="R-variant-chroma-style">
-    <link href="../../../css/variant.css?1719632499" rel="stylesheet">
-    <link href="../../../css/print.css?1719632499" rel="stylesheet" media="print">
-    <link href="../../../css/format-print.css?1719632499" rel="stylesheet">
-    <script src="../../../js/variant.js?1719632499"></script>
+    <link href="../../../images/favicon.ico?1720186644" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../css/fontawesome-all.min.css?1720186645" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/fontawesome-all.min.css?1720186645" rel="stylesheet"></noscript>
+    <link href="../../../css/nucleus.css?1720186645" rel="stylesheet">
+    <link href="../../../css/auto-complete.css?1720186645" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/auto-complete.css?1720186645" rel="stylesheet"></noscript>
+    <link href="../../../css/perfect-scrollbar.min.css?1720186645" rel="stylesheet">
+    <link href="../../../css/fonts.css?1720186645" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/fonts.css?1720186645" rel="stylesheet"></noscript>
+    <link href="../../../css/theme.css?1720186645" rel="stylesheet">
+    <link href="../../../css/theme-relearn-auto.css?1720186645" rel="stylesheet" id="R-variant-style">
+    <link href="../../../css/chroma-relearn-auto.css?1720186645" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../css/variant.css?1720186645" rel="stylesheet">
+    <link href="../../../css/print.css?1720186645" rel="stylesheet" media="print">
+    <link href="../../../css/format-print.css?1720186645" rel="stylesheet">
+    <script src="../../../js/variant.js?1720186645"></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.relBasePath='..\/..\/..';
@@ -1364,6 +1364,46 @@ expect eof</code></pre></div></blockquote>
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">echo $?
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
 <hr>
+<h3 id="配置linux系统登录告警">配置<code>Linux</code>系统登录告警</h3>
+<ul>
+<li>
+<ol>
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>sshd</code><!-- raw HTML omitted -->登录告警<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat &gt;/etc/ssh/sshrc<span style="color:#e6db74">&lt;&lt;-EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">#!/bin/sh
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">TELEGRAM_TOKEN=&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">TELEGRAM_GROUP_ID=&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 获取用户、IP地址、时间和服务器信息
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">USER_NAME=$USER
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">HOST_NAME=$(hostname -s)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">DATA_TIME=$(date +&#34;%F %H:%M:%S&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">LOCALHOST=$(hostname -I | awk &#39;{print $1}&#39;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">LOGGIN_IP=$(echo $SSH_CLIENT | awk &#39;{print $1}&#39;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 构造通知消息
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">msg=&#34;有白名单之外的 IP 登录服务器，请验证:
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">User: ${USER_NAME}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Host: ${LOCALHOST}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Login IP: ${LOGGIN_IP}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Login Time: ${DATA_TIME}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Host Name: ${HOST_NAME}&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># 定义信任的IP地址列表
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">IP_WhiteList=&#39;192.168.1.100&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">result=$(echo ${IP_WhiteList} | grep &#34;${LOGGIN_IP}&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">if [ &#34;${result}&#34; != &#34;&#34; ]; then
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        exit 0  # 如果在信任列表中，退出脚本
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">else
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        curl -X POST &#34;https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage&#34; -d &#34;chat_id=${TELEGRAM_GROUP_ID}&amp;text=${msg}&#34; &gt; /dev/null
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">fi
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<hr>
 
             <footer class="footline">
             </footer>
@@ -1373,8 +1413,8 @@ expect eof</code></pre></div></blockquote>
         </div>
       </main>
     </div>
-    <script src="../../../js/clipboard.min.js?1719632499" defer></script>
-    <script src="../../../js/perfect-scrollbar.min.js?1719632499" defer></script>
-    <script src="../../../js/theme.js?1719632499" defer></script>
+    <script src="../../../js/clipboard.min.js?1720186645" defer></script>
+    <script src="../../../js/perfect-scrollbar.min.js?1720186645" defer></script>
+    <script src="../../../js/theme.js?1720186645" defer></script>
   </body>
 </html>
