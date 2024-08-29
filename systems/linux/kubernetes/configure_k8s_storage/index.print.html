@@ -9,10 +9,10 @@
     <meta name="description" content="Kubernetes数据存储 都知道容器的生命周期可能很短，会被频繁的创建和销毁。那么容器在销毁的时候，保存在容器中的数据也会被清除。这种结果对用户来说，在某些情况下是不乐意看到的。为了持久化保存容器中的数据，kubernetes引入了Volume的概念 Volume是Pod中能够被多个容器访问的共享目录，它被定义在Pod上，然后被一个Pod里面的多个容器挂载到具体的文件目录下，kubernetes通过Volume实现同一个Pod中不同容器之间的数据共享以及数据的持久化存储。Volume的生命周期不和Pod中的单个容器的生命周期有关，当容器终止或者重启的时候，Volume中的数据也不会丢失 kubernetes的Volume支持多种类型，比较常见的有下面的几个： 简单存储：EmptyDir、HostPath、NFS 高级存储：PV、PVC 配置存储：ConfigMap、Secret 简单存储 EmptyDir EmptyDir是最基础的Volume类型，一个EmptyDir就是Host上的一个空目录 EmptyDir是在Pod被分配到Node时创建的，它的初始内容为空，并且无须指定宿主机上对应的目录文件，因为kubernetes会自动分配一个目录，当Pod销毁时，EmptyDir中的数据也会被永久删除。 EmptyDir的用途如下 临时空间例如用于某些应用程序运行时所需的临时目录，且无须永久保留 多容器共享目录一个容器需要从另一个容器中获取数据的目录 接下来，通过一个容器之间的共享案例来使用描述一个EmptyDir 在一个Pod中准备两个容器nginx和busybox然后声明一个volume分别挂载到两个容器的目录中，然后nginx容器负责向volume中写日志，busybox中通过命令将日志内容读到控制台 Kubernetes Emptydir Template模板 apiVersion: v1 kind: Pod metadata: name: emptydir-volume-template # 定义名称 namespace: default spec: # 必选，Pod中容器的详细定义 containers: # 必选，Pod中容器列表 - name: nginx image: nginx:1.">
     <meta name="author" content="二哥">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:image" content="https://usermice.github.io/images/s2-1.png">
     <meta name="twitter:title" content="Configure_K8s_Storage :: Hugo Relearn Theme">
     <meta name="twitter:description" content="Kubernetes数据存储 都知道容器的生命周期可能很短，会被频繁的创建和销毁。那么容器在销毁的时候，保存在容器中的数据也会被清除。这种结果对用户来说，在某些情况下是不乐意看到的。为了持久化保存容器中的数据，kubernetes引入了Volume的概念 Volume是Pod中能够被多个容器访问的共享目录，它被定义在Pod上，然后被一个Pod里面的多个容器挂载到具体的文件目录下，kubernetes通过Volume实现同一个Pod中不同容器之间的数据共享以及数据的持久化存储。Volume的生命周期不和Pod中的单个容器的生命周期有关，当容器终止或者重启的时候，Volume中的数据也不会丢失 kubernetes的Volume支持多种类型，比较常见的有下面的几个： 简单存储：EmptyDir、HostPath、NFS 高级存储：PV、PVC 配置存储：ConfigMap、Secret 简单存储 EmptyDir EmptyDir是最基础的Volume类型，一个EmptyDir就是Host上的一个空目录 EmptyDir是在Pod被分配到Node时创建的，它的初始内容为空，并且无须指定宿主机上对应的目录文件，因为kubernetes会自动分配一个目录，当Pod销毁时，EmptyDir中的数据也会被永久删除。 EmptyDir的用途如下 临时空间例如用于某些应用程序运行时所需的临时目录，且无须永久保留 多容器共享目录一个容器需要从另一个容器中获取数据的目录 接下来，通过一个容器之间的共享案例来使用描述一个EmptyDir 在一个Pod中准备两个容器nginx和busybox然后声明一个volume分别挂载到两个容器的目录中，然后nginx容器负责向volume中写日志，busybox中通过命令将日志内容读到控制台 Kubernetes Emptydir Template模板 apiVersion: v1 kind: Pod metadata: name: emptydir-volume-template # 定义名称 namespace: default spec: # 必选，Pod中容器的详细定义 containers: # 必选，Pod中容器列表 - name: nginx image: nginx:1.">
-    <meta property="og:url" content="https://erge.blog/systems/linux/kubernetes/configure_k8s_storage/">
+    <meta property="og:url" content="https://usermice.github.io/systems/linux/kubernetes/configure_k8s_storage/">
     <meta property="og:site_name" content="Hugo Relearn Theme">
     <meta property="og:title" content="Configure_K8s_Storage :: Hugo Relearn Theme">
     <meta property="og:description" content="Kubernetes数据存储 都知道容器的生命周期可能很短，会被频繁的创建和销毁。那么容器在销毁的时候，保存在容器中的数据也会被清除。这种结果对用户来说，在某些情况下是不乐意看到的。为了持久化保存容器中的数据，kubernetes引入了Volume的概念 Volume是Pod中能够被多个容器访问的共享目录，它被定义在Pod上，然后被一个Pod里面的多个容器挂载到具体的文件目录下，kubernetes通过Volume实现同一个Pod中不同容器之间的数据共享以及数据的持久化存储。Volume的生命周期不和Pod中的单个容器的生命周期有关，当容器终止或者重启的时候，Volume中的数据也不会丢失 kubernetes的Volume支持多种类型，比较常见的有下面的几个： 简单存储：EmptyDir、HostPath、NFS 高级存储：PV、PVC 配置存储：ConfigMap、Secret 简单存储 EmptyDir EmptyDir是最基础的Volume类型，一个EmptyDir就是Host上的一个空目录 EmptyDir是在Pod被分配到Node时创建的，它的初始内容为空，并且无须指定宿主机上对应的目录文件，因为kubernetes会自动分配一个目录，当Pod销毁时，EmptyDir中的数据也会被永久删除。 EmptyDir的用途如下 临时空间例如用于某些应用程序运行时所需的临时目录，且无须永久保留 多容器共享目录一个容器需要从另一个容器中获取数据的目录 接下来，通过一个容器之间的共享案例来使用描述一个EmptyDir 在一个Pod中准备两个容器nginx和busybox然后声明一个volume分别挂载到两个容器的目录中，然后nginx容器负责向volume中写日志，busybox中通过命令将日志内容读到控制台 Kubernetes Emptydir Template模板 apiVersion: v1 kind: Pod metadata: name: emptydir-volume-template # 定义名称 namespace: default spec: # 必选，Pod中容器的详细定义 containers: # 必选，Pod中容器列表 - name: nginx image: nginx:1.">
@@ -21,32 +21,32 @@
     <meta property="article:section" content="Systems">
     <meta property="article:published_time" content="2024-06-25T01:33:15+08:00">
     <meta property="article:modified_time" content="2024-06-25T01:33:15+08:00">
-    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta property="og:image" content="https://usermice.github.io/images/s2-1.png">
     <meta itemprop="name" content="Configure_K8s_Storage :: Hugo Relearn Theme">
     <meta itemprop="description" content="Kubernetes数据存储 都知道容器的生命周期可能很短，会被频繁的创建和销毁。那么容器在销毁的时候，保存在容器中的数据也会被清除。这种结果对用户来说，在某些情况下是不乐意看到的。为了持久化保存容器中的数据，kubernetes引入了Volume的概念 Volume是Pod中能够被多个容器访问的共享目录，它被定义在Pod上，然后被一个Pod里面的多个容器挂载到具体的文件目录下，kubernetes通过Volume实现同一个Pod中不同容器之间的数据共享以及数据的持久化存储。Volume的生命周期不和Pod中的单个容器的生命周期有关，当容器终止或者重启的时候，Volume中的数据也不会丢失 kubernetes的Volume支持多种类型，比较常见的有下面的几个： 简单存储：EmptyDir、HostPath、NFS 高级存储：PV、PVC 配置存储：ConfigMap、Secret 简单存储 EmptyDir EmptyDir是最基础的Volume类型，一个EmptyDir就是Host上的一个空目录 EmptyDir是在Pod被分配到Node时创建的，它的初始内容为空，并且无须指定宿主机上对应的目录文件，因为kubernetes会自动分配一个目录，当Pod销毁时，EmptyDir中的数据也会被永久删除。 EmptyDir的用途如下 临时空间例如用于某些应用程序运行时所需的临时目录，且无须永久保留 多容器共享目录一个容器需要从另一个容器中获取数据的目录 接下来，通过一个容器之间的共享案例来使用描述一个EmptyDir 在一个Pod中准备两个容器nginx和busybox然后声明一个volume分别挂载到两个容器的目录中，然后nginx容器负责向volume中写日志，busybox中通过命令将日志内容读到控制台 Kubernetes Emptydir Template模板 apiVersion: v1 kind: Pod metadata: name: emptydir-volume-template # 定义名称 namespace: default spec: # 必选，Pod中容器的详细定义 containers: # 必选，Pod中容器列表 - name: nginx image: nginx:1.">
     <meta itemprop="datePublished" content="2024-06-25T01:33:15+08:00">
     <meta itemprop="dateModified" content="2024-06-25T01:33:15+08:00">
     <meta itemprop="wordCount" content="2101">
-    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="image" content="https://usermice.github.io/images/s2-1.png">
     <title>Configure_K8s_Storage :: Hugo Relearn Theme</title>
-    <link href="../../../../images/favicon.ico?1724932927" rel="icon" type="image/x-icon" sizes="any">
-    <link href="../../../../css/fontawesome-all.min.css?1724932928" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1724932928" rel="stylesheet"></noscript>
-    <link href="../../../../css/nucleus.css?1724932928" rel="stylesheet">
-    <link href="../../../../css/auto-complete.css?1724932928" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1724932928" rel="stylesheet"></noscript>
-    <link href="../../../../css/perfect-scrollbar.min.css?1724932928" rel="stylesheet">
-    <link href="../../../../css/fonts.css?1724932928" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1724932928" rel="stylesheet"></noscript>
-    <link href="../../../../css/theme.css?1724932928" rel="stylesheet">
-    <link href="../../../../css/theme-relearn-auto.css?1724932928" rel="stylesheet" id="R-variant-style">
-    <link href="../../../../css/chroma-relearn-auto.css?1724932928" rel="stylesheet" id="R-variant-chroma-style">
-    <link href="../../../../css/variant.css?1724932928" rel="stylesheet">
-    <link href="../../../../css/print.css?1724932928" rel="stylesheet" media="print">
-    <link href="../../../../css/format-print.css?1724932928" rel="stylesheet">
-    <script src="../../../../js/variant.js?1724932928"></script>
+    <link href="../../../../images/favicon.ico?1724933323" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1724933324" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1724933324" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1724933324" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1724933324" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1724933324" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1724933324" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1724933324" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1724933324" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1724933324" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1724933324" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1724933324" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1724933324" rel="stylesheet">
+    <link href="../../../../css/print.css?1724933324" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1724933324" rel="stylesheet">
+    <script src="../../../../js/variant.js?1724933324"></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.relBasePath='..\/..\/..\/..';
       window.relearn.relBaseUri='..\/..\/..\/..';
-      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.relearn.absBaseUri='https:\/\/usermice.github.io';
       window.index_js_url="../../../../index.search.js";
       // variant stuff
       window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
@@ -1347,8 +1347,8 @@
         </div>
       </main>
     </div>
-    <script src="../../../../js/clipboard.min.js?1724932928" defer></script>
-    <script src="../../../../js/perfect-scrollbar.min.js?1724932928" defer></script>
-    <script src="../../../../js/theme.js?1724932928" defer></script>
+    <script src="../../../../js/clipboard.min.js?1724933324" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1724933324" defer></script>
+    <script src="../../../../js/theme.js?1724933324" defer></script>
   </body>
 </html>

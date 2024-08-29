@@ -9,10 +9,10 @@
     <meta name="description" content="安全控制 访问控制 kubernetes作为一个分布式集群的管理工具，保证集群的安全性是其一个重要的任务。所谓的安全性其实就是保证对kubernetes的各种客户端进行认证和授权操作 在kubernetes集群中，客户端通常由两类： User Account：一般是独立于kubernetes之外的其他服务管理的用户账号 Service Account：kubernetes管理的账号，用于为Pod的服务进程在访问kubernetes时提供身份标识 graph LR C1((用户)) --&gt; B1(User&lt;br&gt;Account) --&gt; A((Kubernetes)) C2((Pod)) --&gt; B2(Service&lt;br&gt;Account) --&gt; A((Kubernetes)) 认证、授权和准入控制 API Server是访问和管理资源对象的唯一入口。任何一个请求访问API Server，都要经过下面的三个流程： Authentication(认证)：身份鉴别，只有正确的账号才能通过认证 Authorization(授权)：权限鉴别，判断用户是否有权限对访问的资源执行特定的动作 Admission Control(准入控制)：精细访问控制，用于补充授权机制以实现更加精细的访问控制功能 需要注意：在Kubernetes中不能通过API调用将普通用户添加到集群中 普通账户是针对（人）用户的，服务账户针对Pods进程 普通账户是全局性，在集群所有namespaces中，名称具有唯一性 通常，集群的普通账户可以与企业数据库同步，新的普通账户创建需要特殊权限，服务账户创建目的是更轻量化，允许集群用户为特定任务创建服务账户 普通账户和服务账户的审核注意事项不同 对于复杂系统的配置包，可以包括对该系统的各种组件的服务账户的定义 graph LR A((请求)) --&gt; B[Authentication&lt;br&gt;认证&lt;br&gt;身份鉴别&lt;br&gt;] --&gt; C[Authorization&lt;br&gt;授权&lt;br&gt;权限鉴别&lt;br&gt;] --&gt; D[Admission Control&lt;br&gt;注入控制&lt;br&gt;精细访问控制&lt;br&gt;] --&gt; E((Kubernetes&lt;br&gt;资源)) 认证管理 User Accounts(普通账户) Service Accounts(服务账户) apiVersion: v1 kind: ServiceAccount # 权限管理 metadata: name: nfs-client-provisioner namespace: default kubernetes的客户端http和https身份认证方式 kubernetes允许同时配置多种认证方式，只要其中任意一种方式认证通过即可 kubernetes集群安全的关键点在于如何识别并认证客户端身份，它提供了3种客户端身份认证方式 2.">
     <meta name="author" content="二哥">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:image" content="https://usermice.github.io/images/s2-1.png">
     <meta name="twitter:title" content="Configure_K8s_Auth :: Hugo Relearn Theme">
     <meta name="twitter:description" content="安全控制 访问控制 kubernetes作为一个分布式集群的管理工具，保证集群的安全性是其一个重要的任务。所谓的安全性其实就是保证对kubernetes的各种客户端进行认证和授权操作 在kubernetes集群中，客户端通常由两类： User Account：一般是独立于kubernetes之外的其他服务管理的用户账号 Service Account：kubernetes管理的账号，用于为Pod的服务进程在访问kubernetes时提供身份标识 graph LR C1((用户)) --&gt; B1(User&lt;br&gt;Account) --&gt; A((Kubernetes)) C2((Pod)) --&gt; B2(Service&lt;br&gt;Account) --&gt; A((Kubernetes)) 认证、授权和准入控制 API Server是访问和管理资源对象的唯一入口。任何一个请求访问API Server，都要经过下面的三个流程： Authentication(认证)：身份鉴别，只有正确的账号才能通过认证 Authorization(授权)：权限鉴别，判断用户是否有权限对访问的资源执行特定的动作 Admission Control(准入控制)：精细访问控制，用于补充授权机制以实现更加精细的访问控制功能 需要注意：在Kubernetes中不能通过API调用将普通用户添加到集群中 普通账户是针对（人）用户的，服务账户针对Pods进程 普通账户是全局性，在集群所有namespaces中，名称具有唯一性 通常，集群的普通账户可以与企业数据库同步，新的普通账户创建需要特殊权限，服务账户创建目的是更轻量化，允许集群用户为特定任务创建服务账户 普通账户和服务账户的审核注意事项不同 对于复杂系统的配置包，可以包括对该系统的各种组件的服务账户的定义 graph LR A((请求)) --&gt; B[Authentication&lt;br&gt;认证&lt;br&gt;身份鉴别&lt;br&gt;] --&gt; C[Authorization&lt;br&gt;授权&lt;br&gt;权限鉴别&lt;br&gt;] --&gt; D[Admission Control&lt;br&gt;注入控制&lt;br&gt;精细访问控制&lt;br&gt;] --&gt; E((Kubernetes&lt;br&gt;资源)) 认证管理 User Accounts(普通账户) Service Accounts(服务账户) apiVersion: v1 kind: ServiceAccount # 权限管理 metadata: name: nfs-client-provisioner namespace: default kubernetes的客户端http和https身份认证方式 kubernetes允许同时配置多种认证方式，只要其中任意一种方式认证通过即可 kubernetes集群安全的关键点在于如何识别并认证客户端身份，它提供了3种客户端身份认证方式 2.">
-    <meta property="og:url" content="https://erge.blog/systems/linux/kubernetes/configure_k8s_auth/">
+    <meta property="og:url" content="https://usermice.github.io/systems/linux/kubernetes/configure_k8s_auth/">
     <meta property="og:site_name" content="Hugo Relearn Theme">
     <meta property="og:title" content="Configure_K8s_Auth :: Hugo Relearn Theme">
     <meta property="og:description" content="安全控制 访问控制 kubernetes作为一个分布式集群的管理工具，保证集群的安全性是其一个重要的任务。所谓的安全性其实就是保证对kubernetes的各种客户端进行认证和授权操作 在kubernetes集群中，客户端通常由两类： User Account：一般是独立于kubernetes之外的其他服务管理的用户账号 Service Account：kubernetes管理的账号，用于为Pod的服务进程在访问kubernetes时提供身份标识 graph LR C1((用户)) --&gt; B1(User&lt;br&gt;Account) --&gt; A((Kubernetes)) C2((Pod)) --&gt; B2(Service&lt;br&gt;Account) --&gt; A((Kubernetes)) 认证、授权和准入控制 API Server是访问和管理资源对象的唯一入口。任何一个请求访问API Server，都要经过下面的三个流程： Authentication(认证)：身份鉴别，只有正确的账号才能通过认证 Authorization(授权)：权限鉴别，判断用户是否有权限对访问的资源执行特定的动作 Admission Control(准入控制)：精细访问控制，用于补充授权机制以实现更加精细的访问控制功能 需要注意：在Kubernetes中不能通过API调用将普通用户添加到集群中 普通账户是针对（人）用户的，服务账户针对Pods进程 普通账户是全局性，在集群所有namespaces中，名称具有唯一性 通常，集群的普通账户可以与企业数据库同步，新的普通账户创建需要特殊权限，服务账户创建目的是更轻量化，允许集群用户为特定任务创建服务账户 普通账户和服务账户的审核注意事项不同 对于复杂系统的配置包，可以包括对该系统的各种组件的服务账户的定义 graph LR A((请求)) --&gt; B[Authentication&lt;br&gt;认证&lt;br&gt;身份鉴别&lt;br&gt;] --&gt; C[Authorization&lt;br&gt;授权&lt;br&gt;权限鉴别&lt;br&gt;] --&gt; D[Admission Control&lt;br&gt;注入控制&lt;br&gt;精细访问控制&lt;br&gt;] --&gt; E((Kubernetes&lt;br&gt;资源)) 认证管理 User Accounts(普通账户) Service Accounts(服务账户) apiVersion: v1 kind: ServiceAccount # 权限管理 metadata: name: nfs-client-provisioner namespace: default kubernetes的客户端http和https身份认证方式 kubernetes允许同时配置多种认证方式，只要其中任意一种方式认证通过即可 kubernetes集群安全的关键点在于如何识别并认证客户端身份，它提供了3种客户端身份认证方式 2.">
@@ -21,32 +21,32 @@
     <meta property="article:section" content="Systems">
     <meta property="article:published_time" content="2024-06-25T01:12:49+08:00">
     <meta property="article:modified_time" content="2024-06-25T01:12:49+08:00">
-    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta property="og:image" content="https://usermice.github.io/images/s2-1.png">
     <meta itemprop="name" content="Configure_K8s_Auth :: Hugo Relearn Theme">
     <meta itemprop="description" content="安全控制 访问控制 kubernetes作为一个分布式集群的管理工具，保证集群的安全性是其一个重要的任务。所谓的安全性其实就是保证对kubernetes的各种客户端进行认证和授权操作 在kubernetes集群中，客户端通常由两类： User Account：一般是独立于kubernetes之外的其他服务管理的用户账号 Service Account：kubernetes管理的账号，用于为Pod的服务进程在访问kubernetes时提供身份标识 graph LR C1((用户)) --&gt; B1(User&lt;br&gt;Account) --&gt; A((Kubernetes)) C2((Pod)) --&gt; B2(Service&lt;br&gt;Account) --&gt; A((Kubernetes)) 认证、授权和准入控制 API Server是访问和管理资源对象的唯一入口。任何一个请求访问API Server，都要经过下面的三个流程： Authentication(认证)：身份鉴别，只有正确的账号才能通过认证 Authorization(授权)：权限鉴别，判断用户是否有权限对访问的资源执行特定的动作 Admission Control(准入控制)：精细访问控制，用于补充授权机制以实现更加精细的访问控制功能 需要注意：在Kubernetes中不能通过API调用将普通用户添加到集群中 普通账户是针对（人）用户的，服务账户针对Pods进程 普通账户是全局性，在集群所有namespaces中，名称具有唯一性 通常，集群的普通账户可以与企业数据库同步，新的普通账户创建需要特殊权限，服务账户创建目的是更轻量化，允许集群用户为特定任务创建服务账户 普通账户和服务账户的审核注意事项不同 对于复杂系统的配置包，可以包括对该系统的各种组件的服务账户的定义 graph LR A((请求)) --&gt; B[Authentication&lt;br&gt;认证&lt;br&gt;身份鉴别&lt;br&gt;] --&gt; C[Authorization&lt;br&gt;授权&lt;br&gt;权限鉴别&lt;br&gt;] --&gt; D[Admission Control&lt;br&gt;注入控制&lt;br&gt;精细访问控制&lt;br&gt;] --&gt; E((Kubernetes&lt;br&gt;资源)) 认证管理 User Accounts(普通账户) Service Accounts(服务账户) apiVersion: v1 kind: ServiceAccount # 权限管理 metadata: name: nfs-client-provisioner namespace: default kubernetes的客户端http和https身份认证方式 kubernetes允许同时配置多种认证方式，只要其中任意一种方式认证通过即可 kubernetes集群安全的关键点在于如何识别并认证客户端身份，它提供了3种客户端身份认证方式 2.">
     <meta itemprop="datePublished" content="2024-06-25T01:12:49+08:00">
     <meta itemprop="dateModified" content="2024-06-25T01:12:49+08:00">
     <meta itemprop="wordCount" content="538">
-    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="image" content="https://usermice.github.io/images/s2-1.png">
     <title>Configure_K8s_Auth :: Hugo Relearn Theme</title>
-    <link href="../../../../images/favicon.ico?1724932927" rel="icon" type="image/x-icon" sizes="any">
-    <link href="../../../../css/fontawesome-all.min.css?1724932928" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1724932928" rel="stylesheet"></noscript>
-    <link href="../../../../css/nucleus.css?1724932928" rel="stylesheet">
-    <link href="../../../../css/auto-complete.css?1724932928" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1724932928" rel="stylesheet"></noscript>
-    <link href="../../../../css/perfect-scrollbar.min.css?1724932928" rel="stylesheet">
-    <link href="../../../../css/fonts.css?1724932928" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1724932928" rel="stylesheet"></noscript>
-    <link href="../../../../css/theme.css?1724932928" rel="stylesheet">
-    <link href="../../../../css/theme-relearn-auto.css?1724932928" rel="stylesheet" id="R-variant-style">
-    <link href="../../../../css/chroma-relearn-auto.css?1724932928" rel="stylesheet" id="R-variant-chroma-style">
-    <link href="../../../../css/variant.css?1724932928" rel="stylesheet">
-    <link href="../../../../css/print.css?1724932928" rel="stylesheet" media="print">
-    <link href="../../../../css/format-print.css?1724932928" rel="stylesheet">
-    <script src="../../../../js/variant.js?1724932928"></script>
+    <link href="../../../../images/favicon.ico?1724933323" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1724933324" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1724933324" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1724933324" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1724933324" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1724933324" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1724933324" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1724933324" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1724933324" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1724933324" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1724933324" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1724933324" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1724933324" rel="stylesheet">
+    <link href="../../../../css/print.css?1724933324" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1724933324" rel="stylesheet">
+    <script src="../../../../js/variant.js?1724933324"></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.relBasePath='..\/..\/..\/..';
       window.relearn.relBaseUri='..\/..\/..\/..';
-      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.relearn.absBaseUri='https:\/\/usermice.github.io';
       window.index_js_url="../../../../index.search.js";
       // variant stuff
       window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
@@ -613,22 +613,22 @@ B[Role] --- Deployment --- |b=3|B6[Watch]</pre></blockquote>
         </div>
       </main>
     </div>
-    <script src="../../../../js/clipboard.min.js?1724932928" defer></script>
-    <script src="../../../../js/perfect-scrollbar.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-color.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-dispatch.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-drag.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-ease.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-interpolate.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-selection.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-timer.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-transition.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-zoom.min.js?1724932928" defer></script>
-    <script src="../../../../js/js-yaml.min.js?1724932928" defer></script>
-    <script src="../../../../js/mermaid.min.js?1724932928" defer></script>
+    <script src="../../../../js/clipboard.min.js?1724933324" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-color.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-dispatch.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-drag.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-ease.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-interpolate.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-selection.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-timer.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-transition.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-zoom.min.js?1724933324" defer></script>
+    <script src="../../../../js/js-yaml.min.js?1724933324" defer></script>
+    <script src="../../../../js/mermaid.min.js?1724933324" defer></script>
     <script>
       window.themeUseMermaid = JSON.parse("{ \"securityLevel\": \"loose\" }");
     </script>
-    <script src="../../../../js/theme.js?1724932928" defer></script>
+    <script src="../../../../js/theme.js?1724933324" defer></script>
   </body>
 </html>

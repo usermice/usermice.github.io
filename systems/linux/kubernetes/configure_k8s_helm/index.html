@@ -9,10 +9,10 @@
     <meta name="description" content="使用Helm配置管理K8s 名称地址 描述 Bitnami模板库 Kubernetes的Bitnami库 Helm安装Kubernetes服务Zabbix、Redis、Mysql模板 Kubernetes的Charts-docs库 Helm安装Kubernetes服务Zabbix、Redis、Mysql模板 查找、安装和发布Kubernetes包 Helm安装Kubernetes服务Zabbix、Redis、Mysql模板 kubernetes上的应用对象，都是由特定的资源描述组成，包括Deployment、Service等，都保存在各自文件中或者集中写在一个配置文件，然后通过kubectl apply -f 部署。如果应用只由一个或几个这样的服务组成，上面的部署方式就足够了。但是对于一个复杂的应用，会有很多类似上面的资源描述文件，例如微服务架构应用，组成应用的服务可能多达几十、上百个，如果有更新或回滚应用的需求，可能要修改和维护所涉及到大量的资源文件，而这种组织和管理应用的方式就显得力不从心了。并且由于缺少对发布过的应用进行版本管理和控制，使得kubernetes上的应用维护和更新面临诸多的挑战，主要面临以下的问题： 如何将这些服务作为一个整体管理？ 这些资源文件如何高效复用？ 应用级别的版本如何管理？ Helm是一个kubernetes的包管理工具，就像Linux下的包管理器，如yum、apt等，可以很方便的将之前打包好的yaml文件部署到kubernetes上 Helm有3个重要概念 helm：一个命令行客户端工具，主要用于kubernetes应用chart的创建、打包、发布和管理 chart：应用描述，一系列用于描述kubernetes资源相关文件的集合，类似Ansible的Playbook剧本 release：基于chart的部署实体，一个chart被Helm运行后将会生成对应的一个release，将在kubernetes中创建出真实运行的资源对象 Helm v3变化 最明显变化删除Tiller组件 release名称可以在不同的命名空间重用。 支持将chart推动到Docker镜像仓库中 使用JSONSchema验证chart values Helm常用命令 命令 描述 get 下载一个release。可用的子命令：all、hooks、manifest、note、values repo 添加、列出、移除、更新和索引chart仓库。可用的子命令：add、index、list、remove、update list 列出release pull 从远程仓库中下载chart并解压到本地。比如：helm install stable/mysql --untar show 查看chart的详细信息。可用的子命令：all、chart、readme、values search 根据关键字搜索chart。可用的子命令：all、chart、readme、values create 创建一个chart并指定名字 install 安装一个chart status 显示已命名版本的状态 upgrade 更新升级一个release history 获取release历史 package 将chart目录打包到chart存档文件中 template 本地呈现模板 rollback 从之前的版本回退 uninstall 卸载一个release dependency 管理chart依赖 version 查看Helm客户端版本 安装Helm 使用二进制安装Helm $ wget https://get.">
     <meta name="author" content="二哥">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://erge.blog/images/s2-1.png">
+    <meta name="twitter:image" content="https://usermice.github.io/images/s2-1.png">
     <meta name="twitter:title" content="Configure_K8s_Helm :: Hugo Relearn Theme">
     <meta name="twitter:description" content="使用Helm配置管理K8s 名称地址 描述 Bitnami模板库 Kubernetes的Bitnami库 Helm安装Kubernetes服务Zabbix、Redis、Mysql模板 Kubernetes的Charts-docs库 Helm安装Kubernetes服务Zabbix、Redis、Mysql模板 查找、安装和发布Kubernetes包 Helm安装Kubernetes服务Zabbix、Redis、Mysql模板 kubernetes上的应用对象，都是由特定的资源描述组成，包括Deployment、Service等，都保存在各自文件中或者集中写在一个配置文件，然后通过kubectl apply -f 部署。如果应用只由一个或几个这样的服务组成，上面的部署方式就足够了。但是对于一个复杂的应用，会有很多类似上面的资源描述文件，例如微服务架构应用，组成应用的服务可能多达几十、上百个，如果有更新或回滚应用的需求，可能要修改和维护所涉及到大量的资源文件，而这种组织和管理应用的方式就显得力不从心了。并且由于缺少对发布过的应用进行版本管理和控制，使得kubernetes上的应用维护和更新面临诸多的挑战，主要面临以下的问题： 如何将这些服务作为一个整体管理？ 这些资源文件如何高效复用？ 应用级别的版本如何管理？ Helm是一个kubernetes的包管理工具，就像Linux下的包管理器，如yum、apt等，可以很方便的将之前打包好的yaml文件部署到kubernetes上 Helm有3个重要概念 helm：一个命令行客户端工具，主要用于kubernetes应用chart的创建、打包、发布和管理 chart：应用描述，一系列用于描述kubernetes资源相关文件的集合，类似Ansible的Playbook剧本 release：基于chart的部署实体，一个chart被Helm运行后将会生成对应的一个release，将在kubernetes中创建出真实运行的资源对象 Helm v3变化 最明显变化删除Tiller组件 release名称可以在不同的命名空间重用。 支持将chart推动到Docker镜像仓库中 使用JSONSchema验证chart values Helm常用命令 命令 描述 get 下载一个release。可用的子命令：all、hooks、manifest、note、values repo 添加、列出、移除、更新和索引chart仓库。可用的子命令：add、index、list、remove、update list 列出release pull 从远程仓库中下载chart并解压到本地。比如：helm install stable/mysql --untar show 查看chart的详细信息。可用的子命令：all、chart、readme、values search 根据关键字搜索chart。可用的子命令：all、chart、readme、values create 创建一个chart并指定名字 install 安装一个chart status 显示已命名版本的状态 upgrade 更新升级一个release history 获取release历史 package 将chart目录打包到chart存档文件中 template 本地呈现模板 rollback 从之前的版本回退 uninstall 卸载一个release dependency 管理chart依赖 version 查看Helm客户端版本 安装Helm 使用二进制安装Helm $ wget https://get.">
-    <meta property="og:url" content="https://erge.blog/systems/linux/kubernetes/configure_k8s_helm/">
+    <meta property="og:url" content="https://usermice.github.io/systems/linux/kubernetes/configure_k8s_helm/">
     <meta property="og:site_name" content="Hugo Relearn Theme">
     <meta property="og:title" content="Configure_K8s_Helm :: Hugo Relearn Theme">
     <meta property="og:description" content="使用Helm配置管理K8s 名称地址 描述 Bitnami模板库 Kubernetes的Bitnami库 Helm安装Kubernetes服务Zabbix、Redis、Mysql模板 Kubernetes的Charts-docs库 Helm安装Kubernetes服务Zabbix、Redis、Mysql模板 查找、安装和发布Kubernetes包 Helm安装Kubernetes服务Zabbix、Redis、Mysql模板 kubernetes上的应用对象，都是由特定的资源描述组成，包括Deployment、Service等，都保存在各自文件中或者集中写在一个配置文件，然后通过kubectl apply -f 部署。如果应用只由一个或几个这样的服务组成，上面的部署方式就足够了。但是对于一个复杂的应用，会有很多类似上面的资源描述文件，例如微服务架构应用，组成应用的服务可能多达几十、上百个，如果有更新或回滚应用的需求，可能要修改和维护所涉及到大量的资源文件，而这种组织和管理应用的方式就显得力不从心了。并且由于缺少对发布过的应用进行版本管理和控制，使得kubernetes上的应用维护和更新面临诸多的挑战，主要面临以下的问题： 如何将这些服务作为一个整体管理？ 这些资源文件如何高效复用？ 应用级别的版本如何管理？ Helm是一个kubernetes的包管理工具，就像Linux下的包管理器，如yum、apt等，可以很方便的将之前打包好的yaml文件部署到kubernetes上 Helm有3个重要概念 helm：一个命令行客户端工具，主要用于kubernetes应用chart的创建、打包、发布和管理 chart：应用描述，一系列用于描述kubernetes资源相关文件的集合，类似Ansible的Playbook剧本 release：基于chart的部署实体，一个chart被Helm运行后将会生成对应的一个release，将在kubernetes中创建出真实运行的资源对象 Helm v3变化 最明显变化删除Tiller组件 release名称可以在不同的命名空间重用。 支持将chart推动到Docker镜像仓库中 使用JSONSchema验证chart values Helm常用命令 命令 描述 get 下载一个release。可用的子命令：all、hooks、manifest、note、values repo 添加、列出、移除、更新和索引chart仓库。可用的子命令：add、index、list、remove、update list 列出release pull 从远程仓库中下载chart并解压到本地。比如：helm install stable/mysql --untar show 查看chart的详细信息。可用的子命令：all、chart、readme、values search 根据关键字搜索chart。可用的子命令：all、chart、readme、values create 创建一个chart并指定名字 install 安装一个chart status 显示已命名版本的状态 upgrade 更新升级一个release history 获取release历史 package 将chart目录打包到chart存档文件中 template 本地呈现模板 rollback 从之前的版本回退 uninstall 卸载一个release dependency 管理chart依赖 version 查看Helm客户端版本 安装Helm 使用二进制安装Helm $ wget https://get.">
@@ -21,31 +21,31 @@
     <meta property="article:section" content="Systems">
     <meta property="article:published_time" content="2024-06-25T01:22:34+08:00">
     <meta property="article:modified_time" content="2024-06-25T01:22:34+08:00">
-    <meta property="og:image" content="https://erge.blog/images/s2-1.png">
+    <meta property="og:image" content="https://usermice.github.io/images/s2-1.png">
     <meta itemprop="name" content="Configure_K8s_Helm :: Hugo Relearn Theme">
     <meta itemprop="description" content="使用Helm配置管理K8s 名称地址 描述 Bitnami模板库 Kubernetes的Bitnami库 Helm安装Kubernetes服务Zabbix、Redis、Mysql模板 Kubernetes的Charts-docs库 Helm安装Kubernetes服务Zabbix、Redis、Mysql模板 查找、安装和发布Kubernetes包 Helm安装Kubernetes服务Zabbix、Redis、Mysql模板 kubernetes上的应用对象，都是由特定的资源描述组成，包括Deployment、Service等，都保存在各自文件中或者集中写在一个配置文件，然后通过kubectl apply -f 部署。如果应用只由一个或几个这样的服务组成，上面的部署方式就足够了。但是对于一个复杂的应用，会有很多类似上面的资源描述文件，例如微服务架构应用，组成应用的服务可能多达几十、上百个，如果有更新或回滚应用的需求，可能要修改和维护所涉及到大量的资源文件，而这种组织和管理应用的方式就显得力不从心了。并且由于缺少对发布过的应用进行版本管理和控制，使得kubernetes上的应用维护和更新面临诸多的挑战，主要面临以下的问题： 如何将这些服务作为一个整体管理？ 这些资源文件如何高效复用？ 应用级别的版本如何管理？ Helm是一个kubernetes的包管理工具，就像Linux下的包管理器，如yum、apt等，可以很方便的将之前打包好的yaml文件部署到kubernetes上 Helm有3个重要概念 helm：一个命令行客户端工具，主要用于kubernetes应用chart的创建、打包、发布和管理 chart：应用描述，一系列用于描述kubernetes资源相关文件的集合，类似Ansible的Playbook剧本 release：基于chart的部署实体，一个chart被Helm运行后将会生成对应的一个release，将在kubernetes中创建出真实运行的资源对象 Helm v3变化 最明显变化删除Tiller组件 release名称可以在不同的命名空间重用。 支持将chart推动到Docker镜像仓库中 使用JSONSchema验证chart values Helm常用命令 命令 描述 get 下载一个release。可用的子命令：all、hooks、manifest、note、values repo 添加、列出、移除、更新和索引chart仓库。可用的子命令：add、index、list、remove、update list 列出release pull 从远程仓库中下载chart并解压到本地。比如：helm install stable/mysql --untar show 查看chart的详细信息。可用的子命令：all、chart、readme、values search 根据关键字搜索chart。可用的子命令：all、chart、readme、values create 创建一个chart并指定名字 install 安装一个chart status 显示已命名版本的状态 upgrade 更新升级一个release history 获取release历史 package 将chart目录打包到chart存档文件中 template 本地呈现模板 rollback 从之前的版本回退 uninstall 卸载一个release dependency 管理chart依赖 version 查看Helm客户端版本 安装Helm 使用二进制安装Helm $ wget https://get.">
     <meta itemprop="datePublished" content="2024-06-25T01:22:34+08:00">
     <meta itemprop="dateModified" content="2024-06-25T01:22:34+08:00">
     <meta itemprop="wordCount" content="2521">
-    <meta itemprop="image" content="https://erge.blog/images/s2-1.png">
+    <meta itemprop="image" content="https://usermice.github.io/images/s2-1.png">
     <title>Configure_K8s_Helm :: Hugo Relearn Theme</title>
-    <link href="../../../../images/favicon.ico?1724932927" rel="icon" type="image/x-icon" sizes="any">
-    <link href="../../../../css/fontawesome-all.min.css?1724932928" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1724932928" rel="stylesheet"></noscript>
-    <link href="../../../../css/nucleus.css?1724932928" rel="stylesheet">
-    <link href="../../../../css/auto-complete.css?1724932928" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1724932928" rel="stylesheet"></noscript>
-    <link href="../../../../css/perfect-scrollbar.min.css?1724932928" rel="stylesheet">
-    <link href="../../../../css/fonts.css?1724932928" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1724932928" rel="stylesheet"></noscript>
-    <link href="../../../../css/theme.css?1724932928" rel="stylesheet">
-    <link href="../../../../css/theme-relearn-auto.css?1724932928" rel="stylesheet" id="R-variant-style">
-    <link href="../../../../css/chroma-relearn-auto.css?1724932928" rel="stylesheet" id="R-variant-chroma-style">
-    <link href="../../../../css/variant.css?1724932928" rel="stylesheet">
-    <link href="../../../../css/print.css?1724932928" rel="stylesheet" media="print">
-    <script src="../../../../js/variant.js?1724932928"></script>
+    <link href="../../../../images/favicon.ico?1724933323" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1724933324" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1724933324" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1724933324" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1724933324" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1724933324" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1724933324" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1724933324" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1724933324" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1724933324" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1724933324" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1724933324" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1724933324" rel="stylesheet">
+    <link href="../../../../css/print.css?1724933324" rel="stylesheet" media="print">
+    <script src="../../../../js/variant.js?1724933324"></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.relBasePath='..\/..\/..\/..';
       window.relearn.relBaseUri='..\/..\/..\/..';
-      window.relearn.absBaseUri='https:\/\/erge.blog';
+      window.relearn.absBaseUri='https:\/\/usermice.github.io';
       window.index_js_url="../../../../index.search.js";
       // variant stuff
       window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
@@ -489,8 +489,8 @@
 <ul>
 <li><code>values.yaml</code><!-- raw HTML omitted -->：定义所有<!-- raw HTML omitted --><code>yaml</code><!-- raw HTML omitted -->全局变量<!-- raw HTML omitted --></li>
 </ul>
-<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd chart名称/templates</span></span></code></pre></div><p><a href="#R-image-b5402498f1a18aaa11e5a9c18c73d160" class="lightbox-link"><img alt="Chart中的信息" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Helm/Chart%E4%B8%AD%E7%9A%84%E4%BF%A1%E6%81%AF.png" style=" height: auto; width: auto;"></a>
-<a href="javascript:history.back();" class="lightbox-back" id="R-image-b5402498f1a18aaa11e5a9c18c73d160"><img alt="Chart中的信息" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Helm/Chart%E4%B8%AD%E7%9A%84%E4%BF%A1%E6%81%AF.png"></a></p>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cd chart名称/templates</span></span></code></pre></div><p><a href="#R-image-8c6dbd2f8a4eccf2b4feba2ed18b8f9d" class="lightbox-link"><img alt="Chart中的信息" class="border lazy lightbox noshadow figure-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Helm/Chart%E4%B8%AD%E7%9A%84%E4%BF%A1%E6%81%AF.png" style=" height: auto; width: auto;"></a>
+<a href="javascript:history.back();" class="lightbox-back" id="R-image-8c6dbd2f8a4eccf2b4feba2ed18b8f9d"><img alt="Chart中的信息" class="border lazy lightbox noshadow lightbox-image" loading="lazy" src="https://raw.githubusercontent.com/usermice/images/master/Kubernetes_Server/Helm/Chart%E4%B8%AD%E7%9A%84%E4%BF%A1%E6%81%AF.png"></a></p>
 </blockquote>
 <ul>
 <li><!-- raw HTML omitted -->通过刚才创建的<!-- raw HTML omitted --><code>chart</code><!-- raw HTML omitted -->目录，将其部署<!-- raw HTML omitted --></li>
@@ -1953,12 +1953,12 @@ A(创建模板) --&gt;B(修改Chart.yaml Values.yaml文件&lt;br&gt;添加常用
         <script>
           var contentLangs=['en'];
         </script>
-        <script src="../../../../js/auto-complete.js?1724932928" defer></script>
-        <script src="../../../../js/lunr/lunr.min.js?1724932928" defer></script>
-        <script src="../../../../js/lunr/lunr.stemmer.support.min.js?1724932928" defer></script>
-        <script src="../../../../js/lunr/lunr.multi.min.js?1724932928" defer></script>
-        <script src="../../../../js/lunr/lunr.en.min.js?1724932928" defer></script>
-        <script src="../../../../js/search.js?1724932928" defer></script>
+        <script src="../../../../js/auto-complete.js?1724933324" defer></script>
+        <script src="../../../../js/lunr/lunr.min.js?1724933324" defer></script>
+        <script src="../../../../js/lunr/lunr.stemmer.support.min.js?1724933324" defer></script>
+        <script src="../../../../js/lunr/lunr.multi.min.js?1724933324" defer></script>
+        <script src="../../../../js/lunr/lunr.en.min.js?1724933324" defer></script>
+        <script src="../../../../js/search.js?1724933324" defer></script>
       </div>
       <div id="R-homelinks" class="default-animation homelinks">
         <ul>
@@ -2244,22 +2244,22 @@ A(创建模板) --&gt;B(修改Chart.yaml Values.yaml文件&lt;br&gt;添加常用
         </div>
       </div>
     </aside>
-    <script src="../../../../js/clipboard.min.js?1724932928" defer></script>
-    <script src="../../../../js/perfect-scrollbar.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-color.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-dispatch.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-drag.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-ease.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-interpolate.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-selection.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-timer.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-transition.min.js?1724932928" defer></script>
-    <script src="../../../../js/d3/d3-zoom.min.js?1724932928" defer></script>
-    <script src="../../../../js/js-yaml.min.js?1724932928" defer></script>
-    <script src="../../../../js/mermaid.min.js?1724932928" defer></script>
+    <script src="../../../../js/clipboard.min.js?1724933324" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-color.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-dispatch.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-drag.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-ease.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-interpolate.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-selection.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-timer.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-transition.min.js?1724933324" defer></script>
+    <script src="../../../../js/d3/d3-zoom.min.js?1724933324" defer></script>
+    <script src="../../../../js/js-yaml.min.js?1724933324" defer></script>
+    <script src="../../../../js/mermaid.min.js?1724933324" defer></script>
     <script>
       window.themeUseMermaid = JSON.parse("{ \"securityLevel\": \"loose\" }");
     </script>
-    <script src="../../../../js/theme.js?1724932928" defer></script>
+    <script src="../../../../js/theme.js?1724933324" defer></script>
   </body>
 </html>
