@@ -26,22 +26,22 @@
     <meta itemprop="description" content="资源控制器 graph LR A[思维导图] --&gt;B[1.前言] A[思维导图] --&gt;C[2.Namespace] A[思维导图] --&gt;D[3.Deployment] A[思维导图] --&gt;E[4.">
     <meta itemprop="datePublished" content="2024-06-25T17:38:23+08:00">
     <meta itemprop="dateModified" content="2024-06-25T17:38:23+08:00">
-    <meta itemprop="wordCount" content="3636">
+    <meta itemprop="wordCount" content="3796">
     <meta itemprop="image" content="https://usermice.github.io/images/s2-1.png">
     <title>Kubernetes_Template :: Hugo Relearn Theme</title>
-    <link href="../../../../images/favicon.ico?1725691780" rel="icon" type="image/x-icon" sizes="any">
-    <link href="../../../../css/fontawesome-all.min.css?1725691781" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1725691781" rel="stylesheet"></noscript>
-    <link href="../../../../css/nucleus.css?1725691781" rel="stylesheet">
-    <link href="../../../../css/auto-complete.css?1725691781" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1725691781" rel="stylesheet"></noscript>
-    <link href="../../../../css/perfect-scrollbar.min.css?1725691781" rel="stylesheet">
-    <link href="../../../../css/fonts.css?1725691781" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1725691781" rel="stylesheet"></noscript>
-    <link href="../../../../css/theme.css?1725691781" rel="stylesheet">
-    <link href="../../../../css/theme-relearn-auto.css?1725691781" rel="stylesheet" id="R-variant-style">
-    <link href="../../../../css/chroma-relearn-auto.css?1725691781" rel="stylesheet" id="R-variant-chroma-style">
-    <link href="../../../../css/variant.css?1725691781" rel="stylesheet">
-    <link href="../../../../css/print.css?1725691781" rel="stylesheet" media="print">
-    <link href="../../../../css/format-print.css?1725691781" rel="stylesheet">
-    <script src="../../../../js/variant.js?1725691781"></script>
+    <link href="../../../../images/favicon.ico?1727790689" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1727790691" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1727790691" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1727790691" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1727790691" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1727790691" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1727790691" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1727790691" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1727790691" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1727790691" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1727790691" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1727790691" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1727790691" rel="stylesheet">
+    <link href="../../../../css/print.css?1727790691" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1727790691" rel="stylesheet">
+    <script src="../../../../js/variant.js?1727790691"></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.relBasePath='..\/..\/..\/..';
@@ -1636,7 +1636,96 @@ A[&lt;p&gt;Deployment&lt;br&gt;seletor:env=dev] --&gt; A3((&lt;p&gt;Pod&lt;br&gt
 </span></span><span style="display:flex;"><span>          <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/opt/data/nginx/html</span>
 </span></span><span style="display:flex;"><span>          <span style="color:#f92672">type</span>: <span style="color:#ae81ff">DirectoryOrCreate</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">status</span>: {}</span></span></code></pre></div></blockquote>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">status</span>: {}</span></span></code></pre></div><ul>
+<li>使用变量进行传参</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sed -e <span style="color:#e6db74">&#39;s#{REPLICAS}#1#g&#39;</span> -e <span style="color:#e6db74">&#39;s#{IMAGE}#myharbor.com:9527/test/IMAGE[:TAG_ID]#g&#39;</span> -e <span style="color:#e6db74">&#39;s#{JOB_NAME}#k8s-jd-core#g&#39;</span> -e <span style="color:#e6db74">&#39;s#{ENV}#dev#g&#39;</span> /opt/jenkins/deployment_yaml/k8s-deployment.tpl &gt; /opt/jenkins/deployment_yaml/k8s-wim-core-dev.yaml</span></span></code></pre></div><div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: {<span style="color:#ae81ff">JOB_NAME}-{ENV}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">simple-chat-{ENV}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">replicas</span>: {<span style="color:#ae81ff">REPLICAS}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">k8s-app</span>: {<span style="color:#ae81ff">JOB_NAME}-{ENV}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">strategy</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rollingUpdate</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">maxSurge</span>: <span style="color:#ae81ff">10</span><span style="color:#ae81ff">%</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">maxUnavailable</span>: <span style="color:#ae81ff">90</span><span style="color:#ae81ff">%</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">RollingUpdate</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">k8s-app</span>: {<span style="color:#ae81ff">JOB_NAME}-{ENV}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">nodeSelector</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">deploy/env</span>: {<span style="color:#ae81ff">ENV}</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">name</span>: {<span style="color:#ae81ff">JOB_NAME}-{ENV}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">image</span>: {<span style="color:#ae81ff">IMAGE}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">imagePullPolicy</span>: <span style="color:#ae81ff">IfNotPresent</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">8080</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">volumeMounts</span>:
+</span></span><span style="display:flex;"><span>          - <span style="color:#f92672">mountPath</span>: <span style="color:#ae81ff">/etc/localtime</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">name</span>: <span style="color:#ae81ff">volume-time</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">readOnly</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>          - <span style="color:#f92672">mountPath</span>: <span style="color:#ae81ff">/app/.env.local</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">name</span>: <span style="color:#ae81ff">volume-env-{JOB_NAME}-{ENV}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">readOnly</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">subPath</span>: <span style="color:#ae81ff">.env.local</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">hostPath</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/usr/share/zoneinfo/Asia/Shanghai</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">type</span>: <span style="color:#ae81ff">File</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">name</span>: <span style="color:#ae81ff">volume-time</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">configMap</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">defaultMode</span>: <span style="color:#ae81ff">420</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">items</span>:
+</span></span><span style="display:flex;"><span>              - <span style="color:#f92672">key</span>: <span style="color:#ae81ff">app_env_local</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">path</span>: <span style="color:#ae81ff">.env.local</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">name</span>: <span style="color:#ae81ff">configmap-env-{JOB_NAME}-{ENV}</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">name</span>: <span style="color:#ae81ff">volume-env-{JOB_NAME}-{ENV}</span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: {<span style="color:#ae81ff">JOB_NAME}-{ENV}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">simple-chat-{ENV}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">k8s-app</span>: {<span style="color:#ae81ff">JOB_NAME}-{ENV}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">http-{JOB_NAME}-{ENV}</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">targetPort</span>: <span style="color:#ae81ff">8080</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">type</span>: <span style="color:#ae81ff">ClusterIP</span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">networking.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Ingress</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">generation</span>: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: {<span style="color:#ae81ff">JOB_NAME}-ingress-{ENV}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">simple-chat-{ENV}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">annotations</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">nginx.ingress.kubernetes.io/rewrite-target</span>: <span style="color:#ae81ff">/$2</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">ingressClassName</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">host</span>: {<span style="color:#ae81ff">JOB_NAME}-ingress-{ENV}.com</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">http</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">paths</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">backend</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">service</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">name</span>: {<span style="color:#ae81ff">JOB_NAME}-{ENV}</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">port</span>:
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">number</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/{JOB_NAME}(/|$)(.*)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">pathType</span>: <span style="color:#ae81ff">Prefix</span></span></span></code></pre></div></blockquote>
+</blockquote>
 <hr>
 <h3 id="statefulset有状态类型"><code>StatefulSet</code>有状态类型</h3>
 <blockquote>
@@ -2368,22 +2457,22 @@ A[&lt;p&gt;Deployment&lt;br&gt;seletor:env=dev] --&gt; A3((&lt;p&gt;Pod&lt;br&gt
         </div>
       </main>
     </div>
-    <script src="../../../../js/clipboard.min.js?1725691781" defer></script>
-    <script src="../../../../js/perfect-scrollbar.min.js?1725691781" defer></script>
-    <script src="../../../../js/d3/d3-color.min.js?1725691781" defer></script>
-    <script src="../../../../js/d3/d3-dispatch.min.js?1725691781" defer></script>
-    <script src="../../../../js/d3/d3-drag.min.js?1725691781" defer></script>
-    <script src="../../../../js/d3/d3-ease.min.js?1725691781" defer></script>
-    <script src="../../../../js/d3/d3-interpolate.min.js?1725691781" defer></script>
-    <script src="../../../../js/d3/d3-selection.min.js?1725691781" defer></script>
-    <script src="../../../../js/d3/d3-timer.min.js?1725691781" defer></script>
-    <script src="../../../../js/d3/d3-transition.min.js?1725691781" defer></script>
-    <script src="../../../../js/d3/d3-zoom.min.js?1725691781" defer></script>
-    <script src="../../../../js/js-yaml.min.js?1725691781" defer></script>
-    <script src="../../../../js/mermaid.min.js?1725691781" defer></script>
+    <script src="../../../../js/clipboard.min.js?1727790691" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1727790691" defer></script>
+    <script src="../../../../js/d3/d3-color.min.js?1727790691" defer></script>
+    <script src="../../../../js/d3/d3-dispatch.min.js?1727790691" defer></script>
+    <script src="../../../../js/d3/d3-drag.min.js?1727790691" defer></script>
+    <script src="../../../../js/d3/d3-ease.min.js?1727790691" defer></script>
+    <script src="../../../../js/d3/d3-interpolate.min.js?1727790691" defer></script>
+    <script src="../../../../js/d3/d3-selection.min.js?1727790691" defer></script>
+    <script src="../../../../js/d3/d3-timer.min.js?1727790691" defer></script>
+    <script src="../../../../js/d3/d3-transition.min.js?1727790691" defer></script>
+    <script src="../../../../js/d3/d3-zoom.min.js?1727790691" defer></script>
+    <script src="../../../../js/js-yaml.min.js?1727790691" defer></script>
+    <script src="../../../../js/mermaid.min.js?1727790691" defer></script>
     <script>
       window.themeUseMermaid = JSON.parse("{ \"securityLevel\": \"loose\" }");
     </script>
-    <script src="../../../../js/theme.js?1725691781" defer></script>
+    <script src="../../../../js/theme.js?1727790691" defer></script>
   </body>
 </html>
