@@ -22,19 +22,19 @@
     <meta itemprop="dateModified" content="2024-06-13T00:25:13+08:00">
     <meta itemprop="image" content="https://usermice.github.io/images/s2-1.png">
     <title>Firewalld :: Hugo Relearn Theme</title>
-    <link href="../../../images/favicon.ico?1727790689" rel="icon" type="image/x-icon" sizes="any">
-    <link href="../../../css/fontawesome-all.min.css?1727790691" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/fontawesome-all.min.css?1727790691" rel="stylesheet"></noscript>
-    <link href="../../../css/nucleus.css?1727790691" rel="stylesheet">
-    <link href="../../../css/auto-complete.css?1727790691" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/auto-complete.css?1727790691" rel="stylesheet"></noscript>
-    <link href="../../../css/perfect-scrollbar.min.css?1727790691" rel="stylesheet">
-    <link href="../../../css/fonts.css?1727790691" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/fonts.css?1727790691" rel="stylesheet"></noscript>
-    <link href="../../../css/theme.css?1727790691" rel="stylesheet">
-    <link href="../../../css/theme-relearn-auto.css?1727790691" rel="stylesheet" id="R-variant-style">
-    <link href="../../../css/chroma-relearn-auto.css?1727790691" rel="stylesheet" id="R-variant-chroma-style">
-    <link href="../../../css/variant.css?1727790691" rel="stylesheet">
-    <link href="../../../css/print.css?1727790691" rel="stylesheet" media="print">
-    <link href="../../../css/format-print.css?1727790691" rel="stylesheet">
-    <script src="../../../js/variant.js?1727790691"></script>
+    <link href="../../../images/favicon.ico?1728660462" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../css/fontawesome-all.min.css?1728660464" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/fontawesome-all.min.css?1728660464" rel="stylesheet"></noscript>
+    <link href="../../../css/nucleus.css?1728660464" rel="stylesheet">
+    <link href="../../../css/auto-complete.css?1728660464" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/auto-complete.css?1728660464" rel="stylesheet"></noscript>
+    <link href="../../../css/perfect-scrollbar.min.css?1728660464" rel="stylesheet">
+    <link href="../../../css/fonts.css?1728660464" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../css/fonts.css?1728660464" rel="stylesheet"></noscript>
+    <link href="../../../css/theme.css?1728660464" rel="stylesheet">
+    <link href="../../../css/theme-relearn-auto.css?1728660464" rel="stylesheet" id="R-variant-style">
+    <link href="../../../css/chroma-relearn-auto.css?1728660464" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../css/variant.css?1728660464" rel="stylesheet">
+    <link href="../../../css/print.css?1728660464" rel="stylesheet" media="print">
+    <link href="../../../css/format-print.css?1728660464" rel="stylesheet">
+    <script src="../../../js/variant.js?1728660464"></script>
     <script>
       window.relearn = window.relearn || {};
       window.relearn.relBasePath='..\/..\/..';
@@ -539,9 +539,16 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>$ iptables -t nat -A POST_ROUTING -d 10.10.188.232 -p tcp --dport <span style="color:#ae81ff">80</span> -j DNAT --to 10.10.177.232:80 <span style="color:#75715e"># DNAT</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#场景五</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 场景五</span>
 </span></span><span style="display:flex;"><span>$ iptables -I INPUT -p tcp --syn --dport <span style="color:#ae81ff">80</span> -m connlimit --connlimit-above <span style="color:#ae81ff">100</span> -j REJECT <span style="color:#75715e"># 限制并发连接访问数</span>
-</span></span><span style="display:flex;"><span>$ iptables -I INPUT -m limit --limit 3/hour --limit-burst <span style="color:#ae81ff">10</span> -j ACCEPT <span style="color:#75715e"># limit模块; --limit-burst 默认为5</span></span></span></code></pre></div></blockquote>
+</span></span><span style="display:flex;"><span>$ iptables -I INPUT -m limit --limit 3/hour --limit-burst <span style="color:#ae81ff">10</span> -j ACCEPT <span style="color:#75715e"># limit模块; --limit-burst 默认为5</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 场景六：规则允许每秒最多 1 个新连接，突发最多 3 个连接，超过的连接会被丢弃</span>
+</span></span><span style="display:flex;"><span>$ iptables -A INPUT -p tcp --dport <span style="color:#ae81ff">80</span> -i eth0 -m state --state NEW -m limit --limit 1/s --limit-burst <span style="color:#ae81ff">3</span> -j ACCEPT
+</span></span><span style="display:flex;"><span>$ iptables -A INPUT -p tcp --dport <span style="color:#ae81ff">80</span> -i eth0 -j DROP
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ iptables -A INPUT -p tcp --dport <span style="color:#ae81ff">80</span> -i eth0 -m conntrack --ctstate NEW -m recent --set
+</span></span><span style="display:flex;"><span>$ iptables -A INPUT -p tcp --dport <span style="color:#ae81ff">80</span> -i eth0 -m conntrack --ctstate NEW -m recent --update --seconds <span style="color:#ae81ff">60</span> --hitcount <span style="color:#ae81ff">20</span> -j DROP</span></span></code></pre></div></blockquote>
 <hr>
 <h3 id="配置ipset">配置<code>Ipset</code></h3>
 <ul>
@@ -675,8 +682,8 @@
         </div>
       </main>
     </div>
-    <script src="../../../js/clipboard.min.js?1727790691" defer></script>
-    <script src="../../../js/perfect-scrollbar.min.js?1727790691" defer></script>
-    <script src="../../../js/theme.js?1727790691" defer></script>
+    <script src="../../../js/clipboard.min.js?1728660464" defer></script>
+    <script src="../../../js/perfect-scrollbar.min.js?1728660464" defer></script>
+    <script src="../../../js/theme.js?1728660464" defer></script>
   </body>
 </html>
