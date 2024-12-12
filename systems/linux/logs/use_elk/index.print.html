@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" itemscope itemtype="http://schema.org/Article">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="generator" content="Hugo 0.125.4">
+    <meta name="generator" content="Relearn 6.0.0+tip">
+    <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+    <meta name="description" content="配置elasticsearch&#43;redis elasticsearch出现问题怎么处理 接下来描述会遇见到的一个问题：一旦我们的elasticsearch出现问题，就不能进行日志采集处理了！这种情况下该怎么办呢？ 解决方案：可以在client和elasticsearch之间添加一个中间件作为缓存，先将采集到的日志内容写到中间件上，然后再从中间件输入到elasticsearch中。 这就完美的解决了上述的问题了。ELK中使用redis作为中间件，缓存日志采集内容 $ curl &#39;localhost:9200/_cat/health?v&#39; # 检测集群是否健康 $ curl &#39;localhost:9200/_cat/nodes?">
+    <meta name="author" content="二哥">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://usermice.github.io/images/s2-1.png">
+    <meta name="twitter:title" content="Use ELK :: Hugo Relearn Theme">
+    <meta name="twitter:description" content="配置elasticsearch&#43;redis elasticsearch出现问题怎么处理 接下来描述会遇见到的一个问题：一旦我们的elasticsearch出现问题，就不能进行日志采集处理了！这种情况下该怎么办呢？ 解决方案：可以在client和elasticsearch之间添加一个中间件作为缓存，先将采集到的日志内容写到中间件上，然后再从中间件输入到elasticsearch中。 这就完美的解决了上述的问题了。ELK中使用redis作为中间件，缓存日志采集内容 $ curl &#39;localhost:9200/_cat/health?v&#39; # 检测集群是否健康 $ curl &#39;localhost:9200/_cat/nodes?">
+    <meta property="og:url" content="https://usermice.github.io/systems/linux/logs/use_elk/">
+    <meta property="og:site_name" content="Hugo Relearn Theme">
+    <meta property="og:title" content="Use ELK :: Hugo Relearn Theme">
+    <meta property="og:description" content="配置elasticsearch&#43;redis elasticsearch出现问题怎么处理 接下来描述会遇见到的一个问题：一旦我们的elasticsearch出现问题，就不能进行日志采集处理了！这种情况下该怎么办呢？ 解决方案：可以在client和elasticsearch之间添加一个中间件作为缓存，先将采集到的日志内容写到中间件上，然后再从中间件输入到elasticsearch中。 这就完美的解决了上述的问题了。ELK中使用redis作为中间件，缓存日志采集内容 $ curl &#39;localhost:9200/_cat/health?v&#39; # 检测集群是否健康 $ curl &#39;localhost:9200/_cat/nodes?">
+    <meta property="og:locale" content="en">
+    <meta property="og:type" content="article">
+    <meta property="article:section" content="Systems">
+    <meta property="article:published_time" content="2024-06-20T18:24:37+08:00">
+    <meta property="article:modified_time" content="2024-06-20T18:24:37+08:00">
+    <meta property="og:image" content="https://usermice.github.io/images/s2-1.png">
+    <meta itemprop="name" content="Use ELK :: Hugo Relearn Theme">
+    <meta itemprop="description" content="配置elasticsearch&#43;redis elasticsearch出现问题怎么处理 接下来描述会遇见到的一个问题：一旦我们的elasticsearch出现问题，就不能进行日志采集处理了！这种情况下该怎么办呢？ 解决方案：可以在client和elasticsearch之间添加一个中间件作为缓存，先将采集到的日志内容写到中间件上，然后再从中间件输入到elasticsearch中。 这就完美的解决了上述的问题了。ELK中使用redis作为中间件，缓存日志采集内容 $ curl &#39;localhost:9200/_cat/health?v&#39; # 检测集群是否健康 $ curl &#39;localhost:9200/_cat/nodes?">
+    <meta itemprop="datePublished" content="2024-06-20T18:24:37+08:00">
+    <meta itemprop="dateModified" content="2024-06-20T18:24:37+08:00">
+    <meta itemprop="wordCount" content="774">
+    <meta itemprop="image" content="https://usermice.github.io/images/s2-1.png">
+    <title>Use ELK :: Hugo Relearn Theme</title>
+    <link href="../../../../images/favicon.ico?1734019084" rel="icon" type="image/x-icon" sizes="any">
+    <link href="../../../../css/fontawesome-all.min.css?1734019085" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fontawesome-all.min.css?1734019085" rel="stylesheet"></noscript>
+    <link href="../../../../css/nucleus.css?1734019085" rel="stylesheet">
+    <link href="../../../../css/auto-complete.css?1734019085" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/auto-complete.css?1734019085" rel="stylesheet"></noscript>
+    <link href="../../../../css/perfect-scrollbar.min.css?1734019085" rel="stylesheet">
+    <link href="../../../../css/fonts.css?1734019085" rel="stylesheet" media="print" onload="this.media='all';this.onload=null;"><noscript><link href="../../../../css/fonts.css?1734019085" rel="stylesheet"></noscript>
+    <link href="../../../../css/theme.css?1734019085" rel="stylesheet">
+    <link href="../../../../css/theme-relearn-auto.css?1734019085" rel="stylesheet" id="R-variant-style">
+    <link href="../../../../css/chroma-relearn-auto.css?1734019085" rel="stylesheet" id="R-variant-chroma-style">
+    <link href="../../../../css/variant.css?1734019085" rel="stylesheet">
+    <link href="../../../../css/print.css?1734019085" rel="stylesheet" media="print">
+    <link href="../../../../css/format-print.css?1734019085" rel="stylesheet">
+    <script src="../../../../js/variant.js?1734019085"></script>
+    <script>
+      window.relearn = window.relearn || {};
+      window.relearn.relBasePath='..\/..\/..\/..';
+      window.relearn.relBaseUri='..\/..\/..\/..';
+      window.relearn.absBaseUri='https:\/\/usermice.github.io';
+      window.index_js_url="../../../../index.search.js";
+      // variant stuff
+      window.variants && variants.init( [ 'relearn-auto', 'relearn-light', 'relearn-dark', 'relearn-bright', 'zen-auto', 'zen-light', 'zen-dark', 'retro-auto', 'neon', 'learn', 'blue', 'green', 'red', 'my-branding' ] );
+      // translations
+      window.T_Copy_to_clipboard = `Copy to clipboard`;
+      window.T_Copied_to_clipboard = `Copied to clipboard!`;
+      window.T_Copy_link_to_clipboard = `Copy link to clipboard`;
+      window.T_Link_copied_to_clipboard = `Copied link to clipboard!`;
+      window.T_Reset_view = `Reset view`;
+      window.T_View_reset = `View reset!`;
+      window.T_No_results_found = `No results found for "{0}"`;
+      window.T_N_results_found = `{1} results found for "{0}"`;
+    </script>Partial intended to be overwritten to add custom headers, like CSS or any other info
+<style>
+    
+</style>
+
+
+  </head>
+  <body class="mobile-support print disableInlineCopyToClipboard" data-url="../../../../systems/linux/logs/use_elk/">
+    <div id="R-body" class="default-animation">
+      <div id="R-body-overlay"></div>
+      <nav id="R-topbar">
+        <div class="topbar-wrapper">
+          <div class="topbar-sidebar-divider"></div>
+          <div class="topbar-area topbar-area-start" data-area="start">
+            <div class="topbar-button topbar-button-sidebar" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><button class="topbar-control" onclick="toggleNav()" type="button" title="Menu (CTRL&#43;ALT&#43;n)"><i class="fa-fw fas fa-bars"></i></button>
+            </div>
+
+
+
+          </div>
+          <ol class="topbar-breadcrumbs breadcrumbs highlightable" itemscope itemtype="http://schema.org/BreadcrumbList"><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/"><span itemprop="name">Systems</span></a><meta itemprop="position" content="1">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/"><span itemprop="name">Linux</span></a><meta itemprop="position" content="2">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><a itemprop="item" href="../../../../systems/linux/logs/"><span itemprop="name">Logs</span></a><meta itemprop="position" content="3">&nbsp;>&nbsp;</li><li
+            itemscope itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="name">Use ELK</span><meta itemprop="position" content="4"></li>
+          </ol>
+          <div class="topbar-area topbar-area-end" data-area="end">
+
+
+            <div class="topbar-button topbar-button-prev" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/logs/install_elk/" title="Install_ELK (🡐)"><i class="fa-fw fas fa-chevron-left"></i></a>
+            </div>
+
+            <div class="topbar-button topbar-button-next" data-content-empty="show" data-width-s="show" data-width-m="show" data-width-l="show"><a class="topbar-control" href="../../../../systems/linux/message_queue/" title="Message_Queue (🡒)"><i class="fa-fw fas fa-chevron-right"></i></a>
+            </div>
+
+
+
+          </div>
+        </div>
+      </nav>
+      <div id="R-main-overlay"></div>
+      <main id="R-body-inner" class="highlightable default" tabindex="-1">
+        <div class="flex-block-wrapper">
+          <article class="default">
+            <header class="headline">
+            </header>
+
+<h1 id="use-elk">Use ELK</h1>
+
+<h2 id="配置elasticsearchredis">配置<code>elasticsearch+redis</code></h2>
+<ul>
+<li>
+<ol>
+<li><code>elasticsearch</code><!-- raw HTML omitted -->出现问题怎么处理<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<ul>
+<li>接下来描述会遇见到的一个问题：一旦我们的<code>elasticsearch</code>出现问题，就不能进行日志采集处理了！这种情况下该怎么办呢？</li>
+<li><!-- raw HTML omitted -->解决方案：<!-- raw HTML omitted -->可以在<code>client</code>和<code>elasticsearch</code>之间添加一个中间件作为缓存，先将采集到的日志内容写到中间件上，然后再从中间件输入到<code>elasticsearch</code>中。
+这就完美的解决了上述的问题了。<code>ELK</code>中使用<code>redis</code>作为中间件，缓存日志采集内容</li>
+</ul>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#39;localhost:9200/_cat/health?v&#39;</span>  	<span style="color:#75715e"># 检测集群是否健康</span>
+</span></span><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#39;localhost:9200/_cat/nodes?v&#39;</span>  	<span style="color:#75715e"># 获取集群节点列表</span>
+</span></span><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#39;localhost:9200/_cat/indices?v&#39;</span>  	<span style="color:#75715e"># 列出所有索引</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ curl -X PUT <span style="color:#e6db74">&#39;localhost:9200/customer?pretty&#39;</span>  	<span style="color:#75715e"># 创建一个名为&#34;customer&#34;的索引</span>
+</span></span><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#39;localhost:9200/customer/_search?pretty&#39;</span>  	<span style="color:#75715e"># 查看名为&#34;customer&#34;的索引</span>
+</span></span><span style="display:flex;"><span>$ curl -X DELETE <span style="color:#e6db74">&#39;localhost:9200/customer?pretty&#39;</span>  	<span style="color:#75715e"># 删除一个名为&#34;customer&#34;的索引</span>
+</span></span><span style="display:flex;"><span>$ curl localhost:9200/_cat/segments/<span style="color:#f92672">{</span>indexName<span style="color:#f92672">}</span>|wc -l  	<span style="color:#75715e"># 查看某个索引的段数量：GET /nginx-2022-*/_segments</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ curl -X POST 192.168.60.7:9200/indexName/_forcemerge?max_num_segments<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>  	<span style="color:#75715e"># 合并某个索引的段，支持通配符：/nginx-2022-*/_forcemerge?max_num_segments=1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ curl -u user_name:password -X GET <span style="color:#e6db74">&#34;http://localhost:9200/_cluster/health?pretty&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ cat &gt;delete_es_index.sh<span style="color:#e6db74">&lt;&lt;-EOF 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">##!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">## 定期删除两个月之前elasticsearch索引
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">date=`date -d &#34;-2 months&#34; &#34;+%Y.%m&#34;`
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/usr/bin/curl -v --user elastic:password -X DELETE &#34;http://es机器IP:9200/*-$date&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="2">
+<li><!-- raw HTML omitted -->配置<!-- raw HTML omitted --><code>Redis</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat /etc/redis.conf  	<span style="color:#75715e"># 修改下面两行内容</span>
+</span></span><span style="display:flex;"><span>daemonize yes
+</span></span><span style="display:flex;"><span>bind 192.168.1.160
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ systemctl start redis
+</span></span><span style="display:flex;"><span>$ lsof -i:6379
+</span></span><span style="display:flex;"><span>COMMAND     PID  USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
+</span></span><span style="display:flex;"><span>redis-ser <span style="color:#ae81ff">19474</span> redis    4u  IPv4 <span style="color:#ae81ff">1344465</span>      0t0  TCP elk-node1:6379 <span style="color:#f92672">(</span>LISTEN<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ redis-cli -h 192.168.1.160
+</span></span><span style="display:flex;"><span>192.168.1.160:6379&gt; info
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Server</span>
+</span></span><span style="display:flex;"><span>redis_version:2.8.19
+</span></span><span style="display:flex;"><span>.......</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="3">
+<li><!-- raw HTML omitted -->编写从<!-- raw HTML omitted --><code>Client</code><!-- raw HTML omitted -->端收集数据的文件<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat /opt/logstash/data/redis-out.conf
+</span></span><span style="display:flex;"><span>input <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>stdin <span style="color:#f92672">{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>output <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>redis <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>host <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;192.168.1.160&#34;</span>
+</span></span><span style="display:flex;"><span>port <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6379&#34;</span>
+</span></span><span style="display:flex;"><span>db <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6&#34;</span>
+</span></span><span style="display:flex;"><span>data_type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;list&#34;</span>
+</span></span><span style="display:flex;"><span>key <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;demo&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="4">
+<li><!-- raw HTML omitted -->执行收集数据的文件，并输入数据<!-- raw HTML omitted --><code>hello redis</code></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /opt/logstash/bin/logstash -f redis-out.conf 
+</span></span><span style="display:flex;"><span>Settings: Default filter workers: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>Logstash startup completed  	<span style="color:#75715e"># 下面输入数据hello redis</span>
+</span></span><span style="display:flex;"><span>hello redis</span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="5">
+<li><!-- raw HTML omitted -->在<!-- raw HTML omitted --><code>redis</code><!-- raw HTML omitted -->中查看数据<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ redis-cli -h 192.168.1.160
+</span></span><span style="display:flex;"><span>192.168.1.160:6379&gt; info
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Server</span>
+</span></span><span style="display:flex;"><span>.......
+</span></span><span style="display:flex;"><span>.......
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Keyspace</span>
+</span></span><span style="display:flex;"><span>db6:keys<span style="color:#f92672">=</span>1,expires<span style="color:#f92672">=</span>0,avg_ttl<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>  	<span style="color:#75715e"># 在最下面一行，显示是db6</span>
+</span></span><span style="display:flex;"><span>192.168.1.160:6379&gt; <span style="color:#66d9ef">select</span> <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span>OK
+</span></span><span style="display:flex;"><span>192.168.1.160:6379<span style="color:#f92672">[</span>6<span style="color:#f92672">]</span>&gt; keys *
+</span></span><span style="display:flex;"><span>1<span style="color:#f92672">)</span> <span style="color:#e6db74">&#34;demo&#34;</span>
+</span></span><span style="display:flex;"><span>192.168.1.160:6379<span style="color:#f92672">[</span>6<span style="color:#f92672">]</span>&gt; LINDEX demo -1
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;{\&#34;message\&#34;:\&#34;hello redis\&#34;,\&#34;@version\&#34;:\&#34;1\&#34;,\&#34;@timestamp\&#34;:\&#34;2016-11-14T08:04:25.981Z\&#34;,\&#34;host\&#34;:\&#34;elk-node1\&#34;}&#34;</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="6">
+<li><!-- raw HTML omitted -->继续随便写点数据测试<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /opt/logstash/bin/logstash -f redis-out.conf
+</span></span><span style="display:flex;"><span>Settings: Default filter workers: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>Logstash startup completed
+</span></span><span style="display:flex;"><span>hello redis
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">123456</span>
+</span></span><span style="display:flex;"><span>asdf
+</span></span><span style="display:flex;"><span>ert
+</span></span><span style="display:flex;"><span>wang
+</span></span><span style="display:flex;"><span>shi
+</span></span><span style="display:flex;"><span>bo
+</span></span><span style="display:flex;"><span>guohuihui
+</span></span><span style="display:flex;"><span>as
+</span></span><span style="display:flex;"><span>we
+</span></span><span style="display:flex;"><span>r
+</span></span><span style="display:flex;"><span>g
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>asdfjkdfsak
+</span></span><span style="display:flex;"><span>5423wer
+</span></span><span style="display:flex;"><span>34rt3
+</span></span><span style="display:flex;"><span>6y
+</span></span><span style="display:flex;"><span>7uj
+</span></span><span style="display:flex;"><span>u
+</span></span><span style="display:flex;"><span>io9
+</span></span><span style="display:flex;"><span>sdjfhsdk890
+</span></span><span style="display:flex;"><span>huanqiu
+</span></span><span style="display:flex;"><span>huanqiuchain
+</span></span><span style="display:flex;"><span>hqsb
+</span></span><span style="display:flex;"><span>asda    </span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="7">
+<li><!-- raw HTML omitted -->在<!-- raw HTML omitted --><code>redis</code><!-- raw HTML omitted -->中查看长度<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ redis-cli -h 192.168.1.160
+</span></span><span style="display:flex;"><span>192.168.1.160:6379&gt; info
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Server</span>
+</span></span><span style="display:flex;"><span>redis_version:2.8.19
+</span></span><span style="display:flex;"><span>.......
+</span></span><span style="display:flex;"><span>.......
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Keyspace</span>
+</span></span><span style="display:flex;"><span>db6:keys<span style="color:#f92672">=</span>1,expires<span style="color:#f92672">=</span>0,avg_ttl<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>  	<span style="color:#75715e"># 显示是db6</span>
+</span></span><span style="display:flex;"><span>192.168.1.160:6379&gt; <span style="color:#66d9ef">select</span> <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span>OK
+</span></span><span style="display:flex;"><span>192.168.1.160:6379<span style="color:#f92672">[</span>6<span style="color:#f92672">]</span>&gt; keys *
+</span></span><span style="display:flex;"><span>1<span style="color:#f92672">)</span> <span style="color:#e6db74">&#34;demo&#34;</span>
+</span></span><span style="display:flex;"><span>192.168.1.160:6379<span style="color:#f92672">[</span>6<span style="color:#f92672">]</span>&gt; LLEN demo
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>integer<span style="color:#f92672">)</span> <span style="color:#ae81ff">24</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="8">
+<li><!-- raw HTML omitted -->将<!-- raw HTML omitted --><code>redis</code><!-- raw HTML omitted -->中的内容写到<!-- raw HTML omitted --><code>elasticsearch</code><!-- raw HTML omitted -->中<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ vim redis-in.conf
+</span></span><span style="display:flex;"><span>input <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>redis <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span> host <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;192.168.1.160&#34;</span>
+</span></span><span style="display:flex;"><span> port <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6379&#34;</span>
+</span></span><span style="display:flex;"><span> db <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6&#34;</span>
+</span></span><span style="display:flex;"><span> data_type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;list&#34;</span>
+</span></span><span style="display:flex;"><span> key <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;demo&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>output <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>elasticsearch <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span> hosts <span style="color:#f92672">=</span>&gt; <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;192.168.1.160:9200&#34;</span><span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span> index <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;redis-in-%{+YYYY.MM.dd}&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="9">
+<li><!-- raw HTML omitted -->执行<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ /opt/logstash/bin/logstash -f  redis-in.conf --configtest
+</span></span><span style="display:flex;"><span>Configuration OK
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ /opt/logstash/bin/logstash -f  redis-in.conf &amp;
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 在redis中查看，发现数据已被读出：</span>
+</span></span><span style="display:flex;"><span>192.168.1.160:6379<span style="color:#f92672">[</span>6<span style="color:#f92672">]</span>&gt; LLEN demo
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>integer<span style="color:#f92672">)</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 登陆elasticsearch界面查看</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="10">
+<li><!-- raw HTML omitted -->将收集到的所有日志写入到<!-- raw HTML omitted --><code>redis</code><!-- raw HTML omitted -->中。这了重新定义一个添加<!-- raw HTML omitted --><code>redis</code><!-- raw HTML omitted -->缓存后的总文件<!-- raw HTML omitted --><code>shipper.conf</code><!-- raw HTML omitted -->。（可以将之前执行的总文件<!-- raw HTML omitted --><code>file.conf</code><!-- raw HTML omitted -->停掉）<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ vim shipper.conf
+</span></span><span style="display:flex;"><span>input <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>file <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span> path <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;/var/log/messages&#34;</span>
+</span></span><span style="display:flex;"><span> type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;system&#34;</span>
+</span></span><span style="display:flex;"><span> start_position <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;beginning&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>file <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  path <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;/var/log/elasticsearch/huanqiu.log&#34;</span>
+</span></span><span style="display:flex;"><span>  type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;es-error&#34;</span>
+</span></span><span style="display:flex;"><span>  start_position <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;beginning&#34;</span>
+</span></span><span style="display:flex;"><span>  codec <span style="color:#f92672">=</span>&gt; multiline <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      pattern <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;^\[&#34;</span>
+</span></span><span style="display:flex;"><span>      negate <span style="color:#f92672">=</span>&gt; true
+</span></span><span style="display:flex;"><span>      what <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;previous&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>file <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>   path <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;/var/log/nginx/access_json.log&#34;</span>
+</span></span><span style="display:flex;"><span>   codec <span style="color:#f92672">=</span>&gt; json
+</span></span><span style="display:flex;"><span>   start_position <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;beginning&#34;</span>
+</span></span><span style="display:flex;"><span>   type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;nginx-log&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>syslog <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;system-syslog&#34;</span>
+</span></span><span style="display:flex;"><span>    host <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;192.168.1.160&#34;</span>
+</span></span><span style="display:flex;"><span>    port <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;514&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>output <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span>type<span style="color:#f92672">]</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;system&#34;</span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span> redis <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    host <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;192.168.1.160&#34;</span>
+</span></span><span style="display:flex;"><span>    port <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6379&#34;</span>
+</span></span><span style="display:flex;"><span>    db <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6&#34;</span>
+</span></span><span style="display:flex;"><span>    data_type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;list&#34;</span>
+</span></span><span style="display:flex;"><span>    key <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;system&#34;</span>
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span>type<span style="color:#f92672">]</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;es-error&#34;</span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  redis <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>   host <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;192.168.1.160&#34;</span>
+</span></span><span style="display:flex;"><span>   port <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6379&#34;</span>
+</span></span><span style="display:flex;"><span>   db <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6&#34;</span>
+</span></span><span style="display:flex;"><span>   data_type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;list&#34;</span>
+</span></span><span style="display:flex;"><span>   key <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;demo&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span>type<span style="color:#f92672">]</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;nginx-log&#34;</span><span style="color:#f92672">{</span>   
+</span></span><span style="display:flex;"><span>   redis <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      host <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;192.168.1.160&#34;</span>
+</span></span><span style="display:flex;"><span>      port <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6379&#34;</span>
+</span></span><span style="display:flex;"><span>      db <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6&#34;</span>
+</span></span><span style="display:flex;"><span>      data_type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;list&#34;</span>
+</span></span><span style="display:flex;"><span>      key <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;nginx-log&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span>type<span style="color:#f92672">]</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;system-syslog&#34;</span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>   redis <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      host <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;192.168.1.160&#34;</span>
+</span></span><span style="display:flex;"><span>      port <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6379&#34;</span>
+</span></span><span style="display:flex;"><span>      db <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6&#34;</span>
+</span></span><span style="display:flex;"><span>      data_type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;list&#34;</span>
+</span></span><span style="display:flex;"><span>      key <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;system-syslog&#34;</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">}</span>   
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="11">
+<li><!-- raw HTML omitted -->执行上面的文件（提前将上面之前启动的<!-- raw HTML omitted --><code>file.conf</code><!-- raw HTML omitted -->文件的执行给结束掉！）<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$  /opt/logstash/bin/logstash -f shipper.conf --configtest
+</span></span><span style="display:flex;"><span>Configuration OK
+</span></span><span style="display:flex;"><span>$ /opt/logstash/bin/logstash -f shipper.conf
+</span></span><span style="display:flex;"><span>Settings: Default filter workers: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>Logstash startup completed
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 在redis中查看：</span>
+</span></span><span style="display:flex;"><span>$ redis-cli -h 192.168.1.160
+</span></span><span style="display:flex;"><span>192.168.1.160:6379&gt; info
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Server</span>
+</span></span><span style="display:flex;"><span>redis_version:2.8.19
+</span></span><span style="display:flex;"><span>.......
+</span></span><span style="display:flex;"><span>.......
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Keyspace</span>
+</span></span><span style="display:flex;"><span>db6:keys<span style="color:#f92672">=</span>1,expires<span style="color:#f92672">=</span>0,avg_ttl<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>  	<span style="color:#75715e"># 显示是db6</span>
+</span></span><span style="display:flex;"><span>192.168.1.160:6379&gt; <span style="color:#66d9ef">select</span> <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span>OK
+</span></span><span style="display:flex;"><span>192.168.1.160:6379<span style="color:#f92672">[</span>6<span style="color:#f92672">]</span>&gt; keys *
+</span></span><span style="display:flex;"><span>1<span style="color:#f92672">)</span> <span style="color:#e6db74">&#34;demo&#34;</span>
+</span></span><span style="display:flex;"><span>2<span style="color:#f92672">)</span> <span style="color:#e6db74">&#34;system&#34;</span>
+</span></span><span style="display:flex;"><span>192.168.1.160:6379<span style="color:#f92672">[</span>6<span style="color:#f92672">]</span>&gt; keys *
+</span></span><span style="display:flex;"><span>1<span style="color:#f92672">)</span> <span style="color:#e6db74">&#34;nginx-log&#34;</span>
+</span></span><span style="display:flex;"><span>2<span style="color:#f92672">)</span> <span style="color:#e6db74">&#34;demo&#34;</span>
+</span></span><span style="display:flex;"><span>3<span style="color:#f92672">)</span> <span style="color:#e6db74">&#34;system&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 另开一个窗口，添加点日志:</span>
+</span></span><span style="display:flex;"><span>$ logger <span style="color:#e6db74">&#34;12325423&#34;</span>
+</span></span><span style="display:flex;"><span>$ logger <span style="color:#e6db74">&#34;12325423&#34;</span>
+</span></span><span style="display:flex;"><span>$ logger <span style="color:#e6db74">&#34;12325423&#34;</span>
+</span></span><span style="display:flex;"><span>$ logger <span style="color:#e6db74">&#34;12325423&#34;</span>
+</span></span><span style="display:flex;"><span>$ logger <span style="color:#e6db74">&#34;12325423&#34;</span>
+</span></span><span style="display:flex;"><span>$ logger <span style="color:#e6db74">&#34;12325423&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 又会增加日志：</span>
+</span></span><span style="display:flex;"><span>192.168.1.160:6379<span style="color:#f92672">[</span>6<span style="color:#f92672">]</span>&gt; keys *
+</span></span><span style="display:flex;"><span>1<span style="color:#f92672">)</span> <span style="color:#e6db74">&#34;system-syslog&#34;</span>
+</span></span><span style="display:flex;"><span>2<span style="color:#f92672">)</span> <span style="color:#e6db74">&#34;nginx-log&#34;</span>
+</span></span><span style="display:flex;"><span>3<span style="color:#f92672">)</span> <span style="color:#e6db74">&#34;demo&#34;</span>
+</span></span><span style="display:flex;"><span>4<span style="color:#f92672">)</span> <span style="color:#e6db74">&#34;system&#34;</span></span></span></code></pre></div></blockquote>
+<ul>
+<li>
+<ol start="12">
+<li><!-- raw HTML omitted -->可以在任意的一台<!-- raw HTML omitted --><code>ES</code><!-- raw HTML omitted -->中将数据从<!-- raw HTML omitted --><code>redis</code><!-- raw HTML omitted -->读取到<!-- raw HTML omitted --><code>ES</code><!-- raw HTML omitted -->中。
+下面咱们在<!-- raw HTML omitted --><code>elk-node2</code><!-- raw HTML omitted -->节点，将数据从<!-- raw HTML omitted --><code>redis</code><!-- raw HTML omitted -->读取到<!-- raw HTML omitted --><code>ES</code><!-- raw HTML omitted -->中：
+编写文件：<!-- raw HTML omitted --></li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<div class="highlight wrap-code"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat file.conf
+</span></span><span style="display:flex;"><span>input <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>redis <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>   type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;system&#34;</span>
+</span></span><span style="display:flex;"><span>   host <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;192.168.1.160&#34;</span>
+</span></span><span style="display:flex;"><span>   port <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6379&#34;</span>
+</span></span><span style="display:flex;"><span>   db <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6&#34;</span>
+</span></span><span style="display:flex;"><span>   data_type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;list&#34;</span>
+</span></span><span style="display:flex;"><span>   key <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;system&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span> redis <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>   type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;es-error&#34;</span>
+</span></span><span style="display:flex;"><span>   host <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;192.168.1.160&#34;</span>
+</span></span><span style="display:flex;"><span>   port <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6379&#34;</span>
+</span></span><span style="display:flex;"><span>   db <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6&#34;</span>
+</span></span><span style="display:flex;"><span>   data_type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;list&#34;</span>
+</span></span><span style="display:flex;"><span>   key <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;es-error&#34;</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>   redis <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;nginx-log&#34;</span>
+</span></span><span style="display:flex;"><span>      host <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;192.168.1.160&#34;</span>
+</span></span><span style="display:flex;"><span>      port <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6379&#34;</span>
+</span></span><span style="display:flex;"><span>      db <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6&#34;</span>
+</span></span><span style="display:flex;"><span>      data_type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;list&#34;</span>
+</span></span><span style="display:flex;"><span>      key <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;nginx-log&#34;</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>  redis <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;system-syslog&#34;</span>
+</span></span><span style="display:flex;"><span>      host <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;192.168.1.160&#34;</span>
+</span></span><span style="display:flex;"><span>      port <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6379&#34;</span>
+</span></span><span style="display:flex;"><span>      db <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;6&#34;</span>
+</span></span><span style="display:flex;"><span>      data_type <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;list&#34;</span>
+</span></span><span style="display:flex;"><span>      key <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;system-syslog&#34;</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">}</span>   
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>output <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span>type<span style="color:#f92672">]</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;system&#34;</span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    elasticsearch <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>       hosts <span style="color:#f92672">=</span>&gt; <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;192.168.1.160:9200&#34;</span><span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>       index <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;system-%{+YYYY.MM.dd}&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span>type<span style="color:#f92672">]</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;es-error&#34;</span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    elasticsearch <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>       hosts <span style="color:#f92672">=</span>&gt; <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;192.168.1.160:9200&#34;</span><span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>       index <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;es-error-%{+YYYY.MM.dd}&#34;</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span>type<span style="color:#f92672">]</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;nginx-log&#34;</span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>   elasticsearch <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>      hosts <span style="color:#f92672">=</span>&gt; <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;192.168.1.160:9200&#34;</span><span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>      index <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;nignx-log-%{+YYYY.MM.dd}&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span>type<span style="color:#f92672">]</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;system-syslog&#34;</span><span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    elasticsearch <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>       hosts <span style="color:#f92672">=</span>&gt; <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;192.168.1.160:9200&#34;</span><span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>       index <span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;system-syslog-%{+YYYY.MM.dd}&#34;</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 执行</span>
+</span></span><span style="display:flex;"><span>$ /opt/logstash/bin/logstash -f file.conf --configtest
+</span></span><span style="display:flex;"><span>Configuration OK
+</span></span><span style="display:flex;"><span>$ /opt/logstash/bin/logstash -f file.conf &amp;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 去redis中检查，发现数据已经被读出到elasticsearch中了、同时登陆logstash和kibana看，发现可以正常收集到日志了。</span>
+</span></span><span style="display:flex;"><span>192.168.1.160:6379<span style="color:#f92672">[</span>6<span style="color:#f92672">]</span>&gt; keys *
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>empty list or set<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 可以执行这个 去查看nginx日志、也可以启动多个redis写到ES中，具体根据自己的实际情况而定。</span>
+</span></span><span style="display:flex;"><span>$ ab -n10000 -c1 http://192.168.1.160/ </span></span></code></pre></div></blockquote>
+<hr>
+
+            <footer class="footline">
+            </footer>
+          </article>
+
+        </div>
+      </main>
+    </div>
+    <script src="../../../../js/clipboard.min.js?1734019085" defer></script>
+    <script src="../../../../js/perfect-scrollbar.min.js?1734019085" defer></script>
+    <script src="../../../../js/theme.js?1734019085" defer></script>
+  </body>
+</html>
